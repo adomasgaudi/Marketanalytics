@@ -10,6 +10,11 @@ Chart.js loaded from CDN). No server needed.
 
 ## What's inside
 
+- **My company (Fabula ir partneriai)** — your own company surfaced at the top: KPI cards
+  with YoY change and market rank, a 2019–2024 trend chart, and a percentile-vs-market chart.
+  Also highlighted (gold) in the scatter plot and pinned to the top of the explorer table.
+  Note: *Viešųjų ryšių partneriai (VRP)*, code 124099127, rebranded to *Fabula ir partneriai*
+  and is the same legal entity.
 - **KPI strip** — market revenue, CAGR, profit, headcount, median salary
 - **Key insights** — six analytical findings written from the data
 - **Market overview** — revenue/profit/headcount trend, segment breakdown & segment trends
