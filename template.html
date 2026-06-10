@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b25; --panel2:#1c2230; --border:#2a3245;
+    --text:#e6e9f0; --muted:#8b93a7; --accent:#4f8ef7; --green:#34c98e;
+    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
+  .wrap{max-width:1400px;margin:0 auto;padding:24px}
+  header{margin-bottom:24px}
+  header h1{font-size:26px;font-weight:700}
+  header p{color:var(--muted);font-size:14px;margin-top:4px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .kpi .value{font-size:26px;font-weight:700;margin-top:4px}
+  .kpi .sub{font-size:12px;margin-top:2px}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  .grid .full{grid-column:1/-1}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:4px}
+  .card .desc{color:var(--muted);font-size:12px;margin-bottom:12px}
+  .chartbox{position:relative;height:340px}
+  .chartbox.tall{height:520px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  select,input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
+  .insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:24px}
+  .insight{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:14px 16px}
+  .insight.green{border-left-color:var(--green)}
+  .insight.red{border-left-color:var(--red)}
+  .insight.amber{border-left-color:var(--amber)}
+  .insight.purple{border-left-color:var(--purple)}
+  .insight h3{font-size:13px;font-weight:600;margin-bottom:4px}
+  .insight p{font-size:12.5px;color:var(--muted)}
+  .insight p b{color:var(--text)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
+  th:hover{color:var(--text)}
+  tr:hover td{background:rgba(79,142,247,.06)}
+  .tablebox{max-height:560px;overflow:auto;border-radius:8px}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
+  .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
+  footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
+  h2.section{font-size:18px;margin:28px 0 14px;font-weight:700}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies</h1>
+    <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2 class="section">Key insights</h2>
+  <div class="insights" id="insights"></div>
+
+  <h2 class="section">Market overview</h2>
+  <div class="grid">
+    <div class="card full">
+      <h2>Total market: revenue, profit & headcount (2019–2024)</h2>
+      <div class="desc">Sum across all 113 tracked companies. Bars = revenue, lines = total net profit and total employees.</div>
+      <div class="chartbox"><canvas id="chMarket"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>2024 revenue by service segment</h2>
+      <div class="desc">Companies may belong to multiple segments; revenue is attributed to each segment they operate in.</div>
+      <div class="chartbox"><canvas id="chSegments"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Segment revenue trend</h2>
+      <div class="desc">Total segment revenue per year — who is gaining share of the market.</div>
+      <div class="chartbox"><canvas id="chSegTrend"></canvas></div>
+    </div>
+  </div>
+
+  <h2 class="section">Company rankings</h2>
+  <div class="grid">
+    <div class="card full">
+      <h2>Top 20 companies</h2>
+      <div class="controls">
+        <select id="rankMetric">
+          <option value="revenue">Revenue (€)</option>
+          <option value="profit">Net profit (€)</option>
+          <option value="employees">Employees</option>
+          <option value="avgSalary">Avg. salary (€/mo)</option>
+          <option value="margin">Profit margin (%)</option>
+        </select>
+        <select id="rankYear"></select>
+        <select id="rankSegment"><option value="">All segments</option></select>
+      </div>
+      <div class="chartbox tall"><canvas id="chTop"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Growth leaders & laggards (revenue 2021 → 2024)</h2>
+      <div class="desc">Companies with ≥ €300k revenue in 2024 and ≥ €50k in 2021. Top 8 growers vs bottom 8 decliners.</div>
+      <div class="chartbox tall"><canvas id="chGrowth"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Size vs profitability (2024)</h2>
+      <div class="desc">X = revenue (log scale), Y = net margin %, bubble size = employees. Healthy zone is up & right.</div>
+      <div class="chartbox tall"><canvas id="chScatter"></canvas></div>
+    </div>
+  </div>
+
+  <h2 class="section">People & pay</h2>
+  <div class="grid">
+    <div class="card">
+      <h2>Median monthly salary by year</h2>
+      <div class="desc">Median of company average salaries (companies reporting > €500/mo only).</div>
+      <div class="chartbox"><canvas id="chSalary"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Revenue per employee by segment (2024)</h2>
+      <div class="desc">Median revenue per employee across companies in each segment — a productivity proxy. Media agencies pass through ad spend, inflating the number.</div>
+      <div class="chartbox"><canvas id="chRevPerEmp"></canvas></div>
+    </div>
+  </div>
+
+  <h2 class="section">Company explorer</h2>
+  <div class="card">
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search brand…">
+      <select id="tblSegment"><option value="">All segments</option></select>
+      <select id="tblCity"><option value="">All cities</option></select>
+    </div>
+    <div class="tablebox">
+      <table id="tbl">
+        <thead><tr>
+          <th data-k="brand">Brand</th>
+          <th data-k="segs">Segments</th>
+          <th data-k="city">City</th>
+          <th data-k="rev24">Revenue 2024</th>
+          <th data-k="growth">Δ Rev 21→24</th>
+          <th data-k="profit24">Profit 2024</th>
+          <th data-k="margin">Margin</th>
+          <th data-k="emp24">Empl.</th>
+          <th data-k="sal24">Avg salary</th>
+          <th data-k="risk">Credit risk</th>
+        </tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>Built from Komunikacija-konsultacija-konkurentai.xlsx · figures in EUR · profit = net profit (grynasis pelnas) · generated 2026-06</footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
+const LAST = YEARS[YEARS.length-1];
+
+const fmtM = v => (v>=1e6? (v/1e6).toFixed(1)+'M' : v>=1e3? (v/1e3).toFixed(0)+'k' : Math.round(v));
+const fmtEur = v => v==null? '–' : '€'+fmtM(v);
+const fmtPct = v => v==null? '–' : (v>0?'+':'')+(v*100).toFixed(0)+'%';
+
+// group by brand
+const byBrand = {};
+DATA.forEach(d=>{ (byBrand[d.brand] = byBrand[d.brand]||{}); byBrand[d.brand][d.year]=d; });
+const BRANDS = Object.keys(byBrand);
+
+const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
+const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
+
+Chart.defaults.color = '#8b93a7';
+Chart.defaults.borderColor = '#2a3245';
+Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+
+// ---------- KPIs ----------
+function yearTotals(y){
+  let rev=0, profit=0, emp=0;
+  DATA.forEach(d=>{ if(d.year===y){ rev+=d.revenue||0; profit+=d.profit||0; emp+=d.employees||0; }});
+  return {rev, profit, emp};
+}
+const t24 = yearTotals(LAST), t23 = yearTotals(LAST-1), t19 = yearTotals(YEARS[0]);
+const cagr = Math.pow(t24.rev/t19.rev, 1/(LAST-YEARS[0]))-1;
+function medianSalary(y){
+  const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
+  return s[Math.floor(s.length/2)];
+}
+const kpis = [
+  {label:'Market revenue '+LAST, value:'€'+fmtM(t24.rev), sub:fmtPct(t24.rev/t23.rev-1)+' YoY', cls:t24.rev>=t23.rev?'pos':'neg'},
+  {label:'Revenue CAGR 19–24', value:fmtPct(cagr), sub:'€'+fmtM(t19.rev)+' → €'+fmtM(t24.rev), cls:'pos'},
+  {label:'Net profit '+LAST, value:'€'+fmtM(t24.profit), sub:(t24.profit/t24.rev*100).toFixed(1)+'% market margin', cls:''},
+  {label:'Total employees '+LAST, value:Math.round(t24.emp).toLocaleString(), sub:fmtPct(t24.emp/t23.emp-1)+' YoY', cls:t24.emp>=t23.emp?'pos':'neg'},
+  {label:'Median salary '+LAST, value:'€'+medianSalary(LAST).toLocaleString()+'/mo', sub:fmtPct(medianSalary(LAST)/medianSalary(YEARS[0])-1)+' vs '+YEARS[0], cls:'pos'},
+  {label:'Companies tracked', value:BRANDS.length, sub:SEGMENTS.length+' service segments', cls:''},
+];
+document.getElementById('kpis').innerHTML = kpis.map(k=>
+  `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
+
+// ---------- Insights ----------
+const insights = [
+ {cls:'', t:'Growth has stalled after a strong run', p:`The market grew <b>+75%</b> from €207M (2019) to €357M (2023), but 2024 was nearly flat at <b>€362M (+1.4%)</b>. Headcount actually <b>fell ~5%</b> (1,663 → 1,579), the first contraction in the dataset — agencies are doing the same revenue with fewer people.`},
+ {cls:'purple', t:'Media buying dominates, but is a pass-through', p:`The 18 media agencies account for <b>€238M (66%)</b> of 2024 revenue, led by <b>Dentsu (€36.6M)</b> and <b>BPN (€36.4M)</b>. Their margins are thin (1–5%) because ad spend flows through them. Real fee-economy segments — Digital (€87M), Creative (€59M), PR (€30M) — are where competition on talent happens.`},
+ {cls:'green', t:'Small specialists earn the best margins', p:`The most profitable firms in 2024 are boutiques: <b>SynthesisCG (37%)</b>, <b>Maniac (35%)</b>, <b>Expertmedia & Evo media (~20%)</b>. Among larger firms, <b>We deliver agency</b> stands out with 19.5% margin on €4.8M revenue. Scale in this market does not buy profitability.`},
+ {cls:'red', t:'Several mid-size agencies are in trouble', p:`<b>WhatAbout</b> grew revenue 10× since 2019 to €11.9M but posted a <b>−€383k loss</b> in 2024. <b>Cyclopes (−45%)</b>, <b>Idee fixe (−44%)</b>, <b>Clinic212 (−38%)</b> and <b>Evolvery (−36%)</b> all lost over a third of their revenue since 2021.`},
+ {cls:'amber', t:'Wage inflation is squeezing everyone', p:`Median agency salary rose <b>+57%</b> in five years (€1,891 → €2,965/mo) while market revenue rose +75% — but 2024 revenue is flat and salaries kept climbing. That is the mechanism behind the 2024 headcount cut and the margin pressure visible in the scatter plot.`},
+ {cls:'', t:'Winners of 2021–2024', p:`Beyond the big media networks (Dentsu +320%, BPN +117% — partly group restructuring), the standout organic growers are <b>Sons & Daughters (+180%)</b>, <b>Spotlight (+166%)</b>, <b>Bosanova (+152%)</b> and <b>Expertmedia (+148%)</b> — all small-to-mid creative/digital shops.`},
+];
+document.getElementById('insights').innerHTML = insights.map(i=>
+  `<div class="insight ${i.cls}"><h3>${i.t}</h3><p>${i.p}</p></div>`).join('');
+
+// ---------- Market chart ----------
+new Chart(chMarket, {data:{
+  labels: YEARS,
+  datasets:[
+    {type:'bar', label:'Revenue (€M)', data:YEARS.map(y=>yearTotals(y).rev/1e6), backgroundColor:'rgba(79,142,247,.55)', borderRadius:6, yAxisID:'y'},
+    {type:'line', label:'Net profit (€M)', data:YEARS.map(y=>yearTotals(y).profit/1e6), borderColor:'#34c98e', backgroundColor:'#34c98e', tension:.3, yAxisID:'y2'},
+    {type:'line', label:'Employees (×100)', data:YEARS.map(y=>yearTotals(y).emp/100), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderDash:[6,4], tension:.3, yAxisID:'y2'},
+  ]},
+  options:{maintainAspectRatio:false, scales:{
+    y:{title:{display:true,text:'Revenue €M'}, grid:{color:'#222a3a'}},
+    y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €M / Employees ×100'}}
+  }}
+});
+
+// ---------- Segments doughnut ----------
+function segTotals(y){
+  const s={};
+  DATA.forEach(d=>{ if(d.year===y && d.revenue) d.activities.forEach(a=>s[a]=(s[a]||0)+d.revenue); });
+  return s;
+}
+const seg24 = segTotals(LAST);
+const segSorted = Object.entries(seg24).sort((a,b)=>b[1]-a[1]);
+new Chart(chSegments, {type:'doughnut', data:{
+  labels:segSorted.map(s=>s[0]),
+  datasets:[{data:segSorted.map(s=>s[1]/1e6), backgroundColor:segSorted.map(s=>SEGCOLORS[s[0]]||'#888'), borderColor:'#0e1117', borderWidth:2}]},
+  options:{maintainAspectRatio:false, plugins:{legend:{position:'right'},
+    tooltip:{callbacks:{label:c=>` ${c.label}: €${c.parsed.toFixed(1)}M`}}}}
+});
+
+// ---------- Segment trend ----------
+const topSegs = segSorted.slice(0,5).map(s=>s[0]);
+new Chart(chSegTrend, {type:'line', data:{
+  labels:YEARS,
+  datasets: topSegs.map(s=>({label:s, data:YEARS.map(y=>(segTotals(y)[s]||0)/1e6), borderColor:SEGCOLORS[s], backgroundColor:SEGCOLORS[s], tension:.3}))},
+  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€M'}, grid:{color:'#222a3a'}}}}
+});
+
+// ---------- Top-N ranking ----------
+const rankYearSel = document.getElementById('rankYear');
+YEARS.slice().reverse().forEach(y=>{ rankYearSel.add(new Option(y,y)); });
+const rankSegSel = document.getElementById('rankSegment');
+SEGMENTS.forEach(s=>rankSegSel.add(new Option(s,s)));
+['tblSegment'].forEach(id=>{ const el=document.getElementById(id); SEGMENTS.forEach(s=>el.add(new Option(s,s))); });
+
+let chTopObj;
+function drawTop(){
+  const metric = rankMetric.value, year = +rankYear.value, seg = rankSegment.value;
+  let rows = DATA.filter(d=>d.year===year && (!seg || d.activities.includes(seg)));
+  rows = rows.map(d=>({brand:d.brand, val: metric==='margin' ? (d.revenue>100000 && d.profit!=null ? d.profit/d.revenue*100 : null) : d[metric]}))
+             .filter(r=>r.val!=null && r.val!==0)
+             .sort((a,b)=>b.val-a.val).slice(0,20);
+  const isEur = ['revenue','profit'].includes(metric);
+  if(chTopObj) chTopObj.destroy();
+  chTopObj = new Chart(chTop, {type:'bar', data:{
+    labels:rows.map(r=>r.brand),
+    datasets:[{data:rows.map(r=>isEur? r.val/1e6 : r.val), backgroundColor:rows.map(r=>r.val<0?'rgba(240,106,106,.7)':'rgba(79,142,247,.7)'), borderRadius:5}]},
+    options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=> isEur? ' €'+c.parsed.x.toFixed(2)+'M' : metric==='margin'? ' '+c.parsed.x.toFixed(1)+'%' : ' '+c.parsed.x.toLocaleString()}}},
+      scales:{x:{title:{display:true,text:isEur?'€M':metric==='margin'?'%':''}, grid:{color:'#222a3a'}}}}
+  });
+}
+[rankMetric, rankYear, rankSegment].forEach(el=>el.addEventListener('change', drawTop));
+drawTop();
+
+// ---------- Growth leaders ----------
+const growthRows = BRANDS.map(b=>{
+  const d21=byBrand[b][2021], d24=byBrand[b][LAST];
+  if(!d21||!d24||!d21.revenue||!d24.revenue||d21.revenue<50000||d24.revenue<300000) return null;
+  return {brand:b, g:(d24.revenue/d21.revenue-1)*100, rev:d24.revenue};
+}).filter(Boolean).sort((a,b)=>b.g-a.g);
+const gShow = [...growthRows.slice(0,8), ...growthRows.slice(-8)];
+new Chart(chGrowth, {type:'bar', data:{
+  labels:gShow.map(r=>r.brand),
+  datasets:[{data:gShow.map(r=>r.g), backgroundColor:gShow.map(r=>r.g>=0?'rgba(52,201,142,.75)':'rgba(240,106,106,.75)'), borderRadius:5}]},
+  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>{const r=gShow[c.dataIndex]; return ` ${c.parsed.x.toFixed(0)}% · 2024 rev €${fmtM(r.rev)}`}}}},
+    scales:{x:{title:{display:true,text:'Revenue change 2021→2024, %'}, grid:{color:'#222a3a'}}}}
+});
+
+// ---------- Scatter ----------
+const scatterRows = DATA.filter(d=>d.year===LAST && d.revenue>100000 && d.profit!=null && d.employees>0)
+  .map(d=>({x:d.revenue, y:d.profit/d.revenue*100, r:Math.max(4,Math.sqrt(d.employees)*2.2), brand:d.brand, emp:d.employees,
+            seg:d.activities[0]||'Other'}));
+new Chart(chScatter, {type:'bubble', data:{
+  datasets: topSegs.concat(['Other']).map(s=>({
+    label:s,
+    data:scatterRows.filter(r=> s==='Other' ? !topSegs.includes(r.seg) : r.seg===s),
+    backgroundColor:(SEGCOLORS[s]||'#888')+'99', borderColor:SEGCOLORS[s]||'#888'
+  }))},
+  options:{maintainAspectRatio:false,
+    plugins:{tooltip:{callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
+    scales:{
+      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (€, log)'}, grid:{color:'#222a3a'},
+         ticks:{callback:v=>[1e5,3e5,1e6,3e6,1e7,3e7].includes(v)?'€'+fmtM(v):''}},
+      y:{title:{display:true,text:'Net margin %'}, grid:{color:'#222a3a'}, suggestedMin:-30, suggestedMax:45}
+    }}
+});
+
+// ---------- Salary trend ----------
+function salaryQuartiles(y){
+  const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
+  const q = p => s[Math.floor(s.length*p)];
+  return {q1:q(.25), med:q(.5), q3:q(.75)};
+}
+const sq = YEARS.map(salaryQuartiles);
+new Chart(chSalary, {type:'line', data:{
+  labels:YEARS,
+  datasets:[
+    {label:'75th percentile', data:sq.map(s=>s.q3), borderColor:'#4f8ef7', backgroundColor:'rgba(79,142,247,.15)', fill:'+2', tension:.3},
+    {label:'Median', data:sq.map(s=>s.med), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderWidth:3, tension:.3},
+    {label:'25th percentile', data:sq.map(s=>s.q1), borderColor:'#4f8ef7', borderDash:[5,4], tension:.3},
+  ]},
+  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€/month'}, grid:{color:'#222a3a'}}}}
+});
+
+// ---------- Revenue per employee ----------
+const rpe = SEGMENTS.map(s=>{
+  const vals = DATA.filter(d=>d.year===LAST && d.activities.includes(s) && d.revenue>0 && d.employees>2)
+                   .map(d=>d.revenue/d.employees).sort((a,b)=>a-b);
+  return {seg:s, med: vals.length? vals[Math.floor(vals.length/2)] : 0, n:vals.length};
+}).filter(r=>r.n>=3).sort((a,b)=>b.med-a.med);
+new Chart(chRevPerEmp, {type:'bar', data:{
+  labels:rpe.map(r=>r.seg),
+  datasets:[{data:rpe.map(r=>r.med/1000), backgroundColor:rpe.map(r=>SEGCOLORS[r.seg]||'#888'), borderRadius:5}]},
+  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>` €${c.parsed.x.toFixed(0)}k / employee (median of ${rpe[c.dataIndex].n} companies)`}}},
+    scales:{x:{title:{display:true,text:'€k revenue per employee (median)'}, grid:{color:'#222a3a'}}}}
+});
+
+// ---------- Table ----------
+const cities = [...new Set(Object.values(byBrand).map(d=>(d[LAST]||Object.values(d)[0]).city).filter(Boolean))].sort();
+cities.forEach(c=>tblCity.add(new Option(c,c)));
+
+const tblRows = BRANDS.map(b=>{
+  const d24 = byBrand[b][LAST]||{}, d21 = byBrand[b][2021]||{};
+  const first = Object.values(byBrand[b])[0];
+  return {
+    brand:b, segs:(d24.activities||first.activities||[]),
+    city:d24.city||first.city||'', risk:d24.risk||first.risk||'',
+    rev24:d24.revenue, growth:(d21.revenue>10000 && d24.revenue)? d24.revenue/d21.revenue-1 : null,
+    profit24:d24.profit, margin:(d24.revenue>50000 && d24.profit!=null)? d24.profit/d24.revenue : null,
+    emp24:d24.employees, sal24:(d24.avgSalary>500)? d24.avgSalary : null,
+  };
+});
+let sortK='rev24', sortDir=-1;
+function riskCls(r){ return /Žemiausia|Žema/.test(r)?'risk-low':/Vidutinė/.test(r)?'risk-mid':r?'risk-high':''; }
+function renderTable(){
+  const q = search.value.toLowerCase(), seg = tblSegment.value, city = tblCity.value;
+  let rows = tblRows.filter(r=> (!q||r.brand.toLowerCase().includes(q)) && (!seg||r.segs.includes(seg)) && (!city||r.city===city));
+  rows.sort((a,b)=>{
+    let av=a[sortK], bv=b[sortK];
+    if(sortK==='segs'){av=av.join();bv=bv.join();}
+    if(av==null) return 1; if(bv==null) return -1;
+    return (av<bv?-1:av>bv?1:0)*sortDir;
+  });
+  tblBody.innerHTML = rows.map(r=>`<tr>
+    <td><b>${r.brand}</b></td>
+    <td>${r.segs.map(s=>`<span class="tag">${s}</span>`).join('')}</td>
+    <td>${r.city}</td>
+    <td>${fmtEur(r.rev24)}</td>
+    <td class="${r.growth>0?'pos':r.growth<0?'neg':''}">${fmtPct(r.growth)}</td>
+    <td class="${r.profit24>0?'pos':r.profit24<0?'neg':''}">${fmtEur(r.profit24)}</td>
+    <td class="${r.margin>0?'pos':r.margin<0?'neg':''}">${r.margin==null?'–':(r.margin*100).toFixed(1)+'%'}</td>
+    <td>${r.emp24!=null?Math.round(r.emp24):'–'}</td>
+    <td>${r.sal24?'€'+Math.round(r.sal24).toLocaleString():'–'}</td>
+    <td class="${riskCls(r.risk)}">${r.risk||'–'}</td>
+  </tr>`).join('');
+}
+document.querySelectorAll('#tbl th').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir=-1;} renderTable();
+}));
+[search, tblSegment, tblCity].forEach(el=>el.addEventListener('input', renderTable));
+renderTable();
+</script>
+</body>
+</html>
