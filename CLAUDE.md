@@ -9,3 +9,8 @@ Non-negotiables (details in AGENTS.md):
 - Bump the version badge + add a `VERSIONS` entry (with SP) on every change.
 - Push to `main` and send the rebuilt `index.html` to the user afterwards.
 - `revenue` = turnover/apyvarta; `estimatedIncome` = revenue/spėjamos pajamos.
+
+## Git workflow
+
+- Always work from the `main` branch.
+- Always merge to `main` after finishing work.

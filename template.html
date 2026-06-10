@@ -7,31 +7,30 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#0e1117; --panel:#161b25; --panel2:#1c2230; --border:#2a3245;
-    --text:#e6e9f0; --muted:#8b93a7; --accent:#4f8ef7; --green:#34c98e;
-    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542;
+    --bg:#0e1117;--panel:#161b25;--panel2:#1c2230;--border:#2a3245;
+    --text:#e6e9f0;--muted:#8b93a7;--accent:#4f8ef7;--green:#34c98e;
+    --red:#f06a6a;--amber:#f0b04f;--purple:#a78bfa;--hover:rgba(79,142,247,.07);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
-  .wrap{max-width:1400px;margin:0 auto;padding:24px}
-  header{margin-bottom:24px}
-  header h1{font-size:26px;font-weight:700}
-  header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
-  header h1 .hist-btn{font-size:12px;font-weight:600;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:3px 11px;vertical-align:middle;margin-left:4px;cursor:pointer;font-family:inherit}
-  header h1 .hist-btn:hover{border-color:var(--accent);color:var(--text)}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:50;overflow:auto}
-  .modal-overlay.open{display:flex}
-  .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:840px;width:100%}
-  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .modal-head h2{font-size:20px;font-weight:700}
-  .modal-close{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px;font-family:inherit}
-  .modal-close:hover{border-color:var(--red);color:var(--red)}
-  .sp-total{font-size:14px;color:var(--muted);margin-bottom:12px}
-  .sp-total b{color:var(--gold);font-size:24px;font-weight:700}
-  .modal table th,.modal table td{white-space:normal;text-align:left;vertical-align:top}
-  .modal .vcol{font-weight:600;color:var(--text);white-space:nowrap}
-  .sp-badge{display:inline-block;min-width:34px;text-align:center;background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:12px}
-  header p{color:var(--muted);font-size:14px;margin-top:4px}
+
+  /* ── Top nav ── */
+  .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
+  .topnav .logo{font-size:15px;font-weight:700;padding:12px 0;margin-right:24px;white-space:nowrap}
+  .topnav .logo span{color:var(--accent)}
+  .nav-btn{padding:12px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
+  .nav-btn:hover{color:var(--text)}
+  .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .nav-spacer{flex:1}
+  .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
+
+  /* ── Views ── */
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ── Dashboard view ── */
+  #dashView .wrap{max-width:1400px;margin:0 auto;padding:24px}
+  .subtitle{color:var(--muted);font-size:14px;margin-bottom:24px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
   .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
   .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
@@ -45,8 +44,10 @@
   .card .desc{color:var(--muted);font-size:12px;margin-bottom:12px}
   .chartbox{position:relative;height:340px}
   .chartbox.tall{height:520px}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  select,input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
+  .d-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
+  input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
+  input[type=text]:focus{outline:none;border-color:var(--accent)}
   .insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:24px}
   .insight{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:14px 16px}
   .insight.green{border-left-color:var(--green)}
@@ -56,51 +57,73 @@
   .insight h3{font-size:13px;font-weight:600;margin-bottom:4px}
   .insight p{font-size:12.5px;color:var(--muted)}
   .insight p b{color:var(--text)}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
-  th:first-child,td:first-child{text-align:left}
-  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
-  th:hover{color:var(--text)}
-  tr:hover td{background:rgba(79,142,247,.06)}
+  #dashView table{width:100%;border-collapse:collapse;font-size:13px}
+  #dashView th,#dashView td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+  #dashView th:first-child,#dashView td:first-child{text-align:left}
+  #dashView th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
+  #dashView th:hover{color:var(--text)}
+  #dashView tr:hover td{background:rgba(79,142,247,.06)}
   .tablebox{max-height:560px;overflow:auto;border-radius:8px}
   .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
   .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
-  footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
   h2.section{font-size:18px;margin:28px 0 14px;font-weight:700}
-  h2.section.mine{color:var(--gold)}
-  .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
-  .mine-note b{color:var(--text)}
-  .kpi.mine{border-color:var(--gold);box-shadow:0 0 0 1px rgba(244,197,66,.25)}
-  .kpi .rank{color:var(--gold);font-weight:600}
-  tr.mine td{background:rgba(244,197,66,.10)!important;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold)}
-  tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  /* ── Data view ── */
+  #dataView .wrap{max-width:100%;margin:0 auto;padding:20px 24px}
+  .data-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0}
+  .data-tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;white-space:nowrap}
+  .data-tab:hover{color:var(--text);background:var(--panel)}
+  .data-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--panel)}
+  .data-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .badge{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--muted)}
+  .btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .sheet-desc{color:var(--muted);font-size:13px;margin-bottom:14px;padding:10px 14px;background:var(--panel);border-radius:8px;border-left:3px solid var(--accent)}
+  .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:var(--panel);max-height:calc(100vh - 280px)}
+  #dataView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  #dataView thead{position:sticky;top:0;z-index:2}
+  #dataView th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s}
+  #dataView th:hover{color:var(--text);background:#242d3f}
+  #dataView th.sorted-asc::after{content:' ▲';color:var(--accent);font-size:10px}
+  #dataView th.sorted-desc::after{content:' ▼';color:var(--accent);font-size:10px}
+  #dataView td{padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+  #dataView tr:hover td{background:var(--hover)}
+  #dataView tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  #dataView tbody tr:nth-child(even):hover td{background:var(--hover)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  td.url a{color:var(--accent);text-decoration:none}
+  td.url a:hover{text-decoration:underline}
+  td.null{color:var(--border);font-style:italic}
+  #dataView th:first-child,#dataView td:first-child{position:sticky;left:0;z-index:1;background:inherit}
+  #dataView th:first-child{z-index:3;background:var(--panel2)}
+  #dataView td:first-child{background:var(--panel);font-weight:600}
+  #dataView tbody tr:nth-child(even) td:first-child{background:var(--panel)}
+  #dataView tr:hover td:first-child{background:var(--hover)!important}
+  .row-num{color:var(--border);font-size:11px;font-weight:400;width:36px;text-align:right;padding-right:10px}
+  .pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+  .pager button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
+  .pager button:hover{border-color:var(--accent)}
+  .pager button:disabled{opacity:.3;cursor:default}
+
+  footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center;padding:0 24px 20px}
 </style>
 </head>
 <body>
+
+<!-- ═══ Top navigation ═══ -->
+<nav class="topnav">
+  <div class="logo"><span>LT</span> Agencies</div>
+  <button class="nav-btn active" data-view="dashView">Dashboard</button>
+  <button class="nav-btn" data-view="dataView">Data Explorer</button>
+  <div class="nav-spacer"></div>
+  <div class="nav-sub">113 brands · 2019–2024</div>
+</nav>
+
+<!-- ═══ Dashboard view ═══ -->
+<div class="view active" id="dashView">
 <div class="wrap">
-  <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.2.1</span> <button class="hist-btn" id="histBtn">📋 SP history</button></h1>
-    <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
-  </header>
-
-  <h2 class="section mine">⭐ My company — Fabula ir partneriai</h2>
-  <div class="mine-note" id="mineNote"></div>
-  <div class="kpis" id="mineKpis"></div>
-  <div class="grid">
-    <div class="card">
-      <h2>Fabula: revenue, profit &amp; headcount (2019–2024)</h2>
-      <div class="desc">Your company's six-year trajectory. Bars = revenue, lines = net profit and employees.</div>
-      <div class="chartbox"><canvas id="chMine"></canvas></div>
-    </div>
-    <div class="card">
-      <h2>Fabula vs the market (2024)</h2>
-      <div class="desc">Where your company sits against all 113 tracked agencies — percentile rank per metric (100 = top of market, 50 = median).</div>
-      <div class="chartbox"><canvas id="chMineRank"></canvas></div>
-    </div>
-  </div>
-
-  <h2 class="section">Market summary</h2>
+  <p class="subtitle">Competitor landscape dashboard · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   <div class="kpis" id="kpis"></div>
 
   <h2 class="section">Key insights</h2>
@@ -109,18 +132,18 @@
   <h2 class="section">Market overview</h2>
   <div class="grid">
     <div class="card full">
-      <h2>Total market: revenue (spėjamos pajamos), turnover, profit & headcount (2019–2024)</h2>
-      <div class="desc">Sum across all 113 tracked companies. Blue bars = revenue (spėjamos pajamos), grey bars = turnover (apyvarta), lines = total net profit and total employees.</div>
+      <h2>Total market: revenue, profit & headcount (2019–2024)</h2>
+      <div class="desc">Sum across all 113 tracked companies. Bars = revenue, lines = total net profit and total employees.</div>
       <div class="chartbox"><canvas id="chMarket"></canvas></div>
     </div>
     <div class="card">
-      <h2>2024 revenue (spėjamos pajamos) by service segment</h2>
-      <div class="desc">Companies may belong to multiple segments; revenue (spėjamos pajamos) is attributed to each segment they operate in.</div>
+      <h2>2024 revenue by service segment</h2>
+      <div class="desc">Companies may belong to multiple segments; revenue is attributed to each segment they operate in.</div>
       <div class="chartbox"><canvas id="chSegments"></canvas></div>
     </div>
     <div class="card">
-      <h2>Segment revenue trend (spėjamos pajamos)</h2>
-      <div class="desc">Total segment revenue (spėjamos pajamos) per year — who is gaining share of the market.</div>
+      <h2>Segment revenue trend</h2>
+      <div class="desc">Total segment revenue per year — who is gaining share of the market.</div>
       <div class="chartbox"><canvas id="chSegTrend"></canvas></div>
     </div>
   </div>
@@ -129,10 +152,9 @@
   <div class="grid">
     <div class="card full">
       <h2>Top 20 companies</h2>
-      <div class="controls">
+      <div class="d-controls">
         <select id="rankMetric">
-          <option value="estimatedIncome">Revenue – spėjamos pajamos (€)</option>
-          <option value="revenue">Turnover – apyvarta (€)</option>
+          <option value="revenue">Revenue (€)</option>
           <option value="profit">Net profit (€)</option>
           <option value="employees">Employees</option>
           <option value="avgSalary">Avg. salary (€/mo)</option>
@@ -144,13 +166,13 @@
       <div class="chartbox tall"><canvas id="chTop"></canvas></div>
     </div>
     <div class="card">
-      <h2>Growth leaders & laggards (revenue – spėjamos pajamos, 2021 → 2024)</h2>
-      <div class="desc">Companies with ≥ €150k revenue (spėjamos pajamos) in 2024 and ≥ €30k in 2021. Top 8 growers vs bottom 8 decliners.</div>
+      <h2>Growth leaders & laggards (revenue 2021 → 2024)</h2>
+      <div class="desc">Companies with ≥ €300k revenue in 2024 and ≥ €50k in 2021. Top 8 growers vs bottom 8 decliners.</div>
       <div class="chartbox tall"><canvas id="chGrowth"></canvas></div>
     </div>
     <div class="card">
       <h2>Size vs profitability (2024)</h2>
-      <div class="desc">X = revenue (spėjamos pajamos, log scale), Y = net profit margin % from revenue, bubble size = employees. Healthy zone is up & right.</div>
+      <div class="desc">X = revenue (log scale), Y = net margin %, bubble size = employees. Healthy zone is up & right.</div>
       <div class="chartbox tall"><canvas id="chScatter"></canvas></div>
     </div>
   </div>
@@ -163,16 +185,16 @@
       <div class="chartbox"><canvas id="chSalary"></canvas></div>
     </div>
     <div class="card">
-      <h2>Revenue (spėjamos pajamos) per employee by segment (2024)</h2>
-      <div class="desc">Median revenue (spėjamos pajamos) per employee across companies in each segment — a productivity proxy. Pass-through ad spend is already excluded.</div>
+      <h2>Revenue per employee by segment (2024)</h2>
+      <div class="desc">Median revenue per employee across companies in each segment — a productivity proxy. Media agencies pass through ad spend, inflating the number.</div>
       <div class="chartbox"><canvas id="chRevPerEmp"></canvas></div>
     </div>
   </div>
 
   <h2 class="section">Company explorer</h2>
   <div class="card">
-    <div class="controls">
-      <input type="text" id="search" placeholder="Search brand…">
+    <div class="d-controls">
+      <input type="text" id="dashSearch" placeholder="Search brand…">
       <select id="tblSegment"><option value="">All segments</option></select>
       <select id="tblCity"><option value="">All cities</option></select>
     </div>
@@ -182,8 +204,7 @@
           <th data-k="brand">Brand</th>
           <th data-k="segs">Segments</th>
           <th data-k="city">City</th>
-          <th data-k="ei24">Revenue 2024 (spėj. pajamos)</th>
-          <th data-k="rev24">Turnover 2024</th>
+          <th data-k="rev24">Revenue 2024</th>
           <th data-k="growth">Δ Rev 21→24</th>
           <th data-k="profit24">Profit 2024</th>
           <th data-k="margin">Margin</th>
@@ -195,353 +216,295 @@
       </table>
     </div>
   </div>
-
-  <footer>Built from Komunikacija-konsultacija-konkurentai.xlsx · figures in EUR · profit = net profit (grynasis pelnas) · revenue = spėjamos pajamos, turnover = apyvarta · generated 2026-06<br>
-  Created by <b>Adomas</b> on behalf of <b>Fabula</b> · © 2026 Fabula ir partneriai, UAB. All rights reserved.</footer>
+</div>
 </div>
 
-<div class="modal-overlay" id="histModal">
-  <div class="modal">
-    <div class="modal-head">
-      <h2>📋 SP &amp; version history</h2>
-      <button class="modal-close" id="histClose">✕ Close</button>
-    </div>
-    <div class="sp-total">Total effort logged: <b id="spTotal">0</b> SP &nbsp;·&nbsp; <span id="verCount">0</span> versions</div>
-    <p class="desc" style="margin-bottom:14px;font-size:12.5px">Story points reflect <b style="color:var(--text)">effort &amp; time</b>, not lines of code (0.5 = trivial patch · 10 = deep change in convoluted code). A big template dump scores low; a small edit threading many connections scores high.</p>
-    <table>
-      <thead><tr><th>Version</th><th>Date</th><th>SP</th><th>Change</th></tr></thead>
-      <tbody id="histBody"></tbody>
-    </table>
+<!-- ═══ Data explorer view ═══ -->
+<div class="view" id="dataView">
+<div class="wrap">
+  <div class="data-tabs" id="dataTabs"></div>
+  <div class="sheet-desc" id="sheetDesc"></div>
+  <div class="data-controls">
+    <input type="text" id="dataSearch" placeholder="Search across all columns…" style="min-width:220px">
+    <span class="badge" id="rowCount"></span>
+    <button class="btn" id="csvBtn">Export CSV</button>
+  </div>
+  <div class="table-wrap" id="tableWrap">
+    <table><thead><tr id="dtHead"></tr></thead><tbody id="dtBody"></tbody></table>
+  </div>
+  <div class="pager">
+    <button id="prevBtn">← Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn">Next →</button>
+    <span style="margin-left:auto">Rows per page:</span>
+    <select id="pageSizeSel">
+      <option value="50">50</option><option value="100" selected>100</option><option value="250">250</option><option value="999999">All</option>
+    </select>
   </div>
 </div>
+</div>
+
+<footer>Built from Komunikacija-konsultacija-konkurentai.xlsx · figures in EUR · profit = net profit (grynasis pelnas)</footer>
 
 <script>
+/* ===================================================================
+   DATA
+   =================================================================== */
 const DATA = __DATA__;
+const SHEETS = __SHEETS_DATA__;
+
+/* ===================================================================
+   VIEW SWITCHING
+   =================================================================== */
+let chartsInitialized = false;
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(btn.dataset.view).classList.add('active');
+    window.scrollTo(0,0);
+    if(btn.dataset.view==='dashView' && !chartsInitialized) initDashboard();
+    if(btn.dataset.view==='dataView' && !window._dataInitialized) initDataExplorer();
+  });
+});
+
+/* ===================================================================
+   DASHBOARD
+   =================================================================== */
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
 const LAST = YEARS[YEARS.length-1];
-
 const fmtM = v => (v>=1e6? (v/1e6).toFixed(1)+'M' : v>=1e3? (v/1e3).toFixed(0)+'k' : Math.round(v));
 const fmtEur = v => v==null? '–' : '€'+fmtM(v);
 const fmtPct = v => v==null? '–' : (v>0?'+':'')+(v*100).toFixed(0)+'%';
 
-// group by brand
 const byBrand = {};
-DATA.forEach(d=>{ (byBrand[d.brand] = byBrand[d.brand]||{}); byBrand[d.brand][d.year]=d; });
+DATA.forEach(d=>{ (byBrand[d.brand]=byBrand[d.brand]||{}); byBrand[d.brand][d.year]=d; });
 const BRANDS = Object.keys(byBrand);
-
 const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
 const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
 
-Chart.defaults.color = '#8b93a7';
-Chart.defaults.borderColor = '#2a3245';
-Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
-
-// ---------- My company (Fabula, formerly Viešųjų ryšių partneriai / VRP) ----------
-const MY_BRAND = 'Fabula';
-const mine = byBrand[MY_BRAND] || {};
-const mineYears = Object.keys(mine).map(Number).sort((a,b)=>a-b);
-const m24 = mine[LAST] || {};
-const m23 = mine[LAST-1] || {};
-const mFirst = mine[mineYears[0]] || {};
-
-// percentile rank of my company for a metric in LAST year (pos 1 = top of market)
-function rankOf(metricFn){
-  const vals = BRANDS.map(b=>metricFn(byBrand[b][LAST]||{})).filter(v=>v!=null && !isNaN(v));
-  const mineVal = metricFn(m24);
-  if(mineVal==null || isNaN(mineVal)) return null;
-  const sorted = vals.slice().sort((a,b)=>b-a);
-  const pos = sorted.findIndex(v=>v<=mineVal)+1;
-  const pct = Math.round((1-(pos-1)/sorted.length)*100);
-  return {pos, total:sorted.length, pct, val:mineVal};
-}
-const mRev = rankOf(d=>d.revenue);
-const mEI = rankOf(d=>d.estimatedIncome);
-const mProfit = rankOf(d=>d.profit);
-const mEmp = rankOf(d=>d.employees);
-const mSal = rankOf(d=>d.avgSalary>500?d.avgSalary:null);
-const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null);
-const mCagr = (m24.revenue && mFirst.revenue)? Math.pow(m24.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
-
-document.getElementById('mineNote').innerHTML =
-  `The company at <b>rekvizitai.vz.lt/imone/viesuju_rysiu_partneriai</b> — <b>Viešųjų ryšių partneriai (VRP)</b>, company code <b>124099127</b>, founded 1997 — now trades as <b>Fabula ir partneriai, UAB</b> and is already tracked here. The panels below pull out its figures and rank it against all ${BRANDS.length} competitors.`;
-
-const mineKpiCards = [
-  {label:'Turnover '+LAST, value:fmtEur(m24.revenue), sub:(m23.revenue?fmtPct(m24.revenue/m23.revenue-1)+' YoY · ':'')+(mRev?`<span class="rank">#${mRev.pos} of ${mRev.total}</span>`:''), cls:m24.revenue>=m23.revenue?'pos':'neg'},
-  {label:'Revenue '+LAST+' (spėj. pajamos)', value:fmtEur(m24.estimatedIncome), sub:(m23.estimatedIncome?fmtPct(m24.estimatedIncome/m23.estimatedIncome-1)+' YoY · ':'')+(mEI?`<span class="rank">#${mEI.pos} of ${mEI.total}</span>`:''), cls:m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg'},
-  {label:'Net profit '+LAST, value:fmtEur(m24.profit), sub:(m24.estimatedIncome?(m24.profit/m24.estimatedIncome*100).toFixed(1)+'% margin from revenue · ':'')+(mProfit?`<span class="rank">#${mProfit.pos}</span>`:''), cls:m24.profit>=0?'pos':'neg'},
-  {label:'Employees '+LAST, value:m24.employees!=null?Math.round(m24.employees):'–', sub:(m23.employees?fmtPct(m24.employees/m23.employees-1)+' YoY · ':'')+(mEmp?`<span class="rank">#${mEmp.pos}</span>`:''), cls:m24.employees>=m23.employees?'pos':'neg'},
-  {label:'Avg salary '+LAST, value:m24.avgSalary?'€'+Math.round(m24.avgSalary).toLocaleString()+'/mo':'–', sub:(m23.avgSalary?fmtPct(m24.avgSalary/m23.avgSalary-1)+' YoY · ':'')+(mSal?`<span class="rank">#${mSal.pos}</span>`:''), cls:'pos'},
-  {label:'Revenue CAGR 19–24', value:fmtPct(mCagr), sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue), cls:mCagr>=0?'pos':'neg'},
-  {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:''},
-];
-document.getElementById('mineKpis').innerHTML = mineKpiCards.map(k=>
-  `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
-
-new Chart(chMine, {data:{
-  labels: mineYears,
-  datasets:[
-    {type:'bar', label:'Revenue – spėj. pajamos (€M)', data:mineYears.map(y=>(mine[y].estimatedIncome||0)/1e6), backgroundColor:'rgba(244,197,66,.75)', borderColor:'#f4c542', borderWidth:1, borderRadius:6, yAxisID:'y'},
-    {type:'bar', label:'Turnover – apyvarta (€M)', data:mineYears.map(y=>(mine[y].revenue||0)/1e6), backgroundColor:'rgba(139,147,167,.35)', borderRadius:6, yAxisID:'y'},
-    {type:'line', label:'Net profit (€k)', data:mineYears.map(y=>(mine[y].profit||0)/1e3), borderColor:'#34c98e', backgroundColor:'#34c98e', tension:.3, yAxisID:'y2'},
-    {type:'line', label:'Employees', data:mineYears.map(y=>mine[y].employees||0), borderColor:'#4f8ef7', backgroundColor:'#4f8ef7', borderDash:[6,4], tension:.3, yAxisID:'y2'},
-  ]},
-  options:{maintainAspectRatio:false, scales:{
-    y:{title:{display:true,text:'Revenue €M'}, grid:{color:'#222a3a'}},
-    y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €k / Employees'}}
-  }}
-});
-
-const rankData = [
-  {label:'Revenue (spėj. pajamos)', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit}, {label:'Profit margin', r:mMargin},
-  {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
-].filter(x=>x.r);
-new Chart(chMineRank, {type:'bar', data:{
-  labels:rankData.map(x=>x.label),
-  datasets:[{data:rankData.map(x=>x.r.pct), backgroundColor:'rgba(244,197,66,.7)', borderColor:'#f4c542', borderWidth:1, borderRadius:5}]},
-  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>{const x=rankData[c.dataIndex]; return ` ${x.r.pct}th percentile · #${x.r.pos} of ${x.r.total}`}}}},
-    scales:{x:{min:0,max:100,title:{display:true,text:'Percentile vs '+BRANDS.length+' agencies (100 = top)'}, grid:{color:'#222a3a'}}}}
-});
-
-// ---------- KPIs ----------
 function yearTotals(y){
-  let rev=0, profit=0, emp=0, ei=0;
-  DATA.forEach(d=>{ if(d.year===y){ rev+=d.revenue||0; profit+=d.profit||0; emp+=d.employees||0; ei+=d.estimatedIncome||0; }});
-  return {rev, profit, emp, ei};
+  let rev=0,profit=0,emp=0;
+  DATA.forEach(d=>{ if(d.year===y){rev+=d.revenue||0;profit+=d.profit||0;emp+=d.employees||0;}});
+  return {rev,profit,emp};
 }
-const t24 = yearTotals(LAST), t23 = yearTotals(LAST-1), t19 = yearTotals(YEARS[0]);
-const cagr = Math.pow(t24.rev/t19.rev, 1/(LAST-YEARS[0]))-1;
-const cagrEI = Math.pow(t24.ei/t19.ei, 1/(LAST-YEARS[0]))-1;
 function medianSalary(y){
-  const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
+  const s=DATA.filter(d=>d.year===y&&d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
   return s[Math.floor(s.length/2)];
 }
-const kpis = [
-  {label:'Market turnover '+LAST, value:'€'+fmtM(t24.rev), sub:fmtPct(t24.rev/t23.rev-1)+' YoY', cls:t24.rev>=t23.rev?'pos':'neg'},
-  {label:'Turnover CAGR 19–24', value:fmtPct(cagr), sub:'€'+fmtM(t19.rev)+' → €'+fmtM(t24.rev), cls:'pos'},
-  {label:'Market revenue '+LAST+' (spėjamos pajamos)', value:'€'+fmtM(t24.ei), sub:fmtPct(t24.ei/t23.ei-1)+' YoY', cls:t24.ei>=t23.ei?'pos':'neg'},
-  {label:'Revenue CAGR 19–24', value:fmtPct(cagrEI), sub:'€'+fmtM(t19.ei)+' → €'+fmtM(t24.ei), cls:cagrEI>=0?'pos':'neg'},
-  {label:'Net profit '+LAST, value:'€'+fmtM(t24.profit), sub:(t24.profit/t24.ei*100).toFixed(1)+'% margin from revenue · '+fmtPct(t24.profit/t23.profit-1)+' YoY', cls:t24.profit>=t23.profit?'pos':'neg'},
-  {label:'Total employees '+LAST, value:Math.round(t24.emp).toLocaleString(), sub:fmtPct(t24.emp/t23.emp-1)+' YoY', cls:t24.emp>=t23.emp?'pos':'neg'},
-  {label:'Median salary '+LAST, value:'€'+medianSalary(LAST).toLocaleString()+'/mo', sub:fmtPct(medianSalary(LAST)/medianSalary(YEARS[0])-1)+' vs '+YEARS[0], cls:'pos'},
-  {label:'Companies tracked', value:BRANDS.length, sub:SEGMENTS.length+' service segments', cls:''},
-];
-document.getElementById('kpis').innerHTML = kpis.map(k=>
-  `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
-
-// ---------- Insights ----------
-const insights = [
- {cls:'', t:'Growth has stalled after a strong run', p:`The market grew <b>+75%</b> from €207M (2019) to €357M (2023), but 2024 was nearly flat at <b>€362M (+1.4%)</b>. Headcount actually <b>fell ~5%</b> (1,663 → 1,579), the first contraction in the dataset — agencies are doing the same revenue with fewer people.`},
- {cls:'purple', t:'Media buying dominates, but is a pass-through', p:`The 18 media agencies account for <b>€238M (66%)</b> of 2024 revenue, led by <b>Dentsu (€36.6M)</b> and <b>BPN (€36.4M)</b>. Their margins are thin (1–5%) because ad spend flows through them. Real fee-economy segments — Digital (€87M), Creative (€59M), PR (€30M) — are where competition on talent happens.`},
- {cls:'green', t:'Small specialists earn the best margins', p:`The most profitable firms in 2024 are boutiques: <b>SynthesisCG (37%)</b>, <b>Maniac (35%)</b>, <b>Expertmedia & Evo media (~20%)</b>. Among larger firms, <b>We deliver agency</b> stands out with 19.5% margin on €4.8M revenue. Scale in this market does not buy profitability.`},
- {cls:'red', t:'Several mid-size agencies are in trouble', p:`<b>WhatAbout</b> grew revenue 10× since 2019 to €11.9M but posted a <b>−€383k loss</b> in 2024. <b>Cyclopes (−45%)</b>, <b>Idee fixe (−44%)</b>, <b>Clinic212 (−38%)</b> and <b>Evolvery (−36%)</b> all lost over a third of their revenue since 2021.`},
- {cls:'amber', t:'Wage inflation is squeezing everyone', p:`Median agency salary rose <b>+57%</b> in five years (€1,891 → €2,965/mo) while market revenue rose +75% — but 2024 revenue is flat and salaries kept climbing. That is the mechanism behind the 2024 headcount cut and the margin pressure visible in the scatter plot.`},
- {cls:'', t:'Winners of 2021–2024', p:`Beyond the big media networks (Dentsu +320%, BPN +117% — partly group restructuring), the standout organic growers are <b>Sons & Daughters (+180%)</b>, <b>Spotlight (+166%)</b>, <b>Bosanova (+152%)</b> and <b>Expertmedia (+148%)</b> — all small-to-mid creative/digital shops.`},
-];
-document.getElementById('insights').innerHTML = insights.map(i=>
-  `<div class="insight ${i.cls}"><h3>${i.t}</h3><p>${i.p}</p></div>`).join('');
-
-// ---------- Market chart ----------
-new Chart(chMarket, {data:{
-  labels: YEARS,
-  datasets:[
-    {type:'bar', label:'Revenue – spėjamos pajamos (€M)', data:YEARS.map(y=>yearTotals(y).ei/1e6), backgroundColor:'rgba(79,142,247,.75)', borderRadius:6, yAxisID:'y'},
-    {type:'bar', label:'Turnover – apyvarta (€M)', data:YEARS.map(y=>yearTotals(y).rev/1e6), backgroundColor:'rgba(139,147,167,.35)', borderRadius:6, yAxisID:'y'},
-    {type:'line', label:'Net profit (€M)', data:YEARS.map(y=>yearTotals(y).profit/1e6), borderColor:'#34c98e', backgroundColor:'#34c98e', tension:.3, yAxisID:'y2'},
-    {type:'line', label:'Employees (×100)', data:YEARS.map(y=>yearTotals(y).emp/100), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderDash:[6,4], tension:.3, yAxisID:'y2'},
-  ]},
-  options:{maintainAspectRatio:false, scales:{
-    y:{title:{display:true,text:'Revenue / Turnover €M'}, grid:{color:'#222a3a'}},
-    y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €M / Employees ×100'}}
-  }}
-});
-
-// ---------- Segments doughnut ----------
 function segTotals(y){
   const s={};
-  DATA.forEach(d=>{ if(d.year===y && d.estimatedIncome) d.activities.forEach(a=>s[a]=(s[a]||0)+d.estimatedIncome); });
+  DATA.forEach(d=>{ if(d.year===y&&d.revenue) d.activities.forEach(a=>s[a]=(s[a]||0)+d.revenue); });
   return s;
 }
-const seg24 = segTotals(LAST);
-const segSorted = Object.entries(seg24).sort((a,b)=>b[1]-a[1]);
-new Chart(chSegments, {type:'doughnut', data:{
-  labels:segSorted.map(s=>s[0]),
-  datasets:[{data:segSorted.map(s=>s[1]/1e6), backgroundColor:segSorted.map(s=>SEGCOLORS[s[0]]||'#888'), borderColor:'#0e1117', borderWidth:2}]},
-  options:{maintainAspectRatio:false, plugins:{legend:{position:'right'},
-    tooltip:{callbacks:{label:c=>` ${c.label}: €${c.parsed.toFixed(1)}M`}}}}
-});
 
-// ---------- Segment trend ----------
-const topSegs = segSorted.slice(0,5).map(s=>s[0]);
-new Chart(chSegTrend, {type:'line', data:{
-  labels:YEARS,
-  datasets: topSegs.map(s=>({label:s, data:YEARS.map(y=>(segTotals(y)[s]||0)/1e6), borderColor:SEGCOLORS[s], backgroundColor:SEGCOLORS[s], tension:.3}))},
-  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€M'}, grid:{color:'#222a3a'}}}}
-});
+function initDashboard(){
+  chartsInitialized = true;
+  Chart.defaults.color='#8b93a7'; Chart.defaults.borderColor='#2a3245'; Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
 
-// ---------- Top-N ranking ----------
-const rankYearSel = document.getElementById('rankYear');
-YEARS.slice().reverse().forEach(y=>{ rankYearSel.add(new Option(y,y)); });
-const rankSegSel = document.getElementById('rankSegment');
-SEGMENTS.forEach(s=>rankSegSel.add(new Option(s,s)));
-['tblSegment'].forEach(id=>{ const el=document.getElementById(id); SEGMENTS.forEach(s=>el.add(new Option(s,s))); });
+  const t24=yearTotals(LAST),t23=yearTotals(LAST-1),t19=yearTotals(YEARS[0]);
+  const cagr=Math.pow(t24.rev/t19.rev,1/(LAST-YEARS[0]))-1;
+  const kpis=[
+    {label:'Market revenue '+LAST,value:'€'+fmtM(t24.rev),sub:fmtPct(t24.rev/t23.rev-1)+' YoY',cls:t24.rev>=t23.rev?'pos':'neg'},
+    {label:'Revenue CAGR 19–24',value:fmtPct(cagr),sub:'€'+fmtM(t19.rev)+' → €'+fmtM(t24.rev),cls:'pos'},
+    {label:'Net profit '+LAST,value:'€'+fmtM(t24.profit),sub:(t24.profit/t24.rev*100).toFixed(1)+'% market margin',cls:''},
+    {label:'Total employees '+LAST,value:Math.round(t24.emp).toLocaleString(),sub:fmtPct(t24.emp/t23.emp-1)+' YoY',cls:t24.emp>=t23.emp?'pos':'neg'},
+    {label:'Median salary '+LAST,value:'€'+medianSalary(LAST).toLocaleString()+'/mo',sub:fmtPct(medianSalary(LAST)/medianSalary(YEARS[0])-1)+' vs '+YEARS[0],cls:'pos'},
+    {label:'Companies tracked',value:BRANDS.length,sub:SEGMENTS.length+' service segments',cls:''},
+  ];
+  document.getElementById('kpis').innerHTML=kpis.map(k=>
+    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
 
-let chTopObj;
-function drawTop(){
-  const metric = rankMetric.value, year = +rankYear.value, seg = rankSegment.value;
-  let rows = DATA.filter(d=>d.year===year && (!seg || d.activities.includes(seg)));
-  rows = rows.map(d=>({brand:d.brand, val: metric==='margin' ? (d.estimatedIncome>50000 && d.profit!=null ? d.profit/d.estimatedIncome*100 : null) : d[metric]}))
-             .filter(r=>r.val!=null && r.val!==0)
-             .sort((a,b)=>b.val-a.val).slice(0,20);
-  const isEur = ['revenue','profit','estimatedIncome'].includes(metric);
-  if(chTopObj) chTopObj.destroy();
-  chTopObj = new Chart(chTop, {type:'bar', data:{
-    labels:rows.map(r=>r.brand),
-    datasets:[{data:rows.map(r=>isEur? r.val/1e6 : r.val), backgroundColor:rows.map(r=>r.val<0?'rgba(240,106,106,.7)':'rgba(79,142,247,.7)'), borderRadius:5}]},
-    options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:c=> isEur? ' €'+c.parsed.x.toFixed(2)+'M' : metric==='margin'? ' '+c.parsed.x.toFixed(1)+'%' : ' '+c.parsed.x.toLocaleString()}}},
-      scales:{x:{title:{display:true,text:isEur?'€M':metric==='margin'?'%':''}, grid:{color:'#222a3a'}}}}
+  const insights=[
+   {cls:'',t:'Growth has stalled after a strong run',p:`The market grew <b>+75%</b> from €207M (2019) to €357M (2023), but 2024 was nearly flat at <b>€362M (+1.4%)</b>. Headcount actually <b>fell ~5%</b> (1,663 → 1,579), the first contraction in the dataset — agencies are doing the same revenue with fewer people.`},
+   {cls:'purple',t:'Media buying dominates, but is a pass-through',p:`The 18 media agencies account for <b>€238M (66%)</b> of 2024 revenue, led by <b>Dentsu (€36.6M)</b> and <b>BPN (€36.4M)</b>. Their margins are thin (1–5%) because ad spend flows through them. Real fee-economy segments — Digital (€87M), Creative (€59M), PR (€30M) — are where competition on talent happens.`},
+   {cls:'green',t:'Small specialists earn the best margins',p:`The most profitable firms in 2024 are boutiques: <b>SynthesisCG (37%)</b>, <b>Maniac (35%)</b>, <b>Expertmedia & Evo media (~20%)</b>. Among larger firms, <b>We deliver agency</b> stands out with 19.5% margin on €4.8M revenue. Scale in this market does not buy profitability.`},
+   {cls:'red',t:'Several mid-size agencies are in trouble',p:`<b>WhatAbout</b> grew revenue 10× since 2019 to €11.9M but posted a <b>−€383k loss</b> in 2024. <b>Cyclopes (−45%)</b>, <b>Idee fixe (−44%)</b>, <b>Clinic212 (−38%)</b> and <b>Evolvery (−36%)</b> all lost over a third of their revenue since 2021.`},
+   {cls:'amber',t:'Wage inflation is squeezing everyone',p:`Median agency salary rose <b>+57%</b> in five years (€1,891 → €2,965/mo) while market revenue rose +75% — but 2024 revenue is flat and salaries kept climbing. That is the mechanism behind the 2024 headcount cut and the margin pressure visible in the scatter plot.`},
+   {cls:'',t:'Winners of 2021–2024',p:`Beyond the big media networks (Dentsu +320%, BPN +117% — partly group restructuring), the standout organic growers are <b>Sons & Daughters (+180%)</b>, <b>Spotlight (+166%)</b>, <b>Bosanova (+152%)</b> and <b>Expertmedia (+148%)</b> — all small-to-mid creative/digital shops.`},
+  ];
+  document.getElementById('insights').innerHTML=insights.map(i=>
+    `<div class="insight ${i.cls}"><h3>${i.t}</h3><p>${i.p}</p></div>`).join('');
+
+  // Market chart
+  new Chart(chMarket,{data:{labels:YEARS,datasets:[
+    {type:'bar',label:'Revenue (€M)',data:YEARS.map(y=>yearTotals(y).rev/1e6),backgroundColor:'rgba(79,142,247,.55)',borderRadius:6,yAxisID:'y'},
+    {type:'line',label:'Net profit (€M)',data:YEARS.map(y=>yearTotals(y).profit/1e6),borderColor:'#34c98e',backgroundColor:'#34c98e',tension:.3,yAxisID:'y2'},
+    {type:'line',label:'Employees (×100)',data:YEARS.map(y=>yearTotals(y).emp/100),borderColor:'#f0b04f',backgroundColor:'#f0b04f',borderDash:[6,4],tension:.3,yAxisID:'y2'},
+  ]},options:{maintainAspectRatio:false,scales:{y:{title:{display:true,text:'Revenue €M'},grid:{color:'#222a3a'}},y2:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Profit €M / Employees ×100'}}}}});
+
+  // Segments doughnut
+  const seg24=segTotals(LAST);
+  const segSorted=Object.entries(seg24).sort((a,b)=>b[1]-a[1]);
+  new Chart(chSegments,{type:'doughnut',data:{labels:segSorted.map(s=>s[0]),datasets:[{data:segSorted.map(s=>s[1]/1e6),backgroundColor:segSorted.map(s=>SEGCOLORS[s[0]]||'#888'),borderColor:'#0e1117',borderWidth:2}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>` ${c.label}: €${c.parsed.toFixed(1)}M`}}}}});
+
+  // Segment trend
+  const topSegs=segSorted.slice(0,5).map(s=>s[0]);
+  new Chart(chSegTrend,{type:'line',data:{labels:YEARS,datasets:topSegs.map(s=>({label:s,data:YEARS.map(y=>(segTotals(y)[s]||0)/1e6),borderColor:SEGCOLORS[s],backgroundColor:SEGCOLORS[s],tension:.3}))},options:{maintainAspectRatio:false,scales:{y:{title:{display:true,text:'€M'},grid:{color:'#222a3a'}}}}});
+
+  // Top-N ranking
+  const rankYearSel=document.getElementById('rankYear');
+  YEARS.slice().reverse().forEach(y=>{rankYearSel.add(new Option(y,y));});
+  const rankSegSel=document.getElementById('rankSegment');
+  SEGMENTS.forEach(s=>rankSegSel.add(new Option(s,s)));
+  ['tblSegment'].forEach(id=>{const el=document.getElementById(id);SEGMENTS.forEach(s=>el.add(new Option(s,s)));});
+
+  let chTopObj;
+  function drawTop(){
+    const metric=rankMetric.value,year=+rankYear.value,seg=rankSegment.value;
+    let rows=DATA.filter(d=>d.year===year&&(!seg||d.activities.includes(seg)));
+    rows=rows.map(d=>({brand:d.brand,val:metric==='margin'?(d.revenue>100000&&d.profit!=null?d.profit/d.revenue*100:null):d[metric]})).filter(r=>r.val!=null&&r.val!==0).sort((a,b)=>b.val-a.val).slice(0,20);
+    const isEur=['revenue','profit'].includes(metric);
+    if(chTopObj) chTopObj.destroy();
+    chTopObj=new Chart(chTop,{type:'bar',data:{labels:rows.map(r=>r.brand),datasets:[{data:rows.map(r=>isEur?r.val/1e6:r.val),backgroundColor:rows.map(r=>r.val<0?'rgba(240,106,106,.7)':'rgba(79,142,247,.7)'),borderRadius:5}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>isEur?' €'+c.parsed.x.toFixed(2)+'M':metric==='margin'?' '+c.parsed.x.toFixed(1)+'%':' '+c.parsed.x.toLocaleString()}}},scales:{x:{title:{display:true,text:isEur?'€M':metric==='margin'?'%':''},grid:{color:'#222a3a'}}}}});
+  }
+  [rankMetric,rankYear,rankSegment].forEach(el=>el.addEventListener('change',drawTop));
+  drawTop();
+
+  // Growth
+  const growthRows=BRANDS.map(b=>{const d21=byBrand[b][2021],d24=byBrand[b][LAST];if(!d21||!d24||!d21.revenue||!d24.revenue||d21.revenue<50000||d24.revenue<300000) return null;return{brand:b,g:(d24.revenue/d21.revenue-1)*100,rev:d24.revenue};}).filter(Boolean).sort((a,b)=>b.g-a.g);
+  const gShow=[...growthRows.slice(0,8),...growthRows.slice(-8)];
+  new Chart(chGrowth,{type:'bar',data:{labels:gShow.map(r=>r.brand),datasets:[{data:gShow.map(r=>r.g),backgroundColor:gShow.map(r=>r.g>=0?'rgba(52,201,142,.75)':'rgba(240,106,106,.75)'),borderRadius:5}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=gShow[c.dataIndex];return` ${c.parsed.x.toFixed(0)}% · 2024 rev €${fmtM(r.rev)}`}}}},scales:{x:{title:{display:true,text:'Revenue change 2021→2024, %'},grid:{color:'#222a3a'}}}}});
+
+  // Scatter
+  const scatterRows=DATA.filter(d=>d.year===LAST&&d.revenue>100000&&d.profit!=null&&d.employees>0).map(d=>({x:d.revenue,y:d.profit/d.revenue*100,r:Math.max(4,Math.sqrt(d.employees)*2.2),brand:d.brand,emp:d.employees,seg:d.activities[0]||'Other'}));
+  new Chart(chScatter,{type:'bubble',data:{datasets:topSegs.concat(['Other']).map(s=>({label:s,data:scatterRows.filter(r=>s==='Other'?!topSegs.includes(r.seg):r.seg===s),backgroundColor:(SEGCOLORS[s]||'#888')+'99',borderColor:SEGCOLORS[s]||'#888'}))},options:{maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:c=>{const p=c.raw;return` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},scales:{x:{type:'logarithmic',title:{display:true,text:'Revenue 2024 (€, log)'},grid:{color:'#222a3a'},ticks:{callback:v=>[1e5,3e5,1e6,3e6,1e7,3e7].includes(v)?'€'+fmtM(v):''}},y:{title:{display:true,text:'Net margin %'},grid:{color:'#222a3a'},suggestedMin:-30,suggestedMax:45}}}});
+
+  // Salary
+  function salaryQuartiles(y){const s=DATA.filter(d=>d.year===y&&d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);const q=p=>s[Math.floor(s.length*p)];return{q1:q(.25),med:q(.5),q3:q(.75)};}
+  const sq=YEARS.map(salaryQuartiles);
+  new Chart(chSalary,{type:'line',data:{labels:YEARS,datasets:[{label:'75th percentile',data:sq.map(s=>s.q3),borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.15)',fill:'+2',tension:.3},{label:'Median',data:sq.map(s=>s.med),borderColor:'#f0b04f',backgroundColor:'#f0b04f',borderWidth:3,tension:.3},{label:'25th percentile',data:sq.map(s=>s.q1),borderColor:'#4f8ef7',borderDash:[5,4],tension:.3}]},options:{maintainAspectRatio:false,scales:{y:{title:{display:true,text:'€/month'},grid:{color:'#222a3a'}}}}});
+
+  // Rev per employee
+  const rpe=SEGMENTS.map(s=>{const vals=DATA.filter(d=>d.year===LAST&&d.activities.includes(s)&&d.revenue>0&&d.employees>2).map(d=>d.revenue/d.employees).sort((a,b)=>a-b);return{seg:s,med:vals.length?vals[Math.floor(vals.length/2)]:0,n:vals.length};}).filter(r=>r.n>=3).sort((a,b)=>b.med-a.med);
+  new Chart(chRevPerEmp,{type:'bar',data:{labels:rpe.map(r=>r.seg),datasets:[{data:rpe.map(r=>r.med/1000),backgroundColor:rpe.map(r=>SEGCOLORS[r.seg]||'#888'),borderRadius:5}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` €${c.parsed.x.toFixed(0)}k / employee (median of ${rpe[c.dataIndex].n} companies)`}}},scales:{x:{title:{display:true,text:'€k revenue per employee (median)'},grid:{color:'#222a3a'}}}}});
+
+  // Dashboard table
+  const cities=[...new Set(Object.values(byBrand).map(d=>(d[LAST]||Object.values(d)[0]).city).filter(Boolean))].sort();
+  cities.forEach(c=>tblCity.add(new Option(c,c)));
+  const tblRows=BRANDS.map(b=>{const d24=byBrand[b][LAST]||{},d21=byBrand[b][2021]||{};const first=Object.values(byBrand[b])[0];return{brand:b,segs:(d24.activities||first.activities||[]),city:d24.city||first.city||'',risk:d24.risk||first.risk||'',rev24:d24.revenue,growth:(d21.revenue>10000&&d24.revenue)?d24.revenue/d21.revenue-1:null,profit24:d24.profit,margin:(d24.revenue>50000&&d24.profit!=null)?d24.profit/d24.revenue:null,emp24:d24.employees,sal24:(d24.avgSalary>500)?d24.avgSalary:null};});
+  let sortK='rev24',sortDir=-1;
+  function riskCls(r){return /Žemiausia|Žema/.test(r)?'risk-low':/Vidutinė/.test(r)?'risk-mid':r?'risk-high':'';}
+  function renderDashTable(){
+    const q=dashSearch.value.toLowerCase(),seg=tblSegment.value,city=tblCity.value;
+    let rows=tblRows.filter(r=>(!q||r.brand.toLowerCase().includes(q))&&(!seg||r.segs.includes(seg))&&(!city||r.city===city));
+    rows.sort((a,b)=>{let av=a[sortK],bv=b[sortK];if(sortK==='segs'){av=av.join();bv=bv.join();}if(av==null)return 1;if(bv==null)return -1;return(av<bv?-1:av>bv?1:0)*sortDir;});
+    tblBody.innerHTML=rows.map(r=>`<tr><td><b>${r.brand}</b></td><td>${r.segs.map(s=>`<span class="tag">${s}</span>`).join('')}</td><td>${r.city}</td><td>${fmtEur(r.rev24)}</td><td class="${r.growth>0?'pos':r.growth<0?'neg':''}">${fmtPct(r.growth)}</td><td class="${r.profit24>0?'pos':r.profit24<0?'neg':''}">${fmtEur(r.profit24)}</td><td class="${r.margin>0?'pos':r.margin<0?'neg':''}">${r.margin==null?'–':(r.margin*100).toFixed(1)+'%'}</td><td>${r.emp24!=null?Math.round(r.emp24):'–'}</td><td>${r.sal24?'€'+Math.round(r.sal24).toLocaleString():'–'}</td><td class="${riskCls(r.risk)}">${r.risk||'–'}</td></tr>`).join('');
+  }
+  document.querySelectorAll('#tbl th').forEach(th=>th.addEventListener('click',()=>{const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=-1;}renderDashTable();}));
+  [dashSearch,tblSegment,tblCity].forEach(el=>el.addEventListener('input',renderDashTable));
+  renderDashTable();
+}
+initDashboard();
+
+/* ===================================================================
+   DATA EXPLORER
+   =================================================================== */
+const SHEET_ORDER=['Įmonės','Įmonės-analizei','Kūryba','PR','Raw'];
+const SHEET_DESC={
+  'Įmonės':'Master company list — 169 agencies with full contact details, yearly employee counts, salaries, revenue, profit (2019–2024), social links, and credit risk ratings.',
+  'Įmonės-analizei':'Panel data reshaped for analysis — one row per company per year (2019–2024). 660 records covering 110+ brands with financials and segment tags.',
+  'Kūryba':'Creative (kūryba) agencies sub-view — filtered to companies active in the creative/advertising segment with per-company and segment totals.',
+  'PR':'Public relations agencies sub-view — filtered to PR firms with per-company and segment totals.',
+  'Raw':'Original raw data import — 103 companies as sourced, before cleaning and normalization.',
+};
+const MONEY_COLS=new Set(['Apyvarta','Apyvarta 2019','Apyvarta 2020','Apyvarta 2021','Apyvarta 2022','Apyvarta 2023','Apyvarta 2024','Grynasis pelnas 2019','Grynasis pelnas 2020','Grynasis pelnas 2021','Grynasis pelnas 2022','Grynasis pelnas 2023','Grynasis pelnas 2024','Pelnas','DU sąnaudos','Ne-atlyginimų sąnaudos','Spėjamos pajamos','Atlyginimų sąnaudos 2019','Atlyginimų sąnaudos 2020','Atlyginimų sąnaudos 2021','Atlyginimų sąnaudos 2022','Atlyginimų sąnaudos 2023','Atlyginimų sąnaudos 2024','Atlyginimų sąnaudos 2025 05','Skola Sodrai','Apyvarta (1)','Spėjamos pajamos (1)','DU sąnaudos (1)','Ne-atlyginimų sąnaudos (1)','Pelnas (1)']);
+const PCT_PARTIAL=['Pokytis','pokytis'];
+const URL_PARTIAL=['URL','Svetainė','svetainė','Facebook','Instagram','LinkedIn','http'];
+
+let dtSheet=SHEET_ORDER[0], dtSortCol=-1, dtSortDir=1, dtPage=0, dtPageSize=100, dtFiltered=[];
+
+function isNumCol(c,s){if(MONEY_COLS.has(c))return true;return s.filter(v=>v!==null&&!isNaN(Number(v))).length>s.length*.5;}
+function dtFmtMoney(v){const n=Number(v);if(isNaN(n))return v;if(Math.abs(n)>=1e6)return'€'+(n/1e6).toFixed(2)+'M';if(Math.abs(n)>=1e3)return'€'+Math.round(n).toLocaleString('lt-LT');return'€'+n.toFixed(0);}
+function dtFmtNum(v){const n=Number(v);if(isNaN(n))return v;if(Number.isInteger(n)||Math.abs(n)>100)return Math.round(n).toLocaleString('lt-LT');return n.toFixed(2);}
+
+function initDataExplorer(){
+  window._dataInitialized=true;
+  buildDataTabs();
+  renderDataSheet();
+
+  document.getElementById('dataSearch').addEventListener('input',()=>{dtPage=0;filterDataRows();});
+  document.getElementById('prevBtn').addEventListener('click',()=>{if(dtPage>0){dtPage--;renderDataRows();document.getElementById('tableWrap').scrollTop=0;}});
+  document.getElementById('nextBtn').addEventListener('click',()=>{dtPage++;renderDataRows();document.getElementById('tableWrap').scrollTop=0;});
+  document.getElementById('pageSizeSel').addEventListener('change',e=>{dtPageSize=+e.target.value;dtPage=0;renderDataRows();});
+  document.getElementById('csvBtn').addEventListener('click',()=>{
+    const sheet=SHEETS[dtSheet],BOM='﻿';
+    const esc=v=>{if(v===null||v===undefined)return'';const s=String(v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
+    let csv=BOM+sheet.columns.map(esc).join(',')+'\n';
+    dtFiltered.forEach(row=>{csv+=row.map(esc).join(',')+'\n';});
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=dtSheet.replace(/\s+/g,'_')+'.csv';a.click();
   });
 }
-[rankMetric, rankYear, rankSegment].forEach(el=>el.addEventListener('change', drawTop));
-drawTop();
 
-// ---------- Growth leaders ----------
-const growthRows = BRANDS.map(b=>{
-  const d21=byBrand[b][2021], d24=byBrand[b][LAST];
-  if(!d21||!d24||!d21.estimatedIncome||!d24.estimatedIncome||d21.estimatedIncome<30000||d24.estimatedIncome<150000) return null;
-  return {brand:b, g:(d24.estimatedIncome/d21.estimatedIncome-1)*100, rev:d24.estimatedIncome};
-}).filter(Boolean).sort((a,b)=>b.g-a.g);
-const gShow = [...growthRows.slice(0,8), ...growthRows.slice(-8)];
-new Chart(chGrowth, {type:'bar', data:{
-  labels:gShow.map(r=>r.brand),
-  datasets:[{data:gShow.map(r=>r.g), backgroundColor:gShow.map(r=>r.g>=0?'rgba(52,201,142,.75)':'rgba(240,106,106,.75)'), borderRadius:5}]},
-  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>{const r=gShow[c.dataIndex]; return ` ${c.parsed.x.toFixed(0)}% · 2024 rev €${fmtM(r.rev)}`}}}},
-    scales:{x:{title:{display:true,text:'Revenue (spėjamos pajamos) change 2021→2024, %'}, grid:{color:'#222a3a'}}}}
-});
-
-// ---------- Scatter ----------
-const scatterRows = DATA.filter(d=>d.year===LAST && d.estimatedIncome>50000 && d.profit!=null && d.employees>0)
-  .map(d=>({x:d.estimatedIncome, y:d.profit/d.estimatedIncome*100, r:Math.max(4,Math.sqrt(d.employees)*2.2), brand:d.brand, emp:d.employees,
-            seg:d.activities[0]||'Other'}));
-new Chart(chScatter, {type:'bubble', data:{
-  datasets: topSegs.concat(['Other']).map(s=>({
-    label:s,
-    data:scatterRows.filter(r=> r.brand!==MY_BRAND && (s==='Other' ? !topSegs.includes(r.seg) : r.seg===s)),
-    backgroundColor:(SEGCOLORS[s]||'#888')+'99', borderColor:SEGCOLORS[s]||'#888'
-  })).concat([{
-    label:'★ Fabula (you)',
-    data:scatterRows.filter(r=>r.brand===MY_BRAND).map(r=>({...r, r:Math.max(r.r,9)})),
-    backgroundColor:'rgba(244,197,66,.95)', borderColor:'#ffffff', borderWidth:2
-  }])},
-  options:{maintainAspectRatio:false,
-    plugins:{tooltip:{callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
-    scales:{
-      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (spėjamos pajamos, €, log)'}, grid:{color:'#222a3a'},
-         ticks:{callback:v=>[5e4,1e5,3e5,1e6,3e6,1e7].includes(v)?'€'+fmtM(v):''}},
-      y:{title:{display:true,text:'Net profit margin % (from revenue)'}, grid:{color:'#222a3a'}, suggestedMin:-30, suggestedMax:45}
-    }}
-});
-
-// ---------- Salary trend ----------
-function salaryQuartiles(y){
-  const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
-  const q = p => s[Math.floor(s.length*p)];
-  return {q1:q(.25), med:q(.5), q3:q(.75)};
+function buildDataTabs(){
+  const el=document.getElementById('dataTabs');
+  el.innerHTML=SHEET_ORDER.map(s=>`<button class="data-tab${s===dtSheet?' active':''}" data-sheet="${s}">${s}</button>`).join('');
+  el.querySelectorAll('.data-tab').forEach(btn=>btn.addEventListener('click',()=>{
+    dtSheet=btn.dataset.sheet;dtSortCol=-1;dtPage=0;document.getElementById('dataSearch').value='';
+    buildDataTabs();renderDataSheet();
+  }));
 }
-const sq = YEARS.map(salaryQuartiles);
-new Chart(chSalary, {type:'line', data:{
-  labels:YEARS,
-  datasets:[
-    {label:'75th percentile', data:sq.map(s=>s.q3), borderColor:'#4f8ef7', backgroundColor:'rgba(79,142,247,.15)', fill:'+2', tension:.3},
-    {label:'Median', data:sq.map(s=>s.med), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderWidth:3, tension:.3},
-    {label:'25th percentile', data:sq.map(s=>s.q1), borderColor:'#4f8ef7', borderDash:[5,4], tension:.3},
-  ]},
-  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€/month'}, grid:{color:'#222a3a'}}}}
-});
 
-// ---------- Revenue per employee ----------
-const rpe = SEGMENTS.map(s=>{
-  const vals = DATA.filter(d=>d.year===LAST && d.activities.includes(s) && d.estimatedIncome>0 && d.employees>2)
-                   .map(d=>d.estimatedIncome/d.employees).sort((a,b)=>a-b);
-  return {seg:s, med: vals.length? vals[Math.floor(vals.length/2)] : 0, n:vals.length};
-}).filter(r=>r.n>=3).sort((a,b)=>b.med-a.med);
-new Chart(chRevPerEmp, {type:'bar', data:{
-  labels:rpe.map(r=>r.seg),
-  datasets:[{data:rpe.map(r=>r.med/1000), backgroundColor:rpe.map(r=>SEGCOLORS[r.seg]||'#888'), borderRadius:5}]},
-  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>` €${c.parsed.x.toFixed(0)}k / employee (median of ${rpe[c.dataIndex].n} companies)`}}},
-    scales:{x:{title:{display:true,text:'€k revenue per employee (median)'}, grid:{color:'#222a3a'}}}}
-});
-
-// ---------- Table ----------
-const cities = [...new Set(Object.values(byBrand).map(d=>(d[LAST]||Object.values(d)[0]).city).filter(Boolean))].sort();
-cities.forEach(c=>tblCity.add(new Option(c,c)));
-
-const tblRows = BRANDS.map(b=>{
-  const d24 = byBrand[b][LAST]||{}, d21 = byBrand[b][2021]||{};
-  const first = Object.values(byBrand[b])[0];
-  return {
-    brand:b, segs:(d24.activities||first.activities||[]),
-    city:d24.city||first.city||'', risk:d24.risk||first.risk||'',
-    ei24:d24.estimatedIncome, rev24:d24.revenue,
-    growth:(d21.estimatedIncome>10000 && d24.estimatedIncome)? d24.estimatedIncome/d21.estimatedIncome-1 : null,
-    profit24:d24.profit, margin:(d24.estimatedIncome>50000 && d24.profit!=null)? d24.profit/d24.estimatedIncome : null,
-    emp24:d24.employees, sal24:(d24.avgSalary>500)? d24.avgSalary : null,
-  };
-});
-let sortK='ei24', sortDir=-1;
-function riskCls(r){ return /Žemiausia|Žema/.test(r)?'risk-low':/Vidutinė/.test(r)?'risk-mid':r?'risk-high':''; }
-function renderTable(){
-  const q = search.value.toLowerCase(), seg = tblSegment.value, city = tblCity.value;
-  let rows = tblRows.filter(r=> (!q||r.brand.toLowerCase().includes(q)) && (!seg||r.segs.includes(seg)) && (!city||r.city===city));
-  rows.sort((a,b)=>{
-    let av=a[sortK], bv=b[sortK];
-    if(sortK==='segs'){av=av.join();bv=bv.join();}
-    if(av==null) return 1; if(bv==null) return -1;
-    return (av<bv?-1:av>bv?1:0)*sortDir;
+function renderDataSheet(){
+  const sheet=SHEETS[dtSheet];if(!sheet)return;
+  const cols=sheet.columns;
+  document.getElementById('sheetDesc').textContent=SHEET_DESC[dtSheet]||'';
+  const colTypes=cols.map((c,i)=>{
+    const sample=sheet.rows.slice(0,20).map(r=>r[i]);
+    const isMoney=MONEY_COLS.has(c);
+    const isPct=PCT_PARTIAL.some(p=>c.includes(p));
+    const isUrl=URL_PARTIAL.some(p=>c.includes(p));
+    const isNum=!isPct&&!isUrl&&isNumCol(c,sample);
+    return{name:c,isMoney,isPct,isUrl,isNum:isNum||isMoney};
   });
-  rows.sort((a,b)=> a.brand===MY_BRAND?-1 : b.brand===MY_BRAND?1 : 0); // pin my company to top
-  tblBody.innerHTML = rows.map(r=>`<tr class="${r.brand===MY_BRAND?'mine':''}">
-    <td><b>${r.brand}${r.brand===MY_BRAND?' ⭐':''}</b></td>
-    <td>${r.segs.map(s=>`<span class="tag">${s}</span>`).join('')}</td>
-    <td>${r.city}</td>
-    <td>${fmtEur(r.ei24)}</td>
-    <td>${fmtEur(r.rev24)}</td>
-    <td class="${r.growth>0?'pos':r.growth<0?'neg':''}">${fmtPct(r.growth)}</td>
-    <td class="${r.profit24>0?'pos':r.profit24<0?'neg':''}">${fmtEur(r.profit24)}</td>
-    <td class="${r.margin>0?'pos':r.margin<0?'neg':''}">${r.margin==null?'–':(r.margin*100).toFixed(1)+'%'}</td>
-    <td>${r.emp24!=null?Math.round(r.emp24):'–'}</td>
-    <td>${r.sal24?'€'+Math.round(r.sal24).toLocaleString():'–'}</td>
-    <td class="${riskCls(r.risk)}">${r.risk||'–'}</td>
-  </tr>`).join('');
+  const thead=document.getElementById('dtHead');
+  thead.innerHTML='<th class="row-num">#</th>'+cols.map((c,i)=>`<th data-col="${i}" class="${dtSortCol===i?(dtSortDir===1?'sorted-asc':'sorted-desc'):''}">${c||'—'}</th>`).join('');
+  thead.querySelectorAll('th[data-col]').forEach(th=>th.addEventListener('click',()=>{
+    const ci=+th.dataset.col;if(dtSortCol===ci)dtSortDir*=-1;else{dtSortCol=ci;dtSortDir=-1;}
+    dtPage=0;renderDataRows();
+    thead.querySelectorAll('th[data-col]').forEach(t=>t.className='');
+    th.className=dtSortDir===1?'sorted-asc':'sorted-desc';
+  }));
+  window._dtColTypes=colTypes;
+  filterDataRows();
 }
-document.querySelectorAll('#tbl th').forEach(th=>th.addEventListener('click',()=>{
-  const k=th.dataset.k; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir=-1;} renderTable();
-}));
-[search, tblSegment, tblCity].forEach(el=>el.addEventListener('input', renderTable));
-renderTable();
 
-// ---------- SP & version history ----------
-const VERSIONS = [
-  {v:'v0.1.2.1', date:'2026-06-10', sp:1,   desc:'Docs for AI assistants: AGENTS.md with project context, data dictionary, conventions and full prompt history; CLAUDE.md pointer.'},
-  {v:'v0.1.2.0', date:'2026-06-10', sp:4,   desc:'Turnover vs revenue (spėjamos pajamos) split across the whole dashboard: reordered KPI strip (turnover, turnover CAGR, revenue, revenue CAGR, profit margin from revenue + YoY), market chart shows both, segments/rankings/growth/scatter/rev-per-employee/explorer switched or extended to spėjamos pajamos, footer credit added. Touched every chart — each threshold and tooltip had to be re-checked.'},
-  {v:'v0.1.1.0', date:'2026-06-10', sp:3,   desc:'SP &amp; version history: this button + history overlay, with the version log embedded.'},
-  {v:'v0.1.0.0', date:'2026-06-10', sp:0.5, desc:'Version badge added to the header.'},
-  {v:'v0.0.1.0', date:'2026-06-10', sp:5,   desc:'“My company” section — researched the VRP→Fabula rebrand (live scraping was blocked, resolved via web search + shared company code 124099127), added KPI cards with market rank, a 2019–2024 trend chart, a percentile-vs-market chart, gold highlight in the scatter plot and a pinned row in the explorer.'},
-  {v:'v0.0.0.0', date:'2026-06-10', sp:5,   desc:'Initial competitor dashboard — 113 agencies, KPI strip, key insights, market/segment/ranking/salary charts and a searchable explorer.'},
-];
-const spTotal = VERSIONS.reduce((s,v)=>s+v.sp,0);
-document.getElementById('spTotal').textContent = spTotal;
-document.getElementById('verCount').textContent = VERSIONS.length;
-document.getElementById('histBody').innerHTML = VERSIONS.map(v=>
-  `<tr><td class="vcol">${v.v}</td><td>${v.date}</td><td><span class="sp-badge">${v.sp}</span></td><td>${v.desc}</td></tr>`).join('');
-const histModal = document.getElementById('histModal');
-document.getElementById('histBtn').addEventListener('click', ()=>histModal.classList.add('open'));
-document.getElementById('histClose').addEventListener('click', ()=>histModal.classList.remove('open'));
-histModal.addEventListener('click', e=>{ if(e.target===histModal) histModal.classList.remove('open'); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') histModal.classList.remove('open'); });
+function filterDataRows(){
+  const sheet=SHEETS[dtSheet];
+  const q=document.getElementById('dataSearch').value.toLowerCase().trim();
+  dtFiltered=sheet.rows;
+  if(q) dtFiltered=dtFiltered.filter(row=>row.some(v=>v!==null&&String(v).toLowerCase().includes(q)));
+  renderDataRows();
+}
+
+function renderDataRows(){
+  const colTypes=window._dtColTypes;
+  let rows=[...dtFiltered];
+  if(dtSortCol>=0){
+    rows.sort((a,b)=>{let av=a[dtSortCol],bv=b[dtSortCol];if(av===null)return 1;if(bv===null)return -1;const an=Number(av),bn=Number(bv);if(!isNaN(an)&&!isNaN(bn))return(an-bn)*dtSortDir;return String(av).localeCompare(String(bv),'lt')*dtSortDir;});
+  }
+  const total=rows.length,start=dtPage*dtPageSize,pageRows=rows.slice(start,start+dtPageSize);
+  document.getElementById('rowCount').textContent=`${total} row${total!==1?'s':''} × ${colTypes.length} columns`;
+  document.getElementById('pageInfo').textContent=total>dtPageSize?`Page ${dtPage+1} of ${Math.ceil(total/dtPageSize)}`:'';
+  document.getElementById('prevBtn').disabled=dtPage===0;
+  document.getElementById('nextBtn').disabled=start+dtPageSize>=total;
+
+  document.getElementById('dtBody').innerHTML=pageRows.map((row,ri)=>{
+    const idx=start+ri+1;
+    const cells=row.map((v,ci)=>{
+      const ct=colTypes[ci];
+      if(v===null||v===undefined||v==='None'||v==='\\N') return`<td class="null">—</td>`;
+      if(ct.isUrl){const s=String(v);if(s.startsWith('http')){const d=s.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,'');return`<td class="url"><a href="${s}" target="_blank" rel="noopener">${d.length>40?d.slice(0,38)+'…':d}</a></td>`;}return`<td>${s}</td>`;}
+      if(ct.isPct){const n=Number(v);if(!isNaN(n)){const cls=n>0?'pos':n<0?'neg':'';return`<td class="num ${cls}">${(n>0?'+':'')+(n*100).toFixed(1)}%</td>`;}return`<td>${v}</td>`;}
+      if(ct.isMoney){const n=Number(v);if(!isNaN(n)){const cls=n<0?'neg':'';return`<td class="num ${cls}">${dtFmtMoney(n)}</td>`;}return`<td>${v}</td>`;}
+      if(ct.isNum){const n=Number(v);if(!isNaN(n)){const cls=ct.name.includes('elnas')?(n>0?'pos':n<0?'neg':''):'';return`<td class="num ${cls}">${dtFmtNum(n)}</td>`;}}
+      return`<td>${String(v)}</td>`;
+    }).join('');
+    return`<tr><td class="row-num">${idx}</td>${cells}</tr>`;
+  }).join('');
+}
 </script>
 </body>
 </html>
