@@ -1,13 +1,15 @@
 # vz — project context
 
+**This whole file is _context_** — text injected into the model's window. It *influences* behaviour; it does not *enforce* anything. The only thing that enforces is a **hook** (code that runs — none yet, see [HOOKS.md](HOOKS.md)). Which behaviours can be hooks vs must stay context → [GOVERNANCE.md](GOVERNANCE.md).
+
 Single source of truth: purpose, data, conventions, history.
-Rules → **[GOVERNANCE.md](GOVERNANCE.md)** — the constitution (deterministic guardrails/verifiers + guidelines, sorted by the verifiability test) · Hooks → **[HOOKS.md](HOOKS.md)** (none yet).
 
 ## Non-negotiables
-- Edit **`template.html`**, never `index.html`; rebuild: `python3 build_site.py`.
-- Every change: bump version badge + add a `VERSIONS` entry (with SP).
+*(All four are currently context = advisory. The ones a program could check are hooks H1–H6 in GOVERNANCE.md — build those to actually enforce them.)*
+- Edit **`template.html`**, never `index.html`; rebuild: `python3 build_site.py`. *(→ H2)*
+- Every change: bump version badge + add a `VERSIONS` entry (with SP). *(→ H3–H5)*
 - Push to `main`, then send the rebuilt `index.html` to the user.
-- `revenue` = turnover/apyvarta · `estimatedIncome` = revenue/spėjamos pajamos.
+- `revenue` = turnover/apyvarta · `estimatedIncome` = revenue/spėjamos pajamos. *(context only)*
 
 ## What this is
 - Self-contained HTML competitor dashboard: **113 LT** communication/marketing/consulting agencies, financials **2019–2024**.
@@ -83,3 +85,4 @@ Rules → **[GOVERNANCE.md](GOVERNANCE.md)** — the constitution (deterministic
 | — (off) | 0.5 | "Human-readable MD listing the vz hooks." | Added `HOOKS.md`: vz has no hooks; explains the 3 events; pop-ups seen in chats are Data's, not vz. |
 | — (off) | 1 | "Docs too long to read; make them succinct without hurting AI comprehension." | Reformatted CLAUDE/GOVERNANCE/HOOKS to tight bold-lead bullets (one file each, no AI/human split — avoids drift). Same facts, less prose. |
 | — (off) | 1 | "Rewrite the rules system with the researched AI-control + eng vocabulary, not our coined terms." | Recast the Codex as the **vz constitution**: Gate→**deterministic guardrail (verifier)**, Nudge→**guideline (LLM-as-judge)**, Gate Test→**verifiability test**. Terms from RLVR / guardrails / LLM-as-judge / Constitutional AI. |
+| — (off) | 1 | "Name things by their real mechanism of effect on the AI (hook vs context), not cosmetic labels (governance/constitution)." | Recast the rules system around the two mechanisms that actually differ — **Hook** (code that runs → enforces) vs **Context** (text the model reads → advisory only). verifier→hook-able (H1–H6), guideline→context-only (C1–C4); test is "can it be a hook?". CLAUDE.md now states it is itself context. |
