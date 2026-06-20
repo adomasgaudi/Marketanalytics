@@ -1,6 +1,6 @@
 # Rules and context
 
-Mechanisms / which rules can be enforced → [GOVERNANCE.md](GOVERNANCE.md) · full events/hooks/permissions map → [Schema.md](Schema.md).
+Hook-vs-context framework + full events/hooks/permissions map → [Schema.md](Schema.md).
 
 ## Events & the hooks on them
 
@@ -25,17 +25,9 @@ Mechanisms / which rules can be enforced → [GOVERNANCE.md](GOVERNANCE.md) · f
 | **Version badge**           | `<h1>` badge every change. `vA.B.C`: bump **C**; **B** owner-only; **A** owner-only                        | verifiable | ✅ `version_reminder.py` (reminder); enforce → H3/H4          |
 | **SP**                      | 0.5–10 per update, effort/time not LOC; logged in `VERSIONS` array, shown via "📋 SP history" modal        | mixed      | reminder via `version_reminder.py`; numeric → H5, fair? → C1 |
 | **Terminology**             | `revenue` = turnover/apyvarta · `estimatedIncome` = revenue/spėjamos pajamos                               | judgment   | — (C4)                                                       |
-
-
-## Git
-
-- Work from `main`; merge to `main` after finishing.
-
-## Parallel sessions
-
-- Multiple AIs have edited this repo at once and once diverged `main` (one overwrote the other's features).
-- Before work: `git fetch origin main` + rebase/merge.
-- **Never resolve a** `template.html` **conflict by taking one side wholesale** — merge feature-by-feature (badge, SP modal, My-company section, turnover/revenue split, Data Explorer) and keep them all.
+| **Branch**                  | work from `main`; merge back immediately — never strand work on a side branch                              | verifiable | → H7                                                         |
+| **Sync first**              | before work, `git fetch origin main` + rebase/merge (parallel AIs edit at once)                            | verifiable | → H8                                                         |
+| **Merge conflicts**         | never take one `template.html` side wholesale — merge feature-by-feature (badge, SP modal, My-company, turnover/revenue, Data Explorer), keep all | judgment   | — (C5)                                                       |
 
 ---
 
@@ -83,5 +75,5 @@ Mechanisms / which rules can be enforced → [GOVERNANCE.md](GOVERNANCE.md) · f
 
 ## Prompt & version history
 
-- Moved to [HISTORY.md](HISTORY.md) to keep SessionStart context lean. Append new entries there.
+- Moved to [VersionHistory.md](VersionHistory.md) to keep SessionStart context lean. Append new entries there.
 

@@ -130,6 +130,7 @@ So when adding a rule: short + always-relevant → plain Context; big doc + alwa
 - **H5** new `VERSIONS` entry has a numeric SP → block
 - **H6** embedded JS valid (`node --check`) → block
 - **H7** (Stop) at end of turn, working tree clean + `main` pushed to `origin` ("Save"; owner only sees the live site) → block
+- **H8** (SessionStart) auto `git fetch origin main` + rebase before work (parallel AIs edit at once)
 
 ## Behaviours that can only be Context (need judgment → advisory, never a Hook)
 
@@ -137,6 +138,7 @@ So when adding a rule: short + always-relevant → plain Context; big doc + alwa
 - **C2** is the design compact / on-brand? (taste)
 - **C3** fixed the whole bug *class*, not just the shown case?
 - **C4** terminology right? (turnover vs revenue)
+- **C5** `template.html` conflicts merged feature-by-feature, never one side wholesale?
 
 ## Adding a behaviour
 
