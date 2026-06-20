@@ -67,6 +67,12 @@
   .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
   .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
   footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
+  /* ── Company tabs ── */
+  .co-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+  .co-tab{padding:7px 18px;font-size:13px;font-weight:600;border-radius:20px;border:1px solid var(--border);background:var(--panel);color:var(--muted);cursor:pointer;transition:.15s;font-family:inherit}
+  .co-tab:hover{color:var(--text);border-color:var(--muted)}
+  .co-tab.active{background:var(--gold);border-color:var(--gold);color:#111}
+  .co-tab.placeholder{opacity:.4;cursor:default;font-style:italic}
   h2.section{font-size:18px;margin:28px 0 14px;font-weight:700}
   h2.section.mine{color:var(--gold)}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
@@ -153,21 +159,22 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.3.2</span> <button class="hist-btn" id="histBtn">📋 SP history</button></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.3.3</span> <button class="hist-btn" id="histBtn">📋 SP history</button></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
-  <h2 class="section mine">⭐ My company — Fabula ir partneriai</h2>
+  <h2 class="section mine">⭐ My companies</h2>
+  <div class="co-tabs" id="coTabs"></div>
   <div class="mine-note" id="mineNote"></div>
   <div class="kpis" id="mineKpis"></div>
   <div class="grid">
     <div class="card">
-      <h2>Fabula: revenue, profit &amp; headcount (2019–2024)</h2>
+      <h2 id="chMineTitle">Revenue, profit &amp; headcount (2019–2024)</h2>
       <div class="desc">Your company's six-year trajectory. Bars = revenue, lines = net profit and employees.</div>
       <div class="chartbox"><canvas id="chMine"></canvas></div>
     </div>
     <div class="card">
-      <h2>Fabula vs the market (2024)</h2>
+      <h2 id="chMineRankTitle">vs the market (2024)</h2>
       <div class="desc">Where your company sits against all 113 tracked agencies — percentile rank per metric (100 = top of market, 50 = median).</div>
       <div class="chartbox"><canvas id="chMineRank"></canvas></div>
     </div>
@@ -348,91 +355,125 @@ Chart.defaults.color = '#8b93a7';
 Chart.defaults.borderColor = '#2a3245';
 Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
 
-// ---------- My company (Fabula, formerly Viešųjų ryšių partneriai / VRP) ----------
-const MY_BRAND = 'Fabula';
-const mine = byBrand[MY_BRAND] || {};
-const mineYears = Object.keys(mine).map(Number).sort((a,b)=>a-b);
-const m24 = mine[LAST] || {};
-const m23 = mine[LAST-1] || {};
-const mFirst = mine[mineYears[0]] || {};
+// ---------- My companies — tab-driven ----------
+// To add a company: push {brand, note} to MY_COMPANIES. Set brand to the exact
+// brand key in data.json, or null to show a placeholder tab.
+const MY_COMPANIES = [
+  {brand:'Fabula', note:`The company at <b>rekvizitai.vz.lt/imone/viesuju_rysiu_partneriai</b> — <b>Viešųjų ryšių partneriai (VRP)</b>, company code <b>124099127</b>, founded 1997 — now trades as <b>Fabula ir partneriai, UAB</b> and is already tracked here. The panels below pull out its figures and rank it against all ${BRANDS.length} competitors.`},
+  // Add more companies below, e.g.: {brand: 'Brandname', note: 'Description...'}
+];
 
-// percentile rank of my company for a metric in LAST year (pos 1 = top of market)
-function rankOf(metricFn){
+let chMineInst = null, chMineRankInst = null;
+
+const E = v => v!=null ? '€'+Math.round(v).toLocaleString() : '–';
+
+function rankOf(metricFn, cur24){
   const vals = BRANDS.map(b=>metricFn(byBrand[b][LAST]||{})).filter(v=>v!=null && !isNaN(v));
-  const mineVal = metricFn(m24);
+  const mineVal = metricFn(cur24);
   if(mineVal==null || isNaN(mineVal)) return null;
   const sorted = vals.slice().sort((a,b)=>b-a);
   const pos = sorted.findIndex(v=>v<=mineVal)+1;
   const pct = Math.round((1-(pos-1)/sorted.length)*100);
   return {pos, total:sorted.length, pct, val:mineVal};
 }
-const mRev = rankOf(d=>d.revenue);
-const mEI = rankOf(d=>d.estimatedIncome);
-const mProfit = rankOf(d=>d.profit);
-const mEmp = rankOf(d=>d.employees);
-const mSal = rankOf(d=>d.avgSalary>500?d.avgSalary:null);
-const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null);
-const mCagr = (m24.revenue && mFirst.revenue)? Math.pow(m24.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
 
-document.getElementById('mineNote').innerHTML =
-  `The company at <b>rekvizitai.vz.lt/imone/viesuju_rysiu_partneriai</b> — <b>Viešųjų ryšių partneriai (VRP)</b>, company code <b>124099127</b>, founded 1997 — now trades as <b>Fabula ir partneriai, UAB</b> and is already tracked here. The panels below pull out its figures and rank it against all ${BRANDS.length} competitors.`;
+function renderCompany(brand){
+  const mine = byBrand[brand] || {};
+  const mineYears = Object.keys(mine).map(Number).sort((a,b)=>a-b);
+  const m24 = mine[LAST] || {};
+  const m23 = mine[LAST-1] || {};
+  const mFirst = mine[mineYears[0]] || {};
+  const co = MY_COMPANIES.find(c=>c.brand===brand);
 
-const E = v => v!=null ? '€'+Math.round(v).toLocaleString() : '–';
-const mineKpiCards = [
-  {label:'Turnover '+LAST, value:fmtEur(m24.revenue),
-   sub:(m23.revenue?fmtPct(m24.revenue/m23.revenue-1)+' YoY · ':'')+(mRev?`<span class="rank">#${mRev.pos} of ${mRev.total}</span>`:''),
-   cls:m24.revenue>=m23.revenue?'pos':'neg',
-   formula: m23.revenue ? `YoY = ${E(m24.revenue)} ÷ ${E(m23.revenue)} − 1 = ${fmtPct(m24.revenue/m23.revenue-1)}\nRank = position by turnover among ${mRev?.total} companies` : ''},
-  {label:'Revenue '+LAST+' (spėj. pajamos)', value:fmtEur(m24.estimatedIncome),
-   sub:(m23.estimatedIncome?fmtPct(m24.estimatedIncome/m23.estimatedIncome-1)+' YoY · ':'')+(mEI?`<span class="rank">#${mEI.pos} of ${mEI.total}</span>`:''),
-   cls:m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg',
-   formula: m23.estimatedIncome ? `YoY = ${E(m24.estimatedIncome)} ÷ ${E(m23.estimatedIncome)} − 1 = ${fmtPct(m24.estimatedIncome/m23.estimatedIncome-1)}\nRank = position by spėj. pajamos among ${mEI?.total} companies` : ''},
-  {label:'Net profit '+LAST, value:fmtEur(m24.profit),
-   sub:(m24.estimatedIncome?(m24.profit/m24.estimatedIncome*100).toFixed(1)+'% margin from revenue · ':'')+(mProfit?`<span class="rank">#${mProfit.pos}</span>`:''),
-   cls:m24.profit>=0?'pos':'neg',
-   formula: m24.estimatedIncome ? `Margin = net profit ÷ revenue (spėj. pajamos)\n= ${E(m24.profit)} ÷ ${E(m24.estimatedIncome)} = ${(m24.profit/m24.estimatedIncome*100).toFixed(1)}%\nRank = position by net profit among ${mProfit?.total} companies` : ''},
-  {label:'Employees '+LAST, value:m24.employees!=null?Math.round(m24.employees):'–',
-   sub:(m23.employees?fmtPct(m24.employees/m23.employees-1)+' YoY · ':'')+(mEmp?`<span class="rank">#${mEmp.pos}</span>`:''),
-   cls:m24.employees>=m23.employees?'pos':'neg',
-   formula: m23.employees ? `YoY = ${Math.round(m24.employees)} ÷ ${Math.round(m23.employees)} − 1 = ${fmtPct(m24.employees/m23.employees-1)}\nRank = position by headcount among ${mEmp?.total} companies` : ''},
-  {label:'Avg salary '+LAST, value:m24.avgSalary?'€'+Math.round(m24.avgSalary).toLocaleString()+'/mo':'–',
-   sub:(m23.avgSalary?fmtPct(m24.avgSalary/m23.avgSalary-1)+' YoY · ':'')+(mSal?`<span class="rank">#${mSal.pos}</span>`:''),
-   cls:'pos',
-   formula: m23.avgSalary ? `YoY = €${Math.round(m24.avgSalary).toLocaleString()} ÷ €${Math.round(m23.avgSalary).toLocaleString()} − 1 = ${fmtPct(m24.avgSalary/m23.avgSalary-1)}\nRank = position by avg salary among ${mSal?.total} companies` : ''},
-  {label:'Revenue CAGR 19–24', value:fmtPct(mCagr),
-   sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue),
-   cls:mCagr>=0?'pos':'neg',
-   formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
-  {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
-];
-document.getElementById('mineKpis').innerHTML = mineKpiCards.map(k=>
-  `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<div class="formula">${k.formula.replace(/\n/g,'<br>')}</div>`:''}</div>`).join('');
+  const mRev    = rankOf(d=>d.revenue, m24);
+  const mEI     = rankOf(d=>d.estimatedIncome, m24);
+  const mProfit = rankOf(d=>d.profit, m24);
+  const mEmp    = rankOf(d=>d.employees, m24);
+  const mSal    = rankOf(d=>d.avgSalary>500?d.avgSalary:null, m24);
+  const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null, m24);
+  const mCagr   = (m24.revenue && mFirst.revenue)? Math.pow(m24.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
 
-new Chart(chMine, {data:{
-  labels: mineYears,
-  datasets:[
-    {type:'bar', label:'Revenue – spėj. pajamos (€M)', data:mineYears.map(y=>(mine[y].estimatedIncome||0)/1e6), backgroundColor:'rgba(244,197,66,.75)', borderColor:'#f4c542', borderWidth:1, borderRadius:6, yAxisID:'y'},
-    {type:'bar', label:'Turnover – apyvarta (€M)', data:mineYears.map(y=>(mine[y].revenue||0)/1e6), backgroundColor:'rgba(139,147,167,.35)', borderRadius:6, yAxisID:'y'},
-    {type:'line', label:'Net profit (€k)', data:mineYears.map(y=>(mine[y].profit||0)/1e3), borderColor:'#34c98e', backgroundColor:'#34c98e', tension:.3, yAxisID:'y2'},
-    {type:'line', label:'Employees', data:mineYears.map(y=>mine[y].employees||0), borderColor:'#4f8ef7', backgroundColor:'#4f8ef7', borderDash:[6,4], tension:.3, yAxisID:'y2'},
-  ]},
-  options:{maintainAspectRatio:false, scales:{
-    y:{title:{display:true,text:'Revenue €M'}, grid:{color:'#222a3a'}},
-    y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €k / Employees'}}
-  }}
+  document.getElementById('mineNote').innerHTML = co?.note || '';
+  document.getElementById('chMineTitle').textContent = brand+': revenue, profit & headcount (2019–'+LAST+')';
+  document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+LAST+')';
+
+  const cards = [
+    {label:'Turnover '+LAST, value:fmtEur(m24.revenue),
+     sub:(m23.revenue?fmtPct(m24.revenue/m23.revenue-1)+' YoY · ':'')+(mRev?`<span class="rank">#${mRev.pos} of ${mRev.total}</span>`:''),
+     cls:m24.revenue>=m23.revenue?'pos':'neg',
+     formula: m23.revenue ? `YoY = ${E(m24.revenue)} ÷ ${E(m23.revenue)} − 1 = ${fmtPct(m24.revenue/m23.revenue-1)}\nRank = position by turnover among ${mRev?.total} companies` : ''},
+    {label:'Revenue '+LAST+' (spėj. pajamos)', value:fmtEur(m24.estimatedIncome),
+     sub:(m23.estimatedIncome?fmtPct(m24.estimatedIncome/m23.estimatedIncome-1)+' YoY · ':'')+(mEI?`<span class="rank">#${mEI.pos} of ${mEI.total}</span>`:''),
+     cls:m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg',
+     formula: m23.estimatedIncome ? `YoY = ${E(m24.estimatedIncome)} ÷ ${E(m23.estimatedIncome)} − 1 = ${fmtPct(m24.estimatedIncome/m23.estimatedIncome-1)}\nRank = position by spėj. pajamos among ${mEI?.total} companies` : ''},
+    {label:'Net profit '+LAST, value:fmtEur(m24.profit),
+     sub:(m24.estimatedIncome?(m24.profit/m24.estimatedIncome*100).toFixed(1)+'% margin from revenue · ':'')+(mProfit?`<span class="rank">#${mProfit.pos}</span>`:''),
+     cls:m24.profit>=0?'pos':'neg',
+     formula: m24.estimatedIncome ? `Margin = net profit ÷ revenue (spėj. pajamos)\n= ${E(m24.profit)} ÷ ${E(m24.estimatedIncome)} = ${(m24.profit/m24.estimatedIncome*100).toFixed(1)}%\nRank = position by net profit among ${mProfit?.total} companies` : ''},
+    {label:'Employees '+LAST, value:m24.employees!=null?Math.round(m24.employees):'–',
+     sub:(m23.employees?fmtPct(m24.employees/m23.employees-1)+' YoY · ':'')+(mEmp?`<span class="rank">#${mEmp.pos}</span>`:''),
+     cls:m24.employees>=m23.employees?'pos':'neg',
+     formula: m23.employees ? `YoY = ${Math.round(m24.employees)} ÷ ${Math.round(m23.employees)} − 1 = ${fmtPct(m24.employees/m23.employees-1)}\nRank = position by headcount among ${mEmp?.total} companies` : ''},
+    {label:'Avg salary '+LAST, value:m24.avgSalary?'€'+Math.round(m24.avgSalary).toLocaleString()+'/mo':'–',
+     sub:(m23.avgSalary?fmtPct(m24.avgSalary/m23.avgSalary-1)+' YoY · ':'')+(mSal?`<span class="rank">#${mSal.pos}</span>`:''),
+     cls:'pos',
+     formula: m23.avgSalary ? `YoY = €${Math.round(m24.avgSalary).toLocaleString()} ÷ €${Math.round(m23.avgSalary).toLocaleString()} − 1 = ${fmtPct(m24.avgSalary/m23.avgSalary-1)}\nRank = position by avg salary among ${mSal?.total} companies` : ''},
+    {label:'Revenue CAGR '+mineYears[0]+'–'+LAST, value:fmtPct(mCagr),
+     sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue),
+     cls:mCagr>=0?'pos':'neg',
+     formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
+    {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
+  ];
+  document.getElementById('mineKpis').innerHTML = cards.map(k=>
+    `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<div class="formula">${k.formula.replace(/\n/g,'<br>')}</div>`:''}</div>`).join('');
+
+  // Charts — destroy old instances before redrawing
+  if(chMineInst){ chMineInst.destroy(); chMineInst=null; }
+  if(chMineRankInst){ chMineRankInst.destroy(); chMineRankInst=null; }
+
+  chMineInst = new Chart(chMine, {data:{
+    labels: mineYears,
+    datasets:[
+      {type:'bar', label:'Revenue – spėj. pajamos (€M)', data:mineYears.map(y=>(mine[y]?.estimatedIncome||0)/1e6), backgroundColor:'rgba(244,197,66,.75)', borderColor:'#f4c542', borderWidth:1, borderRadius:6, yAxisID:'y'},
+      {type:'bar', label:'Turnover – apyvarta (€M)', data:mineYears.map(y=>(mine[y]?.revenue||0)/1e6), backgroundColor:'rgba(139,147,167,.35)', borderRadius:6, yAxisID:'y'},
+      {type:'line', label:'Net profit (€k)', data:mineYears.map(y=>(mine[y]?.profit||0)/1e3), borderColor:'#34c98e', backgroundColor:'#34c98e', tension:.3, yAxisID:'y2'},
+      {type:'line', label:'Employees', data:mineYears.map(y=>mine[y]?.employees||0), borderColor:'#4f8ef7', backgroundColor:'#4f8ef7', borderDash:[6,4], tension:.3, yAxisID:'y2'},
+    ]},
+    options:{maintainAspectRatio:false, scales:{
+      y:{title:{display:true,text:'Revenue €M'}, grid:{color:'#222a3a'}},
+      y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €k / Employees'}}
+    }}
+  });
+
+  const rankData = [
+    {label:'Revenue (spėj. pajamos)', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit},
+    {label:'Profit margin', r:mMargin}, {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
+  ].filter(x=>x.r);
+  chMineRankInst = new Chart(chMineRank, {type:'bar', data:{
+    labels:rankData.map(x=>x.label),
+    datasets:[{data:rankData.map(x=>x.r.pct), backgroundColor:'rgba(244,197,66,.7)', borderColor:'#f4c542', borderWidth:1, borderRadius:5}]},
+    options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>{const x=rankData[c.dataIndex]; return ` ${x.r.pct}th percentile · #${x.r.pos} of ${x.r.total}`}}}},
+      scales:{x:{min:0,max:100,title:{display:true,text:'Percentile vs '+BRANDS.length+' agencies (100 = top)'}, grid:{color:'#222a3a'}}}}
+  });
+}
+
+// Build tabs
+const coTabsEl = document.getElementById('coTabs');
+MY_COMPANIES.forEach((co, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'co-tab' + (i===0?' active':'');
+  btn.textContent = co.brand;
+  btn.addEventListener('click', () => {
+    coTabsEl.querySelectorAll('.co-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCompany(co.brand);
+  });
+  coTabsEl.appendChild(btn);
 });
 
-const rankData = [
-  {label:'Revenue (spėj. pajamos)', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit}, {label:'Profit margin', r:mMargin},
-  {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
-].filter(x=>x.r);
-new Chart(chMineRank, {type:'bar', data:{
-  labels:rankData.map(x=>x.label),
-  datasets:[{data:rankData.map(x=>x.r.pct), backgroundColor:'rgba(244,197,66,.7)', borderColor:'#f4c542', borderWidth:1, borderRadius:5}]},
-  options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>{const x=rankData[c.dataIndex]; return ` ${x.r.pct}th percentile · #${x.r.pos} of ${x.r.total}`}}}},
-    scales:{x:{min:0,max:100,title:{display:true,text:'Percentile vs '+BRANDS.length+' agencies (100 = top)'}, grid:{color:'#222a3a'}}}}
-});
+// Initial render
+renderCompany(MY_COMPANIES[0].brand);
 
 // ---------- KPIs ----------
 function yearTotals(y){
@@ -656,6 +697,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.3.3', date:'2026-06-20', sp:2,   desc:'Company tabs in "My companies" section. MY_COMPANIES array drives tab strip — currently only Fabula. Adding a company = push one object to the array. Charts and KPIs re-render on tab switch; old Chart instances destroyed before redraw.'},
   {v:'v0.1.3.2', date:'2026-06-20', sp:2,   desc:'Show calculation formulas on all derived KPI values in the "My company" section: YoY % formula with actual numbers, margin formula, CAGR formula, rank explanation — each shown inline below the sub-label.'},
   {v:'v0.1.3.1', date:'2026-06-20', sp:1,   desc:'Mobile nav fix: hide nav-sub subtitle on ≤600px, reduce logo/button padding, add padding tweaks for content areas and h1 font size. Fixes overflow on smartphones.'},
   {v:'v0.1.3.0', date:'2026-06-10', sp:4,   desc:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav + Data Explorer (5 Excel sheets, search, sort, pagination, CSV export) into the full-featured template, keeping all dashboard features intact.'},
