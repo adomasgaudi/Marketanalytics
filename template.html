@@ -75,6 +75,17 @@
   tr.mine td{background:rgba(244,197,66,.10)!important;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold)}
   tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  @media(max-width:600px){
+    .topnav{padding:0 12px}
+    .topnav .logo{font-size:13px;margin-right:8px}
+    .nav-btn{padding:12px 12px;font-size:12px}
+    .nav-sub{display:none}
+    .nav-spacer{display:none}
+    #dashView .wrap,#dataView .wrap{padding:16px 12px}
+    .kpi-strip{gap:10px}
+    .kpi-card{padding:14px}
+    h1{font-size:1.2rem}
+  }
 
   /* ── Top nav ── */
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
@@ -141,7 +152,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.3.0</span> <button class="hist-btn" id="histBtn">📋 SP history</button></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.3.1</span> <button class="hist-btn" id="histBtn">📋 SP history</button></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -625,6 +636,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.3.1', date:'2026-06-20', sp:1,   desc:'Mobile nav fix: hide nav-sub subtitle on ≤600px, reduce logo/button padding, add padding tweaks for content areas and h1 font size. Fixes overflow on smartphones.'},
   {v:'v0.1.3.0', date:'2026-06-10', sp:4,   desc:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav + Data Explorer (5 Excel sheets, search, sort, pagination, CSV export) into the full-featured template, keeping all dashboard features intact.'},
   {v:'—',        date:'2026-06-10', sp:3,   desc:'(Parallel session) Data Explorer view: raw Excel sheets browsable with tabs, search, sorting, pagination and CSV export; sheets_data.json + build pipeline extended.'},
   {v:'v0.1.2.2', date:'2026-06-10', sp:0.5, desc:'Workflow rule: all changes always merge to main immediately (documented in AGENTS.md).'},

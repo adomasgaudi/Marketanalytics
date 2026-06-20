@@ -98,6 +98,7 @@ Data Explorer view) and keep all of them.
 | — (off-dashboard) | 2 | "Create an HTML based just on this data alone." | `fabula.html` — standalone company profile page: header, contact card, rating, workforce, full financial table, debts, ESG. |
 | — (off-dashboard) | 0.5 | "Keep a score of SP points even when working off the main dashboard, in AGENTS.md." | This SP tracking section added; AGENTS.md updated on working branch. |
 | — (off-dashboard) | 1.5 | "Fix fabula.html for mobile — out of bounds on smartphone. Deploy properly on GitHub Pages." | Added media queries: single-column grid on ≤640px, header wraps, table wrapped in overflow-x:auto div, font/padding tweaks. Pushed to main. |
+| v0.1.3.1 | 1 | "Not looking great on phone" (main dashboard at adomasgaudi.github.io/vz/). | Mobile nav fix: hide nav-sub on ≤600px, shrink logo/btn padding, add content padding tweaks. Bumped version badge. |
 
 ## Open / deferred items
 
