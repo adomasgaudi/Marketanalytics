@@ -100,6 +100,7 @@ Data Explorer view) and keep all of them.
 | — (off-dashboard) | 1.5 | "Fix fabula.html for mobile — out of bounds on smartphone. Deploy properly on GitHub Pages." | Added media queries: single-column grid on ≤640px, header wraps, table wrapped in overflow-x:auto div, font/padding tweaks. Pushed to main. |
 | v0.1.3.1 | 1 | "Not looking great on phone" (main dashboard at adomasgaudi.github.io/vz/). | Mobile nav fix: hide nav-sub on ≤600px, shrink logo/btn padding, add content padding tweaks. Bumped version badge. |
 | v0.1.3.2 | 2 | "All derived values should show formulas how they are calculated." | Added inline formula lines below each My-company KPI card sub-label: YoY % with actual values, margin formula, CAGR formula, rank explanation. Monospace styled, muted. |
+| — (off-dashboard) | 2 | "Hard-enforce what a dumb computer can check; nag what needs judgment. We need better names and the first principle written." | Founded the **vz Codex** (`GOVERNANCE.md`): the **Gate Test** meta-principle, plus the two named kinds — **Gate** (deterministic → hook, hard-stop) and **Nudge** (judgment → reminder only). Seeded the Gates/Nudges tables; hooks still TODO. |
 
 ## Open / deferred items
 
