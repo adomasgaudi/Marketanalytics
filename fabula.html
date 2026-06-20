@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabula ir partneriai UAB</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f5f7;
+      color: #1a1a2e;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-text { flex: 1; min-width: 0; }
+
+    .logo-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #e63946;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    header h1 { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+    header p { font-size: 0.85rem; opacity: 0.65; margin-top: 4px; }
+
+    .badge {
+      background: #2ecc71;
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .card.full { grid-column: 1 / -1; }
+
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card h2 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px solid #f7f7f7;
+      font-size: 0.88rem;
+      gap: 8px;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #888; flex-shrink: 0; }
+    .info-value { font-weight: 500; text-align: right; word-break: break-word; }
+
+    .rating-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .rating-score {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #e63946;
+      line-height: 1;
+    }
+
+    .rating-details { color: #888; font-size: 0.85rem; }
+
+    /* Table wrapper makes it scroll horizontally on small screens */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      min-width: 480px;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead th {
+      background: #f4f5f7;
+      padding: 10px 12px;
+      text-align: right;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    thead th:first-child { text-align: left; }
+
+    tbody tr:nth-child(even) td { background: #fafafa; }
+
+    tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: #444;
+      white-space: normal;
+    }
+
+    .dim { color: #aaa; font-size: 0.8rem; }
+
+    .debt-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f7f7f7;
+      font-size: 0.88rem;
+    }
+
+    .debt-row:last-child { border-bottom: none; }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2ecc71;
+      flex-shrink: 0;
+    }
+
+    .debt-label { color: #888; flex: 1; }
+    .debt-value { font-weight: 600; color: #27ae60; white-space: nowrap; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.8rem;
+      color: #bbb;
+    }
+
+    /* ── Mobile: single column ── */
+    @media (max-width: 640px) {
+      header { padding: 20px 16px; gap: 12px; }
+      header h1 { font-size: 1.2rem; }
+
+      .container {
+        grid-template-columns: 1fr;
+        padding: 16px 12px;
+        gap: 12px;
+      }
+
+      .card.full { grid-column: 1; }
+      .right-col { gap: 12px; }
+
+      .info-row { font-size: 0.83rem; }
+
+      table { font-size: 0.8rem; }
+      thead th, tbody td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-circle">F</div>
+  <div class="header-text">
+    <h1>Fabula ir partneriai, UAB</h1>
+    <p>Fabula Rud Pedersen Group &mdash; 360° Communication</p>
+  </div>
+  <div class="badge">Lowest Credit Risk</div>
+</header>
+
+<div class="container">
+
+  <!-- Company Info -->
+  <div class="card">
+    <h2>Company Details</h2>
+    <div class="info-row"><span class="info-label">Company Code</span><span class="info-value">124099127</span></div>
+    <div class="info-row"><span class="info-label">VAT Code</span><span class="info-value">LT240991219</span></div>
+    <div class="info-row"><span class="info-label">Sodra Code</span><span class="info-value">61313</span></div>
+    <div class="info-row"><span class="info-label">Share Capital</span><span class="info-value">58 615 EUR</span></div>
+    <div class="info-row"><span class="info-label">Company Age</span><span class="info-value">28 years 11 months</span></div>
+    <div class="info-row"><span class="info-label">Address</span><span class="info-value">Gedimino pr. 10-5, Vilnius</span></div>
+    <div class="info-row"><span class="info-label">Phone</span><span class="info-value">+370 656 31548</span></div>
+    <div class="info-row"><span class="info-label">Fax</span><span class="info-value">+370 5 2604200</span></div>
+    <div class="info-row"><span class="info-label">Website</span><span class="info-value">fabula.lt</span></div>
+    <div class="info-row"><span class="info-label">Manager</span><span class="info-value">Maksimas Reznikovas</span></div>
+    <div class="info-row"><span class="info-label">Working Hours</span><span class="info-value">Mon–Fri 09:00–18:00</span></div>
+    <div class="info-row"><span class="info-label">Activities</span><span class="info-value">Consulting &amp; Advertising</span></div>
+  </div>
+
+  <!-- Right column: Rating + Workforce -->
+  <div class="right-col">
+
+    <div class="card">
+      <h2>Rating</h2>
+      <div class="rating-bar">
+        <div class="rating-score">9.3</div>
+        <div class="rating-details">out of 10<br><span>24 reviews</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Workforce (2026)</h2>
+      <div class="info-row"><span class="info-label">Employees (10 Jun 2026)</span><span class="info-value">32</span></div>
+      <div class="info-row"><span class="info-label">Annual Average</span><span class="info-value">37</span></div>
+      <div class="info-row"><span class="info-label">Avg. Salary (Apr 2026)</span><span class="info-value">3 869 EUR</span></div>
+      <div class="info-row"><span class="info-label">Taxes Paid (Apr 2026)</span><span class="info-value">65 308 EUR</span></div>
+      <div class="info-row"><span class="info-label">Active Trademarks</span><span class="info-value">3</span></div>
+      <div class="info-row"><span class="info-label">Vehicles</span><span class="info-value">0</span></div>
+    </div>
+
+  </div>
+
+  <!-- Financial Table -->
+  <div class="card full">
+    <h2>Financial Performance</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Indicator</th>
+            <th>2022</th>
+            <th>2023</th>
+            <th>2024</th>
+            <th>2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Revenue</td>
+            <td>3 936 974 €</td>
+            <td>4 517 735 €</td>
+            <td>5 231 622 €</td>
+            <td>5 190 238 €</td>
+          </tr>
+          <tr>
+            <td>Profit Before Tax</td>
+            <td>322 278 €</td>
+            <td>375 551 €</td>
+            <td>392 552 €</td>
+            <td>122 428 €</td>
+          </tr>
+          <tr>
+            <td>Margin Before Tax</td>
+            <td>8.19%</td>
+            <td>8.31%</td>
+            <td>7.50%</td>
+            <td>2.36%</td>
+          </tr>
+          <tr>
+            <td>Net Profit</td>
+            <td>269 786 €</td>
+            <td>316 849 €</td>
+            <td>329 162 €</td>
+            <td>98 186 €</td>
+          </tr>
+          <tr>
+            <td>Net Margin</td>
+            <td>6.85%</td>
+            <td>7.01%</td>
+            <td>6.29%</td>
+            <td>1.89%</td>
+          </tr>
+          <tr>
+            <td>Equity</td>
+            <td>473 319 €</td>
+            <td>540 168 €</td>
+            <td>618 677 €</td>
+            <td>466 866 €</td>
+          </tr>
+          <tr>
+            <td>Liabilities</td>
+            <td>676 354 €</td>
+            <td>655 662 €</td>
+            <td>581 019 €</td>
+            <td>750 498 €</td>
+          </tr>
+          <tr>
+            <td>Non-Current Assets</td>
+            <td>71 430 €</td>
+            <td>75 056 €</td>
+            <td>93 938 €</td>
+            <td>78 850 €</td>
+          </tr>
+          <tr>
+            <td>Current Assets</td>
+            <td>1 124 535 €</td>
+            <td>1 120 774 €</td>
+            <td>1 105 758 €</td>
+            <td>1 138 514 €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Debts -->
+  <div class="card">
+    <h2>Debts &amp; Obligations</h2>
+    <div class="debt-row"><div class="dot"></div><span class="debt-label">Debt to VMI (Tax Authority)</span><span class="debt-value">0 EUR</span></div>
+    <div class="debt-row"><div class="dot"></div><span class="debt-label">Debt to Sodra (Social Insurance)</span><span class="debt-value">0 EUR</span></div>
+    <div class="debt-row"><div class="dot"></div><span class="debt-label">Debt to Other Companies</span><span class="debt-value">0 EUR</span></div>
+  </div>
+
+  <!-- Sustainability -->
+  <div class="card">
+    <h2>Sustainability (ESG)</h2>
+    <div class="info-row"><span class="info-label">Overall Index</span><span class="info-value dim">0 / not filled</span></div>
+    <div class="info-row"><span class="info-label">Sustainability Importance</span><span class="info-value dim">No info (0/4)</span></div>
+    <div class="info-row"><span class="info-label">Environment</span><span class="info-value dim">No info (0/10)</span></div>
+    <div class="info-row"><span class="info-label">Social</span><span class="info-value dim">No info (0/9)</span></div>
+    <div class="info-row"><span class="info-label">Governance</span><span class="info-value dim">No info (0/8)</span></div>
+  </div>
+
+</div>
+
+<footer>Data source: rekvizitai.vz.lt &mdash; as of 2026-06-10</footer>
+
+</body>
+</html>

@@ -94,6 +94,10 @@ Data Explorer view) and keep all of them.
 | v0.1.2.2 | 0.5 | "Merge changes with main always." | Standing instruction #4 made explicit: all work lands in `main` immediately. |
 | — | 3 | (Parallel AI session) Data explorer page from all Excel sheets, merged into single-page app. | Top-nav SPA: Dashboard + Data Explorer views; `sheets_data.json` (5 sheets) embedded via `__SHEETS_DATA__`; search/sort/pagination/CSV export. **But it overwrote all features from the other session's template.** |
 | v0.1.3.0 | 4 | "Two AIs both saying the index is from main and both are different." | Real merge of the two diverged mains: full-featured template kept as base, Data Explorer SPA ported into it (top-nav, dataView, explorer JS). Everything from both lines now coexists. |
+| — (off-dashboard) | 1 | "Create a CSV from my company page on rekvizitai.vz.lt." | User pasted page text; `fabula_ir_partneriai.csv` created with 65 fields: company info, 4-year financials, debts, workforce, ESG. |
+| — (off-dashboard) | 2 | "Create an HTML based just on this data alone." | `fabula.html` — standalone company profile page: header, contact card, rating, workforce, full financial table, debts, ESG. |
+| — (off-dashboard) | 0.5 | "Keep a score of SP points even when working off the main dashboard, in AGENTS.md." | This SP tracking section added; AGENTS.md updated on working branch. |
+| — (off-dashboard) | 1.5 | "Fix fabula.html for mobile — out of bounds on smartphone. Deploy properly on GitHub Pages." | Added media queries: single-column grid on ≤640px, header wraps, table wrapped in overflow-x:auto div, font/padding tweaks. Pushed to main. |
 
 ## Open / deferred items
 
