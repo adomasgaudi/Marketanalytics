@@ -120,6 +120,7 @@ Data Explorer view) and keep all of them.
 | v0.1.3.3 | 2 | "Create tabs to view other companies that we will add data for later. Currently only Fabula." | `MY_COMPANIES` array drives a tab strip above the My companies section. `renderCompany(brand)` redraws all KPIs and charts on tab click. Adding a company = one push to the array. |
 | — (off-dashboard) | 2 | "Hard-enforce what a dumb computer can check; nag what needs judgment. We need better names and the first principle written." | Founded the **vz Codex** (`GOVERNANCE.md`): the **Gate Test** meta-principle, plus the two named kinds — **Gate** (deterministic → hook, hard-stop) and **Nudge** (judgment → reminder only). Seeded the Gates/Nudges tables; hooks still TODO. |
 | — (off-dashboard) | 0.5 | "Why two doc files? Just merge AGENTS.md into CLAUDE.md and delete AGENTS.md." | Folded all of `AGENTS.md` into this single `CLAUDE.md` (the file Claude Code auto-loads) and deleted `AGENTS.md`. One source, no drift. |
+| — (off-dashboard) | 0.5 | "Write a human-readable MD listing the vz repo's hooks." | Added `HOOKS.md` (plain-English): documents that vz currently has **no hooks**, explains what hooks are + the three events (SessionStart/UserPromptSubmit/Stop), and clarifies the pop-up/reminder behaviour seen in chats comes from the Data repo, not vz. |
 
 ## Open / deferred items
 
