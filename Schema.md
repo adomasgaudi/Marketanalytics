@@ -28,6 +28,7 @@ chat opens/resumes; stdout injected.
 - `<system-reminder>` notes + recalled memory.
 
 * *vz:* `rule_schema_reminder.py` → rule-add/change prompt → injects hook-vs-context framework.
+* *vz:* `ui_design_reminder.py` → UI/design prompt → injects [UI.md](UI.md) rubric + tells the AI to ask the owner for a screenshot via AskUserQuestion first.
 
 ## **PreToolUse** — before a tool runs; can block/deny.
 
@@ -35,6 +36,7 @@ chat opens/resumes; stdout injected.
 - permission prompt + IDE diff on Edit/Write.
 
 * *vz:* `permissions.allow` checked here; `commit_message_check.py` → `git commit` → warns if the subject misses the house format `vN CODE-NN | desc | n sp` (non-blocking).
+* *vz:* `guard_main_push.py` → warns a *desktop* session committing/pushing to main (web exempt). `require_main_push.py` → `git push` to a *non-main* branch → warns to move the work to main (REPO-01, non-blocking).
 
 ## **PostToolUse** — after a tool finishes.
 
@@ -55,7 +57,7 @@ chat opens/resumes; stdout injected.
 ### *CLAUDE Hardcoded:*
 - none.
 
-* *vz:* none (prime spot for a hook).
+* *vz:* `save_reminder.py` → at end of turn, if the tree is dirty or `main` has unpushed commits → reminds to commit + push main (REPO-01, non-blocking).
 
 ## **SubagentStop** — subagent (Task) finishes; exit `2` forces continue.
 

@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.60</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.66</title>
 <script>
-  // Apply saved theme before first paint to avoid a flash. Default = light.
-  (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+  // Apply saved theme before first paint to avoid a flash. Default = dark.
+  (function(){ try{ var t=localStorage.getItem('theme'); if(t!=='light') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
@@ -36,7 +36,7 @@
   .hist-pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .hist-pager button{font-family:inherit;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer}
   .hist-pager button:disabled{opacity:.4;cursor:default}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:50;overflow:auto}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:600;overflow:auto}
   .modal-overlay.open{display:flex}
   .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:840px;width:100%}
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -46,8 +46,14 @@
   .sp-total{font-size:14px;color:var(--muted);margin-bottom:12px}
   .sp-total b{color:var(--gold);font-size:24px;font-weight:700}
   .modal table th,.modal table td{white-space:normal;text-align:left;vertical-align:top}
-  .modal .vcol{font-weight:600;color:var(--text);white-space:nowrap}
-  .sp-badge{display:inline-block;min-width:34px;text-align:center;background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:12px}
+  /* Changelog = stacked cards, not a 3-col table: gives the change text full
+     width on a phone and kills the empty Version column + wrapping date (UI-01). */
+  .ch-card{padding:12px 2px;border-top:1px solid var(--border)}
+  .ch-card:first-child{border-top:none;padding-top:4px}
+  .ch-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .ch-ver{font-weight:700;color:var(--text);font-size:13px;white-space:nowrap}
+  .ch-date{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+  .sp-badge{background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:11px;white-space:nowrap}
   .ch-title{font-weight:700;font-size:13.5px;color:var(--text)}
   .ch-desc{font-size:12.5px;color:var(--text);margin-top:2px}
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
@@ -57,7 +63,12 @@
   .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
   .kpi .value{font-size:26px;font-weight:700;margin-top:4px}
   .kpi .sub{font-size:12px;margin-top:2px}
-  .kpi .formula{font-size:11px;color:var(--muted);margin-top:5px;padding-top:5px;border-top:1px solid var(--border);font-family:monospace;line-height:1.4;opacity:.7}
+  .kpi .formula{margin-top:6px;border-top:1px solid var(--border);padding-top:6px}
+  .kpi .formula>summary{font-size:11px;color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:.05em}
+  .kpi .formula>summary::-webkit-details-marker{display:none}
+  .kpi .formula>summary::before{content:'▸';font-size:9px;opacity:.7;transition:transform .15s}
+  .kpi .formula[open]>summary::before{transform:rotate(90deg)}
+  .kpi .formula .formula-body{font-size:11px;color:var(--muted);font-family:monospace;line-height:1.4;opacity:.75;margin-top:6px}
   .pos{color:var(--green)} .neg{color:var(--red)}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
   .grid .full{grid-column:1/-1}
@@ -156,13 +167,13 @@
   .src-legend .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
   .dot-orig{background:var(--green)} .dot-scrape{background:var(--accent)} .dot-both{background:var(--purple)}
   /* Rekvizitai tables: wrap long text, fixed layout, source-tinted rows */
-  #rekView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:fixed}
+  #rekView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   #rekView thead{position:sticky;top:0;z-index:2}
   #rekView th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;white-space:nowrap}
   #rekView td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:normal;overflow-wrap:anywhere;word-break:break-word;vertical-align:top}
   #rekView td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  #rekView th.colField,#rekView td.fieldcell{width:34%}
-  #rekView th.colYear,#rekView td.num.yr{width:auto}
+  #rekView th.colField,#rekView td.fieldcell{min-width:150px;max-width:230px}
+  #rekView th.colYear{min-width:88px}
   #rekView tbody tr:nth-child(even) td{background:var(--zebra)}
   #rekView tr:hover td{background:var(--hover)}
   /* colour the row by source (left edge + faint tint) — no text tags */
@@ -223,7 +234,7 @@
     <button class="nav-btn" data-view="dataView">Data Explorer</button>
     <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   </div>
-  <span class="nav-version">v0.1.60</span>
+  <span class="nav-version">v0.1.66</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -236,7 +247,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.60</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.66</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -411,10 +422,7 @@
     </div>
     <div class="sp-total">Total effort logged: <b id="spTotal">0</b> SP &nbsp;·&nbsp; <span id="verCount">0</span> versions</div>
     <p class="desc" style="margin-bottom:14px;font-size:12.5px">Story points reflect <b style="color:var(--text)">effort &amp; time</b>, not lines of code (0.5 = trivial patch · 10 = deep change in convoluted code). A big template dump scores low; a small edit threading many connections scores high.</p>
-    <table>
-      <thead><tr><th>Version</th><th>Date</th><th>SP</th><th>Change</th></tr></thead>
-      <tbody id="histBody"></tbody>
-    </table>
+    <div id="histBody"></div>
     <div class="hist-pager">
       <button id="histPrev">← Newer</button>
       <button id="histNext">Older →</button>
@@ -591,7 +599,7 @@ function renderCompany(brand){
     {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
   ];
   document.getElementById('mineKpis').innerHTML = cards.map(k=>
-    `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<div class="formula">${k.formula.replace(/\n/g,'<br>')}</div>`:''}</div>`).join('');
+    `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
 
   // Charts — destroy old instances before redrawing
   if(chMineInst){ chMineInst.destroy(); chMineInst=null; }
@@ -864,6 +872,24 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.66', date:'2026-06-21', sp:1.5, title:'Collapse KPI formulas, dark default',
+    desc:'KPI formula text now sits in a closed dropdown; dark theme is the default.',
+    detail:'Each Fabula KPI card now tucks its YoY/Rank formula into a native <details> disclosure that is closed by default — the cards read as value + YoY/rank at a glance, formula one tap away (DATA-16 cram, joy-of-less). Also flipped the default theme to dark: only an explicit saved "light" stays light, so first-time and unset visitors get dark.'},
+  {v:'v0.1.65', date:'2026-06-21', sp:1.5, title:'Fix Rekvizitai column overlap',
+    desc:'Year values no longer overlap; table scrolls horizontally instead.',
+    detail:'Dropped table-layout:fixed on the Rekvizitai matrix — it had squeezed ~8 year columns into ~30px each on mobile, so the nowrap euro values overflowed and overlapped the next column and the year headers clipped to "201". Now columns size to content and the table scrolls horizontally inside its wrapper, matching the Data Explorer table (DBG-02 contrast fix).'},
+  {v:'v0.1.64', date:'2026-06-21', sp:1,   title:'Push-to-main guard hook',
+    desc:'Hook warns when a push targets a non-main branch (REPO-01).',
+    detail:'Added require_main_push.py (PreToolUse) that warns when git push targets a non-main branch, and wired the existing save_reminder.py Stop hook into the committed settings so end-of-turn flags unpushed main — both run in web sessions now. Stops work being stranded on a feature branch where the owner never sees it (PROC-01).'},
+  {v:'v0.1.63', date:'2026-06-21', sp:2,   title:'Changelog stacked cards',
+    desc:'Changelog modal is now stacked cards, not a 3-column table.',
+    detail:'Replaced the version-history table with stacked cards: a compact meta line (version · SP badge · date) over a full-width title/desc/detail. Kills the wide empty Version column and the date wrapping mid-value, and gives the change text the full modal width on mobile — the root fix for the 3-column-table-on-a-phone class flagged in UI.md (UI-01).'},
+  {v:'v0.1.62', date:'2026-06-21', sp:1.5, title:'UI rubric + screenshot hook',
+    desc:'UI.md rubric saved; a hook now loads it and asks for a screenshot on UI work.',
+    detail:'Added UI.md (the space-efficiency rubric + render-critique research) and a UserPromptSubmit hook ui_design_reminder.py that injects it and tells the AI to ask the owner for a screenshot via AskUserQuestion before any UI change — turning "AIs miss wasted space" into a machine-checked step (PROC-01, rule UI-01).'},
+  {v:'v0.1.61', date:'2026-06-21', sp:1,   title:'Inline SP badge, drop SP column',
+    desc:'SP badge now sits next to version number, not in its own column.',
+    detail:'Removed the dedicated SP column from the version history table and placed the SP badge inline after the version string. Saves a full column of width — especially valuable on mobile where every pixel counts.'},
   {v:'v0.1.60', date:'2026-06-21', sp:3,   title:'Changelog + Rek table tidy',
     desc:'Restructured changelog; Rekvizitai table reorganised into year columns.',
     detail:'Changelog: every entry now has a 2-5w title, 5-15w desc and 15-50w detail, paged 10 at a time; HTML-escaped so literal tags like the title element no longer corrupt the list. Rekvizitai: removed source text tags (rows are coloured by source instead), long text wraps, and year metrics pivot into a year-by-year grid.'},
@@ -998,8 +1024,12 @@ function renderHistPage(){
     const change = v.title
       ? `<div class="ch-title">${esc(v.title)}</div><div class="ch-desc">${esc(v.desc)}</div>`
         + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'')
-      : esc(v.desc);
-    return `<tr><td class="vcol">${esc(v.v)}</td><td>${esc(v.date)}</td><td><span class="sp-badge">${esc(v.sp)}</span></td><td>${change}</td></tr>`;
+      : `<div class="ch-desc">${esc(v.desc)}</div>`;
+    return `<div class="ch-card"><div class="ch-meta">`
+      + `<span class="ch-ver">${esc(v.v)}</span>`
+      + `<span class="sp-badge">${esc(v.sp)} SP</span>`
+      + `<span class="ch-date">${esc(v.date)}</span></div>`
+      + change + `</div>`;
   }).join('');
   document.getElementById('histPageInfo').textContent = `Page ${histPage+1} of ${pages}`;
   document.getElementById('histPrev').disabled = histPage===0;

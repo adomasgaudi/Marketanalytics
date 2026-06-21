@@ -1,5 +1,15 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/ui_design_reminder.py"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -17,6 +27,20 @@
           {
             "type": "command",
             "command": "python3 .claude/hooks/guard_main_push.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/require_main_push.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/save_reminder.py"
           }
         ]
       }
