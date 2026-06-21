@@ -1,8 +1,8 @@
 # Scraping rekvizitai.vz.lt
 
-> **Status: done (v53).** Scraper + parser live in `scripts/`, output in `data/rek.csv`
-> + the `Rek` sheet of `data/sheets_data.json`. Kept as a reference for re-running
-> or scraping another company.
+> **Status: live (v67).** Generic per-company pipeline in `scripts/`; combined
+> output in `data/rek_tabs.json`, rendered by the standalone **Rekvizitai** page.
+> Currently holds **6 vijos** and **Adell reklama**.
 
 ## What it covers
 
@@ -11,14 +11,16 @@ panels. The pipeline scrapes the four data tabs (Ataskaitos is a paywall, skippe
 
 | Tab | URL suffix | Yields |
 | --- | --- | --- |
-| Įmonė | `/` | codes, contacts, manager, address, LinkedIn, risk, export, Sodra debt |
-| Finansai | `/apyvarta/` | 2021–2025 statement: sales, profit, margins, equity, assets, liabilities |
-| Darbuotojai | `/darbuotoju-skaicius/` | headcount + annual average |
-| Skolos | `/skolos/` | registered-debt status, debt-change records, credit check |
+| Įmonė | `/` | codes, contacts, manager, address, LinkedIn, risk, export |
+| Finansai | `/apyvarta/` | year-by-year statement + the chart series back to ~2013–2017 |
+| Darbuotojai | `/darbuotoju-skaicius/` | headcount + annual average + dated chart points |
+| Skolos | `/skolos/` | registered-debt status, dated VMI/Sodra debt history, credit check |
 
-## Steps
+## Add a company (the whole flow)
 
-### 1. Install dependencies
+`<slug>` is the path segment in `https://rekvizitai.vz.lt/imone/<slug>/`.
+
+### 1. Install dependencies (once)
 ```bash
 pip install playwright beautifulsoup4
 playwright install chromium
@@ -26,31 +28,33 @@ playwright install chromium
 
 ### 2. Scrape all tabs
 ```bash
-python3 scripts/scrape_6_vijos.py
+python3 scripts/scrape_company.py <slug>          # e.g. adell_reklama
 ```
-Saves one HTML file per tab to `data/raw/6_vijos_<tab>.html` (gitignored — multi-MB intermediates).
+Saves one HTML file per tab to `data/raw/<slug>_<tab>.html` (gitignored — multi-MB intermediates).
 
-### 3. Parse → CSV + Data Explorer sheet
+### 3. Parse → combined JSON
 ```bash
-python3 scripts/parse_6_vijos.py
+python3 scripts/parse_company.py <slug>           # add --brand "Name" to override
 ```
-`scripts/parse_6_vijos.py`:
-- Reads every `data/raw/6_vijos_<tab>.html`
+`scripts/parse_company.py`:
+- Reads every `data/raw/<slug>_<tab>.html`
 - Runs the right extractor per tab — label/value `<table>` rows, the Finansai
-  metric×year grid, and targeted prose facts (headcount / debt)
-- Writes `data/rek.csv` with columns **`tab, field, value`** (SSOT)
-- Mirrors the same rows into the `Rek` sheet of `data/sheets_data.json` so the
-  Data Explorer renders them
+  metric×year grid, the Highcharts time-series behind the diagrams, and prose facts
+- Auto-detects the matching `data/data.json` **brand** (so Original/Merge work);
+  pass `--brand` if the name doesn't match
+- **Upserts** the company block into `data/rek_tabs.json`
+  (`{"companies":[{slug,name,brand,order,tabs}]}`) — the single source of info,
+  keyed by slug, so re-running refreshes just that company
 
 ### 4. Rebuild, commit, push
 ```bash
 python3 src/build_site.py
-git add data/rek.csv data/sheets_data.json scripts/ index.html src/template.html
-git commit -m "vN REPO-01 | scrape all 6_vijos tabs into rek.csv | N sp"
+git add data/rek_tabs.json scripts/ index.html src/template.html
+git commit -m "vN REPO-01 | scrape <slug> into rek_tabs.json | N sp"
 git push origin main
 ```
 
-## Goal
-The "Rek" tab in the Data Explorer (`src/template.html`) renders the `Rek` sheet —
-re-run the pipeline to refresh it. To scrape another company, change `BASE`/`TABS`
-in `scrape_6_vijos.py` and the file keys in `parse_6_vijos.py`.
+## Result
+The **Rekvizitai** page (`src/template.html`) shows a company pill row; each
+company has Įmonė/Finansai/Darbuotojai/Skolos sub-tabs with an Original / Scrape /
+Merge toggle. Re-run the pipeline for a slug to refresh that company.

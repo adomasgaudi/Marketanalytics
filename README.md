@@ -32,8 +32,8 @@ Chart.js loaded from CDN). No server needed.
 | `src/build_site.py` | Injects the JSON data into the template → `index.html` |
 | `data/data.json` | Cleaned per-company per-year records extracted from the Excel file |
 | `data/sheets_data.json` | Raw Excel sheets backing the Data Explorer |
-| `data/rek.csv` | Scraped rekvizitai.vz.lt fields (see `scripts/`) |
-| `scripts/` | rekvizitai.vz.lt scraping pipeline (scrape + parse) |
+| `data/rek_tabs.json` | Scraped rekvizitai.vz.lt data, one block per company (Rekvizitai page) |
+| `scripts/scrape_company.py` · `parse_company.py` | rekvizitai.vz.lt scraping pipeline — see [docs/SCRAPE.md](docs/SCRAPE.md) |
 | `docs/` | Project docs and the standalone `fabula.html` profile |
 
 To rebuild after editing the template or data: `python3 src/build_site.py`

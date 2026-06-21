@@ -192,11 +192,11 @@ Folder layout (v51 reorg). Root keeps only files that *must* live there:
 auto-load / hook reads them), `README.md`, `.claude/`.
 
 - `src/template.html` — source of all HTML/CSS/JS; placeholders `__DATA__` + `__SHEETS_DATA__`. **Edit this.**
-- `src/build_site.py` — injects both JSONs into template → `index.html` at repo root. Paths are repo-root-relative, so run it from anywhere (`python3 src/build_site.py`).
+- `src/build_site.py` — injects the JSONs (`__DATA__`, `__SHEETS_DATA__`, `__REK_DATA__`) into template → `index.html` at repo root. Paths are repo-root-relative, so run it from anywhere (`python3 src/build_site.py`).
 - `data/data.json` — 660 records (113 brands × 2019–2024).
 - `data/sheets_data.json` — 7 raw Excel sheets (Data Explorer source).
-- `data/rek.csv` — scraped rekvizitai.vz.lt fields for 6 vijos (see `scripts/`).
-- `scripts/scrape_6_vijos.py`, `scripts/scrape_discover.py`, `scripts/parse_6_vijos.py` — the rekvizitai scraping pipeline (run locally).
+- `data/rek_tabs.json` — scraped rekvizitai.vz.lt data, one block per company (`{companies:[{slug,name,brand,order,tabs}]}`); source for the Rekvizitai page.
+- `scripts/scrape_company.py <slug>` + `scripts/parse_company.py <slug>` — the generic rekvizitai pipeline (run locally; add a company = run both for its slug). See `docs/SCRAPE.md`. `scrape_discover.py` is the endpoint-discovery helper.
 - `index.html` — generated, self-contained (Chart.js CDN). **The deliverable; never hand-edit.** Stays at repo root for GitHub Pages.
 - `docs/` — `SCRAPE.md`, `VersionHistory.md`, `notactiverules.md`, `dataclaude.md`, `fabula.html` (standalone Fabula profile, off-dashboard one-off).
 - Workflow: edit `src/template.html` → `python3 src/build_site.py` → `node --check` the JS → commit + push `main` → send `index.html`.
