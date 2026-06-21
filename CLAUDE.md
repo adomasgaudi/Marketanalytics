@@ -124,6 +124,8 @@ Each rule = two rows: **description**, then *kind · type*. Sorted by theme, the
 
 | Rule | Description / mechanics |
 | --- | --- |
+| **UI-01** Screenshot-first design | UI change → ask owner for a screenshot via AskUserQuestion, score it against the [UI.md](UI.md) rubric, then render → critique → refine (never one-shot); fix the space-wasting *class*, not the shown case |
+| <br /> | Hook [`ui_design_reminder.py`](.claude/hooks/ui_design_reminder.py) · judgment · TOP |
 | **DATA-46** Loading states everywhere | every async op + heavy re-render shows an immediate indicator; never frozen |
 | <br /> | Context · judgment · TOP |
 | **DATA-20** Custom dropdown | never native `<select>` picker; use the custom styled dropdown |

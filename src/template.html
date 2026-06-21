@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.61</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.62</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = light.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -223,7 +223,7 @@
     <button class="nav-btn" data-view="dataView">Data Explorer</button>
     <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   </div>
-  <span class="nav-version">v0.1.61</span>
+  <span class="nav-version">v0.1.62</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -236,7 +236,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.61</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.62</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -864,6 +864,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.62', date:'2026-06-21', sp:1.5, title:'UI rubric + screenshot hook',
+    desc:'UI.md rubric saved; a hook now loads it and asks for a screenshot on UI work.',
+    detail:'Added UI.md (the space-efficiency rubric + render-critique research) and a UserPromptSubmit hook ui_design_reminder.py that injects it and tells the AI to ask the owner for a screenshot via AskUserQuestion before any UI change — turning "AIs miss wasted space" into a machine-checked step (PROC-01, rule UI-01).'},
   {v:'v0.1.61', date:'2026-06-21', sp:1,   title:'Inline SP badge, drop SP column',
     desc:'SP badge now sits next to version number, not in its own column.',
     detail:'Removed the dedicated SP column from the version history table and placed the SP badge inline after the version string. Saves a full column of width — especially valuable on mobile where every pixel counts.'},

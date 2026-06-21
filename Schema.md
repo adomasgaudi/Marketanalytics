@@ -28,6 +28,7 @@ chat opens/resumes; stdout injected.
 - `<system-reminder>` notes + recalled memory.
 
 * *vz:* `rule_schema_reminder.py` → rule-add/change prompt → injects hook-vs-context framework.
+* *vz:* `ui_design_reminder.py` → UI/design prompt → injects [UI.md](UI.md) rubric + tells the AI to ask the owner for a screenshot via AskUserQuestion first.
 
 ## **PreToolUse** — before a tool runs; can block/deny.
 
