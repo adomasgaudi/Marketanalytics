@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.67</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.68</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = dark.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t!=='light') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -50,12 +50,18 @@
      width on a phone and kills the empty Version column + wrapping date (UI-01). */
   .ch-card{padding:12px 2px;border-top:1px solid var(--border)}
   .ch-card:first-child{border-top:none;padding-top:4px}
+  /* Collapsed by default: summary shows meta + 2-5w title; click reveals desc+detail. */
+  details.ch-card>summary{list-style:none;cursor:pointer;user-select:none}
+  details.ch-card>summary::-webkit-details-marker{display:none}
   .ch-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
   .ch-ver{font-weight:700;color:var(--text);font-size:13px;white-space:nowrap}
   .ch-date{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
   .sp-badge{background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:11px;white-space:nowrap}
-  .ch-title{font-weight:700;font-size:13.5px;color:var(--text)}
-  .ch-desc{font-size:12.5px;color:var(--text);margin-top:2px}
+  .ch-title{font-weight:700;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:8px}
+  .ch-title::after{content:'▸';font-size:10px;color:var(--muted);margin-left:auto;transition:transform .15s}
+  details.ch-card[open] .ch-title::after{transform:rotate(90deg)}
+  .ch-body{margin-top:6px}
+  .ch-desc{font-size:12.5px;color:var(--text)}
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
@@ -239,7 +245,7 @@
     <button class="nav-btn" data-view="dataView">Data Explorer</button>
     <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   </div>
-  <span class="nav-version">v0.1.67</span>
+  <span class="nav-version">v0.1.68</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -252,7 +258,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.67</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.68</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -878,6 +884,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.68', date:'2026-06-21', sp:1.5, title:'Collapse changelog entries',
+    desc:'Each version now shows just its title; click to reveal desc + detail.',
+    detail:'Turned every changelog entry into a closed <details> disclosure — the summary keeps the version · SP · date meta line and the 2–5-word title, and the desc (5–15w) and detail (15–50w) only appear on click. Lets you scan all versions by title and drill in on demand instead of one long wall of text.'},
   {v:'v0.1.67', date:'2026-06-21', sp:4,   title:'Multi-company Rekvizitai',
     desc:'Rekvizitai page now holds multiple companies, picked by a pill row.',
     detail:'Generalised the scraper/parser into scripts/scrape_company.py + parse_company.py (take a <slug>, auto-detect the data.json brand). Added Adell reklama (brand Ogilvy, 310 fields) alongside 6 vijos; rek_tabs.json now stores a list of company blocks. A company pill row sits above the sub-tabs, and Original/Merge use each company\'s own brand record.'},
@@ -1029,16 +1038,17 @@ function renderHistPage(){
   const total = VERSIONS.length, pages = Math.ceil(total/HIST_PAGE_SIZE);
   const start = histPage*HIST_PAGE_SIZE;
   document.getElementById('histBody').innerHTML = VERSIONS.slice(start, start+HIST_PAGE_SIZE).map(v=>{
-    // Back-compat: old entries had only `desc`; new ones have title/desc/detail.
-    const change = v.title
-      ? `<div class="ch-title">${esc(v.title)}</div><div class="ch-desc">${esc(v.desc)}</div>`
-        + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'')
-      : `<div class="ch-desc">${esc(v.desc)}</div>`;
-    return `<div class="ch-card"><div class="ch-meta">`
-      + `<span class="ch-ver">${esc(v.v)}</span>`
+    const meta = `<div class="ch-meta"><span class="ch-ver">${esc(v.v)}</span>`
       + `<span class="sp-badge">${esc(v.sp)} SP</span>`
-      + `<span class="ch-date">${esc(v.date)}</span></div>`
-      + change + `</div>`;
+      + `<span class="ch-date">${esc(v.date)}</span></div>`;
+    // New entries (title/desc/detail) collapse: summary = meta + title, body = desc+detail.
+    if(v.title){
+      const body = `<div class="ch-body"><div class="ch-desc">${esc(v.desc)}</div>`
+        + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'') + `</div>`;
+      return `<details class="ch-card"><summary>${meta}<div class="ch-title">${esc(v.title)}</div></summary>${body}</details>`;
+    }
+    // Back-compat: old entries had only `desc` — show it inline, nothing to collapse.
+    return `<div class="ch-card">${meta}<div class="ch-desc">${esc(v.desc)}</div></div>`;
   }).join('');
   document.getElementById('histPageInfo').textContent = `Page ${histPage+1} of ${pages}`;
   document.getElementById('histPrev').disabled = histPage===0;
