@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.81</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.82</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.81</span>
+  <span class="nav-version">v0.1.82</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.81</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.82</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -407,7 +407,7 @@
   </div>
 
   <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
-  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. The Chart.js copy above is left untouched for comparison.</div>
+  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Drag to pan, scroll or pinch to zoom (translatable infinitely wide), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
   <div class="dd-wrap">
     <div class="dd-bar">
       <div class="co-select" id="sddCompanySelect">
@@ -996,6 +996,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.82', date:'2026-06-21 21:40', sp:5, title:'Pan/zoom SVG deep-dive charts',
+    desc:'SVG deep-dive charts now pan, zoom and translate infinitely wide.',
+    detail:'Ported the Colosseum analytics-view interaction model into the SVG deep-dive engine: each chart keeps a {xMin,xMax} view window over its data, clipped to the plot. Drag pans (unbounded — translate infinitely wide), mouse wheel / two-finger pinch zooms about the cursor, and a ⤢ button + double-click/double-tap re-fit to the data. Touch uses pointer capture + touch-action:pan-y so vertical page scroll still works while horizontal drags pan the chart. The Chart.js deep-dive copy is untouched.'},
   {v:'v0.1.81', date:'2026-06-21 20:38', sp:2, title:'Combined deep-dive source view',
     desc:'Deep-dives gain a Combined option overlaying all sources per chart.',
     detail:'Both deep-dives (Chart.js + SVG) now default to a new "Combined" source that overlays every source able to supply each metric — e.g. Initial + Rekvizitai revenue on one chart, Initial + Sodra headcount/wage. Series are coloured by source (Initial green, Rekvizitai blue, Sodra amber), dashed by position within a source, and labelled with their source so overlapping lines stay readable. Individual Initial/Rekvizitai/Sodra options remain.'},
@@ -1587,8 +1590,12 @@ function drawFinSvg(container, spec){
     tip.style.cssText='position:absolute;pointer-events:none;background:'+(cssVar('--card')||'#1b1f27')+';border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;padding:4px 6px;font-size:11px;color:'+text+';display:none;z-index:6;white-space:nowrap';
     const guide=document.createElement('div');
     guide.style.cssText='position:absolute;top:0;bottom:0;width:1px;background:'+muted+';opacity:.45;display:none;pointer-events:none';
-    container.appendChild(guide); container.appendChild(tip);
-    container.onmousemove=e=>{ const rect=container.getBoundingClientRect(); if(!rect.width||n<1) return;
+    st.geo={W,H,ml:m.l,pw};
+    const fitBtn=document.createElement('button'); fitBtn.textContent='⤢'; fitBtn.title='Fit — reset zoom & pan';
+    fitBtn.style.cssText='position:absolute;top:4px;right:4px;z-index:7;font:600 12px/1 system-ui;padding:2px 5px;border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;background:'+(cssVar('--card')||'#1b1f27')+';color:'+muted+';cursor:pointer;opacity:.6';
+    fitBtn.onclick=ev=>{ ev.stopPropagation(); st.fit(); };
+    container.appendChild(guide); container.appendChild(tip); container.appendChild(fitBtn);
+    container.onmousemove=e=>{ if(st.dragging) return; const rect=container.getBoundingClientRect(); if(!rect.width||n<1) return;
       const px=(e.clientX-rect.left)*W/rect.width; let i=Math.round(view.xMin + (px-m.l)/pw*span);
       i=Math.max(0,Math.min(n-1,i)); const X=xAt(i);
       if(X<m.l-2||X>W-m.r+2){ guide.style.display='none'; tip.style.display='none'; return; }
@@ -1599,8 +1606,48 @@ function drawFinSvg(container, spec){
       tip.style.left=Math.max(2,Math.min(rect.width-tip.offsetWidth-4, gx+8))+'px';
       tip.style.top=Math.min(rect.height-tip.offsetHeight-2, e.clientY-rect.top+8)+'px';
     };
-    container.onmouseleave=()=>{ tip.style.display='none'; guide.style.display='none'; };
+    container.onmouseleave=()=>{ if(!st.dragging){ tip.style.display='none'; guide.style.display='none'; } };
   };
+  // Wire pan/zoom ONCE per container — handlers live on the container so they survive
+  // the innerHTML rebuilds inside render(). Pan is unbounded (translate infinitely wide).
+  if(!st.wired){
+    st.wired=true; container.style.touchAction='pan-y';
+    const pts=new Map(); let pan=null, pinch=null, lastTap=0;
+    const dataPerCss=()=>{ const r=container.getBoundingClientRect(); const pcw=r.width*(st.geo.pw/st.geo.W)||1; return (st.view.xMax-st.view.xMin)/pcw; };
+    const fracAt=clientX=>{ const r=container.getBoundingClientRect(); const mlCss=r.width*(st.geo.ml/st.geo.W); const pcw=r.width*(st.geo.pw/st.geo.W)||1; return Math.max(0,Math.min(1,(clientX-r.left-mlCss)/pcw)); };
+    const zoomAbout=(clientX,k)=>{ const v=st.view, sp=v.xMax-v.xMin, fx=fracAt(clientX), focus=v.xMin+fx*sp, ns=Math.max(1e-3, sp*k); st.view={xMin:focus-fx*ns, xMax:focus+(1-fx)*ns}; };
+    const onMove=e=>{
+      if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      const all=[...pts.values()];
+      if(all.length>=2 && pinch){ e.preventDefault(); st.dragging=true;
+        const hx=Math.abs(all[0].x-all[1].x)||1, mx=(all[0].x+all[1].x)/2, dpc=dataPerCss();
+        st.view={xMin:st.view.xMin-(mx-pinch.mx)*dpc, xMax:st.view.xMax-(mx-pinch.mx)*dpc};
+        zoomAbout(mx, pinch.hx/hx); pinch={hx,mx}; st.render();
+      } else if(pan){
+        if(Math.abs(e.clientX-pan.x0)>3){ pan.moved=true; st.dragging=true; e.preventDefault(); }
+        const r=container.getBoundingClientRect(), pcw=r.width*(st.geo.pw/st.geo.W)||1, sp=pan.v.xMax-pan.v.xMin;
+        const d=((e.clientX-pan.x0)/pcw)*sp; st.view={xMin:pan.v.xMin-d, xMax:pan.v.xMax-d}; st.render();
+      }
+    };
+    const onUp=e=>{
+      const wasTap=pan && !pan.moved && pts.size===1;
+      pts.delete(e.pointerId); if(pts.size<2) pinch=null;
+      if(pts.size===1){ const rem=[...pts.values()][0]; pan={x0:rem.x, v:{...st.view}, moved:true}; }
+      else if(pts.size===0){ pan=null; st.dragging=false;
+        window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp); window.removeEventListener('pointercancel',onUp);
+        try{container.releasePointerCapture(e.pointerId);}catch(_){}
+        if(wasTap){ const now=Date.now(); if(now-lastTap<300){ st.fit(); lastTap=0; } else lastTap=now; }
+      }
+    };
+    container.addEventListener('pointerdown', e=>{
+      pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      try{container.setPointerCapture(e.pointerId);}catch(_){}
+      if(pts.size===1){ window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp); window.addEventListener('pointercancel',onUp); pan={x0:e.clientX, v:{...st.view}, moved:false}; }
+      if(pts.size>=2){ const a=[...pts.values()]; pinch={hx:Math.abs(a[0].x-a[1].x)||1, mx:(a[0].x+a[1].x)/2}; pan=null; e.preventDefault(); }
+    });
+    container.addEventListener('wheel', e=>{ e.preventDefault(); zoomAbout(e.clientX, e.deltaY>0?1.15:1/1.15); st.render(); }, {passive:false});
+    container.addEventListener('dblclick', ()=> st.fit());
+  }
   st.render();
 }
 
