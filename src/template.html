@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.56</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.57</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = light.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -48,6 +48,9 @@
   .modal table th,.modal table td{white-space:normal;text-align:left;vertical-align:top}
   .modal .vcol{font-weight:600;color:var(--text);white-space:nowrap}
   .sp-badge{display:inline-block;min-width:34px;text-align:center;background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:12px}
+  .ch-title{font-weight:700;font-size:13.5px;color:var(--text)}
+  .ch-desc{font-size:12.5px;color:var(--text);margin-top:2px}
+  .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
   .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
@@ -144,13 +147,28 @@
   .src-legend{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
   .src-legend .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
   .dot-orig{background:var(--green)} .dot-scrape{background:var(--accent)} .dot-both{background:var(--purple)}
-  tr.src-orig td:first-child{box-shadow:inset 3px 0 0 var(--green)}
-  tr.src-scrape td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
-  tr.src-both td:first-child{box-shadow:inset 3px 0 0 var(--purple)}
-  .src-pill{display:inline-block;font-size:10.5px;font-weight:600;border-radius:5px;padding:0 6px;margin-left:8px;border:1px solid}
-  .src-pill.orig{color:var(--green);border-color:var(--green)}
-  .src-pill.scrape{color:var(--accent);border-color:var(--accent)}
-  .src-pill.both{color:var(--purple);border-color:var(--purple)}
+  /* Rekvizitai tables: wrap long text, fixed layout, source-tinted rows */
+  #rekView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:fixed}
+  #rekView thead{position:sticky;top:0;z-index:2}
+  #rekView th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;white-space:nowrap}
+  #rekView td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:normal;overflow-wrap:anywhere;word-break:break-word;vertical-align:top}
+  #rekView td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  #rekView th.colField,#rekView td.fieldcell{width:34%}
+  #rekView th.colYear,#rekView td.num.yr{width:auto}
+  #rekView tbody tr:nth-child(even) td{background:var(--zebra)}
+  #rekView tr:hover td{background:var(--hover)}
+  /* colour the row by source (left edge + faint tint) — no text tags */
+  #rekView tr.src-orig   td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+  #rekView tr.src-scrape td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  #rekView tr.src-both   td:first-child{box-shadow:inset 3px 0 0 var(--purple)}
+  #rekView tr.src-orig   td{background:rgba(31,170,114,.07)}
+  #rekView tr.src-scrape td{background:rgba(47,111,224,.06)}
+  #rekView tr.src-both   td{background:rgba(124,92,240,.08)}
+  [data-theme="dark"] #rekView tr.src-orig td{background:rgba(52,201,142,.08)}
+  [data-theme="dark"] #rekView tr.src-scrape td{background:rgba(79,142,247,.08)}
+  [data-theme="dark"] #rekView tr.src-both td{background:rgba(167,139,250,.10)}
+  /* matrix cell holding two source values stacked (merge, differing) */
+  #rekView .mv{display:block} #rekView .mv.o{color:var(--green)} #rekView .mv.s{color:var(--accent)}
   .badge{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--muted)}
   .btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;transition:.15s;font-family:inherit}
   .btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -197,14 +215,14 @@
   <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   <div class="nav-spacer"></div>
   <button class="theme-toggle" id="themeToggle" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
-  <span class="nav-version">v0.1.56</span>
+  <span class="nav-version">v0.1.57</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.56</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.57</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -365,9 +383,7 @@
     <span class="src-legend" id="rekLegend"></span>
     <button class="btn" id="rekCsvBtn" style="margin-left:auto">Export CSV</button>
   </div>
-  <div class="table-wrap" id="rekTableWrap">
-    <table><thead><tr id="rekHead"></tr></thead><tbody id="rekBody"></tbody></table>
-  </div>
+  <div class="table-wrap" id="rekTableWrap"></div>
 </div>
 </div>
 
@@ -826,54 +842,136 @@ document.querySelectorAll('#tbl th').forEach(th=>th.addEventListener('click',()=
 renderTable();
 
 // ---------- SP & version history ----------
+// Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.1.56', date:'2026-06-21', sp:3,   desc:'Rekvizitai page gains a per-sub-tab Original / Scrape / Merge toggle. Original = the dashboard\'s own "6 Loops" record reshaped to match scrape field names; Merge unions both and colour-codes each field by source (original / scrape / both), differing values shown side by side.'},
-  {v:'v0.1.55', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape moved to its own top-level page (next to Data Explorer) with a sub-tab per scraped page (Įmonė, Finansai, Darbuotojai, Skolos). Removed the combined Rek sheet + tab column from Data Explorer; parser now writes rek_tabs.json (one field/value sheet per tab), injected via __REK_DATA__.'},
-  {v:'v0.1.54', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape now also pulls the Highcharts time-series behind the diagrams (embedded JSON.parse blobs) — financials back to 2017, full dated VMI/Sodra debt history, headcount over time. 151 fields, was 64. Debt/headcount points use full YYYY-MM-DD so snapshots don\'t collide.'},
-  {v:'v0.1.53', date:'2026-06-21', sp:3,   desc:'Rekvizitai scrape now covers ALL company tabs (Įmonė, Finansai, Darbuotojai, Skolos), not just Įmonė — 64 fields incl. a 2021–2025 financial statement (sales, profit, margins, equity, assets, liabilities). Rek sheet gains a "tab" column; parser auto-syncs it into sheets_data.json.'},
-  {v:'v0.1.52', date:'2026-06-21', sp:0.5, desc:'Version now also lives in the <title> tag; sharpen BULD-02 — bump the patch digit on every commit/deploy and sync all four spots (title, nav badge, h1 badge, top VERSIONS entry) + git vN.'},
-  {v:'v0.1.51', date:'2026-06-21', sp:3,   desc:'White theme + light/dark toggle. Light is now the default; ☀️/🌙 pill in the top nav flips it and persists to localStorage (no-flash early-apply). Surfaces are token-driven; charts re-tint live (grid/ticks/legend) while brand series colours stay constant.'},
-  {v:'v0.1.51', date:'2026-06-21', sp:1,   desc:'Add Rekvizitai scrape tab to Data Explorer: 6 vijos, MB full company profile scraped from rekvizitai.vz.lt (contacts, address, LinkedIn, Sodra debt, export share, credit risk).'},
-  {v:'v0.1.50', date:'2026-06-21', sp:1,   desc:'Fix persistent Data Explorer crash: SHEET_META is not defined — buildDataTabs() used wrong variable name; correct name is SHEET_DESC. Root cause of every "Data Explorer blank" since v42.'},
-  {v:'v0.1.49', date:'2026-06-21', sp:2,   desc:'Version badge moved to top nav so it stays visible on every tab. VERSIONS array backfilled for v41–v48. Hook downgraded from block to warn so REPO-01 pushes to main are no longer silently blocked.'},
-  {v:'v0.1.48', date:'2026-06-21', sp:1,   desc:'Fix data explorer tabs rendering raw sheet keys (Įmonės etc.) instead of human titles — buildDataTabs() now reads SHEET_META[s].title.'},
-  {v:'v0.1.47', date:'2026-06-21', sp:2,   desc:'Reorganise CLAUDE.md rules by theme then priority (Build&Git, Conversation, Debug, UI, Meta).'},
-  {v:'v0.1.46', date:'2026-06-21', sp:1,   desc:'Add GIT-01 commit format rule: vN patch-only, RULE-ID, sp.'},
-  {v:'v0.1.45', date:'2026-06-21', sp:1,   desc:'Fix git author to Adomas/g@cool.lt via SessionStart hook.'},
-  {v:'v0.1.44', date:'2026-06-21', sp:0.5, desc:'Document guard_main_push hook under REPO-02 in CLAUDE.md.'},
-  {v:'v0.1.43', date:'2026-06-21', sp:2,   desc:'Add guard_main_push hook — block git commit/push to main; remind Claude to use feature branch.'},
-  {v:'v0.1.42', date:'2026-06-21', sp:1,   desc:'Rename Data Explorer tab titles: cleaned vs source, yearly financials, creative/PR yearly.'},
-  {v:'v0.1.41', date:'2026-06-21', sp:2,   desc:'Document commit-check hook and META-18 rule in CLAUDE.md.'},
-  {v:'v0.1.40', date:'2026-06-21', sp:2,   desc:'Data Explorer tabs explained for newcomers: each tab now shows a plain-language title, a one-line “what this is”, a “Best for” hint, and an importance tag (Start here / Focused view / Advanced-raw) so a non-expert knows where to begin and what to skip. Also merged the orphaned NonActiveRules.md into notactiverules.md.'},
-  {v:'v0.1.39', date:'2026-06-21', sp:3,   desc:'Fix Data Explorer blank (#persistent ROOT FOUND): the on-screen banner exposed “MY_BRAND is not defined” — a leftover reference from the MY_COMPANIES refactor threw at the scatter chart and halted the whole script before the explorer could init. Defined MY_BRAND = MY_COMPANIES[0].brand.'},
-  {v:'v0.1.38', date:'2026-06-21', sp:2,   desc:'Changelog as a floating button: moved “SP history” out of the h1 into a small fixed bottom-right “📋 Changelog” button; paginated the history list (8 per page, Newer/Older) so you can scan what’s new in-page without opening the code.'},
-  {v:'v0.1.37', date:'2026-06-21', sp:2,   desc:'Data Explorer still blank (#persistent): added on-screen JS error banner (phones have no devtools) + wrapped eager initDataExplorer() in try/catch so a thrown error is surfaced visibly instead of silently halting the whole script. Diagnostic to pinpoint the real root on the owner’s device.'},
-  {v:'v0.1.36', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer table invisible on mobile: replace max-height:calc(100vh-280px) with min-height:200px+max-height:65vh; add overflow-x:auto on tab strip so tabs scroll instead of clip.'},
-  {v:'v0.1.35', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer blank on mobile: removed lazy-init guard, now calls initDataExplorer() eagerly on page load so tabs and table are always populated regardless of click order.'},
-  {v:'v0.1.34', date:'2026-06-20', sp:2,   desc:'Company tabs in "My companies" section. MY_COMPANIES array drives tab strip — currently only Fabula. Adding a company = push one object to the array. Charts and KPIs re-render on tab switch; old Chart instances destroyed before redraw.'},
-  {v:'v0.1.33', date:'2026-06-20', sp:2,   desc:'Show calculation formulas on all derived KPI values in the "My company" section: YoY % formula with actual numbers, margin formula, CAGR formula, rank explanation — each shown inline below the sub-label.'},
-  {v:'v0.1.32', date:'2026-06-20', sp:1,   desc:'Mobile nav fix: hide nav-sub subtitle on ≤600px, reduce logo/button padding, add padding tweaks for content areas and h1 font size. Fixes overflow on smartphones.'},
-  {v:'v0.1.31', date:'2026-06-10', sp:4,   desc:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav + Data Explorer (5 Excel sheets, search, sort, pagination, CSV export) into the full-featured template, keeping all dashboard features intact.'},
-  {v:'—',        date:'2026-06-10', sp:3,   desc:'(Parallel session) Data Explorer view: raw Excel sheets browsable with tabs, search, sorting, pagination and CSV export; sheets_data.json + build pipeline extended.'},
-  {v:'v0.1.30', date:'2026-06-10', sp:0.5, desc:'Workflow rule: all changes always merge to main immediately (documented in AGENTS.md).'},
-  {v:'v0.1.29', date:'2026-06-10', sp:1,   desc:'Docs for AI assistants: AGENTS.md with project context, data dictionary, conventions and full prompt history; CLAUDE.md pointer.'},
-  {v:'v0.1.28', date:'2026-06-10', sp:4,   desc:'Turnover vs revenue (spėjamos pajamos) split across the whole dashboard: reordered KPI strip (turnover, turnover CAGR, revenue, revenue CAGR, profit margin from revenue + YoY), market chart shows both, segments/rankings/growth/scatter/rev-per-employee/explorer switched or extended to spėjamos pajamos, footer credit added. Touched every chart — each threshold and tooltip had to be re-checked.'},
-  {v:'v0.1.27', date:'2026-06-10', sp:3,   desc:'SP &amp; version history: this button + history overlay, with the version log embedded.'},
-  {v:'v0.1.26', date:'2026-06-10', sp:0.5, desc:'Version badge added to the header.'},
-  {v:'v0.1.25', date:'2026-06-10', sp:5,   desc:'“My company” section — researched the VRP→Fabula rebrand (live scraping was blocked, resolved via web search + shared company code 124099127), added KPI cards with market rank, a 2019–2024 trend chart, a percentile-vs-market chart, gold highlight in the scatter plot and a pinned row in the explorer.'},
-  {v:'v0.1.24', date:'2026-06-10', sp:5,   desc:'Initial competitor dashboard — 113 agencies, KPI strip, key insights, market/segment/ranking/salary charts and a searchable explorer.'},
+  {v:'v0.1.57', date:'2026-06-21', sp:3,   title:'Changelog + Rek table tidy',
+    desc:'Restructured changelog; Rekvizitai table reorganised into year columns.',
+    detail:'Changelog: every entry now has a 2-5w title, 5-15w desc and 15-50w detail, paged 10 at a time; HTML-escaped so literal tags like the title element no longer corrupt the list. Rekvizitai: removed source text tags (rows are coloured by source instead), long text wraps, and year metrics pivot into a year-by-year grid.'},
+  {v:'v0.1.56', date:'2026-06-21', sp:3,   title:'Rekvizitai merge toggle',
+    desc:'Original / Scrape / Merge switch on each Rekvizitai sub-tab.',
+    detail:'Per-sub-tab segmented toggle. Original = the dashboard\'s own "6 Loops" record reshaped to match scrape field names. Merge unions both sources by field and colour-codes each row by origin (original green, scrape blue, both purple); values that differ are shown side by side.'},
+  {v:'v0.1.55', date:'2026-06-21', sp:2,   title:'Rekvizitai own page',
+    desc:'Scrape moved to its own page with a sub-tab per source page.',
+    detail:'New top-level Rekvizitai page next to Data Explorer, one sub-tab each for Įmonė, Finansai, Darbuotojai, Skolos. Removed the combined Rek sheet and tab column from Data Explorer; the parser now writes rek_tabs.json (one field/value sheet per tab), injected into the page at build time.'},
+  {v:'v0.1.54', date:'2026-06-21', sp:2,   title:'Scrape chart series',
+    desc:'Pull the time-series behind the diagrams, not just tables.',
+    detail:'Decoded the Highcharts data embedded as JSON blobs: financials back to 2017, the full dated VMI/Sodra debt history and headcount over time. 151 fields, up from 64. Debt and headcount points use a full YYYY-MM-DD label so same-month snapshots no longer collide.'},
+  {v:'v0.1.53', date:'2026-06-21', sp:3,   title:'Scrape all tabs',
+    desc:'Cover every company tab, not just Įmonė.',
+    detail:'Scraper now visits all four company tabs (Įmonė, Finansai, Darbuotojai, Skolos) — 64 fields including a 2021-2025 financial statement (sales, profit, margins, equity, assets, liabilities). Added a tab column at the time; the parser auto-synced the result into the Data Explorer sheet.'},
+  {v:'v0.1.52', date:'2026-06-21', sp:0.5, title:'Version in title',
+    desc:'Version added to <title>; bump rule sharpened.',
+    detail:'The version now also lives in the page <title> tag. Sharpened BULD-02: bump the patch digit on every commit or deploy and keep all four spots in sync (title, nav badge, h1 badge, top VERSIONS entry) plus the git vN.'},
+  {v:'v0.1.51', date:'2026-06-21', sp:3,   title:'White theme + toggle',
+    desc:'Light theme is now default with a dark toggle.',
+    detail:'Light theme by default; a ☀️/🌙 pill in the top nav flips to dark and persists to localStorage with no flash on load. Surfaces are CSS-token driven and charts re-tint live (grid, ticks, legend) while brand series colours stay constant across themes.'},
+  {v:'v0.1.51', date:'2026-06-21', sp:1,   title:'Rek tab in explorer',
+    desc:'First Rekvizitai scrape shown in the Data Explorer.',
+    detail:'Added a Rekvizitai scrape tab to the Data Explorer: a full 6 vijos, MB company profile pulled from rekvizitai.vz.lt — contacts, address, LinkedIn, Sodra debt, export share and credit risk. Later superseded by the standalone Rekvizitai page in v55.'},
+  {v:'v0.1.50', date:'2026-06-21', sp:1,   title:'Fix explorer crash',
+    desc:'Root cause of the persistent blank Data Explorer.',
+    detail:'Fixed the long-standing Data Explorer crash: buildDataTabs() referenced an undefined SHEET_META; the correct name is SHEET_DESC. This was the root cause of every "Data Explorer blank" report since v42.'},
+  {v:'v0.1.49', date:'2026-06-21', sp:2,   title:'Version badge in nav',
+    desc:'Badge moved to top nav; push hook relaxed.',
+    detail:'Moved the version badge into the top nav so it stays visible on every tab. Backfilled the VERSIONS array for v41-v48. Downgraded the guard hook from block to warn so REPO-01 pushes to main are no longer silently blocked.'},
+  {v:'v0.1.48', date:'2026-06-21', sp:1,   title:'Fix tab titles',
+    desc:'Explorer tabs show human titles, not raw keys.',
+    detail:'Data Explorer tabs were rendering raw sheet keys (Įmonės etc.) instead of human-readable titles; buildDataTabs() now reads the title from the sheet metadata.'},
+  {v:'v0.1.47', date:'2026-06-21', sp:2,   title:'Reorganise rules',
+    desc:'CLAUDE.md rules grouped by theme then priority.',
+    detail:'Reorganised the CLAUDE.md rules tables by theme and then priority: Build & Git, Conversation, Debugging, UI & Design, Meta — so related rules sit together and the most important ones come first.'},
+  {v:'v0.1.46', date:'2026-06-21', sp:1,   title:'Commit format rule',
+    desc:'Added GIT-01 commit message convention.',
+    detail:'Added the GIT-01 rule defining the commit format: a patch-only vN, the driving RULE-ID, a short description and the story points — so commits, the badge and the changelog all carry the same version.'},
+  {v:'v0.1.45', date:'2026-06-21', sp:1,   title:'Fix git author',
+    desc:'Set commit author via SessionStart hook.',
+    detail:'Fixed the git author identity to Adomas / g@cool.lt through a SessionStart hook so commits are attributed correctly regardless of the machine environment.'},
+  {v:'v0.1.44', date:'2026-06-21', sp:0.5, title:'Document push guard',
+    desc:'Documented the main-push guard hook.',
+    detail:'Documented the guard_main_push hook under REPO-02 in CLAUDE.md so its behaviour is discoverable from the rules rather than only living in the hook source.'},
+  {v:'v0.1.43', date:'2026-06-21', sp:2,   title:'Add push guard hook',
+    desc:'Hook warns against committing straight to main.',
+    detail:'Added the guard_main_push hook to intercept git commit/push to main and remind Claude to use a feature branch. Later relaxed from block to warn in v49 once it was blocking legitimate REPO-01 pushes.'},
+  {v:'v0.1.42', date:'2026-06-21', sp:1,   title:'Rename explorer tabs',
+    desc:'Clearer Data Explorer tab titles.',
+    detail:'Renamed the Data Explorer tab titles for clarity: cleaned vs source data, year-by-year financials, and the creative / PR yearly slices.'},
+  {v:'v0.1.41', date:'2026-06-21', sp:2,   title:'Document commit hook',
+    desc:'Commit-check hook and rule written into CLAUDE.md.',
+    detail:'Documented the commit-message check hook and its accompanying rule in CLAUDE.md so the enforced commit format is explained alongside the other governance rules.'},
+  {v:'v0.1.40', date:'2026-06-21', sp:2,   title:'Explain explorer tabs',
+    desc:'Each tab gets a plain-language intro for newcomers.',
+    detail:'Each Data Explorer tab now shows a plain-language title, a one-line "what this is", a "Best for" hint and an importance tag (Start here / Focused view / Advanced-raw) so a non-expert knows where to begin. Also merged the orphaned NonActiveRules.md into notactiverules.md.'},
+  {v:'v0.1.39', date:'2026-06-21', sp:3,   title:'Fix MY_BRAND crash',
+    desc:'Undefined MY_BRAND halted the whole script.',
+    detail:'Root cause found for the persistent blank explorer: the on-screen banner exposed "MY_BRAND is not defined" — a leftover reference from the MY_COMPANIES refactor that threw at the scatter chart and halted the script before the explorer could init. Defined MY_BRAND = MY_COMPANIES[0].brand.'},
+  {v:'v0.1.38', date:'2026-06-21', sp:2,   title:'Floating changelog button',
+    desc:'SP history moved to a paginated floating button.',
+    detail:'Moved "SP history" out of the h1 into a small fixed bottom-right "📋 Changelog" button and paginated the history list (Newer/Older) so you can scan what is new in-page without opening the source code.'},
+  {v:'v0.1.37', date:'2026-06-21', sp:2,   title:'On-screen error banner',
+    desc:'Surface JS errors visibly on mobile.',
+    detail:'Data Explorer still blank on the owner\'s phone: added an on-screen JS error banner (phones have no devtools) and wrapped the eager initDataExplorer() in try/catch so a thrown error is shown visibly instead of silently halting the whole script. Diagnostic toward the real root cause.'},
+  {v:'v0.1.36', date:'2026-06-20', sp:1,   title:'Fix mobile table',
+    desc:'Explorer table no longer invisible on mobile.',
+    detail:'Fixed the Data Explorer table being invisible on mobile: replaced a fragile max-height calc with min-height plus a viewport-relative max-height, and added horizontal overflow on the tab strip so tabs scroll instead of clipping.'},
+  {v:'v0.1.35', date:'2026-06-20', sp:1,   title:'Eager explorer init',
+    desc:'Explorer populates on load regardless of clicks.',
+    detail:'Fixed the Data Explorer being blank on mobile by removing the lazy-init guard; initDataExplorer() now runs eagerly on page load so the tabs and table are always populated regardless of click order.'},
+  {v:'v0.1.34', date:'2026-06-20', sp:2,   title:'My-company tabs',
+    desc:'Tab strip for companies in the My-companies section.',
+    detail:'Added a company tab strip to the "My companies" section driven by the MY_COMPANIES array (only Fabula for now); adding a company is one array push. Charts and KPIs re-render on tab switch, with old Chart instances destroyed before redraw.'},
+  {v:'v0.1.33', date:'2026-06-20', sp:2,   title:'KPI formulas shown',
+    desc:'Derived KPIs show their calculation inline.',
+    detail:'Every derived KPI in the "My company" section now shows its calculation inline below the sub-label: the YoY % formula with the actual numbers, the margin formula, the CAGR formula and a rank explanation.'},
+  {v:'v0.1.32', date:'2026-06-20', sp:1,   title:'Mobile nav fix',
+    desc:'Nav no longer overflows on small phones.',
+    detail:'Mobile nav fixes: hide the nav subtitle below 600px, reduce logo and button padding, and tweak content padding and the h1 font size to stop the header overflowing on smartphones.'},
+  {v:'v0.1.31', date:'2026-06-10', sp:4,   title:'Merge parallel sessions',
+    desc:'Reconciled two diverged mains, keeping all features.',
+    detail:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav and Data Explorer (5 Excel sheets, search, sort, pagination, CSV) into the full template, keeping all dashboard features.'},
+  {v:'—',        date:'2026-06-10', sp:3,   title:'Data Explorer (parallel)',
+    desc:'Parallel session built the raw-sheet explorer.',
+    detail:'(Parallel session) Data Explorer view: raw Excel sheets browsable with tabs, search, sorting, pagination and CSV export; sheets_data.json and the build pipeline extended to carry the sheet data.'},
+  {v:'v0.1.30', date:'2026-06-10', sp:0.5, title:'Merge-to-main rule',
+    desc:'Always merge changes to main immediately.',
+    detail:'Added the workflow rule that all changes always merge to main immediately, documented in the AI docs, to stop work stranding on side branches across parallel sessions.'},
+  {v:'v0.1.29', date:'2026-06-10', sp:1,   title:'AI assistant docs',
+    desc:'Project context and history for AI assistants.',
+    detail:'Created docs for AI assistants: AGENTS.md with project context, the data dictionary, conventions and the full prompt history, plus a CLAUDE.md pointer. Later folded into a single CLAUDE.md.'},
+  {v:'v0.1.28', date:'2026-06-10', sp:4,   title:'Turnover vs revenue split',
+    desc:'Turnover and revenue separated across the dashboard.',
+    detail:'Split turnover from revenue (spėjamos pajamos) across the whole dashboard: reordered the KPI strip, the market chart shows both, and segments, rankings, growth, scatter, rev-per-employee and the explorer were switched or extended to revenue. Touched every chart — each threshold and tooltip had to be re-checked.'},
+  {v:'v0.1.27', date:'2026-06-10', sp:3,   title:'SP history overlay',
+    desc:'Added the version-history button and overlay.',
+    detail:'Added the SP & version history feature: the button plus the history overlay, with the version log embedded so changes are visible in-page.'},
+  {v:'v0.1.26', date:'2026-06-10', sp:0.5, title:'Version badge',
+    desc:'Version badge added to the header.',
+    detail:'Added the first version badge to the page header so the live site always shows which version is deployed.'},
+  {v:'v0.1.25', date:'2026-06-10', sp:5,   title:'My-company section',
+    desc:'Fabula surfaced with rank, trend and percentile.',
+    detail:'Built the "My company" section: researched the VRP→Fabula rebrand (live scraping was blocked, resolved via web search and the shared company code 124099127), added KPI cards with market rank, a 2019-2024 trend chart, a percentile-vs-market chart, a gold scatter highlight and a pinned explorer row.'},
+  {v:'v0.1.24', date:'2026-06-10', sp:5,   title:'Initial dashboard',
+    desc:'First competitor dashboard for 113 agencies.',
+    detail:'Initial competitor dashboard: 113 agencies with a KPI strip, key insights, market / segment / ranking / salary charts and a searchable, sortable explorer table built from the Excel export.'},
 ];
 const spTotal = VERSIONS.reduce((s,v)=>s+v.sp,0);
 document.getElementById('spTotal').textContent = spTotal;
 document.getElementById('verCount').textContent = VERSIONS.length;
 // Paginated changelog (VERSIONS is newest-first)
-const HIST_PAGE_SIZE = 8;
+const HIST_PAGE_SIZE = 10;
 let histPage = 0;
+// Escape — entries contain literal <title>/<h1>/JSON which must not be parsed as HTML.
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function renderHistPage(){
   const total = VERSIONS.length, pages = Math.ceil(total/HIST_PAGE_SIZE);
   const start = histPage*HIST_PAGE_SIZE;
-  document.getElementById('histBody').innerHTML = VERSIONS.slice(start, start+HIST_PAGE_SIZE).map(v=>
-    `<tr><td class="vcol">${v.v}</td><td>${v.date}</td><td><span class="sp-badge">${v.sp}</span></td><td>${v.desc}</td></tr>`).join('');
+  document.getElementById('histBody').innerHTML = VERSIONS.slice(start, start+HIST_PAGE_SIZE).map(v=>{
+    // Back-compat: old entries had only `desc`; new ones have title/desc/detail.
+    const change = v.title
+      ? `<div class="ch-title">${esc(v.title)}</div><div class="ch-desc">${esc(v.desc)}</div>`
+        + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'')
+      : esc(v.desc);
+    return `<tr><td class="vcol">${esc(v.v)}</td><td>${esc(v.date)}</td><td><span class="sp-badge">${esc(v.sp)}</span></td><td>${change}</td></tr>`;
+  }).join('');
   document.getElementById('histPageInfo').textContent = `Page ${histPage+1} of ${pages}`;
   document.getElementById('histPrev').disabled = histPage===0;
   document.getElementById('histNext').disabled = start+HIST_PAGE_SIZE>=total;
@@ -1056,24 +1154,57 @@ function normVal(v){
   return String(v).replace(/[€%\s ]/g,'').replace(',', '.').toLowerCase();
 }
 
-// Rows for the current mode, each tagged {field,value,src} (src: orig|scrape|both).
+// Rows for the current mode, each {field,value,src,ovalue,svalue} (src: orig|scrape|both).
 function rowsForMode(tab){
-  if(rekMode==='scrape')   return scrapeRows(tab).map(r=>({field:r[0], value:r[1], src:'scrape'}));
-  if(rekMode==='original') return origRows(tab).map(r=>({field:r[0], value:r[1], src:'orig'}));
-  // merge: union by field name; equal value -> both, differing -> show both values
+  if(rekMode==='scrape')   return scrapeRows(tab).map(r=>({field:r[0], value:r[1], src:'scrape', svalue:r[1]}));
+  if(rekMode==='original') return origRows(tab).map(r=>({field:r[0], value:r[1], src:'orig', ovalue:r[1]}));
+  // merge: union by field name; equal value -> both, differing -> keep both values
   const out=[], byField=new Map();
-  origRows(tab).forEach(([f,v])=>{ byField.set(f,{field:f, value:v, src:'orig'}); });
+  origRows(tab).forEach(([f,v])=>{ byField.set(f,{field:f, value:v, src:'orig', ovalue:v}); });
   scrapeRows(tab).forEach(([f,v])=>{
     if(byField.has(f)){
-      const o=byField.get(f);
+      const o=byField.get(f); o.svalue=v;
       if(normVal(o.value)===normVal(v)){ o.src='both'; }
-      else { o.src='both'; o.value=`${o.value}  ·  ${v}`; o.diff=true; }
+      else { o.src='both'; o.diff=true; o.value=`${o.value}  ·  ${v}`; }
     } else {
-      byField.set(f,{field:f, value:v, src:'scrape'});
+      byField.set(f,{field:f, value:v, src:'scrape', svalue:v});
     }
   });
   byField.forEach(v=>out.push(v));
   return out;
+}
+
+// Split a field "Metric 2023" or "Metric 2024-05-14" into {base, year, isDate}.
+function splitYear(field){
+  let m=field.match(/^(.*?)[  ](\d{4})-(\d{2})-(\d{2})$/);   // full date
+  if(m) return {base:m[1].trim(), year:m[2], date:`${m[2]}-${m[3]}-${m[4]}`, isDate:true};
+  m=field.match(/^(.*?)[  ](\d{4})$/);                        // plain year
+  if(m) return {base:m[1].trim(), year:m[2], isDate:false};
+  return null;
+}
+
+// Build a metric × year matrix from year-suffixed rows; the rest stay flat.
+// Returns {years:[...], matrix:[{base,src,cells:{year:{value,ovalue,svalue,src}}}], flat:[rows]}.
+function pivotRows(rows){
+  const years=new Set(), bases=new Map(), flat=[], dated=new Map();
+  rows.forEach(r=>{
+    const sp=splitYear(r.field);
+    if(sp && !sp.isDate){
+      years.add(sp.year);
+      if(!bases.has(sp.base)) bases.set(sp.base,{base:sp.base, cells:{}, srcs:new Set()});
+      bases.get(sp.base).cells[sp.year]=r; bases.get(sp.base).srcs.add(r.src);
+    } else if(sp && sp.isDate){
+      // group dated series (e.g. debt) by base metric; show as its own mini-row list
+      if(!dated.has(sp.base)) dated.set(sp.base,[]);
+      dated.get(sp.base).push(r);
+    } else {
+      flat.push(r);
+    }
+  });
+  const yrs=[...years].sort();
+  const matrix=[...bases.values()].map(b=>({base:b.base, cells:b.cells,
+    src: b.srcs.size>1?'both':[...b.srcs][0]}));
+  return {years:yrs, matrix, flat, dated};
 }
 
 function rekFiltered(){
@@ -1117,25 +1248,48 @@ function renderRek(){
   }
   const modeWord={merge:'Original + scrape merged', scrape:'Scrape only', original:'Dashboard data only'}[rekMode];
   intro.innerHTML=`<div class="sd-head"><span class="sd-title">6 vijos, MB — Rekvizitai</span><span class="sd-tier" style="color:var(--muted);border-color:var(--muted)">${modeWord}</span></div>`
-    +`<div class="sd-what">Sub-tab per source page. <b>Original</b> = the dashboard's own record for brand "${REK_BRAND}" (from the Excel export). <b>Scrape</b> = live data from rekvizitai.vz.lt ("(grafikas)" = read off the on-page diagrams). <b>Merge</b> unions both and colour-codes each field by where it came from.</div>`;
+    +`<div class="sd-what">Sub-tab per source page. <b>Original</b> = the dashboard's own record for brand "${REK_BRAND}". <b>Scrape</b> = live rekvizitai.vz.lt data. <b>Merge</b> unions both; each row is <b>coloured</b> by source. Year metrics are laid out as a year-by-year grid; in Merge a differing cell stacks <span style="color:var(--green)">original</span> over <span style="color:var(--accent)">scrape</span>.</div>`;
 
   const rows=rekFiltered();
   document.getElementById('rekRowCount').textContent=`${rows.length} field${rows.length!==1?'s':''}`;
-  document.getElementById('rekHead').innerHTML=['Field','Value'].map((c,i)=>{
-    const arrow=rekSort===i?(rekDir>0?' ▲':' ▼'):'';
-    return `<th data-i="${i}" style="cursor:pointer">${c}${arrow}</th>`;
-  }).join('');
-  document.getElementById('rekHead').querySelectorAll('th').forEach(th=>th.addEventListener('click',()=>{
-    const i=+th.dataset.i; if(rekSort===i) rekDir*=-1; else {rekSort=i; rekDir=1;} renderRek();
-  }));
+  const {years, matrix, flat, dated}=pivotRows(rows);
+  const eh=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const numLike=v=>/^[-+]?[\d  .,]+\s*(€|%)?$/.test(String(v).trim()) && /\d/.test(v);
-  const pill={orig:'<span class="src-pill orig">orig</span>', scrape:'<span class="src-pill scrape">scrape</span>', both:'<span class="src-pill both">both</span>'};
-  document.getElementById('rekBody').innerHTML=rows.map(r=>{
-    const tag = rekMode==='merge' ? pill[r.src] : '';
-    const f=`<td>${r.field}${tag}</td>`;
-    const v=`<td class="${numLike(r.value)?'num':''}">${r.value}</td>`;
-    return `<tr class="src-${r.src}">${f}${v}</tr>`;
-  }).join('') || `<tr><td colspan="2" class="null" style="text-align:center">No fields for this view</td></tr>`;
+  // a matrix cell: in merge with differing values, stack orig (green) + scrape (blue)
+  const cellHtml=r=>{
+    if(!r) return '<td class="num"></td>';
+    if(rekMode==='merge' && r.diff)
+      return `<td class="num"><span class="mv o">${eh(r.ovalue)}</span><span class="mv s">${eh(r.svalue)}</span></td>`;
+    return `<td class="num">${eh(r.value)}</td>`;
+  };
+  let html='';
+  // 1) year matrix (metric × year)
+  if(matrix.length && years.length){
+    html+=`<table><thead><tr><th class="colField">Metric</th>`
+      + years.map(y=>`<th class="colYear num" style="text-align:right">${y}</th>`).join('') + `</tr></thead><tbody>`;
+    matrix.forEach(m=>{
+      html+=`<tr class="src-${m.src}"><td class="fieldcell">${eh(m.base)}</td>`
+        + years.map(y=>cellHtml(m.cells[y])).join('') + `</tr>`;
+    });
+    html+=`</tbody></table>`;
+  }
+  // 2) dated series (e.g. debt) — compact field/value, grouped, wrapping
+  dated.forEach((list, base)=>{
+    html+=`<table style="margin-top:14px"><thead><tr><th class="colField">${eh(base)} — date</th><th class="num" style="text-align:right">Value</th></tr></thead><tbody>`;
+    list.forEach(r=>{ const sp=splitYear(r.field);
+      html+=`<tr class="src-${r.src}"><td class="fieldcell">${eh(sp?sp.date:r.field)}</td><td class="num">${eh(r.value)}</td></tr>`;
+    });
+    html+=`</tbody></table>`;
+  });
+  // 3) flat field/value (non-year fields) — long text wraps
+  if(flat.length){
+    html+=`<table style="margin-top:${matrix.length||dated.size?'14px':'0'}"><thead><tr><th class="colField">Field</th><th>Value</th></tr></thead><tbody>`;
+    flat.forEach(r=>{
+      html+=`<tr class="src-${r.src}"><td class="fieldcell">${eh(r.field)}</td><td class="${numLike(r.value)?'num':''}">${eh(r.value)}</td></tr>`;
+    });
+    html+=`</tbody></table>`;
+  }
+  document.getElementById('rekTableWrap').innerHTML = html || `<div class="null" style="text-align:center;padding:20px">No fields for this view</div>`;
 }
 
 function initRek(){
