@@ -1,35 +1,37 @@
 #!/usr/bin/env python3
-"""Block direct git push/commit to main; remind Claude to use the session feature branch."""
-import json, sys, re
+"""Warn (never block) when committing/pushing to main on a desktop session.
+Web/remote sessions (DATA-06) are exempt — they must push to main per REPO-01."""
+import json, sys, re, subprocess, os
 
 data = json.load(sys.stdin)
 cmd = data.get("tool_input", {}).get("command", "")
 
-# Detect: git push ... main (or origin main)
 push_to_main = bool(re.search(r'\bgit\s+push\b.*\bmain\b', cmd))
-# Detect: git commit while on main (catch force-adds to main too)
 commit_on_main = bool(re.search(r'\bgit\s+commit\b', cmd))
 
 if push_to_main or commit_on_main:
-    import subprocess
     branch = subprocess.run(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
         capture_output=True, text=True
     ).stdout.strip()
 
-    if branch == "main":
+    # Web/remote sessions are identified by the Claude Code remote env var.
+    # They are exempt from the branch rule (DATA-06) and MUST push to main (REPO-01).
+    is_web_session = bool(os.environ.get("CLAUDE_CODE_REMOTE") or os.environ.get("CLAUDE_REMOTE"))
+
+    if branch == "main" and not is_web_session:
+        # Warn only — never block (REPO-01 is TOP priority; blocking causes missed pushes)
         print(json.dumps({
             "hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
-                "permissionDecision": "block",
+                "permissionDecision": "warn",
                 "permissionDecisionReason": (
-                    "RULE REPO-02/REPO-05 VIOLATION: You are on 'main' and tried to commit or push directly. "
-                    "Always work on a feature branch and merge to main immediately after. "
-                    "If this is a web/remote session, check the session instructions for the designated branch name."
+                    "Desktop session: you are committing/pushing directly to main. "
+                    "Prefer a feature branch (REPO-02). Proceeding anyway per REPO-01."
                 )
             }
         }))
         sys.exit(0)
 
-# Allow everything else
+# Allow everything
 print(json.dumps({}))

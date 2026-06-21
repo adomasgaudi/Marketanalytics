@@ -106,6 +106,7 @@
   .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
+  .nav-version{font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;margin-right:8px;white-space:nowrap}
 
   /* ── Views ── */
   .view{display:none}
@@ -162,13 +163,14 @@
   <button class="nav-btn active" data-view="dashView">Dashboard</button>
   <button class="nav-btn" data-view="dataView">Data Explorer</button>
   <div class="nav-spacer"></div>
+  <span class="nav-version">v0.1.49</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.40</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.49</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -726,6 +728,15 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.49', date:'2026-06-21', sp:2,   desc:'Version badge moved to top nav so it stays visible on every tab. Data Explorer tab names fixed to show human titles (was showing raw sheet keys). VERSIONS array backfilled for v41–v48 (rule/hook changes, git author fix, commit format, tab rename, tab display fix).'},
+  {v:'v0.1.48', date:'2026-06-21', sp:1,   desc:'Fix data explorer tabs rendering raw sheet keys (Įmonės etc.) instead of human titles — buildDataTabs() now reads SHEET_META[s].title.'},
+  {v:'v0.1.47', date:'2026-06-21', sp:2,   desc:'Reorganise CLAUDE.md rules by theme then priority (Build&Git, Conversation, Debug, UI, Meta).'},
+  {v:'v0.1.46', date:'2026-06-21', sp:1,   desc:'Add GIT-01 commit format rule: vN patch-only, RULE-ID, sp.'},
+  {v:'v0.1.45', date:'2026-06-21', sp:1,   desc:'Fix git author to Adomas/g@cool.lt via SessionStart hook.'},
+  {v:'v0.1.44', date:'2026-06-21', sp:0.5, desc:'Document guard_main_push hook under REPO-02 in CLAUDE.md.'},
+  {v:'v0.1.43', date:'2026-06-21', sp:2,   desc:'Add guard_main_push hook — block git commit/push to main; remind Claude to use feature branch.'},
+  {v:'v0.1.42', date:'2026-06-21', sp:1,   desc:'Rename Data Explorer tab titles: cleaned vs source, yearly financials, creative/PR yearly.'},
+  {v:'v0.1.41', date:'2026-06-21', sp:2,   desc:'Document commit-check hook and META-18 rule in CLAUDE.md.'},
   {v:'v0.1.40', date:'2026-06-21', sp:2,   desc:'Data Explorer tabs explained for newcomers: each tab now shows a plain-language title, a one-line “what this is”, a “Best for” hint, and an importance tag (Start here / Focused view / Advanced-raw) so a non-expert knows where to begin and what to skip. Also merged the orphaned NonActiveRules.md into notactiverules.md.'},
   {v:'v0.1.39', date:'2026-06-21', sp:3,   desc:'Fix Data Explorer blank (#persistent ROOT FOUND): the on-screen banner exposed “MY_BRAND is not defined” — a leftover reference from the MY_COMPANIES refactor threw at the scatter chart and halted the whole script before the explorer could init. Defined MY_BRAND = MY_COMPANIES[0].brand.'},
   {v:'v0.1.38', date:'2026-06-21', sp:2,   desc:'Changelog as a floating button: moved “SP history” out of the h1 into a small fixed bottom-right “📋 Changelog” button; paginated the history list (8 per page, Newer/Older) so you can scan what’s new in-page without opening the code.'},
