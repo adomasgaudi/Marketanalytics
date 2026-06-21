@@ -163,14 +163,14 @@
   <button class="nav-btn active" data-view="dashView">Dashboard</button>
   <button class="nav-btn" data-view="dataView">Data Explorer</button>
   <div class="nav-spacer"></div>
-  <span class="nav-version">v0.1.50</span>
+  <span class="nav-version">v0.1.51</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.50</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.51</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -728,6 +728,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.51', date:'2026-06-21', sp:1,   desc:'Add Rekvizitai scrape tab to Data Explorer: 6 vijos, MB full company profile scraped from rekvizitai.vz.lt (contacts, address, LinkedIn, Sodra debt, export share, credit risk).'},
   {v:'v0.1.50', date:'2026-06-21', sp:1,   desc:'Fix persistent Data Explorer crash: SHEET_META is not defined — buildDataTabs() used wrong variable name; correct name is SHEET_DESC. Root cause of every "Data Explorer blank" since v42.'},
   {v:'v0.1.49', date:'2026-06-21', sp:2,   desc:'Version badge moved to top nav so it stays visible on every tab. VERSIONS array backfilled for v41–v48. Hook downgraded from block to warn so REPO-01 pushes to main are no longer silently blocked.'},
   {v:'v0.1.48', date:'2026-06-21', sp:1,   desc:'Fix data explorer tabs rendering raw sheet keys (Įmonės etc.) instead of human titles — buildDataTabs() now reads SHEET_META[s].title.'},
@@ -782,7 +783,7 @@ histModal.addEventListener('click', e=>{ if(e.target===histModal) histModal.clas
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') histModal.classList.remove('open'); });
 
 // ---------- Data explorer ----------
-const SHEET_ORDER=['Įmonės','Įmonės-analizei','Kūryba','PR','Raw'];
+const SHEET_ORDER=['Įmonės','Įmonės-analizei','Kūryba','PR','Raw','Rek'];
 // Each tab gets a plain-language title, a one-line "what this is", a "best for"
 // hint, and an importance tag so a newcomer knows where to start vs. what to skip.
 // tier: 'start' (begin here) · 'detail' (rich but wide) · 'niche' (specialist/raw).
@@ -802,6 +803,9 @@ const SHEET_DESC={
   'Raw':{title:'Pre-cleaning import (source)',tier:'niche',
     what:'The untouched source export — 103 rows before deduplication; 77% of its columns fed into "All companies (cleaned)". Has messy headers and duplicates; kept for traceability only.',
     best:'Checking where a data point came from; most users should use the cleaned tables above.'},
+  'Rek':{title:'Rekvizitai scrape',tier:'niche',
+    what:'Live data scraped from rekvizitai.vz.lt — full company profile for 6 vijos, MB including contacts, address, social links, export share, Sodra debt and credit risk.',
+    best:'Checking fields not in the Excel export, e.g. phone, website, LinkedIn, export %.'},
 };
 const TIER_LABEL={start:{t:'Start here',c:'var(--green)'},detail:{t:'Focused view',c:'var(--accent)'},niche:{t:'Advanced / raw',c:'var(--muted)'}};
 const MONEY_COLS=new Set(['Apyvarta','Apyvarta 2019','Apyvarta 2020','Apyvarta 2021','Apyvarta 2022','Apyvarta 2023','Apyvarta 2024','Grynasis pelnas 2019','Grynasis pelnas 2020','Grynasis pelnas 2021','Grynasis pelnas 2022','Grynasis pelnas 2023','Grynasis pelnas 2024','Pelnas','DU sąnaudos','Ne-atlyginimų sąnaudos','Spėjamos pajamos','Atlyginimų sąnaudos 2019','Atlyginimų sąnaudos 2020','Atlyginimų sąnaudos 2021','Atlyginimų sąnaudos 2022','Atlyginimų sąnaudos 2023','Atlyginimų sąnaudos 2024','Atlyginimų sąnaudos 2025 05','Skola Sodrai','Apyvarta (1)','Spėjamos pajamos (1)','DU sąnaudos (1)','Ne-atlyginimų sąnaudos (1)','Pelnas (1)']);
