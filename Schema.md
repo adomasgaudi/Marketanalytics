@@ -34,7 +34,7 @@ chat opens/resumes; stdout injected.
 ### *CLAUDE Hardcoded:*
 - permission prompt + IDE diff on Edit/Write.
 
-* *vz:* `permissions.allow` checked here.
+* *vz:* `permissions.allow` checked here; `commit_message_check.py` → `git commit` → warns if the subject misses the house format `vN CODE-NN | desc | n sp` (non-blocking).
 
 ## **PostToolUse** — after a tool finishes.
 
@@ -93,9 +93,11 @@ chat opens/resumes; stdout injected.
 - `Bash(git pull *)` — any pull
 - `Read(//c/Users/adoma/.claude/**)` — read global .claude
 
-**Hooks** (both non-blocking, in vz):
+**Hooks** (all non-blocking, in vz):
+- **PreToolUse** (`Bash`) → `commit_message_check.py` — `git commit` injects a warning if the subject misses the house format.
 - **PostToolUse** (`Edit|Write`) → `version_reminder.py` — template edit injects badge/SP/rebuild reminder.
 - **UserPromptSubmit** → `rule_schema_reminder.py` — rule prompt injects this file's framework.
+- **Stop** → `save_reminder.py` — finishing injects a commit+push reminder if the tree is dirty.
 
 ---
 
@@ -180,10 +182,11 @@ Each line is a *trigger → what the hook reminds*, on the named event.
 - A behaviour isn't enforced until its hook exists. The name never enforces anything.
 <br />
 ## Events & hooks
-Three hooks touch vz; the rest of each event is CLAUDE-hardcoded. Full map → [Schema.md](Schema.md).
+Four hooks touch vz; the rest of each event is CLAUDE-hardcoded. Full map → [Schema.md](Schema.md).
 | Event | When | Hook | Does | Blocks? |
 |:---|:---|:---|:---|:---|
 | **SessionStart** | chat opens/resumes | — (CLAUDE-hardcoded) | loads CLAUDE.md + MEMORY.md, settings, env, git status, skills/agents/MCP | no |
 | **UserPromptSubmit** | before AI reads prompt | [`rule_schema_reminder.py`](.claude/hooks/rule_schema_reminder.py) | rule-add/change prompt → injects Schema.md's hook-vs-context framework so the AI decides *how* to add it | no |
+| **PreToolUse** | before a Bash call | [`commit_message_check.py`](.claude/hooks/commit_message_check.py) | `git commit` → warns if the subject misses the house format `vN CODE-NN \| desc \| n sp` | no |
 | **PostToolUse** | after Edit/Write | [`version_reminder.py`](.claude/hooks/version_reminder.py) | edit `template.html` → reminds to bump badge + log SP + rebuild | no |
-| **Stop** | AI finishes responding | — (candidate spot) | none yet — could enforce REPO-01 (clean tree + `main` pushed) | n/a |
+| **Stop** | AI finishes responding | [`save_reminder.py`](.claude/hooks/save_reminder.py) | dirty tree / `main` not pushed → reminds to commit + push (REPO-01) | no |
