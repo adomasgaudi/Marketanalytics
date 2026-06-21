@@ -3,10 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.69</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.70</title>
 <script>
-  // Apply saved theme before first paint to avoid a flash. Default = dark.
-  (function(){ try{ var t=localStorage.getItem('theme'); if(t!=='light') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+  // Apply saved theme + view mode before first paint to avoid a flash.
+  // Theme default = dark; view default = advanced (full data sources/tabs).
+  (function(){ try{
+    var t=localStorage.getItem('theme'); if(t!=='light') document.documentElement.setAttribute('data-theme','dark');
+    var v=localStorage.getItem('viewMode'); document.documentElement.setAttribute('data-view', v==='simplified'?'simplified':'advanced');
+  }catch(e){} })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
@@ -245,11 +249,12 @@
     <button class="nav-btn" data-view="dataView">Data Explorer</button>
     <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   </div>
-  <span class="nav-version">v0.1.69</span>
+  <span class="nav-version">v0.1.70</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
+      <button id="viewToggle"></button>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -258,7 +263,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.69</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.70</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -508,6 +513,26 @@ document.getElementById('settingsCog').addEventListener('click', e=>{
   document.getElementById('settingsMenu').classList.toggle('open');
 });
 document.addEventListener('click', ()=>document.getElementById('settingsMenu').classList.remove('open'));
+
+// ---------- View mode toggle (Advanced default; Simplified will hide the
+// extra data sources / tabs). Persisted like theme; filtering is keyed off
+// the <html data-view> attribute and wired in incrementally. ----------
+function currentView(){ return document.documentElement.getAttribute('data-view')==='simplified' ? 'simplified' : 'advanced'; }
+function syncViewButton(){
+  const btn=document.getElementById('viewToggle');
+  if(btn) btn.textContent = currentView()==='advanced' ? '🔬 Advanced view' : '📊 Simplified view';
+}
+function applyView(mode){
+  document.documentElement.setAttribute('data-view', mode);
+  try{ localStorage.setItem('viewMode', mode); }catch(e){}
+  syncViewButton();
+  // Future: re-render tabs / data-source filters that read [data-view].
+}
+syncViewButton();
+document.getElementById('viewToggle').addEventListener('click', ()=>{
+  applyView(currentView()==='advanced' ? 'simplified' : 'advanced');
+  document.getElementById('settingsMenu').classList.remove('open');
+});
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
 const LAST = YEARS[YEARS.length-1];
@@ -884,6 +909,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.70', date:'2026-06-21 19:10', sp:1.5, title:'Advanced/Simplified view toggle',
+    desc:'Settings cog now has an Advanced/Simplified view toggle (experimental).',
+    detail:'Added a pressable view-mode toggle in the ⚙️ settings menu, persisted to localStorage and exposed as <html data-view="advanced|simplified"> (applied pre-paint, advanced default). Filtering of data sources, tabs and other UI off this attribute is wired in incrementally — this commit lands the mechanism. On the experimental-sodra branch.'},
   {v:'v0.1.69', date:'2026-06-21 16:46', sp:1.5, title:'Changelog shows time',
     desc:'Changelog dates now read "day, h:min" since versions ship by the minute.',
     detail:'Versions were shipping many times an hour, so a YYYY-MM-DD date was identical on every row. Each entry now carries the real commit-landing time and renders as "21, 16:23" (day + h:min); older day-only entries fall back to "Jun 21". Times were backfilled from git, so a couple from the parallel multi-company session may be skewed by their clock.'},
