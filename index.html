@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.75</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.76</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -186,6 +186,22 @@
   .seg button:last-child{border-right:none}
   .seg button:hover{color:var(--text)}
   .seg button.active{background:var(--accent);color:#fff}
+  /* Custom (non-native, DATA-20) company dropdown + sticky deep-dive bar */
+  .co-select{position:relative;display:inline-block;min-width:210px}
+  .co-select-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 14px;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
+  .co-select-btn:hover{border-color:var(--muted)}
+  .co-caret{color:var(--muted);font-size:11px;transition:transform .15s}
+  .co-select.open .co-caret{transform:rotate(180deg)}
+  .co-select-panel{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:120;width:min(320px,82vw);background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.45);padding:6px}
+  .co-select.open .co-select-panel{display:block}
+  .co-select-search{width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:6px;background:var(--panel2);color:var(--text);margin-bottom:6px}
+  .co-select-list{max-height:46vh;overflow:auto}
+  .co-select-opt{padding:7px 10px;font-size:13px;border-radius:6px;cursor:pointer;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .co-select-opt:hover{background:var(--panel2)}
+  .co-select-opt.active{background:var(--accent);color:#fff;font-weight:600}
+  .co-select-empty{padding:8px 10px;font-size:12px;color:var(--muted)}
+  .dd-bar{position:sticky;top:44px;z-index:90;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bg);padding:10px 0;margin-bottom:6px}
+  @media(max-width:600px){.dd-bar{top:40px}}
   /* Source colours: one per data source. initial=green, rekvizitai=blue, sodra=amber */
   .src-legend{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
   .src-cube{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;flex:0 0 auto}
@@ -253,7 +269,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.75</span>
+  <span class="nav-version">v0.1.76</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -267,7 +283,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.75</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.76</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -358,23 +374,29 @@
   </div>
 
   <h2 class="section">Company deep-dive · scraped sources</h2>
-  <div class="card full">
-    <div class="desc">Per-company trends drawn from the sources we scraped. Pick a company and a data source; charts that a source can't supply show a note. <b>Initial</b> = dashboard dataset (yearly), <b>Rekvizitai</b> = rekvizitai.vz.lt financials, <b>Sodra</b> = monthly headcount &amp; wage.</div>
-    <div class="controls" style="align-items:center">
-      <div class="co-pills" id="ddCompanies"></div>
-      <span class="nav-spacer" style="flex:1"></span>
+  <div class="desc" style="margin-bottom:6px">Per-company trends drawn from the sources we scraped. Pick a company and a data source; charts that a source can't supply show a note. <b>Initial</b> = dashboard dataset (yearly), <b>Rekvizitai</b> = rekvizitai.vz.lt financials, <b>Sodra</b> = monthly headcount &amp; wage.</div>
+  <div class="dd-wrap">
+    <div class="dd-bar">
+      <div class="co-select" id="ddCompanySelect">
+        <button class="co-select-btn" id="ddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ddCoLabel">Select company</span><span class="co-caret">▾</span></button>
+        <div class="co-select-panel" id="ddCoPanel">
+          <input class="co-select-search" id="ddCoSearch" placeholder="Search company…" autocomplete="off">
+          <div class="co-select-list" id="ddCoList" role="listbox"></div>
+        </div>
+      </div>
+      <span style="flex:1"></span>
       <div class="seg" id="ddSource">
         <button data-src="initial" class="active">Initial</button>
         <button data-src="rekvizitai">Rekvizitai</button>
         <button data-src="sodra">Sodra</button>
       </div>
     </div>
-  </div>
-  <div class="grid">
-    <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="ddRevDesc"></div><div class="chartbox"><canvas id="ddRev"></canvas><div class="chart-empty" id="ddRevEmpty"></div></div></div>
-    <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="ddProfitDesc"></div><div class="chartbox"><canvas id="ddProfit"></canvas><div class="chart-empty" id="ddProfitEmpty"></div></div></div>
-    <div class="card"><h2>Headcount over time</h2><div class="desc" id="ddEmpDesc"></div><div class="chartbox"><canvas id="ddEmp"></canvas><div class="chart-empty" id="ddEmpEmpty"></div></div></div>
-    <div class="card"><h2>Average wage over time</h2><div class="desc" id="ddWageDesc"></div><div class="chartbox"><canvas id="ddWage"></canvas><div class="chart-empty" id="ddWageEmpty"></div></div></div>
+    <div class="grid">
+      <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="ddRevDesc"></div><div class="chartbox"><canvas id="ddRev"></canvas><div class="chart-empty" id="ddRevEmpty"></div></div></div>
+      <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="ddProfitDesc"></div><div class="chartbox"><canvas id="ddProfit"></canvas><div class="chart-empty" id="ddProfitEmpty"></div></div></div>
+      <div class="card"><h2>Headcount over time</h2><div class="desc" id="ddEmpDesc"></div><div class="chartbox"><canvas id="ddEmp"></canvas><div class="chart-empty" id="ddEmpEmpty"></div></div></div>
+      <div class="card"><h2>Average wage over time</h2><div class="desc" id="ddWageDesc"></div><div class="chartbox"><canvas id="ddWage"></canvas><div class="chart-empty" id="ddWageEmpty"></div></div></div>
+    </div>
   </div>
 
   <h2 class="section">Company explorer</h2>
@@ -934,6 +956,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.76', date:'2026-06-21 19:24', sp:2.5, title:'Deep-dive company dropdown',
+    desc:'Company pills became a searchable dropdown that floats sticky atop the charts.',
+    detail:'Replaced the deep-dive company-pill grid with a custom (non-native, DATA-20) searchable dropdown — scales as companies grow. The picker + source toggle now sit in a sticky bar that floats just under the nav, so you can switch company while scrolling through the four charts. Same .co-pill grid on the Sourced Data page is untouched for now.'},
   {v:'v0.1.75', date:'2026-06-21 19:15', sp:1.5, title:'Advanced/Simplified view toggle',
     desc:'Settings cog now has an Advanced/Simplified view toggle.',
     detail:'Added a pressable view-mode toggle in the ⚙️ settings menu, persisted to localStorage and exposed as <html data-mode="advanced|simplified"> (applied pre-paint, advanced default; uses data-mode to avoid the nav data-view attribute). Filtering of data sources, tabs and other UI off this attribute is wired in incrementally — this lands the mechanism.'},
@@ -1371,16 +1396,44 @@ function drawDD(){
   });
 }
 
+// Custom dropdown (non-native, DATA-20): refresh label + filtered option list.
 function buildDDCompanies(){
-  const el=document.getElementById('ddCompanies'); if(!el) return;
-  el.innerHTML=DD_COMPANIES.map(c=>`<button class="co-pill${c===ddCo?' active':''}" data-slug="${c.slug}">${c.name||c.slug}</button>`).join('');
-  el.querySelectorAll('.co-pill').forEach(btn=>btn.addEventListener('click',()=>{
-    ddCo=DD_COMPANIES.find(c=>c.slug===btn.dataset.slug)||ddCo; buildDDCompanies(); drawDD();
+  const list=document.getElementById('ddCoList'); if(!list) return;
+  const label=document.getElementById('ddCoLabel');
+  if(label) label.textContent = ddCo ? (ddCo.name||ddCo.slug) : 'Select company';
+  const q=(document.getElementById('ddCoSearch')?.value||'').trim().toLowerCase();
+  const opts=DD_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  list.innerHTML = opts.length
+    ? opts.map(c=>`<div class="co-select-opt${c===ddCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
+    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
+  list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
+    ddCo=DD_COMPANIES.find(c=>c.slug===o.dataset.slug)||ddCo;
+    closeDDPicker();
+    buildDDCompanies(); drawDD();
   }));
+}
+function closeDDPicker(){
+  const sel=document.getElementById('ddCompanySelect'); if(!sel) return;
+  sel.classList.remove('open');
+  document.getElementById('ddCoBtn').setAttribute('aria-expanded','false');
 }
 function initDD(){
   if(!DD_COMPANIES.length) return;
   buildDDCompanies();
+  const sel=document.getElementById('ddCompanySelect');
+  const btn=document.getElementById('ddCoBtn');
+  const panel=document.getElementById('ddCoPanel');
+  const search=document.getElementById('ddCoSearch');
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=sel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open?'true':'false');
+    if(open){ search.value=''; buildDDCompanies(); search.focus(); }
+  });
+  panel.addEventListener('click',e=>e.stopPropagation());   // keep open while searching
+  search.addEventListener('input', buildDDCompanies);
+  document.addEventListener('click', ()=>{ if(sel.classList.contains('open')) closeDDPicker(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDDPicker(); });
   document.querySelectorAll('#ddSource button').forEach(b=>b.addEventListener('click',()=>{
     ddSrc=b.dataset.src;
     document.querySelectorAll('#ddSource button').forEach(x=>x.classList.toggle('active',x.dataset.src===ddSrc));
