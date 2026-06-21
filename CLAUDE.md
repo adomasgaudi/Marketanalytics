@@ -83,8 +83,10 @@ Each rule = two rows: **description**, then *kind · type*.
 
 | Rule | Description / mechanics |
 | --- | --- |
-| **BULD-02** Version badge | one continuous counter everywhere — `<h1>` badge = top `VERSIONS` entry = git `vN`; bump the last digit every change; A/B owner-only |
+| **BULD-02** Version badge | one continuous counter everywhere — `<h1>` badge = top `VERSIONS` entry = git commit; bump the patch digit (C in vA.B.C) every change; A/B owner-only |
 | <br /> | Hook - [`version_reminder.py`](.claude/hooks/version_reminder.py) - verifiable |
+| **GIT-01** Commit format | `vN RULE-ID \| short description \| N sp` — `vN` is the patch digit only (e.g. `v41`), not the full `vA.B.C`; RULE-ID is the primary rule driving the change; sp = story points |
+| <br /> | Context · verifiable · Stable |
 | **BULD-03** Story points | 0.5–10 per update, effort/time not LOC; logged in `VERSIONS` array, shown via "📋 SP history" modal |
 | <br /> | Hook - [`version_reminder.py`](.claude/hooks/version_reminder.py) - mixed |
 | **REPO-02** Branch | work from `main`; merge back immediately — never strand work on a side branch |
