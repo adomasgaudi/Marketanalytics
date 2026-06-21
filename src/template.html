@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.64</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.65</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = light.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -162,13 +162,13 @@
   .src-legend .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
   .dot-orig{background:var(--green)} .dot-scrape{background:var(--accent)} .dot-both{background:var(--purple)}
   /* Rekvizitai tables: wrap long text, fixed layout, source-tinted rows */
-  #rekView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:fixed}
+  #rekView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   #rekView thead{position:sticky;top:0;z-index:2}
   #rekView th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;white-space:nowrap}
   #rekView td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:normal;overflow-wrap:anywhere;word-break:break-word;vertical-align:top}
   #rekView td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  #rekView th.colField,#rekView td.fieldcell{width:34%}
-  #rekView th.colYear,#rekView td.num.yr{width:auto}
+  #rekView th.colField,#rekView td.fieldcell{min-width:150px;max-width:230px}
+  #rekView th.colYear{min-width:88px}
   #rekView tbody tr:nth-child(even) td{background:var(--zebra)}
   #rekView tr:hover td{background:var(--hover)}
   /* colour the row by source (left edge + faint tint) — no text tags */
@@ -229,7 +229,7 @@
     <button class="nav-btn" data-view="dataView">Data Explorer</button>
     <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   </div>
-  <span class="nav-version">v0.1.64</span>
+  <span class="nav-version">v0.1.65</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -242,7 +242,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.64</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.65</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -867,6 +867,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.65', date:'2026-06-21', sp:1.5, title:'Fix Rekvizitai column overlap',
+    desc:'Year values no longer overlap; table scrolls horizontally instead.',
+    detail:'Dropped table-layout:fixed on the Rekvizitai matrix — it had squeezed ~8 year columns into ~30px each on mobile, so the nowrap euro values overflowed and overlapped the next column and the year headers clipped to "201". Now columns size to content and the table scrolls horizontally inside its wrapper, matching the Data Explorer table (DBG-02 contrast fix).'},
   {v:'v0.1.64', date:'2026-06-21', sp:1,   title:'Push-to-main guard hook',
     desc:'Hook warns when a push targets a non-main branch (REPO-01).',
     detail:'Added require_main_push.py (PreToolUse) that warns when git push targets a non-main branch, and wired the existing save_reminder.py Stop hook into the committed settings so end-of-turn flags unpushed main — both run in web sessions now. Stops work being stranded on a feature branch where the owner never sees it (PROC-01).'},
