@@ -122,8 +122,13 @@
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
   .nav-version{font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;margin-right:8px;white-space:nowrap}
-  .theme-toggle{font-size:14px;line-height:1;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;margin-right:10px;cursor:pointer;font-family:inherit;transition:.15s}
-  .theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+  .settings-wrap{position:relative;margin-right:8px}
+  .settings-cog{font-size:16px;line-height:1;color:var(--muted);background:none;border:none;padding:8px 10px;cursor:pointer;font-family:inherit;transition:.15s}
+  .settings-cog:hover{color:var(--text)}
+  .settings-menu{display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:200}
+  .settings-menu.open{display:block}
+  .settings-menu button{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;color:var(--text);font-size:13px;font-family:inherit;padding:7px 10px;border-radius:6px;cursor:pointer;text-align:left}
+  .settings-menu button:hover{background:var(--panel2)}
 
   /* ── Views ── */
   .view{display:none}
@@ -197,15 +202,20 @@
   <button class="nav-btn" data-view="dataView">Data Explorer</button>
   <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   <div class="nav-spacer"></div>
-  <button class="theme-toggle" id="themeToggle" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
-  <span class="nav-version">v0.1.57</span>
+  <span class="nav-version">v0.1.58</span>
+  <div class="settings-wrap">
+    <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
+    <div class="settings-menu" id="settingsMenu">
+      <button id="themeToggle">🌙 Dark</button>
+    </div>
+  </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.57</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.58</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -452,7 +462,13 @@ function applyTheme(theme){
 syncThemeButton();
 document.getElementById('themeToggle').addEventListener('click', ()=>{
   applyTheme(currentTheme()==='dark' ? 'light' : 'dark');
+  document.getElementById('settingsMenu').classList.remove('open');
 });
+document.getElementById('settingsCog').addEventListener('click', e=>{
+  e.stopPropagation();
+  document.getElementById('settingsMenu').classList.toggle('open');
+});
+document.addEventListener('click', ()=>document.getElementById('settingsMenu').classList.remove('open'));
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
 const LAST = YEARS[YEARS.length-1];
@@ -828,6 +844,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.58', date:'2026-06-21', sp:1,   desc:'Settings cog in top-right nav: theme toggle moved into a dropdown behind a ⚙️ button; closes on outside click.'},
   {v:'v0.1.57', date:'2026-06-21', sp:1,   desc:'Fix mobile nav overflow: topnav scrolls horizontally on ≤600px; logo and version badge hidden on mobile to make room for Dashboard / Data Explorer / Rekvizitai tabs.'},
   {v:'v0.1.55', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape moved to its own top-level page (next to Data Explorer) with a sub-tab per scraped page (Įmonė, Finansai, Darbuotojai, Skolos). Removed the combined Rek sheet + tab column from Data Explorer; parser now writes rek_tabs.json (one field/value sheet per tab), injected via {"order": ["Įmonė", "Finansai", "Darbuotojai", "Skolos"], "tabs": {"Įmonė": {"columns": ["field", "value"], "rows": [["Pavadinimas", "6 vijos, MB"], ["Kreditavimo rizika", "Žema"], ["Šūkis", "Skaitmeninio augimo strateginis partneris."], ["Veiklos sritys", "Reklamos paslaugos"], ["Įmonės aprašymas", "Holistiniai rinkodaros ir pardavimų sprendimai pritaikyti JUMS. Mes pasiruošę panaudoti per daugelį metų sukauptas žinias Jūsų įmonės augimui ir strateginių tikslų pasiekimui."], ["Įmonės kodas", "304405052"], ["PVM mokėtojo kodas", "LT100018834410"], ["Įmonės amžius", "9 metai 8 mėnesiai 23 dienos"], ["Vadovas", "Henrikas Senkus"], ["Adresas", "Polocko g. 51-11, LT-01205 Vilnius"], ["Mobilus telefonas", "+370 650 97123"], ["Tinklalapis", "http://6loops.lt"], ["Įvertinimas", "7 / 10 (įvertino 1)"], ["LinkedIn paskyra", "https://www.linkedin.com/company/6-loops/"], ["Darbuotojai", "1 darbuotojas - apdraustasis"], ["Eksportas", "20% nuo apyvartos Jungtinės Amerikos Valstijos, Latvija, Estija"], ["SODRA (VSDFV)", "skola 94,55 € (2026-06-20 dienos pradžioje)"], ["Kredito rizika", "Žema"], ["Ataskaita", "Išsami ataskaita Tik 45 Eur Ataskaitoje yra specifinių duomenų"]]}, "Finansai": {"columns": ["field", "value"], "rows": [["Pardavimo pajamos 2022", "0 €"], ["Pardavimo pajamos 2023", "23 740 €"], ["Pardavimo pajamos 2024", "60 840 €"], ["Pardavimo pajamos 2025", "123 706 €"], ["Pelnas (nuostoliai) prieš mokesčius 2021", "0 €"], ["Pelnas (nuostoliai) prieš mokesčius 2022", "0 €"], ["Pelnas (nuostoliai) prieš mokesčius 2023", "19 584 €"], ["Pelnas (nuostoliai) prieš mokesčius 2024", "32 936 €"], ["Pelnas (nuostoliai) prieš mokesčius 2025", "65 157 €"], ["Pelningumas prieš mokesčius 2023", "82,49 %"], ["Pelningumas prieš mokesčius 2024", "54,14 %"], ["Pelningumas prieš mokesčius 2025", "52,67 %"], ["Grynasis pelnas (nuostoliai) 2021", "0 €"], ["Grynasis pelnas (nuostoliai) 2022", "0 €"], ["Grynasis pelnas (nuostoliai) 2023", "18 605 €"], ["Grynasis pelnas (nuostoliai) 2024", "31 289 €"], ["Grynasis pelnas (nuostoliai) 2025", "60 309 €"], ["Grynasis pelningumas 2023", "78,37 %"], ["Grynasis pelningumas 2024", "51,43 %"], ["Grynasis pelningumas 2025", "48,75 %"], ["Nuosavas kapitalas 2021", "199 €"], ["Nuosavas kapitalas 2022", "0 €"], ["Nuosavas kapitalas 2023", "5 007 €"], ["Nuosavas kapitalas 2024", "8 087 €"], ["Nuosavas kapitalas 2025", "33 141 €"], ["Mokėtinos sumos ir įsipareigojimai 2021", "0 €"], ["Mokėtinos sumos ir įsipareigojimai 2022", "0 €"], ["Mokėtinos sumos ir įsipareigojimai 2023", "1 240 €"], ["Mokėtinos sumos ir įsipareigojimai 2024", "2 951 €"], ["Mokėtinos sumos ir įsipareigojimai 2025", "8 081 €"], ["Ilgalaikis turtas 2021", "0 €"], ["Ilgalaikis turtas 2022", "0 €"], ["Ilgalaikis turtas 2023", "0 €"], ["Ilgalaikis turtas 2024", "0 €"], ["Ilgalaikis turtas 2025", "0 €"], ["Trumpalaikis turtas 2021", "199 €"], ["Trumpalaikis turtas 2022", "0 €"], ["Trumpalaikis turtas 2023", "6 247 €"], ["Trumpalaikis turtas 2024", "11 038 €"], ["Trumpalaikis turtas 2025", "41 222 €"], ["Pardavimo pajamos (grafikas) 2017", "6730 €"], ["Pardavimo pajamos (grafikas) 2018", "3060 €"], ["Pardavimo pajamos (grafikas) 2019", "4301 €"], ["Pardavimo pajamos (grafikas) 2022", "23740 €"], ["Pardavimo pajamos (grafikas) 2023", "60840 €"], ["Pardavimo pajamos (grafikas) 2024", "123706 €"], ["Pelnas prieš mokesčius (grafikas) 2017", "3411 €"], ["Pelnas prieš mokesčius (grafikas) 2018", "-3087 €"], ["Pelnas prieš mokesčius (grafikas) 2019", "1 €"], ["Pelnas prieš mokesčius (grafikas) 2022", "19584 €"], ["Pelnas prieš mokesčius (grafikas) 2023", "32936 €"], ["Pelnas prieš mokesčius (grafikas) 2024", "65157 €"], ["Grynasis pelnas (grafikas) 2017", "3240 €"], ["Grynasis pelnas (grafikas) 2018", "-3087 €"], ["Grynasis pelnas (grafikas) 2019", "1 €"], ["Grynasis pelnas (grafikas) 2022", "18605 €"], ["Grynasis pelnas (grafikas) 2023", "31289 €"], ["Grynasis pelnas (grafikas) 2024", "60309 €"]]}, "Darbuotojai": {"columns": ["field", "value"], "rows": [["Darbuotojų (apdraustųjų) skaičius", "1"], ["Metinis darbuotojų vidurkis", "1 (+0%)"], ["Darbuotojų skaičius (grafikas) 2024-08-05", "1"], ["Darbuotojų skaičius (grafikas) 2026-02-09", "2"], ["Darbuotojų skaičius (grafikas) 2026-04-17", "1"], ["Darbuotojų skaičius (grafikas) 2026-06-20", "1"]]}, "Skolos": {"columns": ["field", "value"], "rows": [["Registruotos skolos", "Turi"], ["Skolų pokyčių įrašai", "38 įrašai nuo 2026-06-16"], ["Kreditingumas (Juris LT)", "neskolinga — Juris LT, UAB"], ["Skola VMI 2024-06-19", "977.53 €"], ["Skola VMI 2024-06-21", "0.84 €"], ["Skola VMI 2024-10-02", "1.12 €"], ["Skola VMI 2024-10-31", "1.16 €"], ["Skola VMI 2024-11-21", "0 €"], ["Skola VMI 2024-11-23", "1.3 €"], ["Skola VMI 2024-12-13", "36.82 €"], ["Skola VMI 2024-12-14", "1.3 €"], ["Skola VMI 2024-12-31", "1.41 €"], ["Skola VMI 2025-01-16", "0.16 €"], ["Skola VMI 2025-02-14", "0 €"], ["Skola VMI 2026-02-11", "0.42 €"], ["Skola VMI 2026-02-28", "0 €"], ["Skola VMI 2026-03-28", "0.26 €"], ["Skola VMI 2026-04-19", "0.26 €"], ["Skola VMI 2026-04-23", "0 €"], ["Skola VMI 2026-04-25", "0 €"], ["Skola VMI 2026-04-26", "0 €"], ["Skola VMI 2026-04-27", "0 €"], ["Skola VMI 2026-04-29", "0.26 €"], ["Skola VMI 2026-05-02", "0.26 €"], ["Skola VMI 2026-05-04", "0.26 €"], ["Skola VMI 2026-05-12", "0.26 €"], ["Skola VMI 2026-05-16", "0.26 €"], ["Skola VMI 2026-05-24", "0 €"], ["Skola VMI 2026-05-27", "0.26 €"], ["Skola VMI 2026-05-31", "0.34 €"], ["Skola VMI 2026-06-15", "0.34 €"], ["Skola VMI 2026-06-20", "0.34 €"], ["Skola Sodrai 2022-10-02", "50.95 €"], ["Skola Sodrai 2022-11-02", "101.9 €"], ["Skola Sodrai 2022-11-16", "0 €"], ["Skola Sodrai 2024-05-14", "211.85 €"], ["Skola Sodrai 2024-05-30", "0 €"], ["Skola Sodrai 2024-06-02", "56.34 €"], ["Skola Sodrai 2024-06-17", "0 €"], ["Skola Sodrai 2024-06-19", "0 €"], ["Skola Sodrai 2024-06-21", "0 €"], ["Skola Sodrai 2024-10-02", "0 €"], ["Skola Sodrai 2024-10-31", "0 €"], ["Skola Sodrai 2024-11-21", "0 €"], ["Skola Sodrai 2024-11-23", "0 €"], ["Skola Sodrai 2024-12-13", "0 €"], ["Skola Sodrai 2024-12-14", "0 €"], ["Skola Sodrai 2024-12-31", "0 €"], ["Skola Sodrai 2025-01-16", "0 €"], ["Skola Sodrai 2025-02-14", "0 €"], ["Skola Sodrai 2026-02-11", "0 €"], ["Skola Sodrai 2026-02-28", "0 €"], ["Skola Sodrai 2026-03-28", "0 €"], ["Skola Sodrai 2026-04-19", "149.53 €"], ["Skola Sodrai 2026-04-23", "149.78 €"], ["Skola Sodrai 2026-04-25", "149.53 €"], ["Skola Sodrai 2026-04-26", "149.78 €"], ["Skola Sodrai 2026-04-27", "0 €"], ["Skola Sodrai 2026-04-29", "0 €"], ["Skola Sodrai 2026-05-02", "93.3 €"], ["Skola Sodrai 2026-05-04", "78.53 €"], ["Skola Sodrai 2026-05-12", "253.56 €"], ["Skola Sodrai 2026-05-16", "535.09 €"], ["Skola Sodrai 2026-05-24", "535.09 €"], ["Skola Sodrai 2026-05-27", "287.47 €"], ["Skola Sodrai 2026-05-31", "0 €"], ["Skola Sodrai 2026-06-15", "94.55 €"], ["Skola Sodrai 2026-06-20", "94.55 €"]]}}}.'},
   {v:'v0.1.54', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape now also pulls the Highcharts time-series behind the diagrams (embedded JSON.parse blobs) — financials back to 2017, full dated VMI/Sodra debt history, headcount over time. 151 fields, was 64. Debt/headcount points use full YYYY-MM-DD so snapshots don\'t collide.'},
