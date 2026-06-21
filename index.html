@@ -162,7 +162,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.3.7</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.39</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -380,6 +380,11 @@ const MY_COMPANIES = [
   {brand:'Fabula', note:`The company at <b>rekvizitai.vz.lt/imone/viesuju_rysiu_partneriai</b> — <b>Viešųjų ryšių partneriai (VRP)</b>, company code <b>124099127</b>, founded 1997 — now trades as <b>Fabula ir partneriai, UAB</b> and is already tracked here. The panels below pull out its figures and rank it against all ${BRANDS.length} competitors.`},
   // Add more companies below, e.g.: {brand: 'Brandname', note: 'Description...'}
 ];
+// Primary company (pinned/highlighted across charts + explorer). Derived from
+// MY_COMPANIES[0] — fixes the ReferenceError that halted the whole script
+// when the old single-brand MY_BRAND constant was left referenced after the
+// MY_COMPANIES refactor (#persistent: Data Explorer blank).
+const MY_BRAND = MY_COMPANIES[0].brand;
 
 let chMineInst = null, chMineRankInst = null;
 
@@ -715,22 +720,23 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
-  {v:'v0.1.3.7', date:'2026-06-21', sp:2,   desc:'Changelog as a floating button: moved “SP history” out of the h1 into a small fixed bottom-right “📋 Changelog” button; paginated the history list (8 per page, Newer/Older) so you can scan what’s new in-page without opening the code.'},
-  {v:'v0.1.3.6', date:'2026-06-21', sp:2,   desc:'Data Explorer still blank (#persistent): added on-screen JS error banner (phones have no devtools) + wrapped eager initDataExplorer() in try/catch so a thrown error is surfaced visibly instead of silently halting the whole script. Diagnostic to pinpoint the real root on the owner’s device.'},
-  {v:'v0.1.3.5', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer table invisible on mobile: replace max-height:calc(100vh-280px) with min-height:200px+max-height:65vh; add overflow-x:auto on tab strip so tabs scroll instead of clip.'},
-  {v:'v0.1.3.4', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer blank on mobile: removed lazy-init guard, now calls initDataExplorer() eagerly on page load so tabs and table are always populated regardless of click order.'},
-  {v:'v0.1.3.3', date:'2026-06-20', sp:2,   desc:'Company tabs in "My companies" section. MY_COMPANIES array drives tab strip — currently only Fabula. Adding a company = push one object to the array. Charts and KPIs re-render on tab switch; old Chart instances destroyed before redraw.'},
-  {v:'v0.1.3.2', date:'2026-06-20', sp:2,   desc:'Show calculation formulas on all derived KPI values in the "My company" section: YoY % formula with actual numbers, margin formula, CAGR formula, rank explanation — each shown inline below the sub-label.'},
-  {v:'v0.1.3.1', date:'2026-06-20', sp:1,   desc:'Mobile nav fix: hide nav-sub subtitle on ≤600px, reduce logo/button padding, add padding tweaks for content areas and h1 font size. Fixes overflow on smartphones.'},
-  {v:'v0.1.3.0', date:'2026-06-10', sp:4,   desc:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav + Data Explorer (5 Excel sheets, search, sort, pagination, CSV export) into the full-featured template, keeping all dashboard features intact.'},
+  {v:'v0.1.39', date:'2026-06-21', sp:3,   desc:'Fix Data Explorer blank (#persistent ROOT FOUND): the on-screen banner exposed “MY_BRAND is not defined” — a leftover reference from the MY_COMPANIES refactor threw at the scatter chart and halted the whole script before the explorer could init. Defined MY_BRAND = MY_COMPANIES[0].brand.'},
+  {v:'v0.1.38', date:'2026-06-21', sp:2,   desc:'Changelog as a floating button: moved “SP history” out of the h1 into a small fixed bottom-right “📋 Changelog” button; paginated the history list (8 per page, Newer/Older) so you can scan what’s new in-page without opening the code.'},
+  {v:'v0.1.37', date:'2026-06-21', sp:2,   desc:'Data Explorer still blank (#persistent): added on-screen JS error banner (phones have no devtools) + wrapped eager initDataExplorer() in try/catch so a thrown error is surfaced visibly instead of silently halting the whole script. Diagnostic to pinpoint the real root on the owner’s device.'},
+  {v:'v0.1.36', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer table invisible on mobile: replace max-height:calc(100vh-280px) with min-height:200px+max-height:65vh; add overflow-x:auto on tab strip so tabs scroll instead of clip.'},
+  {v:'v0.1.35', date:'2026-06-20', sp:1,   desc:'Fix Data Explorer blank on mobile: removed lazy-init guard, now calls initDataExplorer() eagerly on page load so tabs and table are always populated regardless of click order.'},
+  {v:'v0.1.34', date:'2026-06-20', sp:2,   desc:'Company tabs in "My companies" section. MY_COMPANIES array drives tab strip — currently only Fabula. Adding a company = push one object to the array. Charts and KPIs re-render on tab switch; old Chart instances destroyed before redraw.'},
+  {v:'v0.1.33', date:'2026-06-20', sp:2,   desc:'Show calculation formulas on all derived KPI values in the "My company" section: YoY % formula with actual numbers, margin formula, CAGR formula, rank explanation — each shown inline below the sub-label.'},
+  {v:'v0.1.32', date:'2026-06-20', sp:1,   desc:'Mobile nav fix: hide nav-sub subtitle on ≤600px, reduce logo/button padding, add padding tweaks for content areas and h1 font size. Fixes overflow on smartphones.'},
+  {v:'v0.1.31', date:'2026-06-10', sp:4,   desc:'Merged two parallel AI sessions that had diverged on main: a second session shipped a Data Explorer SPA but overwrote every feature from this line of work. Resolved by porting its top-nav + Data Explorer (5 Excel sheets, search, sort, pagination, CSV export) into the full-featured template, keeping all dashboard features intact.'},
   {v:'—',        date:'2026-06-10', sp:3,   desc:'(Parallel session) Data Explorer view: raw Excel sheets browsable with tabs, search, sorting, pagination and CSV export; sheets_data.json + build pipeline extended.'},
-  {v:'v0.1.2.2', date:'2026-06-10', sp:0.5, desc:'Workflow rule: all changes always merge to main immediately (documented in AGENTS.md).'},
-  {v:'v0.1.2.1', date:'2026-06-10', sp:1,   desc:'Docs for AI assistants: AGENTS.md with project context, data dictionary, conventions and full prompt history; CLAUDE.md pointer.'},
-  {v:'v0.1.2.0', date:'2026-06-10', sp:4,   desc:'Turnover vs revenue (spėjamos pajamos) split across the whole dashboard: reordered KPI strip (turnover, turnover CAGR, revenue, revenue CAGR, profit margin from revenue + YoY), market chart shows both, segments/rankings/growth/scatter/rev-per-employee/explorer switched or extended to spėjamos pajamos, footer credit added. Touched every chart — each threshold and tooltip had to be re-checked.'},
-  {v:'v0.1.1.0', date:'2026-06-10', sp:3,   desc:'SP &amp; version history: this button + history overlay, with the version log embedded.'},
-  {v:'v0.1.0.0', date:'2026-06-10', sp:0.5, desc:'Version badge added to the header.'},
-  {v:'v0.0.1.0', date:'2026-06-10', sp:5,   desc:'“My company” section — researched the VRP→Fabula rebrand (live scraping was blocked, resolved via web search + shared company code 124099127), added KPI cards with market rank, a 2019–2024 trend chart, a percentile-vs-market chart, gold highlight in the scatter plot and a pinned row in the explorer.'},
-  {v:'v0.0.0.0', date:'2026-06-10', sp:5,   desc:'Initial competitor dashboard — 113 agencies, KPI strip, key insights, market/segment/ranking/salary charts and a searchable explorer.'},
+  {v:'v0.1.30', date:'2026-06-10', sp:0.5, desc:'Workflow rule: all changes always merge to main immediately (documented in AGENTS.md).'},
+  {v:'v0.1.29', date:'2026-06-10', sp:1,   desc:'Docs for AI assistants: AGENTS.md with project context, data dictionary, conventions and full prompt history; CLAUDE.md pointer.'},
+  {v:'v0.1.28', date:'2026-06-10', sp:4,   desc:'Turnover vs revenue (spėjamos pajamos) split across the whole dashboard: reordered KPI strip (turnover, turnover CAGR, revenue, revenue CAGR, profit margin from revenue + YoY), market chart shows both, segments/rankings/growth/scatter/rev-per-employee/explorer switched or extended to spėjamos pajamos, footer credit added. Touched every chart — each threshold and tooltip had to be re-checked.'},
+  {v:'v0.1.27', date:'2026-06-10', sp:3,   desc:'SP &amp; version history: this button + history overlay, with the version log embedded.'},
+  {v:'v0.1.26', date:'2026-06-10', sp:0.5, desc:'Version badge added to the header.'},
+  {v:'v0.1.25', date:'2026-06-10', sp:5,   desc:'“My company” section — researched the VRP→Fabula rebrand (live scraping was blocked, resolved via web search + shared company code 124099127), added KPI cards with market rank, a 2019–2024 trend chart, a percentile-vs-market chart, gold highlight in the scatter plot and a pinned row in the explorer.'},
+  {v:'v0.1.24', date:'2026-06-10', sp:5,   desc:'Initial competitor dashboard — 113 agencies, KPI strip, key insights, market/segment/ranking/salary charts and a searchable explorer.'},
 ];
 const spTotal = VERSIONS.reduce((s,v)=>s+v.sp,0);
 document.getElementById('spTotal').textContent = spTotal;

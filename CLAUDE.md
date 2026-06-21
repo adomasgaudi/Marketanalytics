@@ -83,7 +83,7 @@ Each rule = two rows: **description**, then *kind · type*.
 
 | Rule | Description / mechanics |
 | --- | --- |
-| **BULD-02** Version badge | `<h1>` badge every change. `vA.B.C`: bump **C**; **B** owner-only; **A** owner-only |
+| **BULD-02** Version badge | one continuous counter everywhere — `<h1>` badge = top `VERSIONS` entry = git `vN`; bump the last digit every change; A/B owner-only |
 | <br /> | Hook - [`version_reminder.py`](.claude/hooks/version_reminder.py) - verifiable |
 | **BULD-03** Story points | 0.5–10 per update, effort/time not LOC; logged in `VERSIONS` array, shown via "📋 SP history" modal |
 | <br /> | Hook - [`version_reminder.py`](.claude/hooks/version_reminder.py) - mixed |
