@@ -4,3 +4,7 @@
 # Scraper intermediates — multi-MB raw HTML per tab, reproducible via scrape_6_vijos.py
 6_vijos_raw.html
 data/raw/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

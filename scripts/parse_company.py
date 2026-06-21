@@ -250,25 +250,25 @@ def upsert_company(block):
                 payload = existing
         except Exception:
             pass
+    clean_block = {k: v for k, v in block.items() if not k.startswith("_")}
     companies = [c for c in payload["companies"] if c.get("slug") != block["slug"]]
-    companies.append(block)
+    companies.append(clean_block)
+    # keep companies sorted by name for a stable, predictable picker order
+    companies.sort(key=lambda c: (c.get("name") or c.get("slug") or "").lower())
     payload["companies"] = companies
     with open(REK_TABS_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False)
     return payload
 
 
-def main():
-    args = sys.argv[1:]
-    if not args:
-        sys.exit("usage: python3 scripts/parse_company.py <slug> [--brand NAME]")
-    slug = args[0]
-    brand_override = None
-    if "--brand" in args:
-        brand_override = args[args.index("--brand") + 1]
-
+def parse_one(slug, brand_override=None, quiet=False):
+    """Parse one slug's scraped tabs into a company block dict (no file write).
+    Returns the block, or None if no tab HTML was found for the slug."""
     name = company_name(slug)
-    # company-specific chrome (e.g. "Susisiekti el. paštu su Adell reklama")
+    # company-specific chrome (e.g. "Susisiekti el. paštu su Adell reklama").
+    # NOISE is module-global; reset to base each call so slugs don't leak.
+    global NOISE
+    NOISE = list(BASE_NOISE)
     short = re.sub(r",?\s*(UAB|MB|AB|VšĮ|IĮ)\.?$", "", name, flags=re.I).strip()
     NOISE.extend([f"Susisiekti el. paštu su {short} Siųsti Uždaryti",
                   f"Susisiekti el. paštu su {short}"])
@@ -277,11 +277,13 @@ def main():
     for key in ["imone", "finansai", "darbuotojai", "skolos"]:
         path = os.path.join(RAW_DIR, f"{slug}_{key}.html")
         if not os.path.exists(path):
-            print(f"  (skip {key}: no file)")
             continue
         tr = parse_tab(key, path)
         all_rows.extend(tr)
-        print(f"  {TAB_LABEL.get(key, key):12} -> {len(tr)} fields")
+        if not quiet:
+            print(f"    {TAB_LABEL.get(key, key):12} -> {len(tr)} fields")
+    if not all_rows:
+        return None
 
     # de-dup (field,value): the same contact/code repeats across tabs' headers
     seen, final = set(), []
@@ -299,10 +301,23 @@ def main():
         tabs[tab]["rows"].append([field, value])
 
     brand = brand_override or detect_brand(name)
-    block = {"slug": slug, "name": name, "brand": brand, "order": order, "tabs": tabs}
-    payload = upsert_company(block)
+    return {"slug": slug, "name": name, "brand": brand,
+            "order": order, "tabs": tabs, "_count": len(final)}
 
-    print(f"\n{name} (brand={brand}): {len(final)} fields across {len(order)} tabs")
+
+def main():
+    args = sys.argv[1:]
+    if not args:
+        sys.exit("usage: python3 scripts/parse_company.py <slug> [--brand NAME]")
+    slug = args[0]
+    brand_override = args[args.index("--brand") + 1] if "--brand" in args else None
+
+    block = parse_one(slug, brand_override)
+    if not block:
+        sys.exit(f"No tab HTML for '{slug}' in {RAW_DIR} — run scrape_company.py first.")
+    payload = upsert_company(block)
+    print(f"\n{block['name']} (brand={block['brand']}): {block['_count']} fields "
+          f"across {len(block['order'])} tabs")
     print(f"rek_tabs.json now holds {len(payload['companies'])} compan"
           f"{'y' if len(payload['companies'])==1 else 'ies'}: "
           + ", ".join(c['slug'] for c in payload['companies']))
