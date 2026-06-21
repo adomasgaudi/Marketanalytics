@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.83</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.84</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.83</span>
+  <span class="nav-version">v0.1.84</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.83</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.84</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -407,11 +407,11 @@
   </div>
 
   <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
-  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Drag to pan any direction, scroll or pinch to zoom (Shift/Alt = one axis), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
+  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Pick several companies to overlay & compare them; drag to pan any direction, scroll or pinch to zoom (Shift/Alt = one axis), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
   <div class="dd-wrap">
     <div class="dd-bar">
       <div class="co-select" id="sddCompanySelect">
-        <button class="co-select-btn" id="sddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddCoLabel">Select company</span><span class="co-caret">▾</span></button>
+        <button class="co-select-btn" id="sddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddCoLabel">Select companies</span><span class="co-caret">▾</span></button>
         <div class="co-select-panel" id="sddCoPanel">
           <input class="co-select-search" id="sddCoSearch" placeholder="Search company…" autocomplete="off">
           <div class="co-select-list" id="sddCoList" role="listbox"></div>
@@ -425,6 +425,7 @@
         <button data-src="sodra">Sodra</button>
       </div>
     </div>
+    <div id="sddCoChips" style="display:flex;flex-wrap:wrap;gap:4px;margin:0 0 8px"></div>
     <div class="grid">
       <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
       <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
@@ -996,6 +997,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.84', date:'2026-06-21 22:40', sp:4, title:'Compare multiple companies',
+    desc:'The SVG deep-dive picker is now multi-select — overlay several companies per chart.',
+    detail:'The deep-dive company picker became a multi-select: tap to toggle companies in/out (panel stays open), with a removable colour-coded chip row showing the selection. One company keeps the full multi-metric view; two or more switch each chart to compare mode — one primary metric line per company, coloured from the shared palette and shape-marked by the SVG engine. Works with the source toggle and the new pan/zoom.'},
   {v:'v0.1.83', date:'2026-06-21 22:10', sp:3, title:'Two-axis pan & zoom',
     desc:'SVG deep-dive charts now pan and zoom up/down as well as sideways.',
     detail:'Extended the view window to both axes ({xMin,xMax,yMin,yMax} + a right-axis range): drag pans in any direction (unbounded), wheel/pinch zoom about the cursor with per-axis pinch (sideways spread → X, vertical → Y) and Shift/Alt to lock one axis on desktop. Y ticks follow the view. touch-action:none so vertical drags pan instead of scrolling the page over a chart; ⤢ / double-tap re-fits both axes.'},
@@ -1676,40 +1680,70 @@ function drawFinSvg(container, spec){
 }
 
 // ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
-let sddCo = DD_COMPANIES[0]||null, sddSrc='combined';
+let sddCos = DD_COMPANIES[0] ? [DD_COMPANIES[0]] : [], sddSrc='combined';
+const SDD_PALETTE=['--accent','--green','--amber','--purple','--red','--gold','--muted'];
+const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
+const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
+// One chart spec for the current selection. 1 company → full multi-metric spec (unchanged);
+// 2+ companies → "compare mode": one PRIMARY metric line per company, coloured per company.
+function sddSpec(id, src, cos){
+  if(!cos.length) return {empty:'Select a company.'};
+  if(cos.length===1) return ddSpecFor(id, src, cos[0]);
+  const series=[]; let yTitle='';
+  cos.forEach((co,i)=>{
+    let base; try{ base=ddSpecFor(id, src, co); }catch(e){ base=null; }
+    if(!base||!base.series) return;
+    const prim=base.series.find(s=>s.data && s.data.length && s.yAxisID!=='y2'); // first left-axis metric
+    if(!prim) return;
+    if(!yTitle) yTitle=base.yTitle||'';
+    series.push({label:coShort(co), data:prim.data, color:sddColor(i)});
+  });
+  return series.length ? {series, yTitle} : {empty:'No data for the selected companies from '+src+'.'};
+}
 function drawSDD(){
-  if(!sddCo) return;
+  const cos=sddCos.filter(Boolean);
   Object.keys(DD_SPECS).forEach(id=>{
     const sid='s'+id; // ddRev -> sddRev
-    const spec=ddSpecFor(id, sddSrc, sddCo);
+    const spec=sddSpec(id, sddSrc, cos);
     const cont=document.getElementById(sid), emptyEl=document.getElementById(sid+'Empty'), descEl=document.getElementById(sid+'Desc');
     if(!cont) return;
     const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
     if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
     if(emptyEl) emptyEl.classList.remove('show');
-    if(descEl) descEl.textContent=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc)+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+    const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
+    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies (primary metric) · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
     drawFinSvg(cont, spec);
   });
+}
+// Removable chips for the selected companies (colour dot = its compare-mode line colour).
+function buildSDDChips(){
+  const wrap=document.getElementById('sddCoChips'); if(!wrap) return;
+  wrap.innerHTML=sddCos.map((c,i)=>`<span class="sdd-chip" data-slug="${esc(c.slug)}" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--panel2)"><i style="width:8px;height:8px;border-radius:50%;background:${sddColor(i)}"></i>${esc(coShort(c))}<b data-x="1" style="cursor:pointer;opacity:.55;font-weight:700">✕</b></span>`).join('');
+  wrap.querySelectorAll('.sdd-chip b[data-x]').forEach(x=>x.addEventListener('click',e=>{
+    e.stopPropagation(); const slug=x.parentNode.dataset.slug, idx=sddCos.findIndex(c=>c.slug===slug);
+    if(idx>=0){ sddCos.splice(idx,1); buildSDDChips(); buildSDDCompanies(); drawSDD(); }
+  }));
 }
 function buildSDDCompanies(){
   const list=document.getElementById('sddCoList'); if(!list) return;
   const label=document.getElementById('sddCoLabel');
-  if(label) label.textContent = sddCo ? (sddCo.name||sddCo.slug) : 'Select company';
+  if(label) label.textContent = !sddCos.length?'Select companies':sddCos.length===1?(sddCos[0].name||sddCos[0].slug):sddCos.length+' companies';
   const q=(document.getElementById('sddCoSearch')?.value||'').trim().toLowerCase();
   const opts=DD_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  const sel=new Set(sddCos.map(c=>c.slug));
   list.innerHTML = opts.length
-    ? opts.map(c=>`<div class="co-select-opt${c===sddCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
+    ? opts.map(c=>`<div class="co-select-opt${sel.has(c.slug)?' active':''}" role="option" aria-selected="${sel.has(c.slug)}" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
     : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
-    sddCo=DD_COMPANIES.find(c=>c.slug===o.dataset.slug)||sddCo;
-    document.getElementById('sddCompanySelect').classList.remove('open');
-    document.getElementById('sddCoBtn').setAttribute('aria-expanded','false');
-    buildSDDCompanies(); drawSDD();
+    const slug=o.dataset.slug, co=DD_COMPANIES.find(c=>c.slug===slug); if(!co) return;
+    const idx=sddCos.findIndex(c=>c.slug===slug);
+    if(idx>=0) sddCos.splice(idx,1); else sddCos.push(co);   // toggle in/out; panel stays open
+    buildSDDChips(); buildSDDCompanies(); drawSDD();
   }));
 }
 function initSDD(){
   if(!DD_COMPANIES.length) return;
-  buildSDDCompanies();
+  buildSDDCompanies(); buildSDDChips();
   const sel=document.getElementById('sddCompanySelect'), btn=document.getElementById('sddCoBtn'),
         panel=document.getElementById('sddCoPanel'), search=document.getElementById('sddCoSearch');
   btn.addEventListener('click',e=>{ e.stopPropagation();
