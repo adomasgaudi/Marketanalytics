@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.79</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.80</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.79</span>
+  <span class="nav-version">v0.1.80</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.79</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.80</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -406,23 +406,29 @@
   </div>
 
   <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
-  <div class="card full">
-    <div class="desc">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. The Chart.js copy above is left untouched for comparison.</div>
-    <div class="controls" style="align-items:center">
-      <div class="co-pills" id="sddCompanies"></div>
-      <span class="nav-spacer" style="flex:1"></span>
+  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. The Chart.js copy above is left untouched for comparison.</div>
+  <div class="dd-wrap">
+    <div class="dd-bar">
+      <div class="co-select" id="sddCompanySelect">
+        <button class="co-select-btn" id="sddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddCoLabel">Select company</span><span class="co-caret">▾</span></button>
+        <div class="co-select-panel" id="sddCoPanel">
+          <input class="co-select-search" id="sddCoSearch" placeholder="Search company…" autocomplete="off">
+          <div class="co-select-list" id="sddCoList" role="listbox"></div>
+        </div>
+      </div>
+      <span style="flex:1"></span>
       <div class="seg" id="sddSource">
         <button data-src="initial" class="active">Initial</button>
         <button data-src="rekvizitai">Rekvizitai</button>
         <button data-src="sodra">Sodra</button>
       </div>
     </div>
-  </div>
-  <div class="grid">
-    <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
-    <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
-    <div class="card"><h2>Headcount over time</h2><div class="desc" id="sddEmpDesc"></div><div class="chartbox"><div class="svgwrap" id="sddEmp" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddEmpEmpty"></div></div></div>
-    <div class="card"><h2>Average wage over time</h2><div class="desc" id="sddWageDesc"></div><div class="chartbox"><div class="svgwrap" id="sddWage" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddWageEmpty"></div></div></div>
+    <div class="grid">
+      <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
+      <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
+      <div class="card"><h2>Headcount over time</h2><div class="desc" id="sddEmpDesc"></div><div class="chartbox"><div class="svgwrap" id="sddEmp" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddEmpEmpty"></div></div></div>
+      <div class="card"><h2>Average wage over time</h2><div class="desc" id="sddWageDesc"></div><div class="chartbox"><div class="svgwrap" id="sddWage" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddWageEmpty"></div></div></div>
+    </div>
   </div>
 
   <h2 class="section">Company explorer</h2>
@@ -988,6 +994,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.80', date:'2026-06-21 19:58', sp:1.5, title:'SVG deep-dive sticky dropdown',
+    desc:'New SVG deep-dive gets the same sticky searchable company dropdown.',
+    detail:'Applied the v76 treatment to the merged-in SVG-chart deep-dive: its company-pill grid is now the custom searchable dropdown in a sticky bar that floats under the nav while you scroll its four charts. Also preserved inline section badges (e.g. the “new” tag) when sections became collapsible.'},
   {v:'v0.1.79', date:'2026-06-21 21:20', sp:5,   title:'SVG-chart deep-dive copy',
     desc:'Second company deep-dive section rendered with a custom SVG engine (no Chart.js).',
     detail:'Added a "Company deep-dive — SVG charts" section below the existing Chart.js one, reusing the same DD_SPECS data + company picker + Initial/Rekvizitai/Sodra source toggle but rendering each chart with a custom vanilla-SVG engine ported from the Colosseum analytics view: per-series shaped markers (circle/diamond/square/triangle), direct end-of-line labels, dual y-axis (margin %), and a hover guide + tooltip. The original Chart.js copy is left fully intact for comparison.'},
@@ -1559,13 +1568,34 @@ function drawSDD(){
   });
 }
 function buildSDDCompanies(){
-  const el=document.getElementById('sddCompanies'); if(!el) return;
-  el.innerHTML=DD_COMPANIES.map(c=>`<button class="co-pill${c===sddCo?' active':''}" data-slug="${c.slug}">${c.name||c.slug}</button>`).join('');
-  el.querySelectorAll('.co-pill').forEach(btn=>btn.addEventListener('click',()=>{ sddCo=DD_COMPANIES.find(c=>c.slug===btn.dataset.slug)||sddCo; buildSDDCompanies(); drawSDD(); }));
+  const list=document.getElementById('sddCoList'); if(!list) return;
+  const label=document.getElementById('sddCoLabel');
+  if(label) label.textContent = sddCo ? (sddCo.name||sddCo.slug) : 'Select company';
+  const q=(document.getElementById('sddCoSearch')?.value||'').trim().toLowerCase();
+  const opts=DD_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  list.innerHTML = opts.length
+    ? opts.map(c=>`<div class="co-select-opt${c===sddCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
+    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
+  list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
+    sddCo=DD_COMPANIES.find(c=>c.slug===o.dataset.slug)||sddCo;
+    document.getElementById('sddCompanySelect').classList.remove('open');
+    document.getElementById('sddCoBtn').setAttribute('aria-expanded','false');
+    buildSDDCompanies(); drawSDD();
+  }));
 }
 function initSDD(){
   if(!DD_COMPANIES.length) return;
   buildSDDCompanies();
+  const sel=document.getElementById('sddCompanySelect'), btn=document.getElementById('sddCoBtn'),
+        panel=document.getElementById('sddCoPanel'), search=document.getElementById('sddCoSearch');
+  btn.addEventListener('click',e=>{ e.stopPropagation();
+    const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false');
+    if(open){ search.value=''; buildSDDCompanies(); search.focus(); }
+  });
+  panel.addEventListener('click',e=>e.stopPropagation());
+  search.addEventListener('input', buildSDDCompanies);
+  document.addEventListener('click', ()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
   document.querySelectorAll('#sddSource button').forEach(b=>b.addEventListener('click',()=>{
     sddSrc=b.dataset.src;
     document.querySelectorAll('#sddSource button').forEach(x=>x.classList.toggle('active',x.dataset.src===sddSrc));
@@ -1896,7 +1926,7 @@ function makeSectionsCollapsible(){
     details.open = saved!=='closed';           // default open
     const summary=document.createElement('summary');
     summary.className=h.className;             // keep "section" (+ "mine")
-    summary.textContent=h.textContent;
+    summary.innerHTML=h.innerHTML;             // keep inline badges (e.g. "new")
     details.appendChild(summary);
     const sibs=[];
     let n=h.nextElementSibling;
