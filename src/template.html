@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.56</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.57</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = light.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -100,11 +100,12 @@
   tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
   @media(max-width:600px){
-    .topnav{padding:0 12px}
-    .topnav .logo{font-size:13px;margin-right:8px}
-    .nav-btn{padding:12px 12px;font-size:12px}
+    .topnav{padding:0 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+    .topnav .logo{display:none}
+    .nav-btn{padding:10px 10px;font-size:12px;white-space:nowrap;flex-shrink:0}
     .nav-sub{display:none}
     .nav-spacer{display:none}
+    .nav-version{display:none}
     #dashView .wrap,#dataView .wrap{padding:16px 12px}
     .kpi-strip{gap:10px}
     .kpi-card{padding:14px}
@@ -197,14 +198,14 @@
   <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   <div class="nav-spacer"></div>
   <button class="theme-toggle" id="themeToggle" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
-  <span class="nav-version">v0.1.56</span>
+  <span class="nav-version">v0.1.57</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.56</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.57</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -827,7 +828,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
-  {v:'v0.1.56', date:'2026-06-21', sp:3,   desc:'Rekvizitai page gains a per-sub-tab Original / Scrape / Merge toggle. Original = the dashboard\'s own "6 Loops" record reshaped to match scrape field names; Merge unions both and colour-codes each field by source (original / scrape / both), differing values shown side by side.'},
+  {v:'v0.1.57', date:'2026-06-21', sp:1,   desc:'Fix mobile nav overflow: topnav scrolls horizontally on ≤600px; logo and version badge hidden on mobile to make room for Dashboard / Data Explorer / Rekvizitai tabs.'},
   {v:'v0.1.55', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape moved to its own top-level page (next to Data Explorer) with a sub-tab per scraped page (Įmonė, Finansai, Darbuotojai, Skolos). Removed the combined Rek sheet + tab column from Data Explorer; parser now writes rek_tabs.json (one field/value sheet per tab), injected via __REK_DATA__.'},
   {v:'v0.1.54', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape now also pulls the Highcharts time-series behind the diagrams (embedded JSON.parse blobs) — financials back to 2017, full dated VMI/Sodra debt history, headcount over time. 151 fields, was 64. Debt/headcount points use full YYYY-MM-DD so snapshots don\'t collide.'},
   {v:'v0.1.53', date:'2026-06-21', sp:3,   desc:'Rekvizitai scrape now covers ALL company tabs (Įmonė, Finansai, Darbuotojai, Skolos), not just Įmonė — 64 fields incl. a 2021–2025 financial statement (sales, profit, margins, equity, assets, liabilities). Rek sheet gains a "tab" column; parser auto-syncs it into sheets_data.json.'},
