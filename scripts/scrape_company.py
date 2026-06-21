@@ -46,34 +46,39 @@ async def _route(route):
 
 
 async def _fetch_tab(context, slug, key, path):
-    """Open a page, save one tab's HTML, close it. Returns (key, byte size)."""
+    """Open a page, save one tab's HTML, close it. Returns (key, byte size).
+
+    Retries the whole load until the company <h1> is present and the document is
+    substantial — under concurrency, capturing too early returned a 39-byte empty
+    shell (<html><head></head><body></body></html>), so we wait for real content."""
     url = f"https://rekvizitai.vz.lt/imone/{slug}{path}"
     page = await context.new_page()
     await page.route("**/*", _route)
     size = 0
     try:
-        try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(1.2)  # let inline chart JSON / late nodes settle
-        except Exception as e:
-            print(f"   ! [{slug}/{key}] {str(e)[:45]}; saving partial")
-        # page.content() can throw "page is navigating" when ad scripts trigger a
-        # late navigation — retry a couple of times, settling between attempts.
-        html = ""
         for attempt in range(3):
             try:
-                html = await page.content()
-                break
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            except Exception as e:
+                print(f"   ! [{slug}/{key}] goto {str(e)[:40]} (try {attempt+1}/3)")
+            # the company name <h1> is the signal the real DOM has rendered
+            try:
+                await page.wait_for_selector("h1", timeout=10000)
             except Exception:
-                try: await page.wait_for_load_state("domcontentloaded", timeout=8000)
-                except Exception: pass
-                await asyncio.sleep(0.8)
-        if html:
-            with open(os.path.join(OUT_DIR, f"{slug}_{key}.html"), "w", encoding="utf-8") as f:
-                f.write(html)
-            size = len(html)
-        else:
-            print(f"   ! [{slug}/{key}] could not capture HTML")
+                pass
+            await asyncio.sleep(1.2)  # let inline chart JSON / late nodes settle
+            try:
+                html = await page.content()
+            except Exception:
+                html = ""
+            if len(html) > 2000:      # real page (empty shell is ~39 bytes)
+                with open(os.path.join(OUT_DIR, f"{slug}_{key}.html"), "w", encoding="utf-8") as f:
+                    f.write(html)
+                size = len(html)
+                break
+            await asyncio.sleep(1.0)  # back off before retrying
+        if not size:
+            print(f"   ! [{slug}/{key}] no real content after 3 tries")
     except Exception as e:
         print(f"   ! [{slug}/{key}] {str(e)[:60]}")
     finally:
