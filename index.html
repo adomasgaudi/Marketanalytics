@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.80</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.81</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.80</span>
+  <span class="nav-version">v0.1.81</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.80</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.81</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -392,7 +392,8 @@
       </div>
       <span style="flex:1"></span>
       <div class="seg" id="ddSource">
-        <button data-src="initial" class="active">Initial</button>
+        <button data-src="combined" class="active">Combined</button>
+        <button data-src="initial">Initial</button>
         <button data-src="rekvizitai">Rekvizitai</button>
         <button data-src="sodra">Sodra</button>
       </div>
@@ -418,7 +419,8 @@
       </div>
       <span style="flex:1"></span>
       <div class="seg" id="sddSource">
-        <button data-src="initial" class="active">Initial</button>
+        <button data-src="combined" class="active">Combined</button>
+        <button data-src="initial">Initial</button>
         <button data-src="rekvizitai">Rekvizitai</button>
         <button data-src="sodra">Sodra</button>
       </div>
@@ -994,6 +996,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.81', date:'2026-06-21 20:38', sp:2, title:'Combined deep-dive source view',
+    desc:'Deep-dives gain a Combined option overlaying all sources per chart.',
+    detail:'Both deep-dives (Chart.js + SVG) now default to a new "Combined" source that overlays every source able to supply each metric — e.g. Initial + Rekvizitai revenue on one chart, Initial + Sodra headcount/wage. Series are coloured by source (Initial green, Rekvizitai blue, Sodra amber), dashed by position within a source, and labelled with their source so overlapping lines stay readable. Individual Initial/Rekvizitai/Sodra options remain.'},
   {v:'v0.1.80', date:'2026-06-21 19:58', sp:1.5, title:'SVG deep-dive sticky dropdown',
     desc:'New SVG deep-dive gets the same sticky searchable company dropdown.',
     detail:'Applied the v76 treatment to the merged-in SVG-chart deep-dive: its company-pill grid is now the custom searchable dropdown in a sticky bar that floats under the nav while you scroll its four charts. Also preserved inline section badges (e.g. the “new” tag) when sections became collapsible.'},
@@ -1346,7 +1351,7 @@ function renderDataRows(){
 // ---------- Company deep-dive (per-company charts across scraped sources) ----------
 const DD_COMPANIES = (REK_DATA && REK_DATA.companies) || [];
 let ddCo = DD_COMPANIES[0] || null;
-let ddSrc = 'initial';
+let ddSrc = 'combined';
 const DD_CHARTS = {};   // id -> Chart instance (destroyed before redraw)
 
 // Pull a per-year metric from a company's rekvizitai Finansai rows.
@@ -1413,10 +1418,38 @@ const DD_SPECS = {
   },
 };
 
+// Source colour + line-style for the Combined view: colour by source, dash by
+// the series' position within its source so overlapping lines stay readable.
+const DD_SRC_COLOR = {initial:()=>cssVar('--green'), rekvizitai:()=>cssVar('--accent'), sodra:()=>cssVar('--amber')};
+const DD_SRC_TAG = {initial:'Initial', rekvizitai:'Rekvizitai', sodra:'Sodra'};
+const DD_DASH = [[],[6,4],[2,3],[8,3,2,3]];
+// Resolve a chart spec for a source. 'combined' overlays every source that can
+// supply the metric, each series tagged + source-coloured.
+function ddSpecFor(id, src, co){
+  const def=DD_SPECS[id];
+  if(src!=='combined') return def[src] ? def[src](co) : {empty:'No data.'};
+  const series=[]; let yTitle='', y2Title='';
+  ['initial','rekvizitai','sodra'].forEach(s=>{
+    if(!def[s]) return;
+    let r; try{ r=def[s](co); }catch(e){ r=null; }
+    if(!r || !r.series) return;
+    if(!yTitle) yTitle=r.yTitle||'';
+    if(r.y2Title) y2Title=r.y2Title;
+    let within=0;
+    r.series.forEach(ser=>{
+      if(!ser.data || !ser.data.length) return;
+      series.push({label:`${ser.label} · ${DD_SRC_TAG[s]}`, data:ser.data,
+        color:DD_SRC_COLOR[s](), yAxisID:ser.yAxisID, dash:DD_DASH[within%DD_DASH.length]});
+      within++;
+    });
+  });
+  return series.length ? {series, yTitle, y2Title} : {empty:'No data from any source for this metric.'};
+}
+
 function drawDD(){
   if(!ddCo){ return; }
   Object.keys(DD_SPECS).forEach(id=>{
-    const spec=DD_SPECS[id][ddSrc] ? DD_SPECS[id][ddSrc](ddCo) : {empty:'No data.'};
+    const spec=ddSpecFor(id, ddSrc, ddCo);
     const emptyEl=document.getElementById(id+'Empty');
     const descEl=document.getElementById(id+'Desc');
     if(DD_CHARTS[id]){ DD_CHARTS[id].destroy(); DD_CHARTS[id]=null; }
@@ -1428,7 +1461,7 @@ function drawDD(){
       return;
     }
     emptyEl.classList.remove('show');
-    if(descEl) descEl.textContent = `Source: ${ddSrc}`;
+    if(descEl) descEl.textContent = ddSrc==='combined' ? 'All sources overlaid' : `Source: ${ddSrc}`;
     const labels=[...new Set(spec.series.flatMap(s=>s.data.map(p=>p.x)))].sort();
     const scales={ y:{title:{display:true,text:spec.yTitle||''}, grid:{color:GRID}} };
     if(spec.y2Title) scales.y2={position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:spec.y2Title}};
@@ -1437,7 +1470,7 @@ function drawDD(){
         type: s.type || (s.yAxisID==='y2'?'line':'line'),
         label:s.label,
         data: labels.map(x=>{const p=s.data.find(d=>d.x===x); return p?p.y:null;}),
-        borderColor:s.color, backgroundColor:s.color, tension:.25, spanGaps:true,
+        borderColor:s.color, backgroundColor:s.color, borderDash:s.dash||[], tension:.25, spanGaps:true,
         yAxisID:s.yAxisID||'y', pointRadius: labels.length>40?0:2,
       }))},
       options:{maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, scales,
@@ -1527,7 +1560,7 @@ function drawFinSvg(container, spec){
     const shape=SVG_SHAPES[si%SVG_SHAPES.length], yf= ser.yAxisID==='y2'?yR:yL;
     const pts=cats.map((c,i)=>{ const p=ser.data.find(d=>String(d.x)===c); return p?{X:xAt(i),Y:yf(p.y)}:null; });
     const line=pts.filter(Boolean).map(p=>`${p.X.toFixed(1)},${p.Y.toFixed(1)}`).join(' ');
-    if(line) s+=`<polyline points="${line}" fill="none" stroke="${ser.color}" stroke-width="2" stroke-opacity="0.9"/>`;
+    if(line) s+=`<polyline points="${line}" fill="none" stroke="${ser.color}" stroke-width="2" stroke-opacity="0.9"${ser.dash&&ser.dash.length?` stroke-dasharray="${ser.dash.join(',')}"`:''}/>`;
     if(cats.length<=40) pts.forEach(p=>{ if(p) s+=svgMarker(shape,p.X,p.Y,3,ser.color); });
     const last=[...pts].reverse().find(Boolean);
     if(last) s+=`<text x="${Math.min(W-2,last.X+5).toFixed(1)}" y="${(last.Y-5).toFixed(1)}" fill="${ser.color}" font-size="10" text-anchor="${last.X>W-60?'end':'start'}">${ser.label}</text>`;
@@ -1552,18 +1585,18 @@ function drawFinSvg(container, spec){
 }
 
 // ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
-let sddCo = DD_COMPANIES[0]||null, sddSrc='initial';
+let sddCo = DD_COMPANIES[0]||null, sddSrc='combined';
 function drawSDD(){
   if(!sddCo) return;
   Object.keys(DD_SPECS).forEach(id=>{
     const sid='s'+id; // ddRev -> sddRev
-    const spec=DD_SPECS[id][sddSrc] ? DD_SPECS[id][sddSrc](sddCo) : {empty:'No data.'};
+    const spec=ddSpecFor(id, sddSrc, sddCo);
     const cont=document.getElementById(sid), emptyEl=document.getElementById(sid+'Empty'), descEl=document.getElementById(sid+'Desc');
     if(!cont) return;
     const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
     if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
     if(emptyEl) emptyEl.classList.remove('show');
-    if(descEl) descEl.textContent='Source: '+sddSrc+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+    if(descEl) descEl.textContent=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc)+(spec.y2Title?' · right axis = '+spec.y2Title:'');
     drawFinSvg(cont, spec);
   });
 }
