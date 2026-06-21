@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.77</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.78</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -117,8 +117,14 @@
   .co-tab:hover{color:var(--text);border-color:var(--muted)}
   .co-tab.active{background:var(--gold);border-color:var(--gold);color:#111}
   .co-tab.placeholder{opacity:.4;cursor:default;font-style:italic}
-  h2.section{font-size:18px;margin:28px 0 14px;font-weight:700}
-  h2.section.mine{color:var(--gold)}
+  h2.section,.sec>summary.section{font-size:18px;margin:28px 0 14px;font-weight:700}
+  h2.section.mine,.sec>summary.section.mine{color:var(--gold)}
+  /* Collapsible dashboard sections (less scrolling): each section is a <details>. */
+  details.sec{margin:0}
+  .sec>summary.section{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}
+  .sec>summary.section::-webkit-details-marker{display:none}
+  .sec>summary.section::after{content:'▾';font-size:13px;color:var(--muted);transition:transform .15s}
+  .sec:not([open])>summary.section::after{transform:rotate(-90deg)}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
   .mine-note b{color:var(--text)}
   .kpi.mine{border-color:var(--gold);box-shadow:0 0 0 1px rgba(244,197,66,.25)}
@@ -269,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.77</span>
+  <span class="nav-version">v0.1.78</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -283,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.77</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.78</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -962,6 +968,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.78', date:'2026-06-21 19:53', sp:2.5, title:'Collapsible dashboard sections',
+    desc:'Every dashboard section folds into a dropdown so you scroll less.',
+    detail:'Each Dashboard section (My companies, Market overview, rankings, People & pay, deep-dive, explorer, etc.) is now a collapsible <details> — click the heading to fold/unfold; state persists per section in localStorage. Done at runtime after charts render, so chart bitmaps are preserved and re-fit on reopen.'},
   {v:'v0.1.77', date:'2026-06-21 19:46', sp:1.5, title:'Sourced Data company dropdown',
     desc:'Sourced Data page picker now uses the same searchable dropdown.',
     detail:'Swept the sibling: the Sourced Data company picker is now the same custom searchable dropdown as the deep-dive, replacing its pill grid so it scales as companies grow. Hidden automatically when only one company is loaded.'},
@@ -1757,6 +1766,36 @@ try { initRek(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initRek: '+err.message, error:err})); }
 try { initDD(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDD: '+err.message, error:err})); }
+
+// ---------- Collapsible dashboard sections (run last, after charts render) ----------
+// Wrap each h2.section + its content into a <details> so sections fold away to cut
+// scrolling. Charts are already drawn (at full size) before their canvas is moved,
+// so the bitmap is preserved; open state persists per section in localStorage.
+function makeSectionsCollapsible(){
+  const view=document.getElementById('dashView'); if(!view) return;
+  view.querySelectorAll('h2.section').forEach(h=>{
+    const details=document.createElement('details');
+    details.className='sec';
+    const key='sec-open:'+h.textContent.trim();
+    let saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
+    details.open = saved!=='closed';           // default open
+    const summary=document.createElement('summary');
+    summary.className=h.className;             // keep "section" (+ "mine")
+    summary.textContent=h.textContent;
+    details.appendChild(summary);
+    const sibs=[];
+    let n=h.nextElementSibling;
+    while(n && !(n.matches && n.matches('h2.section'))){ sibs.push(n); n=n.nextElementSibling; }
+    h.replaceWith(details);
+    sibs.forEach(s=>details.appendChild(s));
+    details.addEventListener('toggle',()=>{
+      try{ localStorage.setItem(key, details.open?'open':'closed'); }catch(e){}
+      if(details.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} });
+    });
+  });
+}
+try { makeSectionsCollapsible(); }
+catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
 </script>
 </body>
 </html>
