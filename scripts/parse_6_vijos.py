@@ -2,7 +2,10 @@
 """Parse the scraped 6 vijos tab pages into data/rek.csv.
 
 scrape_6_vijos.py saves one HTML file per company tab under data/raw/. This
-reads them all and merges into a single CSV with columns: tab, field, value.
+reads them all and writes:
+  - data/rek.csv      : flat field,value (rows grouped by source-tab order)
+  - data/rek_tabs.json: one field/value sheet per tab (Įmonė, Finansai, …),
+                        the data behind the standalone Rekvizitai page
 
 Per tab we run whichever extractors fit that page:
   - label/value rows  : 2/3-column <table> rows (overview contacts/codes, etc.)
@@ -222,23 +225,38 @@ def parse_tab(key, path):
 
 
 SHEETS_JSON = os.path.join(ROOT, "data", "sheets_data.json")
+REK_TABS_JSON = os.path.join(ROOT, "data", "rek_tabs.json")
 
 
-def update_rek_sheet(final_rows):
-    """Write the scraped rows into sheets_data.json's 'Rek' sheet so the Data
-    Explorer renders them. Keeps the CSV as SSOT — this just mirrors it."""
+def drop_rek_from_sheets():
+    """Remove the old combined 'Rek' sheet from the Data Explorer's
+    sheets_data.json — Rek now lives in its own top-level page."""
     if not os.path.exists(SHEETS_JSON):
-        print("  (no sheets_data.json — skipping Data Explorer sync)")
         return
     with open(SHEETS_JSON, encoding="utf-8") as f:
         sheets = json.load(f)
-    sheets["Rek"] = {
-        "columns": ["tab", "field", "value"],
-        "rows": [list(r) for r in final_rows],
-    }
-    with open(SHEETS_JSON, "w", encoding="utf-8") as f:
-        json.dump(sheets, f, ensure_ascii=False)
-    print(f"  synced Rek sheet in sheets_data.json ({len(final_rows)} rows, 3 cols)")
+    if "Rek" in sheets:
+        del sheets["Rek"]
+        with open(SHEETS_JSON, "w", encoding="utf-8") as f:
+            json.dump(sheets, f, ensure_ascii=False)
+        print("  removed stale 'Rek' sheet from sheets_data.json")
+
+
+def write_rek_tabs(final_rows):
+    """Write one field/value sheet per scraped tab to rek_tabs.json — the data
+    behind the new Rekvizitai page (one sub-tab per source tab). The CSV stays
+    SSOT; this is the per-tab view of the same rows."""
+    order, tabs = [], {}
+    for tab, field, value in final_rows:
+        if tab not in tabs:
+            tabs[tab] = {"columns": ["field", "value"], "rows": []}
+            order.append(tab)
+        tabs[tab]["rows"].append([field, value])
+    payload = {"order": order, "tabs": tabs}
+    with open(REK_TABS_JSON, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
+    counts = ", ".join(f"{t}:{len(tabs[t]['rows'])}" for t in order)
+    print(f"  wrote rek_tabs.json ({counts})")
 
 
 def main():
@@ -264,12 +282,14 @@ def main():
         seen.add((field, value))
         final.append((tab, field, value))
 
+    # CSV: flat field,value (tab column dropped). Rows stay grouped by tab order.
     with open(OUT, "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["tab", "field", "value"])
-        w.writerows(final)
+        w.writerow(["field", "value"])
+        w.writerows((field, value) for _tab, field, value in final)
 
-    update_rek_sheet(final)
+    write_rek_tabs(final)
+    drop_rek_from_sheets()
 
     print(f"\nExtracted {len(final)} fields across {len(set(r[0] for r in final))} tabs -> {os.path.relpath(OUT)}\n")
     cur = None

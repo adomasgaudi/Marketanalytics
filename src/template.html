@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.54</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.55</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = light.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -178,16 +178,17 @@
   <div class="logo"><span>LT</span> Agencies</div>
   <button class="nav-btn active" data-view="dashView">Dashboard</button>
   <button class="nav-btn" data-view="dataView">Data Explorer</button>
+  <button class="nav-btn" data-view="rekView">Rekvizitai</button>
   <div class="nav-spacer"></div>
   <button class="theme-toggle" id="themeToggle" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
-  <span class="nav-version">v0.1.54</span>
+  <span class="nav-version">v0.1.55</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.54</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.55</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -333,6 +334,21 @@
 </div>
 </div>
 
+<div class="view" id="rekView">
+<div class="wrap">
+  <div class="sheet-desc" id="rekIntro"></div>
+  <div class="data-tabs" id="rekTabs"></div>
+  <div class="data-controls">
+    <input type="text" id="rekSearch" placeholder="Search field & value…" style="min-width:220px">
+    <span class="badge" id="rekRowCount"></span>
+    <button class="btn" id="rekCsvBtn">Export CSV</button>
+  </div>
+  <div class="table-wrap" id="rekTableWrap">
+    <table><thead><tr id="rekHead"></tr></thead><tbody id="rekBody"></tbody></table>
+  </div>
+</div>
+</div>
+
 <button class="hist-fab" id="histBtn">📋 Changelog</button>
 
 <div class="modal-overlay" id="histModal">
@@ -367,6 +383,7 @@ window.addEventListener('error', e => {
 });
 const DATA = __DATA__;
 const SHEETS = __SHEETS_DATA__;
+const REK_DATA = __REK_DATA__;
 
 // ---------- View switching ----------
 document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -788,6 +805,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.55', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape moved to its own top-level page (next to Data Explorer) with a sub-tab per scraped page (Įmonė, Finansai, Darbuotojai, Skolos). Removed the combined Rek sheet + tab column from Data Explorer; parser now writes rek_tabs.json (one field/value sheet per tab), injected via __REK_DATA__.'},
   {v:'v0.1.54', date:'2026-06-21', sp:2,   desc:'Rekvizitai scrape now also pulls the Highcharts time-series behind the diagrams (embedded JSON.parse blobs) — financials back to 2017, full dated VMI/Sodra debt history, headcount over time. 151 fields, was 64. Debt/headcount points use full YYYY-MM-DD so snapshots don\'t collide.'},
   {v:'v0.1.53', date:'2026-06-21', sp:3,   desc:'Rekvizitai scrape now covers ALL company tabs (Įmonė, Finansai, Darbuotojai, Skolos), not just Įmonė — 64 fields incl. a 2021–2025 financial statement (sales, profit, margins, equity, assets, liabilities). Rek sheet gains a "tab" column; parser auto-syncs it into sheets_data.json.'},
   {v:'v0.1.52', date:'2026-06-21', sp:0.5, desc:'Version now also lives in the <title> tag; sharpen BULD-02 — bump the patch digit on every commit/deploy and sync all four spots (title, nav badge, h1 badge, top VERSIONS entry) + git vN.'},
@@ -847,7 +865,7 @@ histModal.addEventListener('click', e=>{ if(e.target===histModal) histModal.clas
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') histModal.classList.remove('open'); });
 
 // ---------- Data explorer ----------
-const SHEET_ORDER=['Įmonės','Įmonės-analizei','Kūryba','PR','Raw','Rek'];
+const SHEET_ORDER=['Įmonės','Įmonės-analizei','Kūryba','PR','Raw'];
 // Each tab gets a plain-language title, a one-line "what this is", a "best for"
 // hint, and an importance tag so a newcomer knows where to start vs. what to skip.
 // tier: 'start' (begin here) · 'detail' (rich but wide) · 'niche' (specialist/raw).
@@ -867,9 +885,6 @@ const SHEET_DESC={
   'Raw':{title:'Pre-cleaning import (source)',tier:'niche',
     what:'The untouched source export — 103 rows before deduplication; 77% of its columns fed into "All companies (cleaned)". Has messy headers and duplicates; kept for traceability only.',
     best:'Checking where a data point came from; most users should use the cleaned tables above.'},
-  'Rek':{title:'Rekvizitai scrape',tier:'niche',
-    what:'Live data scraped from rekvizitai.vz.lt across all company tabs (Įmonė, Finansai, Darbuotojai, Skolos) for 6 vijos, MB — contacts, codes, the financial statement (sales, profit, margins, equity, assets, liabilities), plus the time-series behind the on-page diagrams: financials back to 2017, the dated VMI/Sodra debt history and headcount over time. The "tab" column shows which page each field came from; "(grafikas)" marks chart-series values.',
-    best:'Checking fields not in the Excel export, e.g. phone, LinkedIn, export %, year-by-year financials and Sodra/registered-debt status.'},
 };
 const TIER_LABEL={start:{t:'Start here',c:'var(--green)'},detail:{t:'Focused view',c:'var(--accent)'},niche:{t:'Advanced / raw',c:'var(--muted)'}};
 const MONEY_COLS=new Set(['Apyvarta','Apyvarta 2019','Apyvarta 2020','Apyvarta 2021','Apyvarta 2022','Apyvarta 2023','Apyvarta 2024','Grynasis pelnas 2019','Grynasis pelnas 2020','Grynasis pelnas 2021','Grynasis pelnas 2022','Grynasis pelnas 2023','Grynasis pelnas 2024','Pelnas','DU sąnaudos','Ne-atlyginimų sąnaudos','Spėjamos pajamos','Atlyginimų sąnaudos 2019','Atlyginimų sąnaudos 2020','Atlyginimų sąnaudos 2021','Atlyginimų sąnaudos 2022','Atlyginimų sąnaudos 2023','Atlyginimų sąnaudos 2024','Atlyginimų sąnaudos 2025 05','Skola Sodrai','Apyvarta (1)','Spėjamos pajamos (1)','DU sąnaudos (1)','Ne-atlyginimų sąnaudos (1)','Pelnas (1)']);
@@ -974,9 +989,82 @@ function renderDataRows(){
   }).join('');
 }
 
+// ---------- Rekvizitai page (standalone, sub-tab per scraped tab) ----------
+let rekTab = (REK_DATA.order && REK_DATA.order[0]) || null;
+let rekSort = -1, rekDir = 1;
+
+function rekSheet(){ return rekTab ? REK_DATA.tabs[rekTab] : null; }
+
+function rekFiltered(){
+  const sheet = rekSheet(); if(!sheet) return [];
+  const q = document.getElementById('rekSearch').value.trim().toLowerCase();
+  let rows = q ? sheet.rows.filter(r=>r.some(c=>String(c).toLowerCase().includes(q))) : sheet.rows.slice();
+  if(rekSort>=0) rows.sort((a,b)=>String(a[rekSort]).localeCompare(String(b[rekSort]),'lt')*rekDir);
+  return rows;
+}
+
+function buildRekTabs(){
+  const el=document.getElementById('rekTabs');
+  if(!REK_DATA.order || !REK_DATA.order.length){ el.innerHTML=''; return; }
+  el.innerHTML=REK_DATA.order.map(t=>`<button class="data-tab${t===rekTab?' active':''}" data-rt="${t}">${t} <span style="opacity:.55">(${REK_DATA.tabs[t].rows.length})</span></button>`).join('');
+  el.querySelectorAll('.data-tab').forEach(btn=>btn.addEventListener('click',()=>{
+    rekTab=btn.dataset.rt; rekSort=-1; document.getElementById('rekSearch').value='';
+    buildRekTabs(); renderRek();
+  }));
+}
+
+function renderRek(){
+  const intro=document.getElementById('rekIntro');
+  const sheet=rekSheet();
+  if(!sheet){
+    intro.innerHTML='<div class="sd-what">No scrape data yet. Run <b>scripts/scrape_6_vijos.py</b> then <b>scripts/parse_6_vijos.py</b>.</div>';
+    document.getElementById('rekHead').innerHTML='';
+    document.getElementById('rekBody').innerHTML='';
+    document.getElementById('rekRowCount').textContent='';
+    return;
+  }
+  intro.innerHTML=`<div class="sd-head"><span class="sd-title">Rekvizitai scrape — 6 vijos, MB</span><span class="sd-tier" style="color:var(--muted);border-color:var(--muted)">Live scrape</span></div>`
+    +`<div class="sd-what">Scraped from rekvizitai.vz.lt, one sub-tab per company page (Įmonė, Finansai, Darbuotojai, Skolos). "(grafikas)" marks values read from the on-page diagrams; debt/headcount points are dated snapshots.</div>`;
+  const cols=sheet.cols||sheet.columns;
+  const rows=rekFiltered();
+  document.getElementById('rekRowCount').textContent=`${rows.length} field${rows.length!==1?'s':''}`;
+  document.getElementById('rekHead').innerHTML=cols.map((c,i)=>{
+    const arrow=rekSort===i?(rekDir>0?' ▲':' ▼'):'';
+    return `<th data-i="${i}" style="cursor:pointer">${c==='field'?'Field':'Value'}${arrow}</th>`;
+  }).join('');
+  document.getElementById('rekHead').querySelectorAll('th').forEach(th=>th.addEventListener('click',()=>{
+    const i=+th.dataset.i; if(rekSort===i) rekDir*=-1; else {rekSort=i; rekDir=1;} renderRek();
+  }));
+  // value cells: right-align ones that look numeric / money / %
+  const numLike=v=>/^[-+]?[\d  .,]+\s*(€|%)?$/.test(String(v).trim()) && /\d/.test(v);
+  document.getElementById('rekBody').innerHTML=rows.map(r=>{
+    const f=`<td>${r[0]}</td>`;
+    const v=`<td class="${numLike(r[1])?'num':''}">${r[1]}</td>`;
+    return `<tr>${f}${v}</tr>`;
+  }).join('') || `<tr><td colspan="2" class="null" style="text-align:center">No matching fields</td></tr>`;
+}
+
+function initRek(){
+  buildRekTabs();
+  renderRek();
+  document.getElementById('rekSearch').addEventListener('input', renderRek);
+  document.getElementById('rekCsvBtn').addEventListener('click',()=>{
+    const sheet=rekSheet(); if(!sheet) return;
+    const BOM='﻿';
+    const esc=v=>{const s=v==null?'':String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+    const cols=sheet.cols||sheet.columns;
+    let csv=BOM+cols.map(esc).join(',')+'\n';
+    rekFiltered().forEach(r=>{csv+=r.map(esc).join(',')+'\n';});
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rekvizitai_'+rekTab+'.csv';a.click();
+  });
+}
+
 // Initialize Data Explorer eagerly so it works on first visit without a click
 try { initDataExplorer(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDataExplorer: '+err.message, error:err})); }
+try { initRek(); }
+catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initRek: '+err.message, error:err})); }
 </script>
 </body>
 </html>
