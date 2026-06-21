@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.72</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.73</title>
 <script>
   // Apply saved theme before first paint to avoid a flash. Default = dark.
   (function(){ try{ var t=localStorage.getItem('theme'); if(t!=='light') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
@@ -130,11 +130,16 @@
     .nav-sub{display:none}
     .nav-spacer{display:none}
     .nav-version{display:none}
-    #dashView .wrap,#dataView .wrap{padding:16px 12px}
+    #dashView .wrap,#dataView .wrap,#rekView .wrap{padding:16px 10px}
+    .card{padding:12px}
+    .chartbox{height:300px}
     .kpi-strip{gap:10px}
     .kpi-card{padding:14px}
     h1{font-size:1.2rem}
   }
+  /* hard safety: nothing in a card may force the page wider than the screen */
+  .card,.chartbox{max-width:100%}
+  .chartbox canvas{max-width:100%!important}
 
   /* ── Top nav ── */
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
@@ -244,7 +249,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.72</span>
+  <span class="nav-version">v0.1.73</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -257,7 +262,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.72</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.73</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -904,6 +909,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.73', date:'2026-06-21 19:40', sp:1.5, title:'Fix mobile chart overflow',
+    desc:'Charts no longer break out of bounds on narrow phones.',
+    detail:'Tightened mobile padding (wrap/card) and added a hard max-width:100% on cards, chartboxes and canvases so nothing forces the page wider than the screen at 320px. Deep-dive chart legends use compact point-style markers with shorter labels (Turnover/Revenue) so they stop clipping at the right edge. A pre-existing issue that affected the original dashboard charts too.'},
   {v:'v0.1.72', date:'2026-06-21 19:10', sp:4,   title:'Deep-dive charts by source',
     desc:'New dashboard section: per-company charts with an Initial/Rekvizitai/Sodra source toggle.',
     detail:'Added a "Company deep-dive" section for the scraped companies — a company picker + source toggle drives four charts (revenue/sales, profit & margin, headcount, average wage). Each re-plots from the chosen source (Initial=yearly dataset, Rekvizitai=scraped financials, Sodra=monthly headcount+wage); a source that cannot supply a metric shows a clear note instead of a blank chart. The existing dashboard is unchanged.'},
@@ -1269,8 +1277,8 @@ const DD_SPECS = {
   ddRev: {
     title:'Revenue / sales',
     initial: co => ({series:[
-        {label:'Turnover (apyvarta) €', data:initSeries(co,'revenue'), color:cssVar('--muted')},
-        {label:'Revenue (sp. pajamos) €', data:initSeries(co,'estimatedIncome'), color:cssVar('--accent')}
+        {label:'Turnover €', data:initSeries(co,'revenue'), color:cssVar('--muted')},
+        {label:'Revenue €', data:initSeries(co,'estimatedIncome'), color:cssVar('--accent')}
       ], yTitle:'€'}),
     rekvizitai: co => ({series:[{label:'Pardavimo pajamos €', data:rekYearSeries(co,'Pardavimo pajamos'), color:cssVar('--accent')}], yTitle:'€'}),
     sodra: () => ({empty:'Sodra does not report revenue — it covers headcount, wages and tax only.'}),
@@ -1326,7 +1334,8 @@ function drawDD(){
         borderColor:s.color, backgroundColor:s.color, tension:.25, spanGaps:true,
         yAxisID:s.yAxisID||'y', pointRadius: labels.length>40?0:2,
       }))},
-      options:{maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, scales}
+      options:{maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, scales,
+        plugins:{legend:{labels:{usePointStyle:true, boxWidth:8, padding:10, font:{size:11}}}}}
     });
   });
 }
