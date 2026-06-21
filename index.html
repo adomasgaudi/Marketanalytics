@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.75</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.76</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -253,7 +253,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.75</span>
+  <span class="nav-version">v0.1.76</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -267,7 +267,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.75</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.76</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -375,6 +375,26 @@
     <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="ddProfitDesc"></div><div class="chartbox"><canvas id="ddProfit"></canvas><div class="chart-empty" id="ddProfitEmpty"></div></div></div>
     <div class="card"><h2>Headcount over time</h2><div class="desc" id="ddEmpDesc"></div><div class="chartbox"><canvas id="ddEmp"></canvas><div class="chart-empty" id="ddEmpEmpty"></div></div></div>
     <div class="card"><h2>Average wage over time</h2><div class="desc" id="ddWageDesc"></div><div class="chartbox"><canvas id="ddWage"></canvas><div class="chart-empty" id="ddWageEmpty"></div></div></div>
+  </div>
+
+  <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
+  <div class="card full">
+    <div class="desc">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. The Chart.js copy above is left untouched for comparison.</div>
+    <div class="controls" style="align-items:center">
+      <div class="co-pills" id="sddCompanies"></div>
+      <span class="nav-spacer" style="flex:1"></span>
+      <div class="seg" id="sddSource">
+        <button data-src="initial" class="active">Initial</button>
+        <button data-src="rekvizitai">Rekvizitai</button>
+        <button data-src="sodra">Sodra</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
+    <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
+    <div class="card"><h2>Headcount over time</h2><div class="desc" id="sddEmpDesc"></div><div class="chartbox"><div class="svgwrap" id="sddEmp" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddEmpEmpty"></div></div></div>
+    <div class="card"><h2>Average wage over time</h2><div class="desc" id="sddWageDesc"></div><div class="chartbox"><div class="svgwrap" id="sddWage" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddWageEmpty"></div></div></div>
   </div>
 
   <h2 class="section">Company explorer</h2>
@@ -934,6 +954,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.76', date:'2026-06-21 21:00', sp:5,   title:'SVG-chart deep-dive copy',
+    desc:'Second company deep-dive section rendered with a custom SVG engine (no Chart.js).',
+    detail:'Added a "Company deep-dive — SVG charts" section below the existing Chart.js one, reusing the same DD_SPECS data + company picker + Initial/Rekvizitai/Sodra source toggle but rendering each chart with a custom vanilla-SVG engine ported from the Colosseum analytics view: per-series shaped markers (circle/diamond/square/triangle), direct end-of-line labels, dual y-axis (margin %), and a hover guide + tooltip. The original Chart.js copy is left fully intact for comparison.'},
   {v:'v0.1.75', date:'2026-06-21 19:15', sp:1.5, title:'Advanced/Simplified view toggle',
     desc:'Settings cog now has an Advanced/Simplified view toggle.',
     detail:'Added a pressable view-mode toggle in the ⚙️ settings menu, persisted to localStorage and exposed as <html data-mode="advanced|simplified"> (applied pre-paint, advanced default; uses data-mode to avoid the nav data-view attribute). Filtering of data sources, tabs and other UI off this attribute is wired in incrementally — this lands the mechanism.'},
@@ -1389,6 +1412,98 @@ function initDD(){
   drawDD();
 }
 
+// ---------- Custom SVG chart engine (ported from the Colosseum analytics view; no Chart.js) ----------
+const SVG_SHAPES = ['circle','diamond','square','triangle'];
+function svgMarker(shape, X, Y, r, color){
+  X=+X.toFixed(1); Y=+Y.toFixed(1);
+  if(shape==='diamond')  return `<polygon points="${X},${Y-r} ${X+r},${Y} ${X},${Y+r} ${X-r},${Y}" fill="${color}"/>`;
+  if(shape==='square')   return `<rect x="${X-r}" y="${Y-r}" width="${2*r}" height="${2*r}" fill="${color}"/>`;
+  if(shape==='triangle') return `<polygon points="${X},${Y-r} ${X+r},${Y+r} ${X-r},${Y+r}" fill="${color}"/>`;
+  return `<circle cx="${X}" cy="${Y}" r="${r}" fill="${color}"/>`;
+}
+// Draw spec {series:[{label,data:[{x,y}],color,yAxisID}], yTitle, y2Title} into an SVG inside `container`.
+function drawFinSvg(container, spec){
+  const W = container.clientWidth || 360, H = container.clientHeight || 240;
+  const grid = cssVar('--grid')||'#2a2f3a', muted = cssVar('--muted')||'#8a93a6', text = cssVar('--text')||'#e6e9ef';
+  const cats = [...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))].sort();
+  const right = spec.series.filter(s=>s.yAxisID==='y2'), left = spec.series.filter(s=>s.yAxisID!=='y2');
+  const ext = ss => { let lo=Infinity,hi=-Infinity; ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;})); if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0; return [lo,hi]; };
+  const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
+  const m={t:22,r: right.length?50:16,b:26,l:50}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+  const xAt=i=> cats.length<=1 ? m.l+pw/2 : m.l + (pw*i)/(cats.length-1);
+  const yL=v=> m.t+ph - ph*(v-lLo)/(lHi-lLo||1);
+  const yR=v=> m.t+ph - ph*(v-rLo)/(rHi-rLo||1);
+  const fmt=v=> Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M' : Math.abs(v)>=1e3?(v/1e3).toFixed(0)+'k' : String(Math.round(v*10)/10);
+  let s=''; const TICKS=4;
+  for(let k=0;k<=TICKS;k++){ const v=lLo+(lHi-lLo)*k/TICKS, y=yL(v);
+    s+=`<line x1="${m.l}" y1="${y.toFixed(1)}" x2="${(W-m.r).toFixed(1)}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
+    s+=`<text x="${m.l-6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="end">${fmt(v)}</text>`;
+  }
+  if(right.length) for(let k=0;k<=TICKS;k++){ const v=rLo+(rHi-rLo)*k/TICKS, y=yR(v);
+    s+=`<text x="${W-m.r+6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="start">${fmt(v)}</text>`; }
+  const step=Math.max(1,Math.ceil(cats.length/8));
+  cats.forEach((c,i)=>{ if(i%step===0) s+=`<text x="${xAt(i).toFixed(1)}" y="${H-8}" fill="${muted}" font-size="10" text-anchor="middle">${c}</text>`; });
+  spec.series.forEach((ser,si)=>{
+    const shape=SVG_SHAPES[si%SVG_SHAPES.length], yf= ser.yAxisID==='y2'?yR:yL;
+    const pts=cats.map((c,i)=>{ const p=ser.data.find(d=>String(d.x)===c); return p?{X:xAt(i),Y:yf(p.y)}:null; });
+    const line=pts.filter(Boolean).map(p=>`${p.X.toFixed(1)},${p.Y.toFixed(1)}`).join(' ');
+    if(line) s+=`<polyline points="${line}" fill="none" stroke="${ser.color}" stroke-width="2" stroke-opacity="0.9"/>`;
+    if(cats.length<=40) pts.forEach(p=>{ if(p) s+=svgMarker(shape,p.X,p.Y,3,ser.color); });
+    const last=[...pts].reverse().find(Boolean);
+    if(last) s+=`<text x="${Math.min(W-2,last.X+5).toFixed(1)}" y="${(last.Y-5).toFixed(1)}" fill="${ser.color}" font-size="10" text-anchor="${last.X>W-60?'end':'start'}">${ser.label}</text>`;
+  });
+  container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible">${s}</svg>`;
+  // hover guide + tooltip (rebuilt each draw, after innerHTML)
+  const tip=document.createElement('div');
+  tip.style.cssText='position:absolute;pointer-events:none;background:'+(cssVar('--card')||'#1b1f27')+';border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;padding:4px 6px;font-size:11px;color:'+text+';display:none;z-index:6;white-space:nowrap';
+  const guide=document.createElement('div');
+  guide.style.cssText='position:absolute;top:0;bottom:0;width:1px;background:'+muted+';opacity:.45;display:none;pointer-events:none';
+  container.appendChild(guide); container.appendChild(tip);
+  container.onmousemove=e=>{ const rect=container.getBoundingClientRect(); if(!rect.width||cats.length<1) return;
+    const px=(e.clientX-rect.left)*W/rect.width; let i=Math.round((px-m.l)/(pw/Math.max(1,cats.length-1)));
+    i=Math.max(0,Math.min(cats.length-1,i)); const c=cats[i], gx=xAt(i)*rect.width/W;
+    guide.style.left=gx+'px'; guide.style.display='block'; let rows='<b>'+c+'</b>';
+    spec.series.forEach(ser=>{ const p=ser.data.find(d=>String(d.x)===c); if(p) rows+=`<br><span style="color:${ser.color}">●</span> ${ser.label}: ${p.y.toLocaleString('lt-LT')}`; });
+    tip.innerHTML=rows; tip.style.display='block';
+    tip.style.left=Math.max(2,Math.min(rect.width-tip.offsetWidth-4, gx+8))+'px';
+    tip.style.top=Math.min(rect.height-tip.offsetHeight-2, e.clientY-rect.top+8)+'px';
+  };
+  container.onmouseleave=()=>{ tip.style.display='none'; guide.style.display='none'; };
+}
+
+// ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
+let sddCo = DD_COMPANIES[0]||null, sddSrc='initial';
+function drawSDD(){
+  if(!sddCo) return;
+  Object.keys(DD_SPECS).forEach(id=>{
+    const sid='s'+id; // ddRev -> sddRev
+    const spec=DD_SPECS[id][sddSrc] ? DD_SPECS[id][sddSrc](sddCo) : {empty:'No data.'};
+    const cont=document.getElementById(sid), emptyEl=document.getElementById(sid+'Empty'), descEl=document.getElementById(sid+'Desc');
+    if(!cont) return;
+    const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
+    if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
+    if(emptyEl) emptyEl.classList.remove('show');
+    if(descEl) descEl.textContent='Source: '+sddSrc+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+    drawFinSvg(cont, spec);
+  });
+}
+function buildSDDCompanies(){
+  const el=document.getElementById('sddCompanies'); if(!el) return;
+  el.innerHTML=DD_COMPANIES.map(c=>`<button class="co-pill${c===sddCo?' active':''}" data-slug="${c.slug}">${c.name||c.slug}</button>`).join('');
+  el.querySelectorAll('.co-pill').forEach(btn=>btn.addEventListener('click',()=>{ sddCo=DD_COMPANIES.find(c=>c.slug===btn.dataset.slug)||sddCo; buildSDDCompanies(); drawSDD(); }));
+}
+function initSDD(){
+  if(!DD_COMPANIES.length) return;
+  buildSDDCompanies();
+  document.querySelectorAll('#sddSource button').forEach(b=>b.addEventListener('click',()=>{
+    sddSrc=b.dataset.src;
+    document.querySelectorAll('#sddSource button').forEach(x=>x.classList.toggle('active',x.dataset.src===sddSrc));
+    drawSDD();
+  }));
+  let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawSDD,150);});
+  drawSDD();
+}
+
 // ---------- Rekvizitai page (company picker → sub-tabs → source toggle) ----------
 const REK_COMPANIES = (REK_DATA && REK_DATA.companies) || [];
 let rekCo = REK_COMPANIES[0] || null;                 // current company block
@@ -1672,7 +1787,7 @@ try { initDataExplorer(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDataExplorer: '+err.message, error:err})); }
 try { initRek(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initRek: '+err.message, error:err})); }
-try { initDD(); }
+try { initDD(); initSDD(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDD: '+err.message, error:err})); }
 </script>
 </body>
