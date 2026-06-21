@@ -35,7 +35,21 @@ Ranked by effort vs payoff:
 - Sodra "salary" is **insured income**, which differs slightly from rekvizitai's `avgSalary` — reconcile the definition before mixing sources.
 - Financials **lag** (annual statements appear months after year-end) while Sodra figures are near-current — so in the Rekvizitai tab, headcount/salary rows are more up-to-date than profit/turnover rows.
 
-**Status:** Sodra spike in progress on the `sodra` branch (6 vijos first).
+**Status:** Sodra spike done on the `sodra` branch — `scripts/scrape_sodra.py`
+fetches a company's monthly history into `data/sodra/<jarCode>.json`.
+
+Sodra has a clean **open JSON REST API** (no HTML scraping needed):
+- search: `GET /imones-rest/solr/page?text=<jarCode>` → resolves the internal
+  `code` + latest `lastAvgWage` / `lastNumInsured` / activity / municipality
+- history: `GET /imones-rest/values/monthly/page?codes=<code>&size=N` → monthly
+  `avgWage`, `numInsured`, `tax` (data available 2018-01 → present)
+- keyed by **jarCode** = the "Įmonės kodas" the rekvizitai scrape already captures,
+  so the two sources join cleanly per company.
+
+Spike caveat found: Sodra **suppresses avgWage for single-employee companies**
+(privacy) — 6 vijos (1 insured) returns 22 months of headcount but null wages.
+Multi-employee firms (e.g. Adell/Ogilvy) will return real wages. Not yet wired
+into the Rekvizitai page UI — next step is a Sodra source/sub-tab there.
 
 ---
 
