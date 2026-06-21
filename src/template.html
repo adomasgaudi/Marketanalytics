@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.84</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.85</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.84</span>
+  <span class="nav-version">v0.1.85</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.84</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.85</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -997,6 +997,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.85', date:'2026-06-21 23:05', sp:1, title:'Compare keeps all sources',
+    desc:'Multi-company Combined mode now draws every source per company, not just one.',
+    detail:'Compare mode was collapsing each company to a single primary line, so the Combined source lost the per-source overlay. It now emits one primary line per company PER source — colour = company, dash = source (initial solid, rekvizitai dashed, sodra dotted) — so Combined shows initial/rekvizitai/sodra for each company again.'},
   {v:'v0.1.84', date:'2026-06-21 22:40', sp:4, title:'Compare multiple companies',
     desc:'The SVG deep-dive picker is now multi-select — overlay several companies per chart.',
     detail:'The deep-dive company picker became a multi-select: tap to toggle companies in/out (panel stays open), with a removable colour-coded chip row showing the selection. One company keeps the full multi-metric view; two or more switch each chart to compare mode — one primary metric line per company, coloured from the shared palette and shape-marked by the SVG engine. Works with the source toggle and the new pan/zoom.'},
@@ -1685,18 +1688,24 @@ const SDD_PALETTE=['--accent','--green','--amber','--purple','--red','--gold','-
 const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
 const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
 // One chart spec for the current selection. 1 company → full multi-metric spec (unchanged);
-// 2+ companies → "compare mode": one PRIMARY metric line per company, coloured per company.
+// 2+ companies → "compare mode": one PRIMARY metric line per company PER SOURCE — colour = company,
+// dash = source — so the Combined view still shows every source (initial/rekvizitai/sodra), not just one.
+const SDD_SRC_DASH={initial:[], rekvizitai:[6,4], sodra:[2,3]};
 function sddSpec(id, src, cos){
   if(!cos.length) return {empty:'Select a company.'};
   if(cos.length===1) return ddSpecFor(id, src, cos[0]);
+  const def=DD_SPECS[id], srcs = src==='combined' ? ['initial','rekvizitai','sodra'] : [src];
   const series=[]; let yTitle='';
-  cos.forEach((co,i)=>{
-    let base; try{ base=ddSpecFor(id, src, co); }catch(e){ base=null; }
-    if(!base||!base.series) return;
-    const prim=base.series.find(s=>s.data && s.data.length && s.yAxisID!=='y2'); // first left-axis metric
-    if(!prim) return;
-    if(!yTitle) yTitle=base.yTitle||'';
-    series.push({label:coShort(co), data:prim.data, color:sddColor(i)});
+  cos.forEach((co,ci)=>{
+    srcs.forEach(s=>{
+      if(!def[s]) return;
+      let r; try{ r=def[s](co); }catch(e){ r=null; }
+      if(!r||!r.series) return;
+      const prim=r.series.find(x=>x.data && x.data.length && x.yAxisID!=='y2'); // this source's primary metric
+      if(!prim) return;
+      if(!yTitle) yTitle=r.yTitle||'';
+      series.push({ label: coShort(co)+(src==='combined'?' · '+DD_SRC_TAG[s]:''), data:prim.data, color:sddColor(ci), dash: src==='combined'?SDD_SRC_DASH[s]:[] });
+    });
   });
   return series.length ? {series, yTitle} : {empty:'No data for the selected companies from '+src+'.'};
 }
@@ -1711,7 +1720,7 @@ function drawSDD(){
     if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
     if(emptyEl) emptyEl.classList.remove('show');
     const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
-    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies (primary metric) · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?', dash = source':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
     drawFinSvg(cont, spec);
   });
 }
