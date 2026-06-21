@@ -112,3 +112,27 @@ Grade = importance. Kind = Hook (fires) or Context (just text). 3rd row = runtim
 
 - Moved to [VersionHistory.md](VersionHistory.md) to keep SessionStart context lean. Append new entries there.
 
+---
+
+## Rules from data repo — under consideration
+
+Ported from `dataclaude.md` (original rule numbers kept). Rules marked *(modified)* are adapted for the vz context.
+
+| Rule | Description |
+| --- | --- |
+| **#1** Version patch only | bump ONLY the patch digit (C in vA.B.C), whole numbers, every change; owner controls minor/major |
+| <br /> | Context · verifiable |
+| <br /> | ~12 always-on tokens; no runtime |
+| **#2** Authoritative branch *(modified)* | `main` is source of truth for vz; all work merges to `main` immediately — never strand on a side branch |
+| <br /> | Context · verifiable · **to change: edit the branch name in this rule only** |
+| <br /> | ~20 always-on tokens; no runtime |
+| **#3** Save | commit + push after every change — owner only sees the live GitHub Pages site |
+| <br /> | Context · verifiable |
+| <br /> | ~15 always-on tokens; no runtime |
+| **#7** Done = deploy + propagate | push verified work to `main`, confirm GitHub Pages deploys; never consider a task done until live |
+| <br /> | Context · verifiable |
+| <br /> | ~20 always-on tokens; no runtime |
+| **#9** AI-optimised, not human | owner never reads code; favour machine-readable, testable, small files over human readability |
+| <br /> | Context · judgment |
+| <br /> | ~25 always-on tokens; no runtime |
+
