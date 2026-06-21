@@ -4,12 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LT Communication Agencies — Competitor Dashboard 2019–2024</title>
+<script>
+  // Apply saved theme before first paint to avoid a flash. Default = light.
+  (function(){ try{ var t=localStorage.getItem('theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
+  /* Light theme = default (:root). Dark theme via [data-theme="dark"].
+     Brand/data colours (accent/green/red/amber/purple/gold) stay constant
+     across themes so charts read consistently; only surfaces flip. */
   :root{
+    --bg:#f5f6f8; --panel:#ffffff; --panel2:#eef0f4; --border:#d8dce4;
+    --text:#1a1f2b; --muted:#5e6678; --accent:#2f6fe0; --green:#1faa72;
+    --red:#dc4d4d; --amber:#d08a1f; --purple:#7c5cf0; --gold:#c79410;
+    --hover:rgba(47,111,224,.07); --grid:#e6e9ef; --chart-bg:#ffffff; --zebra:rgba(0,0,0,.022);
+  }
+  [data-theme="dark"]{
     --bg:#0e1117; --panel:#161b25; --panel2:#1c2230; --border:#2a3245;
     --text:#e6e9f0; --muted:#8b93a7; --accent:#4f8ef7; --green:#34c98e;
-    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542; --hover:rgba(79,142,247,.07);
+    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542;
+    --hover:rgba(79,142,247,.07); --grid:#222a3a; --chart-bg:#0e1117; --zebra:rgba(255,255,255,.015);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
@@ -65,7 +79,7 @@
   th:first-child,td:first-child{text-align:left}
   th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
   th:hover{color:var(--text)}
-  tr:hover td{background:rgba(79,142,247,.06)}
+  tr:hover td{background:var(--hover)}
   .tablebox{max-height:560px;overflow:auto;border-radius:8px}
   .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
   .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
@@ -107,6 +121,8 @@
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
   .nav-version{font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;margin-right:8px;white-space:nowrap}
+  .theme-toggle{font-size:14px;line-height:1;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:5px 9px;margin-right:10px;cursor:pointer;font-family:inherit;transition:.15s}
+  .theme-toggle:hover{border-color:var(--accent);color:var(--text)}
 
   /* ── Views ── */
   .view{display:none}
@@ -133,12 +149,12 @@
   #dataView table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   #dataView thead{position:sticky;top:0;z-index:2}
   #dataView th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s}
-  #dataView th:hover{color:var(--text);background:#242d3f}
+  #dataView th:hover{color:var(--text);background:var(--hover)}
   #dataView th.sorted-asc::after{content:' ▲';color:var(--accent);font-size:10px}
   #dataView th.sorted-desc::after{content:' ▼';color:var(--accent);font-size:10px}
   #dataView td{padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis;text-align:left}
   #dataView tr:hover td{background:var(--hover)}
-  #dataView tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  #dataView tbody tr:nth-child(even) td{background:var(--zebra)}
   #dataView tbody tr:nth-child(even):hover td{background:var(--hover)}
   td.num{text-align:right!important;font-variant-numeric:tabular-nums}
   td.url a{color:var(--accent);text-decoration:none}
@@ -163,14 +179,15 @@
   <button class="nav-btn active" data-view="dashView">Dashboard</button>
   <button class="nav-btn" data-view="dataView">Data Explorer</button>
   <div class="nav-spacer"></div>
-  <span class="nav-version">v0.1.50</span>
+  <button class="theme-toggle" id="themeToggle" title="Toggle light / dark theme" aria-label="Toggle theme"></button>
+  <span class="nav-version">v0.1.51</span>
   <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.50</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.51</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -362,6 +379,41 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   });
 });
 
+// ---------- Theme toggle (light default, dark persisted) ----------
+function currentTheme(){ return document.documentElement.getAttribute('data-theme')==='dark' ? 'dark' : 'light'; }
+function syncThemeButton(){
+  const btn = document.getElementById('themeToggle');
+  if(btn) btn.textContent = currentTheme()==='dark' ? '☀️ Light' : '🌙 Dark';
+}
+function retintCharts(){
+  // Repaint every live Chart instance's grid/tick/legend colours from the
+  // new theme. Series colours are intentionally left untouched (brand consts).
+  const muted = cssVar('--muted');
+  Object.values(Chart.instances).forEach(c => {
+    if(c.options.scales) Object.values(c.options.scales).forEach(s=>{
+      if(s.grid) s.grid.color = GRID;
+      if(s.ticks) s.ticks.color = muted;
+      if(s.title) s.title.color = muted;
+    });
+    if(c.options.plugins && c.options.plugins.legend && c.options.plugins.legend.labels)
+      c.options.plugins.legend.labels.color = muted;
+    c.update('none');
+  });
+}
+function applyTheme(theme){
+  if(theme==='dark') document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+  try{ localStorage.setItem('theme', theme); }catch(e){}
+  GRID = cssVar('--grid');
+  applyChartDefaults();
+  syncThemeButton();
+  retintCharts();
+}
+syncThemeButton();
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  applyTheme(currentTheme()==='dark' ? 'light' : 'dark');
+});
+
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
 const LAST = YEARS[YEARS.length-1];
 
@@ -377,9 +429,17 @@ const BRANDS = Object.keys(byBrand);
 const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
 const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
 
-Chart.defaults.color = '#8b93a7';
-Chart.defaults.borderColor = '#2a3245';
-Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+// Read a CSS custom property off <html> so charts track the active theme.
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// GRID/CHART_BG are re-read on theme switch (see applyTheme); the per-chart
+// options reference GRID so a re-render picks up the new value.
+let GRID = cssVar('--grid');
+const applyChartDefaults = () => {
+  Chart.defaults.color = cssVar('--muted');
+  Chart.defaults.borderColor = cssVar('--border');
+  Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+};
+applyChartDefaults();
 
 // ---------- My companies — tab-driven ----------
 // To add a company: push {brand, note} to MY_COMPANIES. Set brand to the exact
@@ -471,7 +531,7 @@ function renderCompany(brand){
       {type:'line', label:'Employees', data:mineYears.map(y=>mine[y]?.employees||0), borderColor:'#4f8ef7', backgroundColor:'#4f8ef7', borderDash:[6,4], tension:.3, yAxisID:'y2'},
     ]},
     options:{maintainAspectRatio:false, scales:{
-      y:{title:{display:true,text:'Revenue €M'}, grid:{color:'#222a3a'}},
+      y:{title:{display:true,text:'Revenue €M'}, grid:{color:GRID}},
       y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €k / Employees'}}
     }}
   });
@@ -485,7 +545,7 @@ function renderCompany(brand){
     datasets:[{data:rankData.map(x=>x.r.pct), backgroundColor:'rgba(244,197,66,.7)', borderColor:'#f4c542', borderWidth:1, borderRadius:5}]},
     options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
       tooltip:{callbacks:{label:c=>{const x=rankData[c.dataIndex]; return ` ${x.r.pct}th percentile · #${x.r.pos} of ${x.r.total}`}}}},
-      scales:{x:{min:0,max:100,title:{display:true,text:'Percentile vs '+BRANDS.length+' agencies (100 = top)'}, grid:{color:'#222a3a'}}}}
+      scales:{x:{min:0,max:100,title:{display:true,text:'Percentile vs '+BRANDS.length+' agencies (100 = top)'}, grid:{color:GRID}}}}
   });
 }
 
@@ -554,7 +614,7 @@ new Chart(chMarket, {data:{
     {type:'line', label:'Employees (×100)', data:YEARS.map(y=>yearTotals(y).emp/100), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderDash:[6,4], tension:.3, yAxisID:'y2'},
   ]},
   options:{maintainAspectRatio:false, scales:{
-    y:{title:{display:true,text:'Revenue / Turnover €M'}, grid:{color:'#222a3a'}},
+    y:{title:{display:true,text:'Revenue / Turnover €M'}, grid:{color:GRID}},
     y2:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Profit €M / Employees ×100'}}
   }}
 });
@@ -569,7 +629,7 @@ const seg24 = segTotals(LAST);
 const segSorted = Object.entries(seg24).sort((a,b)=>b[1]-a[1]);
 new Chart(chSegments, {type:'doughnut', data:{
   labels:segSorted.map(s=>s[0]),
-  datasets:[{data:segSorted.map(s=>s[1]/1e6), backgroundColor:segSorted.map(s=>SEGCOLORS[s[0]]||'#888'), borderColor:'#0e1117', borderWidth:2}]},
+  datasets:[{data:segSorted.map(s=>s[1]/1e6), backgroundColor:segSorted.map(s=>SEGCOLORS[s[0]]||'#888'), borderColor:cssVar('--chart-bg'), borderWidth:2}]},
   options:{maintainAspectRatio:false, plugins:{legend:{position:'right'},
     tooltip:{callbacks:{label:c=>` ${c.label}: €${c.parsed.toFixed(1)}M`}}}}
 });
@@ -579,7 +639,7 @@ const topSegs = segSorted.slice(0,5).map(s=>s[0]);
 new Chart(chSegTrend, {type:'line', data:{
   labels:YEARS,
   datasets: topSegs.map(s=>({label:s, data:YEARS.map(y=>(segTotals(y)[s]||0)/1e6), borderColor:SEGCOLORS[s], backgroundColor:SEGCOLORS[s], tension:.3}))},
-  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€M'}, grid:{color:'#222a3a'}}}}
+  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€M'}, grid:{color:GRID}}}}
 });
 
 // ---------- Top-N ranking ----------
@@ -603,7 +663,7 @@ function drawTop(){
     datasets:[{data:rows.map(r=>isEur? r.val/1e6 : r.val), backgroundColor:rows.map(r=>r.val<0?'rgba(240,106,106,.7)':'rgba(79,142,247,.7)'), borderRadius:5}]},
     options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
       tooltip:{callbacks:{label:c=> isEur? ' €'+c.parsed.x.toFixed(2)+'M' : metric==='margin'? ' '+c.parsed.x.toFixed(1)+'%' : ' '+c.parsed.x.toLocaleString()}}},
-      scales:{x:{title:{display:true,text:isEur?'€M':metric==='margin'?'%':''}, grid:{color:'#222a3a'}}}}
+      scales:{x:{title:{display:true,text:isEur?'€M':metric==='margin'?'%':''}, grid:{color:GRID}}}}
   });
 }
 [rankMetric, rankYear, rankSegment].forEach(el=>el.addEventListener('change', drawTop));
@@ -621,7 +681,7 @@ new Chart(chGrowth, {type:'bar', data:{
   datasets:[{data:gShow.map(r=>r.g), backgroundColor:gShow.map(r=>r.g>=0?'rgba(52,201,142,.75)':'rgba(240,106,106,.75)'), borderRadius:5}]},
   options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
     tooltip:{callbacks:{label:c=>{const r=gShow[c.dataIndex]; return ` ${c.parsed.x.toFixed(0)}% · 2024 rev €${fmtM(r.rev)}`}}}},
-    scales:{x:{title:{display:true,text:'Revenue (spėjamos pajamos) change 2021→2024, %'}, grid:{color:'#222a3a'}}}}
+    scales:{x:{title:{display:true,text:'Revenue (spėjamos pajamos) change 2021→2024, %'}, grid:{color:GRID}}}}
 });
 
 // ---------- Scatter ----------
@@ -636,14 +696,14 @@ new Chart(chScatter, {type:'bubble', data:{
   })).concat([{
     label:'★ Fabula (you)',
     data:scatterRows.filter(r=>r.brand===MY_BRAND).map(r=>({...r, r:Math.max(r.r,9)})),
-    backgroundColor:'rgba(244,197,66,.95)', borderColor:'#ffffff', borderWidth:2
+    backgroundColor:'rgba(244,197,66,.95)', borderColor:cssVar('--text'), borderWidth:2
   }])},
   options:{maintainAspectRatio:false,
     plugins:{tooltip:{callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
     scales:{
-      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (spėjamos pajamos, €, log)'}, grid:{color:'#222a3a'},
+      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (spėjamos pajamos, €, log)'}, grid:{color:GRID},
          ticks:{callback:v=>[5e4,1e5,3e5,1e6,3e6,1e7].includes(v)?'€'+fmtM(v):''}},
-      y:{title:{display:true,text:'Net profit margin % (from revenue)'}, grid:{color:'#222a3a'}, suggestedMin:-30, suggestedMax:45}
+      y:{title:{display:true,text:'Net profit margin % (from revenue)'}, grid:{color:GRID}, suggestedMin:-30, suggestedMax:45}
     }}
 });
 
@@ -661,7 +721,7 @@ new Chart(chSalary, {type:'line', data:{
     {label:'Median', data:sq.map(s=>s.med), borderColor:'#f0b04f', backgroundColor:'#f0b04f', borderWidth:3, tension:.3},
     {label:'25th percentile', data:sq.map(s=>s.q1), borderColor:'#4f8ef7', borderDash:[5,4], tension:.3},
   ]},
-  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€/month'}, grid:{color:'#222a3a'}}}}
+  options:{maintainAspectRatio:false, scales:{y:{title:{display:true,text:'€/month'}, grid:{color:GRID}}}}
 });
 
 // ---------- Revenue per employee ----------
@@ -675,7 +735,7 @@ new Chart(chRevPerEmp, {type:'bar', data:{
   datasets:[{data:rpe.map(r=>r.med/1000), backgroundColor:rpe.map(r=>SEGCOLORS[r.seg]||'#888'), borderRadius:5}]},
   options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false},
     tooltip:{callbacks:{label:c=>` €${c.parsed.x.toFixed(0)}k / employee (median of ${rpe[c.dataIndex].n} companies)`}}},
-    scales:{x:{title:{display:true,text:'€k revenue per employee (median)'}, grid:{color:'#222a3a'}}}}
+    scales:{x:{title:{display:true,text:'€k revenue per employee (median)'}, grid:{color:GRID}}}}
 });
 
 // ---------- Table ----------
@@ -728,6 +788,7 @@ renderTable();
 
 // ---------- SP & version history ----------
 const VERSIONS = [
+  {v:'v0.1.51', date:'2026-06-21', sp:3,   desc:'White theme + light/dark toggle. Light is now the default; ☀️/🌙 pill in the top nav flips it and persists to localStorage (no-flash early-apply). Surfaces are token-driven; charts re-tint live (grid/ticks/legend) while brand series colours stay constant.'},
   {v:'v0.1.50', date:'2026-06-21', sp:1,   desc:'Fix persistent Data Explorer crash: SHEET_META is not defined — buildDataTabs() used wrong variable name; correct name is SHEET_DESC. Root cause of every "Data Explorer blank" since v42.'},
   {v:'v0.1.49', date:'2026-06-21', sp:2,   desc:'Version badge moved to top nav so it stays visible on every tab. VERSIONS array backfilled for v41–v48. Hook downgraded from block to warn so REPO-01 pushes to main are no longer silently blocked.'},
   {v:'v0.1.48', date:'2026-06-21', sp:1,   desc:'Fix data explorer tabs rendering raw sheet keys (Įmonės etc.) instead of human titles — buildDataTabs() now reads SHEET_META[s].title.'},

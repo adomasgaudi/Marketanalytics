@@ -27,9 +27,14 @@ Chart.js loaded from CDN). No server needed.
 
 | File | Purpose |
 |---|---|
-| `index.html` | The dashboard (generated, self-contained) |
-| `template.html` | HTML/JS template with `__DATA__` placeholder |
-| `data.json` | Cleaned per-company per-year records extracted from the Excel file |
-| `build_site.py` | Injects `data.json` into the template → `index.html` |
+| `index.html` | The dashboard (generated, self-contained). Stays at repo root for GitHub Pages. |
+| `src/template.html` | HTML/JS template with `__DATA__` / `__SHEETS_DATA__` placeholders |
+| `src/build_site.py` | Injects the JSON data into the template → `index.html` |
+| `data/data.json` | Cleaned per-company per-year records extracted from the Excel file |
+| `data/sheets_data.json` | Raw Excel sheets backing the Data Explorer |
+| `data/rek.csv` | Scraped rekvizitai.vz.lt fields (see `scripts/`) |
+| `scripts/` | rekvizitai.vz.lt scraping pipeline (scrape + parse) |
+| `docs/` | Project docs and the standalone `fabula.html` profile |
 
-To rebuild after editing the template or data: `python3 build_site.py`
+To rebuild after editing the template or data: `python3 src/build_site.py`
+(paths are repo-root-relative, so it runs from anywhere).

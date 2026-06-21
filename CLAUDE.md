@@ -45,7 +45,7 @@ Each rule = two rows: **description**, then *kind · type*. Sorted by theme, the
 
 | Rule | Description / mechanics |
 | --- | --- |
-| **BULD-01** Edit source | Edit `template.html`, never `index.html`; rebuild `python3 build_site.py` |
+| **BULD-01** Edit source | Edit `src/template.html`, never `index.html`; rebuild `python3 src/build_site.py` |
 | <br /> | Context · verifiable · TOP |
 | **REPO-01** Save | commit + push to `main` after every change — owner only sees the live site; then send rebuilt `index.html` |
 | <br /> | Context · verifiable · TOP |
@@ -166,7 +166,7 @@ Each rule = two rows: **description**, then *kind · type*. Sorted by theme, the
 
 ### Not-active rules
 
-Parked rules + specs/tasks (considered, not in force) moved to [notactiverules.md](notactiverules.md).
+Parked rules + specs/tasks (considered, not in force) moved to [notactiverules.md](docs/notactiverules.md).
 
 
 ---
@@ -185,13 +185,19 @@ Parked rules + specs/tasks (considered, not in force) moved to [notactiverules.m
 
 ## Files & build
 
-- `template.html` — source of all HTML/CSS/JS; placeholders `__DATA__` + `__SHEETS_DATA__`. **Edit this.**
-- `data.json` — 660 records (113 brands × 2019–2024).
-- `sheets_data.json` — 7 raw Excel sheets (Data Explorer source).
-- `build_site.py` — injects both JSONs into template → `index.html`.
-- `index.html` — generated, self-contained (Chart.js CDN). **The deliverable; never hand-edit.**
-- `fabula.html` — standalone Fabula profile page (off-dashboard one-off; not linked from the app).
-- Workflow: edit template → `python3 build_site.py` → `node --check` the JS → commit + push `main` → send `index.html`.
+Folder layout (v51 reorg). Root keeps only files that *must* live there:
+`index.html` (GitHub Pages serves root), `CLAUDE.md` + `Schema.md` (Claude
+auto-load / hook reads them), `README.md`, `.claude/`.
+
+- `src/template.html` — source of all HTML/CSS/JS; placeholders `__DATA__` + `__SHEETS_DATA__`. **Edit this.**
+- `src/build_site.py` — injects both JSONs into template → `index.html` at repo root. Paths are repo-root-relative, so run it from anywhere (`python3 src/build_site.py`).
+- `data/data.json` — 660 records (113 brands × 2019–2024).
+- `data/sheets_data.json` — 7 raw Excel sheets (Data Explorer source).
+- `data/rek.csv` — scraped rekvizitai.vz.lt fields for 6 vijos (see `scripts/`).
+- `scripts/scrape_6_vijos.py`, `scripts/scrape_discover.py`, `scripts/parse_6_vijos.py` — the rekvizitai scraping pipeline (run locally).
+- `index.html` — generated, self-contained (Chart.js CDN). **The deliverable; never hand-edit.** Stays at repo root for GitHub Pages.
+- `docs/` — `SCRAPE.md`, `VersionHistory.md`, `notactiverules.md`, `dataclaude.md`, `fabula.html` (standalone Fabula profile, off-dashboard one-off).
+- Workflow: edit `src/template.html` → `python3 src/build_site.py` → `node --check` the JS → commit + push `main` → send `index.html`.
 
 ## Data dictionary (data.json record)
 
@@ -215,5 +221,5 @@ Parked rules + specs/tasks (considered, not in force) moved to [notactiverules.m
 
 ## Prompt & version history
 
-- Moved to [VersionHistory.md](VersionHistory.md) to keep SessionStart context lean. Append new entries there.
+- Moved to [VersionHistory.md](docs/VersionHistory.md) to keep SessionStart context lean. Append new entries there.
 
