@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.76</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.77</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -269,7 +269,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.76</span>
+  <span class="nav-version">v0.1.77</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -283,7 +283,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.76</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.77</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -457,7 +457,13 @@
 
 <div class="view" id="rekView">
 <div class="wrap">
-  <div class="co-pills" id="rekCompanies"></div>
+  <div class="co-select" id="rekCompanySelect" style="margin-bottom:14px">
+    <button class="co-select-btn" id="rekCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekCoLabel">Select company</span><span class="co-caret">▾</span></button>
+    <div class="co-select-panel" id="rekCoPanel">
+      <input class="co-select-search" id="rekCoSearch" placeholder="Search company…" autocomplete="off">
+      <div class="co-select-list" id="rekCoList" role="listbox"></div>
+    </div>
+  </div>
   <div class="sheet-desc" id="rekIntro"></div>
   <div class="data-tabs" id="rekTabs"></div>
   <div class="data-controls">
@@ -956,6 +962,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.77', date:'2026-06-21 19:46', sp:1.5, title:'Sourced Data company dropdown',
+    desc:'Sourced Data page picker now uses the same searchable dropdown.',
+    detail:'Swept the sibling: the Sourced Data company picker is now the same custom searchable dropdown as the deep-dive, replacing its pill grid so it scales as companies grow. Hidden automatically when only one company is loaded.'},
   {v:'v0.1.76', date:'2026-06-21 19:24', sp:2.5, title:'Deep-dive company dropdown',
     desc:'Company pills became a searchable dropdown that floats sticky atop the charts.',
     detail:'Replaced the deep-dive company-pill grid with a custom (non-native, DATA-20) searchable dropdown — scales as companies grow. The picker + source toggle now sit in a sticky bar that floats just under the nav, so you can switch company while scrolling through the four charts. Same .co-pill grid on the Sourced Data page is untouched for now.'},
@@ -1583,13 +1592,21 @@ function rekFiltered(){
 }
 
 function buildRekCompanies(){
-  const el=document.getElementById('rekCompanies');
-  if(!el) return;
-  if(REK_COMPANIES.length<2){ el.innerHTML=''; return; }   // hide picker if only one
-  el.innerHTML=REK_COMPANIES.map(c=>
-    `<button class="co-pill${c===rekCo?' active':''}" data-slug="${c.slug}">${c.name||c.slug}</button>`).join('');
-  el.querySelectorAll('.co-pill').forEach(btn=>btn.addEventListener('click',()=>{
-    selectCompany(btn.dataset.slug);
+  const sel=document.getElementById('rekCompanySelect'); if(!sel) return;
+  if(REK_COMPANIES.length<2){ sel.style.display='none'; return; }   // single company: no picker
+  sel.style.display='';
+  const label=document.getElementById('rekCoLabel');
+  if(label) label.textContent = rekCo ? (rekCo.name||rekCo.slug) : 'Select company';
+  const list=document.getElementById('rekCoList');
+  const q=(document.getElementById('rekCoSearch')?.value||'').trim().toLowerCase();
+  const opts=REK_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  list.innerHTML = opts.length
+    ? opts.map(c=>`<div class="co-select-opt${c===rekCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
+    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
+  list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
+    sel.classList.remove('open');
+    document.getElementById('rekCoBtn').setAttribute('aria-expanded','false');
+    selectCompany(o.dataset.slug);
   }));
 }
 
@@ -1705,6 +1722,19 @@ function initRek(){
     syncModeButtons(); buildRekTabs(); renderRek();
   }));
   document.getElementById('rekSearch').addEventListener('input', renderRek);
+  // Custom company dropdown open/close/search (wired once).
+  (function(){
+    const sel=document.getElementById('rekCompanySelect'); if(!sel) return;
+    const btn=document.getElementById('rekCoBtn'), panel=document.getElementById('rekCoPanel'), search=document.getElementById('rekCoSearch');
+    btn.addEventListener('click',e=>{ e.stopPropagation();
+      const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false');
+      if(open){ search.value=''; buildRekCompanies(); search.focus(); }
+    });
+    panel.addEventListener('click',e=>e.stopPropagation());
+    search.addEventListener('input', buildRekCompanies);
+    document.addEventListener('click', ()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+  })();
   document.getElementById('rekCsvBtn').addEventListener('click',()=>{
     const BOM='﻿', esc=v=>{const s=v==null?'':String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
     const merged=rekMode==='merged';
