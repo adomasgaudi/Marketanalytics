@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.82</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.83</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.82</span>
+  <span class="nav-version">v0.1.83</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.82</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.83</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -407,7 +407,7 @@
   </div>
 
   <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
-  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Drag to pan, scroll or pinch to zoom (translatable infinitely wide), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
+  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Drag to pan any direction, scroll or pinch to zoom (Shift/Alt = one axis), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
   <div class="dd-wrap">
     <div class="dd-bar">
       <div class="co-select" id="sddCompanySelect">
@@ -996,6 +996,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.83', date:'2026-06-21 22:10', sp:3, title:'Two-axis pan & zoom',
+    desc:'SVG deep-dive charts now pan and zoom up/down as well as sideways.',
+    detail:'Extended the view window to both axes ({xMin,xMax,yMin,yMax} + a right-axis range): drag pans in any direction (unbounded), wheel/pinch zoom about the cursor with per-axis pinch (sideways spread → X, vertical → Y) and Shift/Alt to lock one axis on desktop. Y ticks follow the view. touch-action:none so vertical drags pan instead of scrolling the page over a chart; ⤢ / double-tap re-fits both axes.'},
   {v:'v0.1.82', date:'2026-06-21 21:40', sp:5, title:'Pan/zoom SVG deep-dive charts',
     desc:'SVG deep-dive charts now pan, zoom and translate infinitely wide.',
     detail:'Ported the Colosseum analytics-view interaction model into the SVG deep-dive engine: each chart keeps a {xMin,xMax} view window over its data, clipped to the plot. Drag pans (unbounded — translate infinitely wide), mouse wheel / two-finger pinch zooms about the cursor, and a ⤢ button + double-click/double-tap re-fit to the data. Touch uses pointer capture + touch-action:pan-y so vertical page scroll still works while horizontal drags pan the chart. The Chart.js deep-dive copy is untouched.'},
@@ -1544,30 +1547,31 @@ function drawFinSvg(container, spec){
   const cats = [...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))].sort();
   const n = cats.length;
   const st = container.__fin || (container.__fin = { cid:'fcl'+Math.random().toString(36).slice(2,8) });
-  const fullView = () => ({ xMin: n<=1?-0.5:0, xMax: n<=1?0.5:n-1 });
+  const left=spec.series.filter(s=>s.yAxisID!=='y2'), right=spec.series.filter(s=>s.yAxisID==='y2');
+  const ext=ss=>{ let lo=Infinity,hi=-Infinity; ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;})); if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0; return [lo,hi]; };
+  // Full fit = x over the category index + y over each axis' data extent — all pannable/zoomable.
+  const fitState=()=>{ const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
+    return { view:{ xMin:n<=1?-0.5:0, xMax:n<=1?0.5:n-1, yMin:lLo, yMax:lHi }, ry:{ yMin:rLo, yMax:rHi } }; };
   const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|');
-  if(st.sig!==sig){ st.sig=sig; st.view=fullView(); }   // new data identity → refit
-  st.spec=spec; st.cats=cats; st.fit=()=>{ st.view=fullView(); st.render(); };
+  if(st.sig!==sig){ st.sig=sig; const f=fitState(); st.view=f.view; st.ry=f.ry; }   // new data identity → refit
+  st.spec=spec; st.cats=cats; st.fit=()=>{ const f=fitState(); st.view=f.view; st.ry=f.ry; st.render(); };
 
   st.render=function(){
-    const view=st.view;
+    const view=st.view, ry=st.ry;
     const W=container.clientWidth||360, H=container.clientHeight||240;
     const grid=cssVar('--grid')||'#2a2f3a', muted=cssVar('--muted')||'#8a93a6', text=cssVar('--text')||'#e6e9ef';
-    const right=spec.series.filter(s=>s.yAxisID==='y2'), left=spec.series.filter(s=>s.yAxisID!=='y2');
-    const ext=ss=>{ let lo=Infinity,hi=-Infinity; ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;})); if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0; return [lo,hi]; };
-    const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
     const m={t:22,r: right.length?50:16,b:26,l:50}, pw=W-m.l-m.r, ph=H-m.t-m.b;
-    const span=(view.xMax-view.xMin)||1;
+    const span=(view.xMax-view.xMin)||1, ySpan=(view.yMax-view.yMin)||1, rySpan=(ry.yMax-ry.yMin)||1;
     const xAt=i=> m.l + ((i-view.xMin)/span)*pw;
-    const yL=v=> m.t+ph - ph*(v-lLo)/(lHi-lLo||1);
-    const yR=v=> m.t+ph - ph*(v-rLo)/(rHi-rLo||1);
+    const yL=v=> m.t+ph - ph*(v-view.yMin)/ySpan;
+    const yR=v=> m.t+ph - ph*(v-ry.yMin)/rySpan;
     const fmt=v=> Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M' : Math.abs(v)>=1e3?(v/1e3).toFixed(0)+'k' : String(Math.round(v*10)/10);
     let s=''; const TICKS=4;
-    for(let k=0;k<=TICKS;k++){ const v=lLo+(lHi-lLo)*k/TICKS, y=yL(v);
+    for(let k=0;k<=TICKS;k++){ const v=view.yMin+ySpan*k/TICKS, y=yL(v);
       s+=`<line x1="${m.l}" y1="${y.toFixed(1)}" x2="${(W-m.r).toFixed(1)}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
       s+=`<text x="${m.l-6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="end">${fmt(v)}</text>`;
     }
-    if(right.length) for(let k=0;k<=TICKS;k++){ const v=rLo+(rHi-rLo)*k/TICKS, y=yR(v);
+    if(right.length) for(let k=0;k<=TICKS;k++){ const v=ry.yMin+rySpan*k/TICKS, y=yR(v);
       s+=`<text x="${W-m.r+6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="start">${fmt(v)}</text>`; }
     // x labels: only categories whose pixel falls inside the plot, thinned to ~8
     const step=Math.max(1, Math.ceil(Math.min(n, span+1)/8));
@@ -1584,13 +1588,13 @@ function drawFinSvg(container, spec){
       if(last) body+=`<text x="${Math.min(W-2,last.X+5).toFixed(1)}" y="${(last.Y-5).toFixed(1)}" fill="${ser.color}" font-size="10" text-anchor="${last.X>W-60?'end':'start'}">${ser.label}</text>`;
     });
     s+=`<clipPath id="${st.cid}"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath><g clip-path="url(#${st.cid})">${body}</g>`;
-    container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:pan-y">${s}</svg>`;
+    container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${s}</svg>`;
     // hover guide + tooltip (rebuilt each draw, after innerHTML)
     const tip=document.createElement('div');
     tip.style.cssText='position:absolute;pointer-events:none;background:'+(cssVar('--card')||'#1b1f27')+';border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;padding:4px 6px;font-size:11px;color:'+text+';display:none;z-index:6;white-space:nowrap';
     const guide=document.createElement('div');
     guide.style.cssText='position:absolute;top:0;bottom:0;width:1px;background:'+muted+';opacity:.45;display:none;pointer-events:none';
-    st.geo={W,H,ml:m.l,pw};
+    st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     const fitBtn=document.createElement('button'); fitBtn.textContent='⤢'; fitBtn.title='Fit — reset zoom & pan';
     fitBtn.style.cssText='position:absolute;top:4px;right:4px;z-index:7;font:600 12px/1 system-ui;padding:2px 5px;border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;background:'+(cssVar('--card')||'#1b1f27')+';color:'+muted+';cursor:pointer;opacity:.6';
     fitBtn.onclick=ev=>{ ev.stopPropagation(); st.fit(); };
@@ -1611,28 +1615,47 @@ function drawFinSvg(container, spec){
   // Wire pan/zoom ONCE per container — handlers live on the container so they survive
   // the innerHTML rebuilds inside render(). Pan is unbounded (translate infinitely wide).
   if(!st.wired){
-    st.wired=true; container.style.touchAction='pan-y';
-    const pts=new Map(); let pan=null, pinch=null, lastTap=0;
-    const dataPerCss=()=>{ const r=container.getBoundingClientRect(); const pcw=r.width*(st.geo.pw/st.geo.W)||1; return (st.view.xMax-st.view.xMin)/pcw; };
-    const fracAt=clientX=>{ const r=container.getBoundingClientRect(); const mlCss=r.width*(st.geo.ml/st.geo.W); const pcw=r.width*(st.geo.pw/st.geo.W)||1; return Math.max(0,Math.min(1,(clientX-r.left-mlCss)/pcw)); };
-    const zoomAbout=(clientX,k)=>{ const v=st.view, sp=v.xMax-v.xMin, fx=fracAt(clientX), focus=v.xMin+fx*sp, ns=Math.max(1e-3, sp*k); st.view={xMin:focus-fx*ns, xMax:focus+(1-fx)*ns}; };
+    st.wired=true; container.style.touchAction='none';
+    const SPREAD=26; const pts=new Map(); let pan=null, pinch=null, lastTap=0;
+    const geoCss=()=>{ const r=container.getBoundingClientRect(); return { r, pcw:r.width*(st.geo.pw/st.geo.W)||1, pch:r.height*(st.geo.ph/st.geo.H)||1, mlCss:r.width*(st.geo.ml/st.geo.W), mtCss:r.height*(st.geo.mt/st.geo.H) }; };
+    // zoom both axes about a screen point, per-axis factors (kx/ky=1 → that axis untouched)
+    const zoomAbout=(clientX,clientY,kx,ky)=>{
+      const g=geoCss(), v=st.view, ry=st.ry;
+      const fx=Math.max(0,Math.min(1,(clientX-g.r.left-g.mlCss)/g.pcw)), vf=Math.max(0,Math.min(1,(clientY-g.r.top-g.mtCss)/g.pch));
+      const spx=v.xMax-v.xMin, focusX=v.xMin+fx*spx, nsx=Math.max(1e-3,spx*kx);
+      const spy=v.yMax-v.yMin, focusY=v.yMax-vf*spy, nsy=spy*ky;            // data grows upward → top=yMax
+      const spr=ry.yMax-ry.yMin, focusR=ry.yMax-vf*spr, nsr=spr*ky;
+      st.view={ xMin:focusX-fx*nsx, xMax:focusX+(1-fx)*nsx, yMin:focusY-(1-vf)*nsy, yMax:focusY+vf*nsy };
+      st.ry={ yMin:focusR-(1-vf)*nsr, yMax:focusR+vf*nsr };
+    };
+    // pan both axes from a snapshot, unbounded (translate infinitely in any direction)
+    const applyPan=(snap,cx,cy)=>{ const g=geoCss();
+      const dx=((cx-snap.x0)/g.pcw)*(snap.v.xMax-snap.v.xMin), fy=(cy-snap.y0)/g.pch;
+      const ySp=snap.v.yMax-snap.v.yMin, rSp=snap.ry.yMax-snap.ry.yMin;
+      st.view={ xMin:snap.v.xMin-dx, xMax:snap.v.xMax-dx, yMin:snap.v.yMin+fy*ySp, yMax:snap.v.yMax+fy*ySp };
+      st.ry={ yMin:snap.ry.yMin+fy*rSp, yMax:snap.ry.yMax+fy*rSp };
+    };
     const onMove=e=>{
       if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
       const all=[...pts.values()];
       if(all.length>=2 && pinch){ e.preventDefault(); st.dragging=true;
-        const hx=Math.abs(all[0].x-all[1].x)||1, mx=(all[0].x+all[1].x)/2, dpc=dataPerCss();
-        st.view={xMin:st.view.xMin-(mx-pinch.mx)*dpc, xMax:st.view.xMax-(mx-pinch.mx)*dpc};
-        zoomAbout(mx, pinch.hx/hx); pinch={hx,mx}; st.render();
+        const hx=Math.abs(all[0].x-all[1].x)||1, vy=Math.abs(all[0].y-all[1].y)||1, mx=(all[0].x+all[1].x)/2, my=(all[0].y+all[1].y)/2;
+        const g=geoCss();   // pan by midpoint
+        const dx=((mx-pinch.mx)/g.pcw)*(st.view.xMax-st.view.xMin), fy=(my-pinch.my)/g.pch;
+        const ySp=st.view.yMax-st.view.yMin, rSp=st.ry.yMax-st.ry.yMin;
+        st.view={ xMin:st.view.xMin-dx, xMax:st.view.xMax-dx, yMin:st.view.yMin+fy*ySp, yMax:st.view.yMax+fy*ySp };
+        st.ry={ yMin:st.ry.yMin+fy*rSp, yMax:st.ry.yMax+fy*rSp };
+        const kx=(pinch.hx>SPREAD && hx>4)?pinch.hx/hx:1, ky=(pinch.vy>SPREAD && vy>4)?pinch.vy/vy:1;   // per-axis stretch
+        zoomAbout(mx,my,kx,ky); pinch={hx,vy,mx,my}; st.render();
       } else if(pan){
-        if(Math.abs(e.clientX-pan.x0)>3){ pan.moved=true; st.dragging=true; e.preventDefault(); }
-        const r=container.getBoundingClientRect(), pcw=r.width*(st.geo.pw/st.geo.W)||1, sp=pan.v.xMax-pan.v.xMin;
-        const d=((e.clientX-pan.x0)/pcw)*sp; st.view={xMin:pan.v.xMin-d, xMax:pan.v.xMax-d}; st.render();
+        if(Math.abs(e.clientX-pan.x0)+Math.abs(e.clientY-pan.y0)>3){ pan.moved=true; st.dragging=true; e.preventDefault(); }
+        applyPan(pan,e.clientX,e.clientY); st.render();
       }
     };
     const onUp=e=>{
       const wasTap=pan && !pan.moved && pts.size===1;
       pts.delete(e.pointerId); if(pts.size<2) pinch=null;
-      if(pts.size===1){ const rem=[...pts.values()][0]; pan={x0:rem.x, v:{...st.view}, moved:true}; }
+      if(pts.size===1){ const rem=[...pts.values()][0]; pan={x0:rem.x, y0:rem.y, v:{...st.view}, ry:{...st.ry}, moved:true}; }
       else if(pts.size===0){ pan=null; st.dragging=false;
         window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp); window.removeEventListener('pointercancel',onUp);
         try{container.releasePointerCapture(e.pointerId);}catch(_){}
@@ -1642,10 +1665,11 @@ function drawFinSvg(container, spec){
     container.addEventListener('pointerdown', e=>{
       pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
       try{container.setPointerCapture(e.pointerId);}catch(_){}
-      if(pts.size===1){ window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp); window.addEventListener('pointercancel',onUp); pan={x0:e.clientX, v:{...st.view}, moved:false}; }
-      if(pts.size>=2){ const a=[...pts.values()]; pinch={hx:Math.abs(a[0].x-a[1].x)||1, mx:(a[0].x+a[1].x)/2}; pan=null; e.preventDefault(); }
+      if(pts.size===1){ window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp); window.addEventListener('pointercancel',onUp); pan={x0:e.clientX, y0:e.clientY, v:{...st.view}, ry:{...st.ry}, moved:false}; }
+      if(pts.size>=2){ const a=[...pts.values()]; pinch={hx:Math.abs(a[0].x-a[1].x)||1, vy:Math.abs(a[0].y-a[1].y)||1, mx:(a[0].x+a[1].x)/2, my:(a[0].y+a[1].y)/2}; pan=null; e.preventDefault(); }
     });
-    container.addEventListener('wheel', e=>{ e.preventDefault(); zoomAbout(e.clientX, e.deltaY>0?1.15:1/1.15); st.render(); }, {passive:false});
+    container.addEventListener('touchstart', e=>{ if(e.touches&&e.touches.length) e.preventDefault(); }, {passive:false});
+    container.addEventListener('wheel', e=>{ e.preventDefault(); const k=e.deltaY>0?1.15:1/1.15; zoomAbout(e.clientX, e.clientY, e.shiftKey?1:k, e.altKey?1:k); st.render(); }, {passive:false});
     container.addEventListener('dblclick', ()=> st.fit());
   }
   st.render();
