@@ -1,2 +1,5 @@
 # VS Code multi-root workspace (local, references sibling ../Data repo)
 *.code-workspace
+
+# Scraper intermediate — 4.8MB raw HTML, reproducible via scrape_6_vijos.py
+6_vijos_raw.html
