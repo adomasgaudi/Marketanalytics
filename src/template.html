@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.101</title>
+<title>Market Analytics — LT agencies · v0.1.102</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -131,6 +131,9 @@
   html[data-mode="simplified"] details.sec.adv{display:none}
   html[data-mode="simplified"] .topnav .nav-btn[data-view="rekView"]{display:none}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
+  .co-info-head{margin-bottom:7px;line-height:1.3}
+  .co-name{font-weight:700;font-size:15px;color:var(--text)}
+  .co-full{color:var(--muted);font-size:12px;margin-left:8px}
   .co-info-row{display:flex;gap:12px;padding:3px 0}
   .co-info-k{color:var(--muted);min-width:88px;flex:0 0 auto}
   .co-info-v{color:var(--text);font-weight:600}
@@ -146,10 +149,10 @@
     .topnav .logo{display:block;font-size:12.5px;font-weight:700;margin-right:7px;padding:10px 0;white-space:nowrap;flex-shrink:0;color:var(--text)}
     .nav-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;flex:1;min-width:0}
     .nav-btn{padding:10px 7px;font-size:11.5px;white-space:nowrap;flex-shrink:0}
-    .settings-cog{padding:8px 6px}
+    .settings-cog{padding:2px 6px 0}
     .nav-sub{display:none}
     .nav-spacer{display:none}
-    .nav-version{font-size:9px;margin-right:4px}
+    .nav-version{font-size:7px;margin:0}
     #dashView .wrap,#rekView .wrap{padding:16px 10px}
     .card{padding:12px}
     .chartbox{height:300px}
@@ -165,7 +168,7 @@
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
   .topnav .logo{font-size:15px;font-weight:700;padding:12px 0;margin-right:24px;white-space:nowrap;cursor:pointer;color:var(--text);transition:color .15s}
   .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
-  .home-ic{font-size:.78em;color:var(--muted);margin-left:6px;vertical-align:1px;transition:color .15s}
+  .home-ic{font-size:1.15em;font-weight:700;color:var(--muted);margin-right:5px;vertical-align:-1px;transition:color .15s}
   .topnav .logo:hover .home-ic{color:var(--accent)}
   .nav-btn{padding:12px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;font-family:inherit}
   .nav-btn:hover{color:var(--text)}
@@ -173,9 +176,9 @@
   .nav-scroll{display:flex}
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
-  .nav-version{font-size:10px;font-weight:600;color:var(--muted);margin-right:6px;white-space:nowrap;align-self:center}
-  .settings-wrap{position:relative;margin-right:8px}
-  .settings-cog{font-size:16px;line-height:1;color:var(--muted);background:none;border:none;padding:8px 10px;cursor:pointer;font-family:inherit;transition:.15s}
+  .nav-version{font-size:8px;font-weight:600;color:var(--muted);white-space:nowrap;line-height:1;margin-top:1px}
+  .settings-wrap{position:relative;margin-right:8px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .settings-cog{font-size:16px;line-height:1;color:var(--muted);background:none;border:none;padding:3px 8px 0;cursor:pointer;font-family:inherit;transition:.15s}
   .settings-cog:hover{color:var(--text)}
   .settings-menu{display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:200}
   .settings-menu.open{display:block}
@@ -290,13 +293,13 @@
 <body>
 
 <nav class="topnav">
-  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard">Market Analytics<span class="home-ic">⌂</span></div>
+  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
   <div class="nav-scroll">
     <button class="nav-btn" data-view="rekView">Data exploration</button>
   </div>
-  <span class="nav-version">v0.1.101</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
+    <span class="nav-version">v0.1.102</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -697,15 +700,14 @@ function renderCompany(brand){
   // Compact profile box, shown for every company (missing fields read "no data").
   const fullName = Object.values(mine).map(r=>r.company).find(Boolean) || '';
   const nd='<span class="nd">no data</span>';
+  const head=`<div class="co-info-head"><span class="co-name">${esc(brand)}</span>${fullName&&fullName!==brand?`<span class="co-full">${esc(fullName)}</span>`:''}</div>`;
   const infoRows=[
-    ['Short title', esc(brand)],
-    (fullName && fullName!==brand) ? ['Full title', esc(fullName)] : null,
     ['CEO', REK_CEO[brand]?esc(REK_CEO[brand]):nd],
     ['Founded', FOUNDED[brand]?esc(FOUNDED[brand]):nd],
     ['Employees', m24.employees!=null?Math.round(m24.employees):nd],
-  ].filter(Boolean);
+  ];
   const noteEl=document.getElementById('mineNote');
-  noteEl.innerHTML=infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('');
+  noteEl.innerHTML=head+infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('');
   noteEl.style.display='';
   document.getElementById('chMineTitle').textContent = brand+': revenue, profit & headcount (2019–'+LAST+')';
   document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+LAST+')';
@@ -1007,6 +1009,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.102', date:'2026-06-22 14:05', sp:1, title:'Back bracket + cleaner profile',
+    desc:'Title gets a back “‹” bracket, version shrinks under the cog, profile drops title labels.',
+    detail:'Swapped the home “⌂” for a back “‹” bracket to the left of the title (still returns to the dashboard). Moved the version badge under the settings cog as tiny text, freeing nav-bar width. In the profile box, dropped the “Short title/Full title” labels — the brand shows as the bold name with the full legal name beside it in smaller grey.'},
   {v:'v0.1.101', date:'2026-06-22 13:45', sp:2, title:'Home title + company profile box',
     desc:'One Data-exploration button; title returns home; per-company profile replaces the Fabula note.',
     detail:'Nav now has a single “Data exploration” button (→ Company Data); the dashboard is the default view, and clicking the “Market Analytics” title (now with a ⌂ hint + hover) returns to it. Replaced the Fabula-only description with a compact profile box shown for EVERY company — short title, full title (when it differs), CEO (from Rekvizitai), founded date (from the Įmonės sheet) and employees, each reading “no data” when missing.'},
