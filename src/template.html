@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.86</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.87</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -125,6 +125,10 @@
   .sec>summary.section::-webkit-details-marker{display:none}
   .sec>summary.section::after{content:'▾';font-size:13px;color:var(--muted);transition:transform .15s}
   .sec:not([open])>summary.section::after{transform:rotate(-90deg)}
+  /* Simplified view: hide advanced (deep-dive) sections + the raw-data tabs. */
+  html[data-mode="simplified"] details.sec.adv{display:none}
+  html[data-mode="simplified"] .topnav .nav-btn[data-view="dataView"],
+  html[data-mode="simplified"] .topnav .nav-btn[data-view="rekView"]{display:none}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
   .mine-note b{color:var(--text)}
   .kpi.mine{border-color:var(--gold);box-shadow:0 0 0 1px rgba(244,197,66,.25)}
@@ -275,7 +279,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.86</span>
+  <span class="nav-version">v0.1.87</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +293,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.86</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.87</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -618,7 +622,14 @@ function applyMode(mode){
   document.documentElement.setAttribute('data-mode', mode);
   try{ localStorage.setItem('viewMode', mode); }catch(e){}
   syncViewButton();
-  // Future: re-render tabs / data-source filters that read [data-mode].
+  // Simplified hides the raw-data tabs; if we're on one, fall back to Dashboard.
+  if(mode==='simplified'){
+    const active=document.querySelector('.nav-btn.active');
+    if(active && (active.dataset.view==='dataView' || active.dataset.view==='rekView'))
+      document.querySelector('.nav-btn[data-view="dashView"]')?.click();
+  }
+  // Layout shifts (sections shown/hidden) — re-fit charts.
+  requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} });
 }
 syncViewButton();
 document.getElementById('viewToggle').addEventListener('click', ()=>{
@@ -1001,6 +1012,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.87', date:'2026-06-22 08:27', sp:2, title:'Wire Simplified view mode',
+    desc:'The Advanced/Simplified toggle now actually filters the page.',
+    detail:'Wired the v75 toggle: Simplified hides the two advanced Company deep-dive sections and the raw-data tabs (Initial Data, Sourced Data), leaving the polished dashboard + explorer; Advanced shows everything. Driven by [data-mode] on <html>, persisted, applied pre-paint; switching to Simplified while on a hidden tab falls back to Dashboard and re-fits charts. Easy to adjust what Simplified strips.'},
   {v:'v0.1.86', date:'2026-06-21 23:30', sp:2, title:'Source dropdown + sticky pills',
     desc:'Deep-dive source toggle is now a dropdown; selected companies show as sticky ✕-pills.',
     detail:'Replaced the 4-button source segmented row with a custom dropdown (DATA-20). The selected companies now render as colour-dotted ✕-pills in a single horizontally-scrolling row inside the sticky bar, so you always see what is selected and can remove any with one tap while scrolling the charts. The two dropdowns close each other and on outside-click/Escape.'},
@@ -2103,6 +2117,7 @@ function makeSectionsCollapsible(){
   view.querySelectorAll('h2.section').forEach(h=>{
     const details=document.createElement('details');
     details.className='sec';
+    if(/deep-dive/i.test(h.textContent)) details.classList.add('adv');  // advanced-only sections
     const key='sec-open:'+h.textContent.trim();
     let saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
     details.open = saved!=='closed';           // default open
