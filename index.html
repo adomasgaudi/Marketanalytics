@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.97</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.98</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -234,7 +234,7 @@
   #rekTableWrap tbody tr:nth-child(even) td{background:var(--zebra)}
   #rekTableWrap tr:hover td{background:var(--hover)}
   /* merge cell stacking per-source values (differing) — colour-keyed text */
-  #rekView .mv{display:block} #rekView .mv.initial{color:var(--green)} #rekView .mv.rekvizitai{color:var(--accent)} #rekView .mv.sodra{color:var(--amber)}
+  #rekView .mv{display:inline-block} #rekView .mv+.mv{margin-left:10px} #rekView .mv.initial{color:var(--green)} #rekView .mv.rekvizitai{color:var(--accent)} #rekView .mv.sodra{color:var(--amber)}
   #rekTableWrap td.conflict{box-shadow:inset 3px 0 0 var(--amber);cursor:help}
   .badge{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--muted)}
   .btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;transition:.15s;font-family:inherit}
@@ -287,7 +287,7 @@
     <button class="nav-btn active" data-view="dashView">Dashboard</button>
     <button class="nav-btn" data-view="rekView">Company Data</button>
   </div>
-  <span class="nav-version">v0.1.97</span>
+  <span class="nav-version">v0.1.98</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -301,7 +301,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.97</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.98</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -952,6 +952,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.98', date:'2026-06-22 12:35', sp:0.5, title:'Conflict values side by side',
+    desc:'Disagreeing source values now sit horizontally, keeping the row height even.',
+    detail:'Changed the multi-value conflict spans from stacked (block) to inline, so a cell where sources disagree shows the values next to each other (colour-keyed) instead of stacking and growing the row.'},
   {v:'v0.1.97', date:'2026-06-22 12:25', sp:1.5, title:'Split yearly vs monthly columns',
     desc:'Yearly averages and monthly snapshots no longer share a value column.',
     detail:'Fixed a semantic mix-up: a yearly average and a monthly snapshot measure different spans, so the unified time table now puts them in SEPARATE value columns (Yearly | Monthly) on the same time axis. A year row fills only Yearly, a month row only Monthly — so they read as different measurements, and conflicts are only flagged between same-span values.'},
