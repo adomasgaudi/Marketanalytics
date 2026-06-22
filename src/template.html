@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.91</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.92</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -87,6 +87,7 @@
   .card .desc{color:var(--muted);font-size:12px;margin-bottom:12px}
   .chartbox{position:relative;height:340px}
   .chartbox.tall{height:520px}
+  .eng-tag{position:absolute;left:4px;top:4px;z-index:7;font:600 8px/1 system-ui;letter-spacing:.04em;padding:2px 4px;border-radius:3px;background:var(--panel2);color:var(--muted);opacity:.7;pointer-events:none}
   /* overlay shown when the chosen source has no data for a chart */
   .chart-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:0 24px;color:var(--muted);font-size:13px;line-height:1.5}
   .chart-empty.show{display:flex}
@@ -279,7 +280,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.91</span>
+  <span class="nav-version">v0.1.92</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -293,7 +294,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.91</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.92</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -330,7 +331,7 @@
     <div class="card">
       <h2>2024 revenue (spėjamos pajamos) by service segment</h2>
       <div class="desc">Companies may belong to multiple segments; revenue (spėjamos pajamos) is attributed to each segment they operate in.</div>
-      <div class="chartbox"><canvas id="chSegments"></canvas></div>
+      <div class="chartbox"><span class="eng-tag">Chart.js</span><canvas id="chSegments"></canvas></div>
     </div>
     <div class="card">
       <h2>Segment revenue trend (spėjamos pajamos)</h2>
@@ -365,7 +366,7 @@
     <div class="card">
       <h2>Size vs profitability (2024)</h2>
       <div class="desc">X = revenue (spėjamos pajamos, log scale), Y = net profit margin % from revenue, bubble size = employees. Healthy zone is up & right.</div>
-      <div class="chartbox tall"><canvas id="chScatter"></canvas></div>
+      <div class="chartbox tall"><span class="eng-tag">Chart.js</span><canvas id="chScatter"></canvas></div>
     </div>
   </div>
 
@@ -723,7 +724,7 @@ function renderCompany(brand){
     {label:'Turnover €M', kind:'bar', color:cssVar('--muted'), data:mineYears.map(y=>({x:y, y:(mine[y]?.revenue||0)/1e6}))},
     {label:'Net profit €k', color:cssVar('--green'), yAxisID:'y2', data:mineYears.map(y=>({x:y, y:(mine[y]?.profit||0)/1e3}))},
     {label:'Employees', color:cssVar('--accent'), yAxisID:'y2', dash:[6,4], data:mineYears.map(y=>({x:y, y:mine[y]?.employees||0}))},
-  ]}, {interactive:false});
+  ]});
 
   const rankData = [
     {label:'Revenue (spėj. pajamos)', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit},
@@ -797,7 +798,7 @@ drawFinSvg(chMarket, { yTitle:'€M', y2Title:'profit €M / emp ×100', series:
   {label:'Turnover €M', kind:'bar', color:cssVar('--muted'), data:YEARS.map(y=>({x:y, y:yearTotals(y).rev/1e6}))},
   {label:'Net profit €M', color:cssVar('--green'), yAxisID:'y2', data:YEARS.map(y=>({x:y, y:yearTotals(y).profit/1e6}))},
   {label:'Employees ×100', color:cssVar('--amber'), yAxisID:'y2', dash:[6,4], data:YEARS.map(y=>({x:y, y:yearTotals(y).emp/100}))},
-]}, {interactive:false});
+]});
 
 // ---------- Segments doughnut ----------
 function segTotals(y){
@@ -818,7 +819,7 @@ new Chart(chSegments, {type:'doughnut', data:{
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);
 drawFinSvg(chSegTrend, { yTitle:'€M', series: topSegs.map(s=>(
   {label:s, color:SEGCOLORS[s], data:YEARS.map(y=>({x:y, y:(segTotals(y)[s]||0)/1e6}))}
-)) }, {interactive:false});
+)) });
 
 // ---------- Top-N ranking ----------
 const rankYearSel = document.getElementById('rankYear');
@@ -891,7 +892,7 @@ drawFinSvg(chSalary, { yTitle:'€/mo', series:[
   {label:'75th pct', color:cssVar('--accent'), data:YEARS.map((y,k)=>({x:y, y:sq[k].q3}))},
   {label:'Median', color:cssVar('--amber'), data:YEARS.map((y,k)=>({x:y, y:sq[k].med}))},
   {label:'25th pct', color:cssVar('--accent'), dash:[5,4], data:YEARS.map((y,k)=>({x:y, y:sq[k].q1}))},
-]}, {interactive:false});
+]});
 
 // ---------- Revenue per employee ----------
 const rpe = SEGMENTS.map(s=>{
@@ -908,7 +909,7 @@ drawBarsSvg(chRevPerEmp, {
 // Re-render the static SVG dashboard charts at the new size on window resize.
 const SVG_DASH_IDS=['chMine','chMineRank','chMarket','chSegTrend','chTop','chGrowth','chSalary','chRevPerEmp'];
 function redrawDashSvg(){ SVG_DASH_IDS.forEach(id=>{ const el=document.getElementById(id); if(!el) return;
-  if(el.__fin) el.__fin.render(); else if(el.__barcfg) drawBarsSvg(el, el.__barcfg); }); }
+  if(el.__fin) el.__fin.render(); else if(el.__bar) el.__bar.render(); }); }
 let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dashRT=setTimeout(redrawDashSvg,160); });
 
 // ---------- Table ----------
@@ -962,6 +963,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.92', date:'2026-06-22 10:40', sp:3, title:'All SVG charts pan/zoom',
+    desc:'Every SVG chart now pans/zooms/translates like the deep-dive; engine tags added.',
+    detail:'Dropped the static mode on the dashboard line/bar charts so they pan/zoom/pinch/double-tap-reset exactly like the deep-dive. Rebuilt drawBarsSvg with the same 2D view-window model — drag to pan, wheel/pinch to zoom (value axis = horizontal, rows = vertical), ⤢ to fit — clipping bars to the plot and row-labels to the left margin. Added a small corner tag on every chart: “SVG” on engine charts, “Chart.js” on the two that stay (doughnut + bubble).'},
   {v:'v0.1.91', date:'2026-06-22 10:20', sp:0.5, title:'Fix second init crash (esc TDZ)',
     desc:'Same temporal-dead-zone class: esc() was used by charts before its declaration.',
     detail:'After moving SVG_SHAPES, a second helper hit the same wall — const esc (HTML-escape) was declared mid-file but the SVG dashboard charts escape labels at load. Moved esc up beside cssVar. Swept the engine + chart code: drawFinSvg/drawBarsSvg only depend on cssVar, esc, SVG_SHAPES — all now declared before first render.'},
@@ -1518,6 +1522,7 @@ function drawFinSvg(container, spec, opts){
     guide.style.cssText='position:absolute;top:0;bottom:0;width:1px;background:'+muted+';opacity:.45;display:none;pointer-events:none';
     st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     container.appendChild(guide); container.appendChild(tip);
+    const engTag=document.createElement('span'); engTag.className='eng-tag'; engTag.textContent='SVG'; container.appendChild(engTag);
     if(interactive){
       const fitBtn=document.createElement('button'); fitBtn.textContent='⤢'; fitBtn.title='Fit — reset zoom & pan';
       fitBtn.style.cssText='position:absolute;top:4px;right:4px;z-index:7;font:600 12px/1 system-ui;padding:2px 5px;border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;background:'+(cssVar('--card')||'#1b1f27')+';color:'+muted+';cursor:pointer;opacity:.6';
@@ -1605,44 +1610,100 @@ function drawFinSvg(container, spec, opts){
 // Static horizontal-bar SVG (rank lists). cfg = {rows:[{label,value,color}], xTitle, fmt(v), tip(row)}.
 function drawBarsSvg(container, cfg){
   if(!container) return;
-  container.__barcfg=cfg;   // remembered so a resize can re-render at the new size
-  const rows=cfg.rows||[];
-  const W=container.clientWidth||360, H=container.clientHeight||240;
-  const grid=cssVar('--grid')||'#2a2f3a', muted=cssVar('--muted')||'#8a93a6', text=cssVar('--text')||'#e6e9ef';
+  const st = container.__bar || (container.__bar = { cid:'bcl'+Math.random().toString(36).slice(2,8) });
+  st.cfg=cfg; const rows=cfg.rows||[]; const R=rows.length;
   const fmt=cfg.fmt||(v=>String(Math.round(v*10)/10));
-  const m={t:6,r:30,b:24,l:Math.min(150,Math.max(64,Math.round(W*0.34)))}, pw=W-m.l-m.r, ph=H-m.t-m.b;
-  let lo=0,hi=0; rows.forEach(r=>{ if(r.value<lo)lo=r.value; if(r.value>hi)hi=r.value; });
-  if(lo===hi) hi=lo+1; const span=hi-lo||1;
-  const xAt=v=> m.l+(v-lo)/span*pw, base=xAt(0);
-  const bandH= rows.length? ph/rows.length : ph, barH=Math.max(3,Math.min(22,bandH*0.66));
-  const maxChars=Math.max(4,Math.floor(m.l/6.2));
-  const trunc=v=>{ v=String(v); return v.length>maxChars? v.slice(0,maxChars-1)+'…':v; };
-  let s=''; const TICKS=3;
-  for(let k=0;k<=TICKS;k++){ const v=lo+span*k/TICKS, x=xAt(v);
-    s+=`<line x1="${x.toFixed(1)}" y1="${m.t}" x2="${x.toFixed(1)}" y2="${(m.t+ph).toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
-    s+=`<text x="${x.toFixed(1)}" y="${(H-12).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="middle">${fmt(v)}</text>`;
-  }
-  if(cfg.xTitle) s+=`<text x="${(m.l+pw/2).toFixed(1)}" y="${(H-1).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="middle">${esc(cfg.xTitle)}</text>`;
-  rows.forEach((r,i)=>{ const cy=m.t+i*bandH+bandH/2, x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
-    s+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${r.color||cssVar('--accent')}" rx="2"/>`;
-    s+=`<text x="${(m.l-6).toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${text}" font-size="10" text-anchor="end">${esc(trunc(r.label))}</text>`;
-    const lx=x1>=base?x1+3:x1-3, anchor=x1>=base?'start':'end';
-    s+=`<text x="${lx.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${muted}" font-size="9" text-anchor="${anchor}">${esc(fmt(r.value))}</text>`;
-  });
-  container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible">${s}</svg>`;
-  const tip=document.createElement('div');
-  tip.style.cssText='position:absolute;pointer-events:none;background:'+(cssVar('--card')||'#1b1f27')+';border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;padding:4px 6px;font-size:11px;color:'+text+';display:none;z-index:6;white-space:nowrap';
-  container.appendChild(tip);
-  container.onmousemove=e=>{ const rect=container.getBoundingClientRect(); if(!rect.height||!rows.length) return;
-    const yv=(e.clientY-rect.top)*H/rect.height; const i=Math.floor((yv-m.t)/bandH);
-    if(i<0||i>=rows.length){ tip.style.display='none'; return; }
-    const r=rows[i]; tip.innerHTML=cfg.tip? cfg.tip(r) : `<b>${esc(String(r.label))}</b>: ${esc(fmt(r.value))}`;
-    tip.style.display='block';
-    tip.style.left=Math.min(rect.width-tip.offsetWidth-4,Math.max(2,(e.clientX-rect.left)+8))+'px';
-    tip.style.top=Math.min(rect.height-tip.offsetHeight-2,(e.clientY-rect.top)+8)+'px';
+  let lo=0,hi=0; rows.forEach(r=>{ if(r.value<lo)lo=r.value; if(r.value>hi)hi=r.value; }); if(lo===hi) hi=lo+1;
+  const fullView=()=>({ vMin:lo, vMax:hi, iMin:-0.5, iMax:Math.max(0.5,R-0.5) });
+  const sig=R+'#'+rows.map(r=>r.label+':'+r.value).join('|');
+  if(st.sig!==sig){ st.sig=sig; st.view=fullView(); }    // new data → refit
+  st.fit=()=>{ st.view=fullView(); st.render(); };
+
+  st.render=function(){
+    const view=st.view, rows=st.cfg.rows||[], R=rows.length;
+    const W=container.clientWidth||360, H=container.clientHeight||240;
+    const grid=cssVar('--grid')||'#2a2f3a', muted=cssVar('--muted')||'#8a93a6', text=cssVar('--text')||'#e6e9ef';
+    const m={t:6,r:30,b:24,l:Math.min(150,Math.max(64,Math.round(W*0.34)))}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+    const vspan=(view.vMax-view.vMin)||1, ispan=(view.iMax-view.iMin)||1;
+    const xAt=v=> m.l+(v-view.vMin)/vspan*pw, base=xAt(0), rowY=i=> m.t+(i-view.iMin)/ispan*ph;
+    const bandH=ph/ispan, barH=Math.max(2,Math.min(22,bandH*0.62));
+    const maxChars=Math.max(4,Math.floor(m.l/6.2));
+    const trunc=v=>{ v=String(v); return v.length>maxChars? v.slice(0,maxChars-1)+'…':v; };
+    let s=''; const TICKS=3;
+    for(let k=0;k<=TICKS;k++){ const v=view.vMin+vspan*k/TICKS, x=xAt(v); if(x<m.l-1||x>W-m.r+1) continue;
+      s+=`<line x1="${x.toFixed(1)}" y1="${m.t}" x2="${x.toFixed(1)}" y2="${(m.t+ph).toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
+      s+=`<text x="${x.toFixed(1)}" y="${(H-12).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="middle">${esc(fmt(v))}</text>`;
+    }
+    if(cfg.xTitle) s+=`<text x="${(m.l+pw/2).toFixed(1)}" y="${(H-1).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="middle">${esc(cfg.xTitle)}</text>`;
+    let plot='', labels='';
+    rows.forEach((r,i)=>{ const cy=rowY(i); if(cy<m.t-bandH||cy>m.t+ph+bandH) return;
+      const x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
+      plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${r.color||cssVar('--accent')}" rx="2"/>`;
+      const lx=x1>=base?x1+3:x1-3, anchor=x1>=base?'start':'end';
+      plot+=`<text x="${lx.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${muted}" font-size="9" text-anchor="${anchor}">${esc(fmt(r.value))}</text>`;
+      labels+=`<text x="${(m.l-6).toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${text}" font-size="10" text-anchor="end">${esc(trunc(r.label))}</text>`;
+    });
+    s+=`<clipPath id="${st.cid}p"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath><clipPath id="${st.cid}l"><rect x="0" y="${m.t}" width="${m.l}" height="${ph}"/></clipPath>`;
+    s+=`<g clip-path="url(#${st.cid}p)">${plot}</g><g clip-path="url(#${st.cid}l)">${labels}</g>`;
+    container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${s}</svg>`;
+    st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
+    const tag=document.createElement('span'); tag.className='eng-tag'; tag.textContent='SVG'; container.appendChild(tag);
+    const tip=document.createElement('div');
+    tip.style.cssText='position:absolute;pointer-events:none;background:'+(cssVar('--card')||'#1b1f27')+';border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;padding:4px 6px;font-size:11px;color:'+text+';display:none;z-index:6;white-space:nowrap';
+    container.appendChild(tip);
+    const fitBtn=document.createElement('button'); fitBtn.textContent='⤢'; fitBtn.title='Fit — reset zoom & pan';
+    fitBtn.style.cssText='position:absolute;top:4px;right:4px;z-index:7;font:600 12px/1 system-ui;padding:2px 5px;border:1px solid '+(cssVar('--border')||'#333')+';border-radius:4px;background:'+(cssVar('--card')||'#1b1f27')+';color:'+muted+';cursor:pointer;opacity:.6';
+    fitBtn.onclick=ev=>{ ev.stopPropagation(); st.fit(); };
+    container.appendChild(fitBtn);
+    container.onmousemove=e=>{ if(st.dragging) return; const rect=container.getBoundingClientRect(); if(!rect.height||!R) return;
+      const yv=(e.clientY-rect.top)*H/rect.height; if(yv<m.t||yv>m.t+ph){ tip.style.display='none'; return; }
+      const i=Math.round(view.iMin+(yv-m.t)/ph*ispan); if(i<0||i>=R){ tip.style.display='none'; return; }
+      const r=rows[i]; tip.innerHTML=cfg.tip? cfg.tip(r) : `<b>${esc(String(r.label))}</b>: ${esc(fmt(r.value))}`;
+      tip.style.display='block';
+      tip.style.left=Math.min(rect.width-tip.offsetWidth-4,Math.max(2,(e.clientX-rect.left)+8))+'px';
+      tip.style.top=Math.min(rect.height-tip.offsetHeight-2,(e.clientY-rect.top)+8)+'px';
+    };
+    container.onmouseleave=()=>{ if(!st.dragging){ tip.style.display='none'; } };
   };
-  container.onmouseleave=()=>{ tip.style.display='none'; };
-  if(!container.__ro && window.ResizeObserver){ container.__ro=new ResizeObserver(()=>{ if(container.clientWidth>0 && container.__barcfg) drawBarsSvg(container, container.__barcfg); }); container.__ro.observe(container); }
+  // Wire pan/zoom once (value axis = x, row axis = y) — mirrors the deep-dive engine.
+  if(!st.wired){
+    st.wired=true; container.style.touchAction='none';
+    const SPREAD=26; const pts=new Map(); let pan=null, pinch=null, lastTap=0;
+    const geoCss=()=>{ const r=container.getBoundingClientRect(); return { r, pcw:r.width*(st.geo.pw/st.geo.W)||1, pch:r.height*(st.geo.ph/st.geo.H)||1, mlCss:r.width*(st.geo.ml/st.geo.W), mtCss:r.height*(st.geo.mt/st.geo.H) }; };
+    const zoomAbout=(cx,cy,kx,ky)=>{ const g=geoCss(), v=st.view;
+      const fx=Math.max(0,Math.min(1,(cx-g.r.left-g.mlCss)/g.pcw)), vf=Math.max(0,Math.min(1,(cy-g.r.top-g.mtCss)/g.pch));
+      const vs=v.vMax-v.vMin, focV=v.vMin+fx*vs, nv=Math.max(1e-6,vs*kx);
+      const is=v.iMax-v.iMin, focI=v.iMin+vf*is, ni=is*ky;
+      st.view={ vMin:focV-fx*nv, vMax:focV+(1-fx)*nv, iMin:focI-vf*ni, iMax:focI+(1-vf)*ni };
+    };
+    const applyPan=(snap,cx,cy)=>{ const g=geoCss();
+      const dv=((cx-snap.x0)/g.pcw)*(snap.v.vMax-snap.v.vMin), di=((cy-snap.y0)/g.pch)*(snap.v.iMax-snap.v.iMin);
+      st.view={ vMin:snap.v.vMin-dv, vMax:snap.v.vMax-dv, iMin:snap.v.iMin-di, iMax:snap.v.iMax-di };
+    };
+    const onMove=e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      const all=[...pts.values()];
+      if(all.length>=2 && pinch){ e.preventDefault(); st.dragging=true;
+        const hx=Math.abs(all[0].x-all[1].x)||1, vy=Math.abs(all[0].y-all[1].y)||1, mx=(all[0].x+all[1].x)/2, my=(all[0].y+all[1].y)/2;
+        const g=geoCss(); const dv=((mx-pinch.mx)/g.pcw)*(st.view.vMax-st.view.vMin), di=((my-pinch.my)/g.pch)*(st.view.iMax-st.view.iMin);
+        st.view={ vMin:st.view.vMin-dv, vMax:st.view.vMax-dv, iMin:st.view.iMin-di, iMax:st.view.iMax-di };
+        const kx=(pinch.hx>SPREAD&&hx>4)?pinch.hx/hx:1, ky=(pinch.vy>SPREAD&&vy>4)?pinch.vy/vy:1;
+        zoomAbout(mx,my,kx,ky); pinch={hx,vy,mx,my}; st.render();
+      } else if(pan){ if(Math.abs(e.clientX-pan.x0)+Math.abs(e.clientY-pan.y0)>3){ pan.moved=true; st.dragging=true; e.preventDefault(); } applyPan(pan,e.clientX,e.clientY); st.render(); }
+    };
+    const onUp=e=>{ const wasTap=pan&&!pan.moved&&pts.size===1; pts.delete(e.pointerId); if(pts.size<2)pinch=null;
+      if(pts.size===1){ const rem=[...pts.values()][0]; pan={x0:rem.x,y0:rem.y,v:{...st.view},moved:true}; }
+      else if(pts.size===0){ pan=null; st.dragging=false; window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp); window.removeEventListener('pointercancel',onUp); try{container.releasePointerCapture(e.pointerId);}catch(_){}
+        if(wasTap){ const now=Date.now(); if(now-lastTap<300){ st.fit(); lastTap=0; } else lastTap=now; } }
+    };
+    container.addEventListener('pointerdown', e=>{ pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); try{container.setPointerCapture(e.pointerId);}catch(_){}
+      if(pts.size===1){ window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp); window.addEventListener('pointercancel',onUp); pan={x0:e.clientX,y0:e.clientY,v:{...st.view},moved:false}; }
+      if(pts.size>=2){ const a=[...pts.values()]; pinch={hx:Math.abs(a[0].x-a[1].x)||1,vy:Math.abs(a[0].y-a[1].y)||1,mx:(a[0].x+a[1].x)/2,my:(a[0].y+a[1].y)/2}; pan=null; e.preventDefault(); } });
+    container.addEventListener('touchstart', e=>{ if(e.touches&&e.touches.length) e.preventDefault(); }, {passive:false});
+    container.addEventListener('wheel', e=>{ e.preventDefault(); const k=e.deltaY>0?1.15:1/1.15; zoomAbout(e.clientX,e.clientY,e.shiftKey?1:k,e.altKey?1:k); st.render(); }, {passive:false});
+    container.addEventListener('dblclick', ()=> st.fit());
+  }
+  if(!st.ro && window.ResizeObserver){ st.ro=new ResizeObserver(()=>{ if(container.clientWidth>0) st.render(); }); st.ro.observe(container); }
+  st.render();
 }
 
 // ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
