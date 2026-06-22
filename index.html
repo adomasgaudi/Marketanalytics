@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.114</title>
+<title>Market Analytics — LT agencies · v0.1.115</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -148,6 +148,18 @@
   .sec>summary.section::-webkit-details-marker{display:none}
   .sec>summary.section::after{content:'▾';font-size:13px;color:var(--muted);transition:transform .15s}
   .sec:not([open])>summary.section::after{transform:rotate(-90deg)}
+  /* Two top-level CARDS (Company data / Market data) that open; sub-sections nest inside. */
+  .group-card{border:1px solid var(--border);border-radius:12px;background:var(--panel);margin:16px 0;padding:0 16px}
+  .group-card>summary.group-sum{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;padding:16px 2px}
+  .group-card>summary.group-sum::-webkit-details-marker{display:none}
+  .group-card>summary.group-sum::after{content:'▾';margin-left:auto;font-size:14px;color:var(--muted);transition:transform .15s}
+  .group-card:not([open])>summary.group-sum::after{transform:rotate(-90deg)}
+  .group-card.mine>summary.group-sum{color:var(--gold)}
+  .group-card[open]>summary.group-sum{border-bottom:1px solid var(--border);margin-bottom:10px}
+  /* nested sub-cards inside a group: lighter, smaller heading, no giant top margin */
+  .group-card .sec{border:1px solid var(--border);border-radius:8px;background:var(--panel2);margin:12px 0;padding:0 12px}
+  .group-card .sec>summary.section{font-size:15px;margin:0;padding:13px 2px}
+  .group-card .sec>summary.section::after{margin-left:auto}
   /* Simplified view: hide advanced (deep-dive) sections + the raw-data tabs. */
   html[data-mode="simplified"] details.sec.adv{display:none}
   html[data-mode="simplified"] .topnav .nav-btn[data-view="rekView"]{display:none}
@@ -354,7 +366,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.114</span>
+    <span class="nav-version">v0.1.115</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -1098,6 +1110,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.115', date:'2026-06-22 18:10', sp:3, title:'Two card groups',
+    desc:'Collapsed the six dashboard sections into two minimalistic cards that open: “Company data” (overview + rankings + deep-dive) and “Market data” (summary + market overview + people & pay).',
+    detail:'makeSectionsCollapsible now groups the sections: each becomes a <details>, then the lead one is poured into a top-level card and the rest nest inside as openable sub-cards. Company data is gold-headed (Fabula identity) and holds the per-company overview, Company rankings and Company deep-dive; Market data holds the market summary, Market overview and People & pay. Open state persists per card and per sub-card.'},
   {v:'v0.1.114', date:'2026-06-22 17:55', sp:0.5, title:'Minimal footer',
     desc:'Replaced the verbose footer with a tiny, barely-visible line reading “by Adomas for Fabula”.',
     detail:'Dropped the long data-source/copyright footer in favour of a single 9px, low-opacity, letter-spaced credit line — present but unobtrusive.'},
@@ -2361,32 +2376,49 @@ try { initSDD(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initSDD: '+err.message, error:err})); }
 
 // ---------- Collapsible dashboard sections (run last, after charts render) ----------
-// Wrap each h2.section + its content into a <details> so sections fold away to cut
-// scrolling. Charts are already drawn (at full size) before their canvas is moved,
-// so the bitmap is preserved; open state persists per section in localStorage.
+// Two top-level CARDS that open: "Company data" (Overview + rankings + deep-dive) and
+// "Market data" (Market summary + market overview + people & pay). Each former section
+// becomes a <details>; the lead one is flattened into the card, the rest nest as sub-cards.
+// Charts are already drawn at full size before their node is moved, so bitmaps survive.
 function makeSectionsCollapsible(){
   const view=document.getElementById('dashView'); if(!view) return;
+  const wrap=view.querySelector('.wrap'); if(!wrap) return;
+  const secs={};
+  // 1) wrap each h2.section + its following content into a <details class="sec">
   view.querySelectorAll('h2.section').forEach(h=>{
-    const details=document.createElement('details');
-    details.className='sec';
-    if(/deep-dive/i.test(h.textContent)) details.classList.add('adv');  // advanced-only sections
-    const key='sec-open:'+h.textContent.trim();
-    let saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
-    details.open = saved!=='closed';           // default open
-    const summary=document.createElement('summary');
-    summary.className=h.className;             // keep "section" (+ "mine")
-    summary.innerHTML=h.innerHTML;             // keep inline badges (e.g. "new")
+    const title=h.textContent.trim();
+    const details=document.createElement('details'); details.className='sec';
+    if(/deep-dive/i.test(title)) details.classList.add('adv'); // advanced-only (hidden in Simplified)
+    const summary=document.createElement('summary'); summary.className=h.className; summary.innerHTML=h.innerHTML;
     details.appendChild(summary);
-    const sibs=[];
-    let n=h.nextElementSibling;
+    const sibs=[]; let n=h.nextElementSibling;
     while(n && !(n.matches && n.matches('h2.section'))){ sibs.push(n); n=n.nextElementSibling; }
-    h.replaceWith(details);
-    sibs.forEach(s=>details.appendChild(s));
-    details.addEventListener('toggle',()=>{
-      try{ localStorage.setItem(key, details.open?'open':'closed'); }catch(e){}
-      if(details.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} });
-    });
+    h.replaceWith(details); sibs.forEach(s=>details.appendChild(s));
+    secs[title]=details;
+    const key='sec-open:'+title; let saved=null; try{saved=localStorage.getItem(key);}catch(e){}
+    details.open = saved!=='closed';
+    details.addEventListener('toggle',()=>{ try{localStorage.setItem(key, details.open?'open':'closed');}catch(e){}
+      if(details.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} }); });
   });
+  // 2) group the sections into two top-level cards
+  const persistOpen=(el,key)=>{ let saved=null; try{saved=localStorage.getItem(key);}catch(e){} el.open=saved!=='closed';
+    el.addEventListener('toggle',()=>{ try{localStorage.setItem(key, el.open?'open':'closed');}catch(e){}
+      if(el.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} }); }); };
+  const makeGroup=(title, leadKey, subKeys, gold)=>{
+    const card=document.createElement('details'); card.className='group-card'+(gold?' mine':'');
+    const sum=document.createElement('summary'); sum.className='group-sum'; sum.textContent=title; card.appendChild(sum);
+    // lead section: pour its content (minus its own summary) straight into the card
+    const lead=secs[leadKey];
+    if(lead){ [...lead.childNodes].forEach(ch=>{ if(ch.nodeType===1 && ch.tagName==='SUMMARY') return; card.appendChild(ch); }); lead.remove(); }
+    // remaining sections nest as their own openable sub-cards
+    subKeys.forEach(k=>{ if(secs[k]) card.appendChild(secs[k]); });
+    persistOpen(card,'grp-open:'+title);
+    return card;
+  };
+  const companyCard=makeGroup('Company data','Overview',['Company rankings','Company deep-dive'], true);
+  const marketCard =makeGroup('Market data','Market summary',['Market overview','People & pay'], false);
+  const foot=wrap.querySelector('.mini-foot');
+  wrap.insertBefore(companyCard, foot); wrap.insertBefore(marketCard, foot);
 }
 try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
