@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.113</title>
+<title>Market Analytics — LT agencies · v0.1.114</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -133,6 +133,7 @@
   .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
   .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
   footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
+  .mini-foot{font-size:9px;font-weight:400;letter-spacing:.4px;color:var(--muted);opacity:.28;text-align:center;margin:34px 0 16px}
   /* ── Company tabs ── */
   .co-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
   .co-tab{padding:7px 18px;font-size:13px;font-weight:600;border-radius:20px;border:1px solid var(--border);background:var(--panel);color:var(--muted);cursor:pointer;transition:.15s;font-family:inherit}
@@ -353,7 +354,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.113</span>
+    <span class="nav-version">v0.1.114</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -502,8 +503,7 @@
     </div>
   </div>
 
-  <footer>Built from Komunikacija-konsultacija-konkurentai.xlsx · figures in EUR · profit = net profit (grynasis pelnas) · revenue = spėjamos pajamos, turnover = apyvarta · generated 2026-06<br>
-  Created by <b>Adomas</b> on behalf of <b>Fabula</b> · © 2026 Fabula ir partneriai, UAB. All rights reserved.</footer>
+  <footer class="mini-foot">by Adomas for Fabula</footer>
 </div>
 </div>
 
@@ -1098,6 +1098,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.114', date:'2026-06-22 17:55', sp:0.5, title:'Minimal footer',
+    desc:'Replaced the verbose footer with a tiny, barely-visible line reading “by Adomas for Fabula”.',
+    detail:'Dropped the long data-source/copyright footer in favour of a single 9px, low-opacity, letter-spaced credit line — present but unobtrusive.'},
   {v:'v0.1.113', date:'2026-06-22 17:45', sp:0.5, title:'Remove Company explorer',
     desc:'Dropped the Company explorer table section (the big sortable brand table) at the bottom of the dashboard, plus its now-dead JS.',
     detail:'Removed the Company explorer card (search + segment/city filters + sortable table) and its renderTable/tblRows logic and segment/city select wiring. The Company Data explorer on the Data exploration view still covers raw per-company browsing.'},
