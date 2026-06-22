@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.103</title>
+<title>Market Analytics — LT agencies · v0.1.104</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -68,11 +68,17 @@
   .ch-desc{font-size:12.5px;color:var(--text)}
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
-  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
-  .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-  .kpi .value{font-size:26px;font-weight:700;margin-top:4px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+  .kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  .kpi .value{font-size:21px;font-weight:700;margin-top:2px}
   .kpi .sub{font-size:12px;margin-top:2px}
+  .kpi-wide{grid-column:1/-1}
+  .kp-two{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:5px}
+  .kp-metric{font-size:13px;color:var(--muted);display:flex;align-items:baseline;gap:6px}
+  .kp-metric b{color:var(--text);font-size:21px;font-weight:700}
+  .kp-u{font-size:12px}
+  .kp-d{font-weight:600} .kp-d.pos{color:var(--green)} .kp-d.neg{color:var(--red)}
   .kpi .formula{margin-top:6px;border-top:1px solid var(--border);padding-top:6px}
   .kpi .formula>summary{font-size:11px;color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:.05em}
   .kpi .formula>summary::-webkit-details-marker{display:none}
@@ -143,14 +149,23 @@
   .ff-yoy{font-size:12px;font-weight:600}
   .ff-yoy.pos{color:var(--green)} .ff-yoy.neg{color:var(--red)}
   .ff-rk{color:var(--gold);font-weight:600;font-size:12px}
-  .ff-bar{display:flex;height:34px;border-radius:7px;overflow:hidden;min-width:64px;transition:width .3s}
-  .ff-seg{display:flex;align-items:center;padding:0 9px;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden}
-  .ff-seg span{overflow:hidden;text-overflow:ellipsis}
-  .ff-seg.rev{background:var(--accent);color:#fff}
-  .ff-seg.profit{background:var(--green);color:#fff}
-  .ff-seg.pass,.ff-seg.cost{background:var(--panel2);color:var(--muted)}
-  .ff-seg.cost.loss{background:rgba(220,77,77,.18);color:var(--red)}
-  .ff-note{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.55}
+  .vf-block{margin-bottom:16px}
+  .vf-head{font-size:13px;color:var(--muted);margin-bottom:8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .vf-head b{color:var(--text);font-size:15px}
+  .vf-body{display:flex;gap:12px;min-height:90px}
+  .vf-bar{width:26px;flex:0 0 auto;display:flex;flex-direction:column;border-radius:6px;overflow:hidden}
+  .vf-seg{width:100%;min-height:4px}
+  .vf-seg.rev{background:var(--accent)} .vf-seg.profit{background:var(--green)}
+  .vf-seg.pass,.vf-seg.cost{background:var(--panel2)} .vf-seg.cost.loss{background:rgba(220,77,77,.25)}
+  .vf-legend{flex:1;display:flex;flex-direction:column;min-width:0}
+  .vf-item{display:flex;gap:9px;align-items:center;min-height:32px}
+  .vf-dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .vf-dot.rev{background:var(--accent)} .vf-dot.profit{background:var(--green)}
+  .vf-dot.pass,.vf-dot.cost{background:var(--panel2);border:1px solid var(--border)}
+  .vf-txt{display:flex;flex-direction:column;min-width:0}
+  .vf-txt b{color:var(--text);font-weight:600;font-size:13.5px}
+  .vf-desc{color:var(--muted);font-size:11.5px;line-height:1.35}
+  .ff-note{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.55}
   .co-info-row{display:flex;gap:12px;padding:3px 0}
   .co-info-k{color:var(--muted);min-width:88px;flex:0 0 auto}
   .co-info-v{color:var(--text);font-weight:600}
@@ -316,7 +331,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.103</span>
+    <span class="nav-version">v0.1.104</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -688,6 +703,12 @@ const FOUNDED={}; (function(){ const sh=SHEETS['Įmonės']; if(!sh) return;
 const REK_CEO={}; ((REK_DATA&&REK_DATA.companies)||[]).forEach(c=>{ if(!c.brand) return;
   const rows=(c.tabs&&c.tabs['Įmonė']&&c.tabs['Įmonė'].rows)||[]; const v=rows.find(x=>x[0]==='Vadovas'); if(v&&v[1]) REK_CEO[c.brand]=v[1];
 });
+// Which sources we have per brand (every brand has Initial; rekvizitai/sodra only if scraped).
+const REK_HAS={}; ((REK_DATA&&REK_DATA.companies)||[]).forEach(c=>{ if(!c.brand) return;
+  REK_HAS[c.brand]={ rekvizitai: !!(c.tabs&&Object.keys(c.tabs).length), sodra: !!c.sodra };
+});
+const srcCubes=brand=>{ const h=REK_HAS[brand]||{}, have={initial:true, rekvizitai:!!h.rekvizitai, sodra:!!h.sodra};
+  return `<span class="co-cubes">${['initial','rekvizitai','sodra'].map(s=>`<span class="src-cube ${s}${have[s]?'':' empty'}"></span>`).join('')}</span>`; };
 
 function rankOf(metricFn, cur24){
   const vals = BRANDS.map(b=>metricFn(byBrand[b][LAST]||{})).filter(v=>v!=null && !isNaN(v));
@@ -738,47 +759,54 @@ function renderCompany(brand){
     el.style.display='';
     const rk=r=> r?`<span class="ff-rk">#${r.pos}/${r.total}</span>`:'';
     const yo=(c,p)=> (p? `<span class="ff-yoy ${c>=p?'pos':'neg'}">${fmtPct(c/p-1)}</span>`:'');
-    let rows='';
+    // A block = a VERTICAL bar; each part's label + explanation is aligned to its right.
+    const block=(title,sub,total,meta,segs)=>{
+      const fx=s=>Math.max(s.pct,4).toFixed(2);
+      const bar=segs.map(s=>`<div class="vf-seg ${s.cls}" style="flex:${fx(s)}"></div>`).join('');
+      const leg=segs.map(s=>`<div class="vf-item" style="flex:${fx(s)}"><span class="vf-dot ${s.cls}"></span><div class="vf-txt"><b>${s.name} ${s.val}</b>${s.desc?`<span class="vf-desc">${s.desc}</span>`:''}</div></div>`).join('');
+      return `<div class="vf-block"><div class="vf-head"><b>${title}</b> <span class="ff-sub2">${sub}</span> <span class="ff-v">${fmtEur(total)}</span> ${meta}</div>`
+        +`<div class="vf-body"><div class="vf-bar">${bar}</div><div class="vf-legend">${leg}</div></div></div>`;
+    };
+    let html='';
     if(T!=null){
-      const revPct=(R!=null && T>0)?Math.max(0,Math.min(100,R/T*100)):100;
-      const pass=(R!=null && T>R)?T-R:0;
-      rows+=`<div class="ff-row"><div class="ff-top"><b>Turnover</b> <span class="ff-sub2">apyvarta</span> <span class="ff-v">${fmtEur(T)}</span> ${yo(T,m23.revenue)} ${rk(mRev)}</div>`
-        +`<div class="ff-bar">`
-        +(R!=null?`<div class="ff-seg rev" style="width:${revPct.toFixed(1)}%"><span>Revenue ${fmtEur(R)}</span></div>`:`<div class="ff-seg rev" style="width:100%"><span>${fmtEur(T)}</span></div>`)
-        +(pass>0?`<div class="ff-seg pass" style="width:${(100-revPct).toFixed(1)}%"><span>Pass-through ${fmtEur(pass)}</span></div>`:'')
-        +`</div></div>`;
+      const revPct=(R!=null && T>0)?Math.max(0,Math.min(100,R/T*100)):100, passEur=(R!=null && T>R)?T-R:0;
+      const segs=[{cls:'rev', pct:revPct, name:'Revenue', val:fmtEur(R!=null?R:T), desc:'fee income the agency keeps (turnover − pass-through)'}];
+      if(passEur>0) segs.push({cls:'pass', pct:100-revPct, name:'Pass-through', val:fmtEur(passEur), desc:'media spend bought for clients, billed through the agency'});
+      html+=block('Turnover','apyvarta',T,`${yo(T,m23.revenue)} ${rk(mRev)}`,segs);
     }
     if(R!=null){
-      const w=(T!=null && T>0)?Math.max(12,Math.min(100,R/T*100)):100;
       const margin=(R>0 && P!=null)?P/R*100:null, loss=P!=null && P<0;
-      const profW=margin!=null?Math.max(0,Math.min(100,margin)):0, costs=(P!=null)?R-P:null;
-      rows+=`<div class="ff-row"><div class="ff-top"><b>Revenue</b> <span class="ff-sub2">spėj. pajamos</span> <span class="ff-v">${fmtEur(R)}</span> ${yo(R,m23.estimatedIncome)} ${rk(mEI)}</div>`
-        +`<div class="ff-bar" style="width:${w.toFixed(1)}%">`
-        +((P!=null && !loss)?`<div class="ff-seg profit" style="width:${profW.toFixed(1)}%"><span>Profit ${fmtEur(P)}</span></div>`:'')
-        +`<div class="ff-seg cost${loss?' loss':''}" style="width:${(100-profW).toFixed(1)}%"><span>${loss?'Costs (loss)':'Costs'} ${costs!=null?fmtEur(costs):''}</span></div>`
-        +`</div></div>`;
+      const profPct=margin!=null?Math.max(0,Math.min(100,margin)):0, costs=(P!=null)?R-P:null;
+      const segs=[];
+      if(P!=null && !loss) segs.push({cls:'profit', pct:profPct, name:'Net profit', val:fmtEur(P), desc:'what is left: revenue − costs'});
+      segs.push({cls:loss?'cost loss':'cost', pct:100-profPct, name:loss?'Costs (loss-making)':'Costs', val:costs!=null?fmtEur(costs):'', desc:'salaries, overheads and other expenses'});
+      html+=block('Revenue','spėj. pajamos',R,`${yo(R,m23.estimatedIncome)} ${rk(mEI)}`,segs);
       const mtxt = margin!=null ? (loss?`<b style="color:var(--red)">−${Math.abs(margin).toFixed(1)}%</b> (net loss ${fmtEur(-P)})`:`<b>${margin.toFixed(1)}%</b>`) : '<span class="nd">no data</span>';
-      rows+=`<div class="ff-note"><b>Net margin</b> = profit ÷ revenue = ${mtxt}${mProfit?` · #${mProfit.pos} of ${mProfit.total}`:''}<br>Revenue (spėj. pajamos) = turnover − pass-through media spend · Net profit = revenue − costs</div>`;
+      html+=`<div class="ff-note"><b>Net margin</b> = net profit ÷ revenue = ${mtxt}${mProfit?` · #${mProfit.pos} of ${mProfit.total}`:''}</div>`;
     }
-    el.innerHTML=`<div class="ff">${rows}</div>`;
+    el.innerHTML=`<div class="ff">${html}</div>`;
   })();
 
+  // Employees + Avg salary combined into one People & pay card (they relate → annual payroll).
+  const emp=m24.employees!=null?Math.round(m24.employees):null, sal=(m24.avgSalary>500)?Math.round(m24.avgSalary):null;
+  const payroll=(emp!=null && sal!=null)?emp*sal*12:null;
+  const empD=m23.employees?`<span class="kp-d ${m24.employees>=m23.employees?'pos':'neg'}">${fmtPct(m24.employees/m23.employees-1)}</span>`:'';
+  const salD=m23.avgSalary?`<span class="kp-d ${m24.avgSalary>=m23.avgSalary?'pos':'neg'}">${fmtPct(m24.avgSalary/m23.avgSalary-1)}</span>`:'';
+  const peopleCard=`<div class="kpi mine kpi-wide"><div class="label">People &amp; pay ${LAST}</div>`
+    +`<div class="kp-two">`
+    +`<div class="kp-metric"><b>${emp!=null?emp:'–'}</b> <span class="kp-u">employees</span> ${empD} ${mEmp?`<span class="rank">#${mEmp.pos}</span>`:''}</div>`
+    +`<div class="kp-metric"><b>${sal!=null?'€'+sal.toLocaleString():'–'}</b> <span class="kp-u">/mo avg</span> ${salD} ${mSal?`<span class="rank">#${mSal.pos}</span>`:''}</div>`
+    +`</div>`
+    +(payroll!=null?`<div class="sub" style="margin-top:6px">≈ ${fmtEur(payroll)} payroll/yr · ${emp} × €${sal.toLocaleString()} × 12</div>`:'')
+    +`</div>`;
   const cards = [
-    {label:'Employees '+LAST, value:m24.employees!=null?Math.round(m24.employees):'–',
-     sub:(m23.employees?fmtPct(m24.employees/m23.employees-1)+' YoY · ':'')+(mEmp?`<span class="rank">#${mEmp.pos}</span>`:''),
-     cls:m24.employees>=m23.employees?'pos':'neg',
-     formula: m23.employees ? `YoY = ${Math.round(m24.employees)} ÷ ${Math.round(m23.employees)} − 1 = ${fmtPct(m24.employees/m23.employees-1)}\nRank = position by headcount among ${mEmp?.total} companies` : ''},
-    {label:'Avg salary '+LAST, value:m24.avgSalary?'€'+Math.round(m24.avgSalary).toLocaleString()+'/mo':'–',
-     sub:(m23.avgSalary?fmtPct(m24.avgSalary/m23.avgSalary-1)+' YoY · ':'')+(mSal?`<span class="rank">#${mSal.pos}</span>`:''),
-     cls:'pos',
-     formula: m23.avgSalary ? `YoY = €${Math.round(m24.avgSalary).toLocaleString()} ÷ €${Math.round(m23.avgSalary).toLocaleString()} − 1 = ${fmtPct(m24.avgSalary/m23.avgSalary-1)}\nRank = position by avg salary among ${mSal?.total} companies` : ''},
     {label:'Revenue CAGR '+mineYears[0]+'–'+LAST, value:fmtPct(mCagr),
      sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue),
      cls:mCagr>=0?'pos':'neg',
      formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
     {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
   ];
-  document.getElementById('mineKpis').innerHTML = cards.map(k=>
+  document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
     `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
 
   // Charts — SVG engine, static. Keep the card but show "No data" if the company lacks it.
@@ -818,7 +846,7 @@ function buildOvList(){
   const q=(document.getElementById('ovCoSearch')?.value||'').trim().toLowerCase();
   const opts=OV_BRANDS.filter(b=>!q||b.toLowerCase().includes(q));
   list.innerHTML = opts.length
-    ? opts.map(b=>`<div class="co-select-opt${b===ovBrand?' active':''}" role="option" data-brand="${esc(b)}">${esc(b)}</div>`).join('')
+    ? opts.map(b=>`<div class="co-select-opt${b===ovBrand?' active':''}" role="option" data-brand="${esc(b)}">${srcCubes(b)}${esc(b)}</div>`).join('')
     : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
     ovBrand=o.dataset.brand;
@@ -1048,6 +1076,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.104', date:'2026-06-22 15:00', sp:3, title:'Vertical money-flow + combined people',
+    desc:'Money flow is now vertical bars with each part explained on the right; people merged; cubes in Overview picker.',
+    detail:'Reworked the money-flow into vertical bars: a Turnover column split into Revenue/Pass-through and a Revenue column split into Net profit/Costs, with each segment’s label + plain-language explanation aligned to its right. Combined Employees + Avg salary into one “People & pay” card (with derived annual payroll) and made the remaining pills (CAGR, Credit risk) more compact. Added the source cubes (green/blue/amber) to every company in the Overview picker too.'},
   {v:'v0.1.103', date:'2026-06-22 14:30', sp:2.5, title:'Money-flow nested bars',
     desc:'Turnover, revenue and profit shown as nested bars so the relationship is visual.',
     detail:'Replaced the three separate Turnover / Revenue / Net-profit cards with one “money flow” visual: a full-width Turnover bar split into Revenue (blue) + Pass-through, and below it a Revenue-width bar split into Net profit (green) + Costs — so you see how revenue is a slice of turnover and profit a slice of revenue. Each carries its value, YoY, rank, plus the net-margin and the revenue/profit formulas. Losses render red. Employees/salary/CAGR/risk stay as cards.'},
