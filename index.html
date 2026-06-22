@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.87</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.88</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -279,7 +279,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.87</span>
+  <span class="nav-version">v0.1.88</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -293,7 +293,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.87</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.88</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -383,35 +383,8 @@
     </div>
   </div>
 
-  <h2 class="section">Company deep-dive · scraped sources</h2>
-  <div class="desc" style="margin-bottom:6px">Per-company trends drawn from the sources we scraped. Pick a company and a data source; charts that a source can't supply show a note. <b>Initial</b> = dashboard dataset (yearly), <b>Rekvizitai</b> = rekvizitai.vz.lt financials, <b>Sodra</b> = monthly headcount &amp; wage.</div>
-  <div class="dd-wrap">
-    <div class="dd-bar">
-      <div class="co-select" id="ddCompanySelect">
-        <button class="co-select-btn" id="ddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ddCoLabel">Select company</span><span class="co-caret">▾</span></button>
-        <div class="co-select-panel" id="ddCoPanel">
-          <input class="co-select-search" id="ddCoSearch" placeholder="Search company…" autocomplete="off">
-          <div class="co-select-list" id="ddCoList" role="listbox"></div>
-        </div>
-      </div>
-      <span style="flex:1"></span>
-      <div class="seg" id="ddSource">
-        <button data-src="combined" class="active">Combined</button>
-        <button data-src="initial">Initial</button>
-        <button data-src="rekvizitai">Rekvizitai</button>
-        <button data-src="sodra">Sodra</button>
-      </div>
-    </div>
-    <div class="grid">
-      <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="ddRevDesc"></div><div class="chartbox"><canvas id="ddRev"></canvas><div class="chart-empty" id="ddRevEmpty"></div></div></div>
-      <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="ddProfitDesc"></div><div class="chartbox"><canvas id="ddProfit"></canvas><div class="chart-empty" id="ddProfitEmpty"></div></div></div>
-      <div class="card"><h2>Headcount over time</h2><div class="desc" id="ddEmpDesc"></div><div class="chartbox"><canvas id="ddEmp"></canvas><div class="chart-empty" id="ddEmpEmpty"></div></div></div>
-      <div class="card"><h2>Average wage over time</h2><div class="desc" id="ddWageDesc"></div><div class="chartbox"><canvas id="ddWage"></canvas><div class="chart-empty" id="ddWageEmpty"></div></div></div>
-    </div>
-  </div>
-
-  <h2 class="section">Company deep-dive — SVG charts <span class="badge">new</span></h2>
-  <div class="desc" style="margin-bottom:6px">Same data as above, drawn with a custom <b>SVG chart engine</b> ported from the Colosseum analytics view (no Chart.js) — shaped markers per series, direct labels, hover guide. <b>Pick several companies to overlay & compare them; drag to pan any direction, scroll or pinch to zoom (Shift/Alt = one axis), ⤢ or double-click/tap to reset.</b> The Chart.js copy above is left untouched for comparison.</div>
+  <h2 class="section">Company deep-dive</h2>
+  <div class="desc" style="margin-bottom:6px">Per-company trends from the sources we scraped, drawn with a custom <b>SVG chart engine</b> (no Chart.js). Pick several companies to overlay &amp; compare; drag to pan any direction, scroll or pinch to zoom (Shift/Alt = one axis), ⤢ or double-click/tap to reset. <b>Initial</b> = dashboard dataset (yearly), <b>Rekvizitai</b> = rekvizitai.vz.lt financials, <b>Sodra</b> = monthly headcount &amp; wage.</div>
   <div class="dd-wrap">
     <div class="dd-bar">
       <div class="co-select" id="sddCompanySelect">
@@ -1012,6 +985,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.88', date:'2026-06-22 09:00', sp:1.5, title:'Drop Chart.js deep-dive copy',
+    desc:'Removed the duplicate Chart.js deep-dive; the SVG one is now the only deep-dive.',
+    detail:'Deleted the older canvas/Chart.js "Company deep-dive · scraped sources" section (its 4 charts, single-company picker, source toggle and drawDD/initDD code) now that the SVG deep-dive supersedes it with pan/zoom + multi-company compare. Shared spec helpers (DD_SPECS, ddSpecFor, initSeries/rekYearSeries/sodraSeries) stay — the SVG view uses them. Merged the two headings into one "Company deep-dive".'},
   {v:'v0.1.87', date:'2026-06-22 08:27', sp:2, title:'Wire Simplified view mode',
     desc:'The Advanced/Simplified toggle now actually filters the page.',
     detail:'Wired the v75 toggle: Simplified hides the two advanced Company deep-dive sections and the raw-data tabs (Initial Data, Sourced Data), leaving the polished dashboard + explorer; Advanced shows everything. Driven by [data-mode] on <html>, persisted, applied pre-paint; switching to Simplified while on a hidden tab falls back to Dashboard and re-fits charts. Easy to adjust what Simplified strips.'},
@@ -1384,9 +1360,7 @@ function renderDataRows(){
 
 // ---------- Company deep-dive (per-company charts across scraped sources) ----------
 const DD_COMPANIES = (REK_DATA && REK_DATA.companies) || [];
-let ddCo = DD_COMPANIES[0] || null;
-let ddSrc = 'combined';
-const DD_CHARTS = {};   // id -> Chart instance (destroyed before redraw)
+// DD_SPECS + ddSpecFor below are the shared spec source; rendered by the SVG engine (drawSDD).
 
 // Pull a per-year metric from a company's rekvizitai Finansai rows.
 // metricBase e.g. 'Pardavimo pajamos' ; returns [{x:year, y:number}] sorted.
@@ -1478,85 +1452,6 @@ function ddSpecFor(id, src, co){
     });
   });
   return series.length ? {series, yTitle, y2Title} : {empty:'No data from any source for this metric.'};
-}
-
-function drawDD(){
-  if(!ddCo){ return; }
-  Object.keys(DD_SPECS).forEach(id=>{
-    const spec=ddSpecFor(id, ddSrc, ddCo);
-    const emptyEl=document.getElementById(id+'Empty');
-    const descEl=document.getElementById(id+'Desc');
-    if(DD_CHARTS[id]){ DD_CHARTS[id].destroy(); DD_CHARTS[id]=null; }
-    const hasData = spec.series && spec.series.some(s=>s.data && s.data.length);
-    if(!hasData){
-      emptyEl.textContent = spec.empty || `No ${DD_SPECS[id].title.toLowerCase()} data from ${ddSrc} for ${ddCo.name||ddCo.slug}.`;
-      emptyEl.classList.add('show');
-      if(descEl) descEl.textContent='';
-      return;
-    }
-    emptyEl.classList.remove('show');
-    if(descEl) descEl.textContent = ddSrc==='combined' ? 'All sources overlaid' : `Source: ${ddSrc}`;
-    const labels=[...new Set(spec.series.flatMap(s=>s.data.map(p=>p.x)))].sort();
-    const scales={ y:{title:{display:true,text:spec.yTitle||''}, grid:{color:GRID}} };
-    if(spec.y2Title) scales.y2={position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:spec.y2Title}};
-    DD_CHARTS[id]=new Chart(document.getElementById(id), {
-      data:{ labels, datasets: spec.series.map(s=>({
-        type: s.type || (s.yAxisID==='y2'?'line':'line'),
-        label:s.label,
-        data: labels.map(x=>{const p=s.data.find(d=>d.x===x); return p?p.y:null;}),
-        borderColor:s.color, backgroundColor:s.color, borderDash:s.dash||[], tension:.25, spanGaps:true,
-        yAxisID:s.yAxisID||'y', pointRadius: labels.length>40?0:2,
-      }))},
-      options:{maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, scales,
-        plugins:{legend:{labels:{usePointStyle:true, boxWidth:8, padding:10, font:{size:11}}}}}
-    });
-  });
-}
-
-// Custom dropdown (non-native, DATA-20): refresh label + filtered option list.
-function buildDDCompanies(){
-  const list=document.getElementById('ddCoList'); if(!list) return;
-  const label=document.getElementById('ddCoLabel');
-  if(label) label.textContent = ddCo ? (ddCo.name||ddCo.slug) : 'Select company';
-  const q=(document.getElementById('ddCoSearch')?.value||'').trim().toLowerCase();
-  const opts=DD_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
-  list.innerHTML = opts.length
-    ? opts.map(c=>`<div class="co-select-opt${c===ddCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
-    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
-  list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
-    ddCo=DD_COMPANIES.find(c=>c.slug===o.dataset.slug)||ddCo;
-    closeDDPicker();
-    buildDDCompanies(); drawDD();
-  }));
-}
-function closeDDPicker(){
-  const sel=document.getElementById('ddCompanySelect'); if(!sel) return;
-  sel.classList.remove('open');
-  document.getElementById('ddCoBtn').setAttribute('aria-expanded','false');
-}
-function initDD(){
-  if(!DD_COMPANIES.length) return;
-  buildDDCompanies();
-  const sel=document.getElementById('ddCompanySelect');
-  const btn=document.getElementById('ddCoBtn');
-  const panel=document.getElementById('ddCoPanel');
-  const search=document.getElementById('ddCoSearch');
-  btn.addEventListener('click',e=>{
-    e.stopPropagation();
-    const open=sel.classList.toggle('open');
-    btn.setAttribute('aria-expanded', open?'true':'false');
-    if(open){ search.value=''; buildDDCompanies(); search.focus(); }
-  });
-  panel.addEventListener('click',e=>e.stopPropagation());   // keep open while searching
-  search.addEventListener('input', buildDDCompanies);
-  document.addEventListener('click', ()=>{ if(sel.classList.contains('open')) closeDDPicker(); });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDDPicker(); });
-  document.querySelectorAll('#ddSource button').forEach(b=>b.addEventListener('click',()=>{
-    ddSrc=b.dataset.src;
-    document.querySelectorAll('#ddSource button').forEach(x=>x.classList.toggle('active',x.dataset.src===ddSrc));
-    drawDD();
-  }));
-  drawDD();
 }
 
 // ---------- Custom SVG chart engine (ported from the Colosseum analytics view; no Chart.js) ----------
@@ -2105,8 +2000,8 @@ try { initDataExplorer(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDataExplorer: '+err.message, error:err})); }
 try { initRek(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initRek: '+err.message, error:err})); }
-try { initDD(); initSDD(); }
-catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initDD: '+err.message, error:err})); }
+try { initSDD(); }
+catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initSDD: '+err.message, error:err})); }
 
 // ---------- Collapsible dashboard sections (run last, after charts render) ----------
 // Wrap each h2.section + its content into a <details> so sections fold away to cut
