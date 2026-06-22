@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.94</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.95</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -218,6 +218,8 @@
   .src-cube.initial{background:var(--green)} .src-cube.rekvizitai{background:var(--accent)} .src-cube.sodra{background:var(--amber)}
   .src-cube.empty{background:transparent;border:1px solid var(--border);opacity:.5}
   .src-legend .src-cube{margin-right:5px}
+  .co-cubes{display:inline-flex;gap:2px;margin-right:8px;vertical-align:middle}
+  .co-cubes .src-cube{width:9px;height:9px}
   /* a row's source-tag cell: small cubes showing which source(s) the row came from */
   .cube-cell{display:flex;gap:3px;align-items:center;flex-wrap:nowrap}
   /* Sourced-data tables: wrap long text, fixed layout */
@@ -284,7 +286,7 @@
     <button class="nav-btn active" data-view="dashView">Dashboard</button>
     <button class="nav-btn" data-view="rekView">Company Data</button>
   </div>
-  <span class="nav-version">v0.1.94</span>
+  <span class="nav-version">v0.1.95</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -298,7 +300,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.94</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.95</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -949,6 +951,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.95', date:'2026-06-22 11:45', sp:1, title:'Source cubes in company picker',
+    desc:'Each company in the dropdown now shows which sources we have for it.',
+    detail:'Added the source cubes (green = Initial, blue = Rekvizitai, amber = Sodra) beside every company name in the Company Data picker, dimmed when that source has no data — so you can see at a glance which companies have scraped Rekvizitai/Sodra info vs Initial-only.'},
   {v:'v0.1.94', date:'2026-06-22 11:30', sp:3, title:'One Company Data tab, all brands',
     desc:'Removed the Initial Data tab; the company picker now covers all 113 brands.',
     detail:'Dropped the separate Initial Data nav tab — its raw-sheet explorer now lives (collapsed by default) under a “Initial data — raw Excel sheets” drop-down inside the renamed “Company Data” tab. The per-company picker now lists every dashboard brand (113): scraped companies show full Initial+Rekvizitai+Sodra, every other brand shows Initial-only data pulled from the dashboard dataset on select. Re-scoped the explorer table CSS to .sheet-explorer and the per-company table to #rekTableWrap so the two don\'t collide. Defaults to Fabula.'},
@@ -1922,8 +1927,11 @@ function buildRekCompanies(){
   const list=document.getElementById('rekCoList');
   const q=(document.getElementById('rekCoSearch')?.value||'').trim().toLowerCase();
   const opts=REK_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  const coCubes=c=>{ const has=new Set(['initial']); // every brand has Initial (dataset)
+    if(c.tabs && Object.keys(c.tabs).length) has.add('rekvizitai'); if(c.sodra) has.add('sodra');
+    return `<span class="co-cubes">${SOURCES.map(s=>`<span class="src-cube ${s}${has.has(s)?'':' empty'}" title="${SRC_LABEL[s]}${has.has(s)?'':' — none'}"></span>`).join('')}</span>`; };
   list.innerHTML = opts.length
-    ? opts.map(c=>`<div class="co-select-opt${c===rekCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${esc(c.name||c.slug)}</div>`).join('')
+    ? opts.map(c=>`<div class="co-select-opt${c===rekCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${coCubes(c)}${esc(c.name||c.slug)}</div>`).join('')
     : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
     sel.classList.remove('open');
