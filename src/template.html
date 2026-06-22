@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.85</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.86</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -275,7 +275,7 @@
     <button class="nav-btn" data-view="dataView">Initial Data</button>
     <button class="nav-btn" data-view="rekView">Sourced Data</button>
   </div>
-  <span class="nav-version">v0.1.85</span>
+  <span class="nav-version">v0.1.86</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -289,7 +289,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.85</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.86</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -417,15 +417,19 @@
           <div class="co-select-list" id="sddCoList" role="listbox"></div>
         </div>
       </div>
-      <span style="flex:1"></span>
-      <div class="seg" id="sddSource">
-        <button data-src="combined" class="active">Combined</button>
-        <button data-src="initial">Initial</button>
-        <button data-src="rekvizitai">Rekvizitai</button>
-        <button data-src="sodra">Sodra</button>
+      <div class="co-select" id="sddSourceSel" style="min-width:150px">
+        <button class="co-select-btn" id="sddSrcBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddSrcLabel">Combined</span><span class="co-caret">▾</span></button>
+        <div class="co-select-panel" id="sddSrcPanel" style="width:min(220px,70vw)">
+          <div class="co-select-list" role="listbox">
+            <div class="co-select-opt active" role="option" data-src="combined">Combined</div>
+            <div class="co-select-opt" role="option" data-src="initial">Initial</div>
+            <div class="co-select-opt" role="option" data-src="rekvizitai">Rekvizitai</div>
+            <div class="co-select-opt" role="option" data-src="sodra">Sodra</div>
+          </div>
+        </div>
       </div>
+      <div id="sddCoChips" style="flex:1 1 100%;display:flex;gap:4px;overflow-x:auto;padding-bottom:2px"></div>
     </div>
-    <div id="sddCoChips" style="display:flex;flex-wrap:wrap;gap:4px;margin:0 0 8px"></div>
     <div class="grid">
       <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
       <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
@@ -997,6 +1001,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.86', date:'2026-06-21 23:30', sp:2, title:'Source dropdown + sticky pills',
+    desc:'Deep-dive source toggle is now a dropdown; selected companies show as sticky ✕-pills.',
+    detail:'Replaced the 4-button source segmented row with a custom dropdown (DATA-20). The selected companies now render as colour-dotted ✕-pills in a single horizontally-scrolling row inside the sticky bar, so you always see what is selected and can remove any with one tap while scrolling the charts. The two dropdowns close each other and on outside-click/Escape.'},
   {v:'v0.1.85', date:'2026-06-21 23:05', sp:1, title:'Compare keeps all sources',
     desc:'Multi-company Combined mode now draws every source per company, not just one.',
     detail:'Compare mode was collapsing each company to a single primary line, so the Combined source lost the per-source overlay. It now emits one primary line per company PER source — colour = company, dash = source (initial solid, rekvizitai dashed, sodra dotted) — so Combined shows initial/rekvizitai/sodra for each company again.'},
@@ -1727,7 +1734,7 @@ function drawSDD(){
 // Removable chips for the selected companies (colour dot = its compare-mode line colour).
 function buildSDDChips(){
   const wrap=document.getElementById('sddCoChips'); if(!wrap) return;
-  wrap.innerHTML=sddCos.map((c,i)=>`<span class="sdd-chip" data-slug="${esc(c.slug)}" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--panel2)"><i style="width:8px;height:8px;border-radius:50%;background:${sddColor(i)}"></i>${esc(coShort(c))}<b data-x="1" style="cursor:pointer;opacity:.55;font-weight:700">✕</b></span>`).join('');
+  wrap.innerHTML=sddCos.map((c,i)=>`<span class="sdd-chip" data-slug="${esc(c.slug)}" style="display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;white-space:nowrap;font-size:11px;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--panel2)"><i style="width:8px;height:8px;border-radius:50%;background:${sddColor(i)};flex:0 0 auto"></i>${esc(coShort(c))}<b data-x="1" style="cursor:pointer;opacity:.55;font-weight:700">✕</b></span>`).join('');
   wrap.querySelectorAll('.sdd-chip b[data-x]').forEach(x=>x.addEventListener('click',e=>{
     e.stopPropagation(); const slug=x.parentNode.dataset.slug, idx=sddCos.findIndex(c=>c.slug===slug);
     if(idx>=0){ sddCos.splice(idx,1); buildSDDChips(); buildSDDCompanies(); drawSDD(); }
@@ -1756,18 +1763,26 @@ function initSDD(){
   const sel=document.getElementById('sddCompanySelect'), btn=document.getElementById('sddCoBtn'),
         panel=document.getElementById('sddCoPanel'), search=document.getElementById('sddCoSearch');
   btn.addEventListener('click',e=>{ e.stopPropagation();
-    const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false');
-    if(open){ search.value=''; buildSDDCompanies(); search.focus(); }
+    const willOpen=!sel.classList.contains('open');
+    document.getElementById('sddSourceSel')?.classList.remove('open');
+    sel.classList.toggle('open',willOpen); btn.setAttribute('aria-expanded',willOpen?'true':'false');
+    if(willOpen){ search.value=''; buildSDDCompanies(); search.focus(); }
   });
   panel.addEventListener('click',e=>e.stopPropagation());
   search.addEventListener('input', buildSDDCompanies);
-  document.addEventListener('click', ()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
-  document.querySelectorAll('#sddSource button').forEach(b=>b.addEventListener('click',()=>{
-    sddSrc=b.dataset.src;
-    document.querySelectorAll('#sddSource button').forEach(x=>x.classList.toggle('active',x.dataset.src===sddSrc));
-    drawSDD();
+  // Source picker — custom dropdown (DATA-20), replaces the old 4-button segmented row.
+  const ssel=document.getElementById('sddSourceSel'), sbtn=document.getElementById('sddSrcBtn'),
+        spanel=document.getElementById('sddSrcPanel'), slabel=document.getElementById('sddSrcLabel');
+  const closeAll=()=>{ [sel,ssel].forEach(x=>x&&x.classList.remove('open')); btn.setAttribute('aria-expanded','false'); sbtn.setAttribute('aria-expanded','false'); };
+  sbtn.addEventListener('click',e=>{ e.stopPropagation(); const open=!ssel.classList.contains('open'); closeAll(); ssel.classList.toggle('open',open); sbtn.setAttribute('aria-expanded',open?'true':'false'); });
+  spanel.addEventListener('click',e=>e.stopPropagation());
+  spanel.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
+    sddSrc=o.dataset.src; slabel.textContent=o.textContent;
+    spanel.querySelectorAll('.co-select-opt').forEach(x=>x.classList.toggle('active',x.dataset.src===sddSrc));
+    ssel.classList.remove('open'); sbtn.setAttribute('aria-expanded','false'); drawSDD();
   }));
+  document.addEventListener('click', closeAll);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(); });
   let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawSDD,150);});
   drawSDD();
 }
