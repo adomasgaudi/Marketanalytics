@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.115</title>
+<title>Market Analytics — LT agencies · v0.1.116</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -156,12 +156,14 @@
   .group-card:not([open])>summary.group-sum::after{transform:rotate(-90deg)}
   .group-card.mine>summary.group-sum{color:var(--gold)}
   .group-card[open]>summary.group-sum{border-bottom:1px solid var(--border);margin-bottom:10px}
-  /* nested sub-cards inside a group: lighter, smaller heading, no giant top margin */
-  .group-card .sec{border:1px solid var(--border);border-radius:8px;background:var(--panel2);margin:12px 0;padding:0 12px}
-  .group-card .sec>summary.section{font-size:15px;margin:0;padding:13px 2px}
-  .group-card .sec>summary.section::after{margin-left:auto}
+  /* tabs — one horizontally-scrolling row of pills; only the active subsection's panel shows */
+  .grp-tabs{display:flex;gap:5px;overflow-x:auto;margin:0 0 14px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .grp-tab{flex:0 0 auto;font:600 13px/1 inherit;min-height:32px;padding:0 13px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;white-space:nowrap;transition:.12s}
+  .grp-tab:hover{color:var(--text)}
+  .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .grp-panel[hidden]{display:none}
   /* Simplified view: hide advanced (deep-dive) sections + the raw-data tabs. */
-  html[data-mode="simplified"] details.sec.adv{display:none}
+  html[data-mode="simplified"] .grp-tab.adv,html[data-mode="simplified"] .grp-panel.adv{display:none}
   html[data-mode="simplified"] .topnav .nav-btn[data-view="rekView"]{display:none}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
   .co-info-head{margin-bottom:7px;line-height:1.3}
@@ -366,7 +368,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.115</span>
+    <span class="nav-version">v0.1.116</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -1110,6 +1112,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.116', date:'2026-06-22 18:25', sp:1.5, title:'Subsection tabs',
+    desc:'Each subsection inside the Company-data and Market-data cards is now a tab instead of a stacked block, so you switch instead of scrolling.',
+    detail:'The two group cards render a horizontally-scrolling row of tab pills (Overview / Company rankings / Company deep-dive · Market summary / Market overview / People & pay); only the active subsection’s panel shows. Charts resize on tab switch; the deep-dive tab still hides in Simplified mode.'},
   {v:'v0.1.115', date:'2026-06-22 18:10', sp:3, title:'Two card groups',
     desc:'Collapsed the six dashboard sections into two minimalistic cards that open: “Company data” (overview + rankings + deep-dive) and “Market data” (summary + market overview + people & pay).',
     detail:'makeSectionsCollapsible now groups the sections: each becomes a <details>, then the lead one is poured into a top-level card and the rest nest inside as openable sub-cards. Company data is gold-headed (Fabula identity) and holds the per-company overview, Company rankings and Company deep-dive; Market data holds the market summary, Market overview and People & pay. Open state persists per card and per sub-card.'},
@@ -2375,48 +2380,50 @@ catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initRek: '+
 try { initSDD(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'initSDD: '+err.message, error:err})); }
 
-// ---------- Collapsible dashboard sections (run last, after charts render) ----------
-// Two top-level CARDS that open: "Company data" (Overview + rankings + deep-dive) and
-// "Market data" (Market summary + market overview + people & pay). Each former section
-// becomes a <details>; the lead one is flattened into the card, the rest nest as sub-cards.
-// Charts are already drawn at full size before their node is moved, so bitmaps survive.
+// ---------- Two card groups, each with TABS per subsection (run last, after charts render) ----------
+// "Company data" (Overview / Company rankings / Company deep-dive) and "Market data"
+// (Market summary / Market overview / People & pay). Each subsection is a TAB inside its card —
+// only the active one shows, so no long scroll. Charts are drawn full-size before being moved.
 function makeSectionsCollapsible(){
   const view=document.getElementById('dashView'); if(!view) return;
   const wrap=view.querySelector('.wrap'); if(!wrap) return;
+  const resizeCharts=()=>requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} });
+  // 1) collect each section's title + its content nodes (then drop the heading)
   const secs={};
-  // 1) wrap each h2.section + its following content into a <details class="sec">
   view.querySelectorAll('h2.section').forEach(h=>{
     const title=h.textContent.trim();
-    const details=document.createElement('details'); details.className='sec';
-    if(/deep-dive/i.test(title)) details.classList.add('adv'); // advanced-only (hidden in Simplified)
-    const summary=document.createElement('summary'); summary.className=h.className; summary.innerHTML=h.innerHTML;
-    details.appendChild(summary);
-    const sibs=[]; let n=h.nextElementSibling;
-    while(n && !(n.matches && n.matches('h2.section'))){ sibs.push(n); n=n.nextElementSibling; }
-    h.replaceWith(details); sibs.forEach(s=>details.appendChild(s));
-    secs[title]=details;
-    const key='sec-open:'+title; let saved=null; try{saved=localStorage.getItem(key);}catch(e){}
-    details.open = saved!=='closed';
-    details.addEventListener('toggle',()=>{ try{localStorage.setItem(key, details.open?'open':'closed');}catch(e){}
-      if(details.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} }); });
+    const nodes=[]; let n=h.nextElementSibling;
+    while(n && !(n.matches && n.matches('h2.section'))){ nodes.push(n); n=n.nextElementSibling; }
+    secs[title]={title, nodes, adv:/deep-dive/i.test(title)};
+    h.remove();
   });
-  // 2) group the sections into two top-level cards
-  const persistOpen=(el,key)=>{ let saved=null; try{saved=localStorage.getItem(key);}catch(e){} el.open=saved!=='closed';
-    el.addEventListener('toggle',()=>{ try{localStorage.setItem(key, el.open?'open':'closed');}catch(e){}
-      if(el.open) requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} }); }); };
-  const makeGroup=(title, leadKey, subKeys, gold)=>{
+  // 2) build a card with one tab + panel per subsection
+  const makeGroup=(title, keys, gold)=>{
     const card=document.createElement('details'); card.className='group-card'+(gold?' mine':'');
     const sum=document.createElement('summary'); sum.className='group-sum'; sum.textContent=title; card.appendChild(sum);
-    // lead section: pour its content (minus its own summary) straight into the card
-    const lead=secs[leadKey];
-    if(lead){ [...lead.childNodes].forEach(ch=>{ if(ch.nodeType===1 && ch.tagName==='SUMMARY') return; card.appendChild(ch); }); lead.remove(); }
-    // remaining sections nest as their own openable sub-cards
-    subKeys.forEach(k=>{ if(secs[k]) card.appendChild(secs[k]); });
-    persistOpen(card,'grp-open:'+title);
+    const tabs=document.createElement('div'); tabs.className='grp-tabs';
+    const panels=document.createElement('div'); panels.className='grp-panels';
+    keys.map(k=>secs[k]).filter(Boolean).forEach((sec,i)=>{
+      const tab=document.createElement('button'); tab.type='button';
+      tab.className='grp-tab'+(sec.adv?' adv':'')+(i===0?' active':''); tab.textContent=sec.title; tab.dataset.i=i;
+      tabs.appendChild(tab);
+      const panel=document.createElement('div'); panel.className='grp-panel'+(sec.adv?' adv':''); panel.dataset.i=i; panel.hidden=(i!==0);
+      sec.nodes.forEach(node=>panel.appendChild(node));
+      panels.appendChild(panel);
+    });
+    tabs.addEventListener('click',e=>{ const b=e.target.closest('.grp-tab'); if(!b) return; const i=b.dataset.i;
+      tabs.querySelectorAll('.grp-tab').forEach(t=>t.classList.toggle('active',t.dataset.i===i));
+      panels.querySelectorAll('.grp-panel').forEach(p=>p.hidden=(p.dataset.i!==i));
+      resizeCharts();
+    });
+    card.appendChild(tabs); card.appendChild(panels);
+    const key='grp-open:'+title; let saved=null; try{saved=localStorage.getItem(key);}catch(e){}
+    card.open = saved!=='closed';
+    card.addEventListener('toggle',()=>{ try{localStorage.setItem(key,card.open?'open':'closed');}catch(e){} if(card.open) resizeCharts(); });
     return card;
   };
-  const companyCard=makeGroup('Company data','Overview',['Company rankings','Company deep-dive'], true);
-  const marketCard =makeGroup('Market data','Market summary',['Market overview','People & pay'], false);
+  const companyCard=makeGroup('Company data',['Overview','Company rankings','Company deep-dive'], true);
+  const marketCard =makeGroup('Market data',['Market summary','Market overview','People & pay'], false);
   const foot=wrap.querySelector('.mini-foot');
   wrap.insertBefore(companyCard, foot); wrap.insertBefore(marketCard, foot);
 }
