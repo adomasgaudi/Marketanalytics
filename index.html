@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.109</title>
+<title>Market Analytics — LT agencies · v0.1.110</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -350,7 +350,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.109</span>
+    <span class="nav-version">v0.1.110</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -1170,6 +1170,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.110', date:'2026-06-22 17:00', sp:1, title:'Detailed source solid, average grey',
+    desc:'In overlaid (Combined) charts the detailed scraped sources draw solid and full-colour; Initial — the coarse yearly average — now draws thin and grey as a background reference.',
+    detail:'Per-source emphasis on the SVG comparison charts: the monthly/scraped sources (Sodra, Rekvizitai) render as bold solid coloured lines, while Initial (the dashboard yearly average) renders thin, grey and semi-transparent so it sits behind as context. drawFinSvg now honours per-series width / opacity / marker-size; applied in both single-company and multi-company Combined overlays.'},
   {v:'v0.1.109', date:'2026-06-22 16:40', sp:2, title:'Per-employee money-flow toggle',
     desc:'Company overview gains a Total / Per-employee toggle on its money-flow; market summary adds a Per-employee mode alongside Average and Whole-market.',
     detail:'Both money-flow diagrams (company Overview and Market summary) can now be normalised. Company: Total ↔ Per employee (divides turnover/revenue/profit/costs by headcount). Market: Average per company · Per employee · Whole market — CAGR endpoints and the employees card follow the chosen mode, and the bar carries a small scope tag (e.g. "per employee · 1,579 staff").'},
@@ -1655,10 +1658,13 @@ function ddSpecFor(id, src, co){
     if(!yTitle) yTitle=r.yTitle||'';
     if(r.y2Title) y2Title=r.y2Title;
     let within=0;
+    const isAvg = (s==='initial'); // Initial = coarse yearly average → thin grey reference
     r.series.forEach(ser=>{
       if(!ser.data || !ser.data.length) return;
       series.push({label:`${ser.label} · ${DD_SRC_TAG[s]}`, data:ser.data,
-        color:DD_SRC_COLOR[s](), yAxisID:ser.yAxisID, dash:DD_DASH[within%DD_DASH.length]});
+        color: isAvg ? cssVar('--muted') : DD_SRC_COLOR[s](), yAxisID:ser.yAxisID,
+        dash: isAvg ? [] : DD_DASH[within%DD_DASH.length],
+        width: isAvg ? 1.3 : 2.4, opacity: isAvg ? 0.5 : 0.95, mr: isAvg ? 2.4 : 3});
       within++;
     });
   });
@@ -1730,8 +1736,8 @@ function drawFinSvg(container, spec, opts){
       const shape=SVG_SHAPES[si%SVG_SHAPES.length];
       const pts=cats.map((c,i)=>{ const p=ser.data.find(d=>String(d.x)===c); return p?{X:xAt(i),Y:yf(p.y)}:null; });
       const line=pts.filter(Boolean).map(p=>`${p.X.toFixed(1)},${p.Y.toFixed(1)}`).join(' ');
-      if(line) body+=`<polyline points="${line}" fill="none" stroke="${ser.color}" stroke-width="2" stroke-opacity="0.9"${ser.dash&&ser.dash.length?` stroke-dasharray="${ser.dash.join(',')}"`:''}/>`;
-      if(span<=40) pts.forEach(p=>{ if(p && p.X>=m.l-4 && p.X<=W-m.r+4) body+=svgMarker(shape,p.X,p.Y,3,ser.color); });
+      if(line) body+=`<polyline points="${line}" fill="none" stroke="${ser.color}" stroke-width="${ser.width!=null?ser.width:2}" stroke-opacity="${ser.opacity!=null?ser.opacity:0.9}"${ser.dash&&ser.dash.length?` stroke-dasharray="${ser.dash.join(',')}"`:''}/>`;
+      if(span<=40 && !ser.noMarkers) pts.forEach(p=>{ if(p && p.X>=m.l-4 && p.X<=W-m.r+4) body+=svgMarker(shape,p.X,p.Y,ser.mr!=null?ser.mr:3,ser.color); });
     });
     s+=`<clipPath id="${st.cid}"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath><g clip-path="url(#${st.cid})">${body}</g>`;
     container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:${interactive?'none':'auto'}">${s}</svg>`;
@@ -1937,9 +1943,14 @@ const SDD_PALETTE=['--accent','--green','--amber','--purple','--red','--gold','-
 const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
 const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
 // One chart spec for the current selection. 1 company → full multi-metric spec (unchanged);
-// 2+ companies → "compare mode": one PRIMARY metric line per company PER SOURCE — colour = company,
-// dash = source — so the Combined view still shows every source (initial/rekvizitai/sodra), not just one.
-const SDD_SRC_DASH={initial:[], rekvizitai:[6,4], sodra:[2,3]};
+// 2+ companies → "compare mode": one PRIMARY metric line per company PER SOURCE.
+// colour = company; the detailed scraped sources (Rekvizitai/Sodra) draw SOLID & full-colour,
+// while Initial (the coarse yearly *average*) draws thin & grey so it reads as a background reference.
+function srcStyle(s, coColor){
+  // Initial = yearly average → thin grey; scraped (rekvizitai/sodra) = solid, bold, company colour.
+  if(s==='initial') return {color:cssVar('--muted'), dash:[], width:1.3, opacity:0.5, mr:2.4};
+  return {color:coColor, dash:[], width:2.4, opacity:0.95, mr:3};
+}
 function sddSpec(id, src, cos){
   if(!cos.length) return {empty:'Select a company.'};
   if(cos.length===1) return ddSpecFor(id, src, cos[0]);
@@ -1953,7 +1964,8 @@ function sddSpec(id, src, cos){
       const prim=r.series.find(x=>x.data && x.data.length && x.yAxisID!=='y2'); // this source's primary metric
       if(!prim) return;
       if(!yTitle) yTitle=r.yTitle||'';
-      series.push({ label: coShort(co)+(src==='combined'?' · '+DD_SRC_TAG[s]:''), data:prim.data, color:sddColor(ci), dash: src==='combined'?SDD_SRC_DASH[s]:[] });
+      const st = src==='combined' ? srcStyle(s, sddColor(ci)) : {color:sddColor(ci), dash:[], width:2.4, opacity:0.95, mr:3};
+      series.push(Object.assign({ label: coShort(co)+(src==='combined'?' · '+DD_SRC_TAG[s]:''), data:prim.data }, st));
     });
   });
   return series.length ? {series, yTitle} : {empty:'No data for the selected companies from '+src+'.'};
@@ -1969,7 +1981,7 @@ function drawSDD(){
     if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
     if(emptyEl) emptyEl.classList.remove('show');
     const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
-    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?', dash = source':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
     drawFinSvg(cont, spec);
   });
 }
