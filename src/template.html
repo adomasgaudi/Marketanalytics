@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.96</title>
+<title>LT Communication Agencies — Competitor Dashboard 2019–2024 · v0.1.97</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -287,7 +287,7 @@
     <button class="nav-btn active" data-view="dashView">Dashboard</button>
     <button class="nav-btn" data-view="rekView">Company Data</button>
   </div>
-  <span class="nav-version">v0.1.96</span>
+  <span class="nav-version">v0.1.97</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -301,7 +301,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <header>
-    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.96</span></h1>
+    <h1>🇱🇹 Lithuanian Communication & Marketing Agencies <span class="version">v0.1.97</span></h1>
     <p>Competitor landscape dashboard · 113 brands · Financials 2019–2024 (revenue, profit, headcount, salaries) · Source: rekvizitai.vz.lt data export</p>
   </header>
 
@@ -952,6 +952,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.97', date:'2026-06-22 12:25', sp:1.5, title:'Split yearly vs monthly columns',
+    desc:'Yearly averages and monthly snapshots no longer share a value column.',
+    detail:'Fixed a semantic mix-up: a yearly average and a monthly snapshot measure different spans, so the unified time table now puts them in SEPARATE value columns (Yearly | Monthly) on the same time axis. A year row fills only Yearly, a month row only Monthly — so they read as different measurements, and conflicts are only flagged between same-span values.'},
   {v:'v0.1.96', date:'2026-06-22 12:10', sp:3, title:'Unified time series + conflicts',
     desc:'Same metric from all sources now shares one time column; disagreements are flagged.',
     detail:'Reworked the Merged pivot: a metric with any dated points (e.g. headcount, avg wage) is now ONE time series instead of separate per-source tables — Initial yearly, Rekvizitai dated and Sodra monthly fold onto a single time column (dated points aligned by month, parenthetical qualifiers like "(grafikas)" canonicalised so they count as the same metric). When sources disagree for a period the cell is marked (amber edge) and shows every source\'s value colour-keyed (green/blue/amber), with a hover tooltip naming each. Purely-yearly metrics keep the clean metric×year matrix.'},
@@ -2052,18 +2055,24 @@ function renderRek(){
     });
     html+=`</tbody></table>`;
   }
-  // 2) unified time series — Initial + Rekvizitai + Sodra on ONE time column.
-  //    Conflicts (sources disagree for a period) show every source's value, colour-keyed.
+  // 2) unified time series — Initial + Rekvizitai + Sodra on ONE time axis, but yearly
+  //    and monthly measurements get SEPARATE value columns (different spans aren't comparable).
+  const SPAN_LABEL={year:'Yearly', month:'Monthly'};
   series.forEach(sObj=>{
-    html+=`<table style="margin-top:14px"><thead><tr><th class="colField">${eh(sObj.base)} — time</th><th class="num" style="text-align:right">Value</th>${srcTh}</tr></thead><tbody>`;
+    const spans=['year','month'].filter(sp=>sObj.rows.some(r=>r.kind===sp));
+    html+=`<table style="margin-top:14px"><thead><tr><th class="colField">${eh(sObj.base)} — time</th>`
+      + spans.map(sp=>`<th class="num" style="text-align:right">${SPAN_LABEL[sp]}</th>`).join('') + srcTh + `</tr></thead><tbody>`;
     sObj.rows.forEach(c=>{
-      const valCell = (merged && c.diff)
-        ? `<td class="num conflict" title="Sources disagree — ${SOURCES.filter(s=>c.vals[s]!=null).map(s=>SRC_LABEL[s]+': '+c.vals[s]).join(' · ')}">`
-            + SOURCES.filter(s=>c.vals[s]!=null).map(s=>`<span class="mv ${s}">${eh(c.vals[s])}</span>`).join('') + `</td>`
-        : `<td class="num">${eh(c.value)}</td>`;
+      const valCells = spans.map(sp=>{
+        if(c.kind!==sp) return '<td class="num"></td>';
+        if(merged && c.diff)
+          return `<td class="num conflict" title="Sources disagree — ${SOURCES.filter(s=>c.vals[s]!=null).map(s=>SRC_LABEL[s]+': '+c.vals[s]).join(' · ')}">`
+            + SOURCES.filter(s=>c.vals[s]!=null).map(s=>`<span class="mv ${s}">${eh(c.vals[s])}</span>`).join('') + `</td>`;
+        return `<td class="num">${eh(c.value)}</td>`;
+      }).join('');
       const days=Object.values(c.days||{}).sort();
       const dayTip = (c.kind==='month' && days.length && days[days.length-1]!==c.period) ? ` title="${eh(days[days.length-1])}"` : '';
-      html+=`<tr><td class="fieldcell"${dayTip}>${eh(c.period)}</td>${valCell}${merged?cubeCell(c.sources):''}</tr>`;
+      html+=`<tr><td class="fieldcell"${dayTip}>${eh(c.period)}</td>${valCells}${merged?cubeCell(c.sources):''}</tr>`;
     });
     html+=`</tbody></table>`;
   });
