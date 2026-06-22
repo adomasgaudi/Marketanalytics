@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.110</title>
+<title>Market Analytics — LT agencies · v0.1.111</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -97,6 +97,9 @@
   .svg-legend{position:absolute;left:36px;right:36px;top:2px;display:flex;flex-wrap:wrap;gap:0 10px;justify-content:center;font-size:9.5px;color:var(--muted);pointer-events:none;line-height:1.3;z-index:6}
   .svg-legend i{display:inline-block;width:10px;height:9px;border-radius:2px;margin-right:3px;vertical-align:middle}
   .svg-legend i.line{height:3px;margin-bottom:2px}
+  .sdd-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin:0 0 12px;font-size:11.5px;color:var(--muted)}
+  .sdd-leg-it{display:inline-flex;align-items:center;gap:5px}
+  .sdd-leg-note{font-style:italic;opacity:.8}
   .chart-nodata{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
   /* overlay shown when the chosen source has no data for a chart */
   .chart-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:0 24px;color:var(--muted);font-size:13px;line-height:1.5}
@@ -350,7 +353,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.110</span>
+    <span class="nav-version">v0.1.111</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -490,6 +493,7 @@
       </div>
       <div id="sddCoChips" style="flex:1 1 100%;display:flex;gap:4px;overflow-x:auto;padding-bottom:2px"></div>
     </div>
+    <div id="sddLegend" class="sdd-legend"></div>
     <div class="grid">
       <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
       <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
@@ -1170,6 +1174,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.111', date:'2026-06-22 17:20', sp:2, title:'Clearer time axis + shared legend',
+    desc:'Comparison-chart x-axis now shows clean year labels (or short months when zoomed in) instead of cramped YYYY-MM that ran together; the per-chart legend moved out to one shared key under the dropdown.',
+    detail:'Borrowed the Data repo timeBands idea: the SVG x-axis collapses to a single YEAR label per year-change (short Mon labels when a single year is in view), with a pixel-gap guard so labels never collide. The overlaid legend that sat on top of every deep-dive chart is suppressed; instead one compact legend under the company/source dropdown explains the source styling (solid scraped vs thin-grey Initial average), with company colour read from the chips.'},
   {v:'v0.1.110', date:'2026-06-22 17:00', sp:1, title:'Detailed source solid, average grey',
     desc:'In overlaid (Combined) charts the detailed scraped sources draw solid and full-colour; Initial — the coarse yearly average — now draws thin and grey as a background reference.',
     detail:'Per-source emphasis on the SVG comparison charts: the monthly/scraped sources (Sodra, Rekvizitai) render as bold solid coloured lines, while Initial (the dashboard yearly average) renders thin, grey and semi-transparent so it sits behind as context. drawFinSvg now honours per-series width / opacity / marker-size; applied in both single-company and multi-company Combined overlays.'},
@@ -1685,6 +1692,7 @@ function svgMarker(shape, X, Y, r, color){
 // domain, so pan/zoom (added in later parts) survives redraws. Initial view = full data.
 function drawFinSvg(container, spec, opts){
   const interactive = !(opts && opts.interactive===false); // dashboard overview charts pass {interactive:false} → static, page still scrolls
+  const showLegend = !(opts && opts.noLegend); // comparison charts use a shared legend under the dropdown instead
   const cats = [...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))].sort();
   const n = cats.length;
   const st = container.__fin || (container.__fin = { cid:'fcl'+Math.random().toString(36).slice(2,8) });
@@ -1714,9 +1722,21 @@ function drawFinSvg(container, spec, opts){
     }
     if(right.length) for(let k=0;k<=TICKS;k++){ const v=ry.yMin+rySpan*k/TICKS, y=yR(v);
       s+=`<text x="${W-m.r+6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="start">${fmt(v)}</text>`; }
-    // x labels: only categories whose pixel falls inside the plot, thinned to ~8
-    const step=Math.max(1, Math.ceil(Math.min(n, span+1)/8));
-    cats.forEach((c,i)=>{ const X=xAt(i); if(X<m.l-1||X>W-m.r+1) return; if(i%step===0) s+=`<text x="${X.toFixed(1)}" y="${H-8}" fill="${muted}" font-size="10" text-anchor="middle">${c}</text>`; });
+    // x labels: calendar-aware (Data-repo timeBands style). Multi-year span → one YEAR label
+    // at each year change; zoomed into a single year → short "Mon" labels. A pixel-gap guard
+    // drops any label that would collide with the previous one, so they never run together.
+    const MON_ABBR=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const yrOf=c=>{ const mm=/^(\d{4})/.exec(String(c)); return mm?mm[1]:String(c); };
+    const moOf=c=>{ const mm=/^(\d{4})-(\d{2})/.exec(String(c)); return mm?MON_ABBR[(+mm[2]-1)%12]:String(c); };
+    const vis=[]; cats.forEach((c,i)=>{ const X=xAt(i); if(X>=m.l-1&&X<=W-m.r+1) vis.push({c,X}); });
+    const multiYear = new Set(vis.map(v=>yrOf(v.c))).size>1;
+    let lastX=-1e9, prevKey=null; const minGap=34;
+    const putX=(lbl,X)=>{ s+=`<text x="${X.toFixed(1)}" y="${H-8}" fill="${muted}" font-size="10" text-anchor="middle">${lbl}</text>`; };
+    vis.forEach(v=>{ const key = multiYear ? yrOf(v.c) : moOf(v.c);
+      if(key===prevKey) { prevKey=key; return; }            // dedupe consecutive same-label
+      if(v.X-lastX < minGap) { prevKey=key; return; }        // would collide → skip
+      lastX=v.X; prevKey=key; putX(key, v.X);
+    });
     // series, clipped to the plot rect. Bar series (kind:'bar') render as grouped bars per category.
     const barIdx={}; let nbar=0; spec.series.forEach((s,i)=>{ if(s.kind==='bar') barIdx[i]=nbar++; });
     const slotPx=pw/span, groupW=nbar?Math.min(slotPx*0.7, 64):0, barW=nbar?groupW/nbar:0;
@@ -1748,7 +1768,7 @@ function drawFinSvg(container, spec, opts){
     guide.style.cssText='position:absolute;top:0;bottom:0;width:1px;background:'+muted+';opacity:.45;display:none;pointer-events:none';
     st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     container.appendChild(guide); container.appendChild(tip);
-    if(spec.series.length>1 || spec.series.some(s=>s.kind==='bar')){
+    if(showLegend && (spec.series.length>1 || spec.series.some(s=>s.kind==='bar'))){
       const lg=document.createElement('div'); lg.className='svg-legend';
       lg.innerHTML=spec.series.map(s=>`<span><i class="lgsw${s.kind==='bar'?'':' line'}" style="background:${s.color}"></i>${s.label}</span>`).join('');
       container.appendChild(lg);
@@ -1970,8 +1990,21 @@ function sddSpec(id, src, cos){
   });
   return series.length ? {series, yTitle} : {empty:'No data for the selected companies from '+src+'.'};
 }
+// Shared legend under the dropdown (replaces the per-chart overlay). Company colour lives in the
+// chips above; this explains the source styling in Combined mode (solid scraped vs thin-grey average).
+function buildSDDLegend(){
+  const el=document.getElementById('sddLegend'); if(!el) return;
+  const cos=sddCos.filter(Boolean);
+  if(sddSrc!=='combined' || !cos.length){ el.innerHTML=''; el.style.display='none'; return; }
+  el.style.display='';
+  const sample=(color,thin)=>`<svg width="22" height="10" style="vertical-align:middle;flex:0 0 auto"><line x1="1" y1="5" x2="21" y2="5" stroke="${color}" stroke-width="${thin?1.3:2.4}" stroke-opacity="${thin?0.5:0.95}"/></svg>`;
+  el.innerHTML = `<span class="sdd-leg-it">${sample(cssVar('--text'),false)} Scraped (Sodra / Rekvizitai)</span>`
+    + `<span class="sdd-leg-it">${sample(cssVar('--muted'),true)} Initial — yearly avg</span>`
+    + `<span class="sdd-leg-note">colour = company (chips above)</span>`;
+}
 function drawSDD(){
   const cos=sddCos.filter(Boolean);
+  buildSDDLegend();
   Object.keys(DD_SPECS).forEach(id=>{
     const sid='s'+id; // ddRev -> sddRev
     const spec=sddSpec(id, sddSrc, cos);
@@ -1982,7 +2015,7 @@ function drawSDD(){
     if(emptyEl) emptyEl.classList.remove('show');
     const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
     if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
-    drawFinSvg(cont, spec);
+    drawFinSvg(cont, spec, {noLegend:true});
   });
 }
 // Removable chips for the selected companies (colour dot = its compare-mode line colour).
