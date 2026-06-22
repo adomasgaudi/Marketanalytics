@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.118</title>
+<title>Market Analytics — LT agencies · v0.1.119</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -35,6 +35,11 @@
   .page-hero{margin:6px 0 22px}
   .page-hero h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin:0;line-height:1.05}
   .page-hero p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+  .vs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .vs-col{border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:14px 16px}
+  .vs-h{margin:0 0 10px;font-size:14px;font-weight:700}
+  .vs-h.mine{color:var(--gold)}
+  .ff-empty{color:var(--muted);font-size:13px}
   header{margin-bottom:24px}
   header h1{font-size:26px;font-weight:700}
   header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
@@ -376,7 +381,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
-    <span class="nav-version">v0.1.118</span>
+    <span class="nav-version">v0.1.119</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -415,6 +420,10 @@
       <div class="chartbox"><div class="svgwrap" id="chMineRank" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
+
+  <h2 class="section">Per employee</h2>
+  <div class="desc" style="margin-bottom:10px">The selected company against the market average — every figure divided by headcount, so size drops out.</div>
+  <div id="coVsMarket" class="vs-grid"></div>
 
   <h2 class="section">Market summary</h2>
   <div class="seg" id="marketMode" style="margin-bottom:12px">
@@ -857,6 +866,20 @@ function renderCompany(brand){
   _coFlowRerender = renderFinFlow;
   renderFinFlow();
 
+  // Per-employee comparison: this company vs the whole-market average, every € ÷ headcount.
+  (function(){ const el=document.getElementById('coVsMarket'); if(!el) return;
+    const mA=marketAgg(LAST);                          // market totals this year (hoisted fn)
+    const ce=m24.employees, me=mA.emp;
+    const coFlow = (ce>0)
+      ? moneyFlowHtml(m24.revenue/ce, m24.estimatedIncome/ce, m24.profit/ce, {tag:'per employee · '+Math.round(ce)+' staff'})
+      : '<div class="ff-empty">No headcount for this company.</div>';
+    const mkFlow = (me>0)
+      ? moneyFlowHtml(mA.rev/me, mA.ei/me, mA.profit/me, {tag:'per employee · '+Math.round(me).toLocaleString()+' staff'})
+      : '';
+    el.innerHTML = `<div class="vs-col"><h3 class="vs-h mine">${esc(brand)}</h3>${coFlow}</div>`
+      + `<div class="vs-col"><h3 class="vs-h">Market average</h3>${mkFlow}</div>`;
+  })();
+
   // Employees + Avg salary combined into one People & pay card (they relate → annual payroll).
   const emp=m24.employees!=null?Math.round(m24.employees):null, sal=(m24.avgSalary>500)?Math.round(m24.avgSalary):null;
   const payroll=(emp!=null && sal!=null)?emp*sal*12:null;
@@ -1122,6 +1145,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.119', date:'2026-06-22 19:05', sp:2, title:'Per-employee company vs market',
+    desc:'New “Per employee” tab in the Company-data card puts the selected company’s per-employee money-flow side-by-side with the whole-market average.',
+    detail:'Both bars divide turnover / revenue / net profit by headcount, so company size drops out and you compare like-for-like — the company (gold) next to the market average. Updates with the company picker; stacks on narrow screens.'},
   {v:'v0.1.118', date:'2026-06-22 18:50', sp:2, title:'Nav polish + page title',
     desc:'Back-bracket now shows only on Data exploration; the dashboard gets a big “Market Analytics” hero title; new minimalistic line-art settings gear; nav version no longer skews the row alignment.',
     detail:'The ‹ home bracket is hidden on the dashboard and appears only when viewing Data exploration (html.view-rek). Added a page-hero H1 + subtitle atop the dashboard. Replaced the ⚙️ emoji with a clean stroked-gear SVG. The version badge is now absolutely positioned below the cog so the settings block no longer makes the nav row taller, fixing the Data-exploration vertical mis-alignment.'},
@@ -2438,7 +2464,7 @@ function makeSectionsCollapsible(){
     card.addEventListener('toggle',()=>{ try{localStorage.setItem(key,card.open?'open':'closed');}catch(e){} if(card.open) resizeCharts(); });
     return card;
   };
-  const companyCard=makeGroup('Company data',['Overview','Company rankings','Company deep-dive'], true);
+  const companyCard=makeGroup('Company data',['Overview','Per employee','Company rankings','Company deep-dive'], true);
   const marketCard =makeGroup('Market data',['Market summary','Market overview','People & pay'], false);
   const foot=wrap.querySelector('.mini-foot');
   wrap.insertBefore(companyCard, foot); wrap.insertBefore(marketCard, foot);
