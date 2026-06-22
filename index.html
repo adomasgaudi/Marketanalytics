@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.107</title>
+<title>Market Analytics — LT agencies · v0.1.108</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -349,7 +349,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.107</span>
+    <span class="nav-version">v0.1.108</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -961,10 +961,10 @@ document.getElementById('insights').innerHTML = insights.map(i=>
 
 // ---------- Market chart ----------
 drawFinSvg(chMarket, { yTitle:'€M', y2Title:'profit €M / emp ×100', series:[
-  {label:'Revenue €M', kind:'bar', color:cssVar('--accent'), data:YEARS.map(y=>({x:y, y:yearTotals(y).ei/1e6}))},
-  {label:'Turnover €M', kind:'bar', color:cssVar('--muted'), data:YEARS.map(y=>({x:y, y:yearTotals(y).rev/1e6}))},
-  {label:'Net profit €M', color:cssVar('--green'), yAxisID:'y2', data:YEARS.map(y=>({x:y, y:yearTotals(y).profit/1e6}))},
-  {label:'Employees ×100', color:cssVar('--amber'), yAxisID:'y2', dash:[6,4], data:YEARS.map(y=>({x:y, y:yearTotals(y).emp/100}))},
+  {label:'Revenue €M', kind:'bar', color:cssVar('--accent'), data:YEARS.map(y=>({x:y, y:marketAgg(y).ei/1e6}))},
+  {label:'Turnover €M', kind:'bar', color:cssVar('--muted'), data:YEARS.map(y=>({x:y, y:marketAgg(y).rev/1e6}))},
+  {label:'Net profit €M', color:cssVar('--green'), yAxisID:'y2', data:YEARS.map(y=>({x:y, y:marketAgg(y).profit/1e6}))},
+  {label:'Employees ×100', color:cssVar('--amber'), yAxisID:'y2', dash:[6,4], data:YEARS.map(y=>({x:y, y:marketAgg(y).emp/100}))},
 ]});
 
 // ---------- Segments doughnut ----------
@@ -1130,6 +1130,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.108', date:'2026-06-22 16:20', sp:0.5, title:'Fix market chart crash',
+    desc:'Market summary money-flow + KPIs crashed (yearTotals undefined) after the rename; the market chart now uses marketAgg too.',
+    detail:'The avg/total refactor renamed yearTotals → marketAgg but the Market overview chart series still referenced yearTotals, throwing a ReferenceError that blanked the whole Market summary. Pointed the chart at marketAgg (identical fields).'},
   {v:'v0.1.107', date:'2026-06-22 16:05', sp:3, title:'Market money-flow + insights card',
     desc:'Market summary now uses the same money-flow bar as a company, defaults to per-company average with a toggle to whole-market totals; Key insights folded into a dropdown card; chart legend added.',
     detail:'Market summary: replaced the three financial KPI cards (turnover/revenue/profit) with the company-style money-flow bar (Turnover → Revenue bracket → Net profit + Costs + Pass-through). Added an Average-per-company / Whole-market toggle, defaulting to average (more comparable across years); employees card switches between avg and total to match. Key insights moved into a collapsible card nested inside the Market summary section, with a count badge. Converted charts now show a swatch legend instead of an end-of-line label.'},
