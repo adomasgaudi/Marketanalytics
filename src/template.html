@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.100</title>
+<title>Market Analytics — LT agencies · v0.1.101</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -131,6 +131,10 @@
   html[data-mode="simplified"] details.sec.adv{display:none}
   html[data-mode="simplified"] .topnav .nav-btn[data-view="rekView"]{display:none}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
+  .co-info-row{display:flex;gap:12px;padding:3px 0}
+  .co-info-k{color:var(--muted);min-width:88px;flex:0 0 auto}
+  .co-info-v{color:var(--text);font-weight:600}
+  .co-info-v .nd,.nd{color:var(--muted);font-weight:400;font-style:italic}
   .mine-note b{color:var(--text)}
   .kpi.mine{border-color:var(--gold);box-shadow:0 0 0 1px rgba(244,197,66,.25)}
   .kpi .rank{color:var(--gold);font-weight:600}
@@ -159,8 +163,10 @@
 
   /* ── Top nav ── */
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
-  .topnav .logo{font-size:15px;font-weight:700;padding:12px 0;margin-right:24px;white-space:nowrap}
-  .topnav .logo span{color:var(--accent)}
+  .topnav .logo{font-size:15px;font-weight:700;padding:12px 0;margin-right:24px;white-space:nowrap;cursor:pointer;color:var(--text);transition:color .15s}
+  .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
+  .home-ic{font-size:.78em;color:var(--muted);margin-left:6px;vertical-align:1px;transition:color .15s}
+  .topnav .logo:hover .home-ic{color:var(--accent)}
   .nav-btn{padding:12px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;font-family:inherit}
   .nav-btn:hover{color:var(--text)}
   .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -284,12 +290,11 @@
 <body>
 
 <nav class="topnav">
-  <div class="logo">Market Analytics</div>
+  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard">Market Analytics<span class="home-ic">⌂</span></div>
   <div class="nav-scroll">
-    <button class="nav-btn active" data-view="dashView">Dashboard</button>
-    <button class="nav-btn" data-view="rekView">Company Data</button>
+    <button class="nav-btn" data-view="rekView">Data exploration</button>
   </div>
-  <span class="nav-version">v0.1.100</span>
+  <span class="nav-version">v0.1.101</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
     <div class="settings-menu" id="settingsMenu">
@@ -524,15 +529,19 @@ const SHEETS = __SHEETS_DATA__;
 const REK_DATA = __REK_DATA__;
 
 // ---------- View switching ----------
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById(btn.dataset.view).classList.add('active');
-    window.scrollTo(0,0);
-  });
-});
+function switchView(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(viewId)?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===viewId));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>switchView(btn.dataset.view)));
+// Title = home: click (or Enter) returns to the dashboard.
+const navHome=document.getElementById('navHome');
+if(navHome){
+  navHome.addEventListener('click',()=>switchView('dashView'));
+  navHome.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); switchView('dashView'); } });
+}
 
 // ---------- Theme toggle (light default, dark persisted) ----------
 function currentTheme(){ return document.documentElement.getAttribute('data-theme')==='dark' ? 'dark' : 'light'; }
@@ -649,6 +658,16 @@ const MY_BRAND = MY_COMPANIES[0].brand;
 
 const E = v => v!=null ? '€'+Math.round(v).toLocaleString() : '–';
 
+// Per-brand profile bits for the Overview info box: founded date (Įmonės raw sheet)
+// and CEO (Vadovas, only from scraped Rekvizitai tabs).
+const FOUNDED={}; (function(){ const sh=SHEETS['Įmonės']; if(!sh) return;
+  const bi=sh.columns.indexOf('Pagrindinis brandas'), fi=sh.columns.indexOf('Įregistruota'); if(bi<0||fi<0) return;
+  sh.rows.forEach(r=>{ const b=r[bi], f=String(r[fi]||''); if(b && /^\d{4}-\d{2}-\d{2}/.test(f)) FOUNDED[b]=f.slice(0,10); });
+})();
+const REK_CEO={}; ((REK_DATA&&REK_DATA.companies)||[]).forEach(c=>{ if(!c.brand) return;
+  const rows=(c.tabs&&c.tabs['Įmonė']&&c.tabs['Įmonė'].rows)||[]; const v=rows.find(x=>x[0]==='Vadovas'); if(v&&v[1]) REK_CEO[c.brand]=v[1];
+});
+
 function rankOf(metricFn, cur24){
   const vals = BRANDS.map(b=>metricFn(byBrand[b][LAST]||{})).filter(v=>v!=null && !isNaN(v));
   const mineVal = metricFn(cur24);
@@ -675,7 +694,19 @@ function renderCompany(brand){
   const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null, m24);
   const mCagr   = (m24.revenue && mFirst.revenue)? Math.pow(m24.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
 
-  const noteEl=document.getElementById('mineNote'); noteEl.innerHTML=co?.note||''; noteEl.style.display=co?.note?'':'none';
+  // Compact profile box, shown for every company (missing fields read "no data").
+  const fullName = Object.values(mine).map(r=>r.company).find(Boolean) || '';
+  const nd='<span class="nd">no data</span>';
+  const infoRows=[
+    ['Short title', esc(brand)],
+    (fullName && fullName!==brand) ? ['Full title', esc(fullName)] : null,
+    ['CEO', REK_CEO[brand]?esc(REK_CEO[brand]):nd],
+    ['Founded', FOUNDED[brand]?esc(FOUNDED[brand]):nd],
+    ['Employees', m24.employees!=null?Math.round(m24.employees):nd],
+  ].filter(Boolean);
+  const noteEl=document.getElementById('mineNote');
+  noteEl.innerHTML=infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('');
+  noteEl.style.display='';
   document.getElementById('chMineTitle').textContent = brand+': revenue, profit & headcount (2019–'+LAST+')';
   document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+LAST+')';
 
@@ -976,6 +1007,9 @@ renderTable();
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.101', date:'2026-06-22 13:45', sp:2, title:'Home title + company profile box',
+    desc:'One Data-exploration button; title returns home; per-company profile replaces the Fabula note.',
+    detail:'Nav now has a single “Data exploration” button (→ Company Data); the dashboard is the default view, and clicking the “Market Analytics” title (now with a ⌂ hint + hover) returns to it. Replaced the Fabula-only description with a compact profile box shown for EVERY company — short title, full title (when it differs), CEO (from Rekvizitai), founded date (from the Įmonės sheet) and employees, each reading “no data” when missing.'},
   {v:'v0.1.100', date:'2026-06-22 13:20', sp:3, title:'Title in nav + Overview all-company',
     desc:'Title moved into the top bar (no flag); "My companies" is now an all-company Overview.',
     detail:'Moved the "Market Analytics" title into the top navigation as the brand (flag removed, items shrunk to fit one row at the same height, visible on mobile) and dropped the big page header + its subtitle. Renamed the "My companies" section to "Overview" and replaced its single Fabula tab with a searchable dropdown over all 113 brands (default Fabula); picking any company renders its KPIs + charts, and a metric/chart with no data shows "No data" instead of disappearing.'},
