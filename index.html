@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.116</title>
+<title>Market Analytics — LT agencies · v0.1.117</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -278,6 +278,9 @@
   .seg button.active{background:var(--accent);color:#fff}
   /* Custom (non-native, DATA-20) company dropdown + sticky deep-dive bar */
   .co-select{position:relative;display:inline-block;min-width:210px}
+  /* sticky company picker: stays under the nav while the long profile/charts scroll */
+  .co-sticky{position:sticky;top:44px;z-index:80;display:block;background:var(--panel);padding:8px 0;margin:0 0 12px}
+  .co-sticky .co-select-btn{max-width:340px}
   .co-select-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 14px;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
   .co-select-btn:hover{border-color:var(--muted)}
   .co-caret{color:var(--muted);font-size:11px;transition:transform .15s}
@@ -368,7 +371,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings">⚙️</button>
-    <span class="nav-version">v0.1.116</span>
+    <span class="nav-version">v0.1.117</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -380,7 +383,7 @@
 <div class="view active" id="dashView">
 <div class="wrap">
   <h2 class="section mine">Overview</h2>
-  <div class="co-select" id="ovCompanySelect" style="margin-bottom:14px;max-width:340px">
+  <div class="co-select co-sticky" id="ovCompanySelect">
     <button class="co-select-btn" id="ovCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovCoLabel">Fabula</span><span class="co-caret">▾</span></button>
     <div class="co-select-panel" id="ovCoPanel">
       <input class="co-select-search" id="ovCoSearch" placeholder="Search company…" autocomplete="off">
@@ -1112,6 +1115,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.117', date:'2026-06-22 18:35', sp:0.5, title:'Sticky company picker',
+    desc:'The Company-data company picker now stays stuck under the nav while the long profile and charts scroll.',
+    detail:'Made #ovCompanySelect position:sticky (top under the topnav, panel-coloured background) so you can switch company without scrolling back up.'},
   {v:'v0.1.116', date:'2026-06-22 18:25', sp:1.5, title:'Subsection tabs',
     desc:'Each subsection inside the Company-data and Market-data cards is now a tab instead of a stacked block, so you switch instead of scrolling.',
     detail:'The two group cards render a horizontally-scrolling row of tab pills (Overview / Company rankings / Company deep-dive · Market summary / Market overview / People & pay); only the active subsection’s panel shows. Charts resize on tab switch; the deep-dive tab still hides in Simplified mode.'},
