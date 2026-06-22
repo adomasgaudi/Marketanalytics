@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.119</title>
+<title>Market Analytics — LT agencies · v0.1.120</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -222,11 +222,11 @@
   tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
   @media(max-width:600px){
-    .topnav{padding:0 6px;overflow:visible;flex-wrap:nowrap}
-    .topnav .logo{display:block;font-size:12.5px;font-weight:700;margin-right:7px;padding:10px 0;white-space:nowrap;flex-shrink:0;color:var(--text)}
+    .topnav{padding:0 8px;overflow:visible;flex-wrap:nowrap;min-height:46px}
+    .topnav .logo{display:block;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:nowrap;flex-shrink:0;color:var(--text);line-height:46px}
     .nav-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;flex:1;min-width:0}
-    .nav-btn{padding:10px 7px;font-size:11.5px;white-space:nowrap;flex-shrink:0}
-    .settings-cog{padding:2px 6px 0}
+    .nav-btn{padding:0 8px;font-size:13px;white-space:nowrap;flex-shrink:0;line-height:46px;height:46px}
+    .settings-cog{padding:4px 6px}
     .nav-sub{display:none}
     .nav-spacer{display:none}
     .nav-version{font-size:7px;margin:0}
@@ -242,15 +242,17 @@
   .chartbox canvas{max-width:100%!important}
 
   /* ── Top nav ── */
-  .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
-  .topnav .logo{font-size:15px;font-weight:700;padding:12px 0;margin-right:24px;white-space:nowrap;cursor:pointer;color:var(--text);transition:color .15s}
+  /* All nav items share font-size + line-height = the nav height, so centred text lines up by
+     baseline (PB: "Data exploration misaligned" — was caused by size diff + the 2px underline border). */
+  .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;min-height:50px}
+  .topnav .logo{font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:nowrap;cursor:pointer;color:var(--text);transition:color .15s;line-height:50px}
   .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
   .home-ic{display:none;font-size:1.15em;font-weight:700;color:var(--muted);margin-right:5px;vertical-align:-1px;transition:color .15s}
   html.view-rek .home-ic{display:inline}
   .topnav .logo:hover .home-ic{color:var(--accent)}
-  .nav-btn{padding:12px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap;font-family:inherit}
+  .nav-btn{padding:0 18px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;box-shadow:inset 0 -2px 0 transparent;transition:.15s;white-space:nowrap;font-family:inherit;line-height:50px;height:50px}
   .nav-btn:hover{color:var(--text)}
-  .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .nav-btn.active{color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
   .nav-scroll{display:flex}
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
@@ -381,7 +383,7 @@
   </div>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
-    <span class="nav-version">v0.1.119</span>
+    <span class="nav-version">v0.1.120</span>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
@@ -1145,6 +1147,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.120', date:'2026-06-22 19:15', sp:1, title:'Fix nav baseline (root)',
+    desc:'Root-fixed the recurring “Data exploration misaligned”: all nav items now share font-size and a line-height equal to the nav height, and the active underline no longer shifts the text.',
+    detail:'PB — the misalignment came from two things: the logo and tab used different font sizes (so centring offset their baselines) and the tab carried a 2px bottom border that nudged its text up. Now logo + tabs use the same size and line-height = the fixed nav height, and the active underline is an inset box-shadow (zero layout effect), so every label sits on one baseline.'},
   {v:'v0.1.119', date:'2026-06-22 19:05', sp:2, title:'Per-employee company vs market',
     desc:'New “Per employee” tab in the Company-data card puts the selected company’s per-employee money-flow side-by-side with the whole-market average.',
     detail:'Both bars divide turnover / revenue / net profit by headcount, so company size drops out and you compare like-for-like — the company (gold) next to the market average. Updates with the company picker; stacks on narrow screens.'},
