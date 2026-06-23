@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.125</title>
+<title>Market Analytics — LT agencies · v0.1.126</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -390,7 +390,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.125</span>
+      <span class="nav-version">v0.1.126</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -498,8 +498,13 @@
       <div class="chartbox"><div class="svgwrap" id="chSalary" style="position:absolute;inset:0"></div></div>
     </div>
     <div class="card">
-      <h2>Revenue (spėjamos pajamos) per employee by segment (2024)</h2>
-      <div class="desc">Median revenue (spėjamos pajamos) per employee across companies in each segment — a productivity proxy. Pass-through ad spend is already excluded.</div>
+      <h2>Revenue (spėjamos pajamos) by segment (2024)</h2>
+      <div class="desc" id="revSegDesc">Median revenue (spėjamos pajamos) per employee across companies in each segment — a productivity proxy. Pass-through ad spend is already excluded.</div>
+      <div class="seg" id="revSegMode" style="margin-bottom:10px">
+        <button data-mode="emp" class="active">Per employee</button>
+        <button data-mode="company">Per company</button>
+        <button data-mode="market">Whole market</button>
+      </div>
       <div class="chartbox"><div class="svgwrap" id="chRevPerEmp" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
@@ -1125,17 +1130,36 @@ drawFinSvg(chSalary, { yTitle:'€/mo', series:[
   {label:'25th pct', color:cssVar('--accent'), dash:[5,4], data:YEARS.map((y,k)=>({x:y, y:sq[k].q1}))},
 ]});
 
-// ---------- Revenue per employee ----------
-const rpe = SEGMENTS.map(s=>{
-  const vals = DATA.filter(d=>d.year===LAST && d.activities.includes(s) && d.estimatedIncome>0 && d.employees>2)
-                   .map(d=>d.estimatedIncome/d.employees).sort((a,b)=>a-b);
-  return {seg:s, med: vals.length? vals[Math.floor(vals.length/2)] : 0, n:vals.length};
-}).filter(r=>r.n>=3).sort((a,b)=>b.med-a.med);
-drawBarsSvg(chRevPerEmp, {
-  rows: rpe.map(r=>({label:r.seg, value:r.med/1000, color:SEGCOLORS[r.seg]||cssVar('--muted'), n:r.n})),
-  xTitle:'€k revenue per employee (median)', fmt:v=>'€'+Math.round(v)+'k',
-  tip:r=>`<b>${esc(String(r.label))}</b>: €${Math.round(r.value)}k / employee (median of ${r.n} companies)`
-});
+// ---------- Revenue by segment (per employee · per company · whole market) ----------
+const median=a=>a.length?a.slice().sort((x,y)=>x-y)[Math.floor(a.length/2)]:0;
+function revSegRows(mode){
+  return SEGMENTS.map(s=>{
+    const ds = DATA.filter(d=>d.year===LAST && d.activities.includes(s) && d.estimatedIncome>0);
+    let value=0, n=ds.length;
+    if(mode==='emp'){ const w=ds.filter(d=>d.employees>2).map(d=>d.estimatedIncome/d.employees); n=w.length; value=median(w); }
+    else if(mode==='company'){ value=median(ds.map(d=>d.estimatedIncome)); }
+    else { value=ds.reduce((a,d)=>a+d.estimatedIncome,0); }      // market = sum
+    return {seg:s, value, n};
+  }).filter(r=> mode==='emp' ? r.n>=3 : r.n>=1).sort((a,b)=>b.value-a.value);
+}
+const eur=v=> v>=1e6 ? '€'+(v/1e6).toFixed(v>=1e7?0:1)+'M' : v>=1e3 ? '€'+Math.round(v/1e3)+'k' : '€'+Math.round(v);
+function renderRevSeg(mode){
+  const rows=revSegRows(mode), per = mode==='emp'?'/ employee':mode==='company'?'/ company':'total';
+  drawBarsSvg(chRevPerEmp, {
+    rows: rows.map(r=>({label:r.seg, value:r.value, color:SEGCOLORS[r.seg]||cssVar('--muted'), n:r.n})),
+    xTitle: (mode==='market'?'Total':'Median')+' revenue (spėj. pajamos), €', fmt:eur,
+    tip:r=>`<b>${esc(String(r.label))}</b>: ${eur(r.value)} ${per} (${r.n} companies)`
+  });
+  const d=document.getElementById('revSegDesc');
+  if(d) d.textContent = mode==='emp'
+    ? 'Median revenue (spėjamos pajamos) per employee in each segment — a productivity proxy. Pass-through ad spend is already excluded.'
+    : mode==='company'
+    ? 'Median revenue (spėjamos pajamos) per company in each segment. Pass-through ad spend is already excluded.'
+    : 'Total revenue (spėjamos pajamos) summed across every company in each segment. Pass-through ad spend is already excluded.';
+}
+(function(){ const seg=document.getElementById('revSegMode'); if(seg) seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderRevSeg(b.dataset.mode); })); })();
+renderRevSeg('emp');
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
 const SVG_DASH_IDS=['chMine','chMineRank','chMarket','chSegTrend','chTop','chGrowth','chSalary','chRevPerEmp'];
@@ -1146,6 +1170,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.126', date:'2026-06-22 23:05', sp:2, title:'Segment revenue basis toggle',
+    desc:'The “Revenue by segment” chart now has a Per employee / Per company / Whole market toggle, recomputing the bars (median or sum) on the fly.',
+    detail:'Per employee = median estimatedIncome÷headcount (productivity proxy); Per company = median estimatedIncome per company; Whole market = total estimatedIncome summed per segment. Axis label, value formatting (€k/€M) and the description follow the chosen basis.'},
   {v:'v0.1.125', date:'2026-06-22 22:50', sp:1, title:'Plain always-visible sections',
     desc:'The always-visible groups (Market data, Company data) are no longer wrapped in a card box, since they don’t collapse. Only the collapsible groups keep card chrome.',
     detail:'Dropped the border/background/padding from non-collapsible div.group-card; collapsible details cards keep their box because they toggle.'},
