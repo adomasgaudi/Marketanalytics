@@ -28,7 +28,8 @@ built in v122–v154, without deviating from it. Source of truth for the pattern
 1. ✅ **CMP-1/2 structure** (v155): \<year\> + all-time tabs, sticky year-row + Full/Per-employee bar, picker hoisted.
 2. ✅ **CMP-4/5 single-year** (v155): profile + money-flow (YoY badges on every item) + KPI grid; follows year + basis; rank is per-year.
 3. ✅ **CMP-6 all-time money-flow** (v156): company turnover→profit/costs/pass-through stacked SVG, synced Full/Per-employee toggle (#coFlowMode2). Sticky stacking fixed (v157).
-4. ⬜ **CMP-7 all-time charts**: avg-salary-by-year line (chMine already shows revenue/turnover/profit/employees).
+4. ✅ **CMP-3 basis drives every graph** (v158): Full/Per-employee now switches the "vs market" percentile ranks (revenue/turnover/profit ÷ headcount) AND the chMine trajectory (€k/employee bars + avg pay), not just the money-flow.
+5. ⬜ **CMP-7 all-time charts**: avg-salary-by-year line (chMine already shows revenue/turnover/profit/employees).
 5. ⬜ **CMP-9/10 polish**: company top-facts card, verify descs/English/auto-fit inherited, empty-states for unreported years.
 
 ## UI/UX extra tasks (don't deviate from Market)
