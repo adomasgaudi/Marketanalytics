@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.148</title>
+<title>Market Analytics — LT agencies · v0.1.149</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.148</span>
+      <span class="nav-version">v0.1.149</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1326,6 +1326,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.149', date:'2026-06-23 05:00', sp:3, title:'Nice round axis ticks',
+    desc:'SVG chart y-axes now show round values (1M, 2M, 3M) at 1/2/5 steps that SCROLL as you pan, instead of arbitrary numbers like 927k / −124k that re-derived every frame. (Recurring axis bug — root fix.)',
+    detail:'#persistent: replaced the yMin+k·span/TICKS labelling with a niceTicks(min,max) generator (1/2/5 ×10ⁿ step, ticks at round multiples inside the view), drawn only inside the plot. Cleaner number formatting (1M not 1.0M). The pan/zoom math already re-renders lines + axis together and the ResizeObserver repaints (not re-fits), so the round ticks now visibly scroll with the data.',
+    cat:'CHART'},
   {v:'v0.1.148', date:'2026-06-23 04:45', sp:1, title:'Top cards as KPI style',
     desc:'The Companies-tracked and Data-sources cards now use the KPI card styling (uppercase label, big value) so they match the rest of the dashboard.',
     detail:'Switched the two .top-cards from plain .card to .kpi so the label/value/sub typography applies.',
@@ -1997,14 +2001,19 @@ function drawFinSvg(container, spec, opts){
     const xAt=i=> m.l + ((i-view.xMin)/span)*pw;
     const yL=v=> m.t+ph - ph*(v-view.yMin)/ySpan;
     const yR=v=> m.t+ph - ph*(v-ry.yMin)/rySpan;
-    const fmt=v=> Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M' : Math.abs(v)>=1e3?(v/1e3).toFixed(0)+'k' : String(Math.round(v*10)/10);
+    const fmt=v=>{ const a=Math.abs(v); if(a>=1e6){ const n=v/1e6; return (Number.isInteger(n)?n:+n.toFixed(1))+'M'; }
+      if(a>=1e3){ const n=v/1e3; return (Number.isInteger(n)?n:Math.round(n))+'k'; } return String(Math.round(v*10)/10); };
     let s=''; const TICKS=4;
-    for(let k=0;k<=TICKS;k++){ const v=view.yMin+ySpan*k/TICKS, y=yL(v);
+    // "nice" round tick values inside [min,max] (1/2/5 × 10ⁿ) so the axis shows round numbers that
+    // SCROLL when you pan, instead of arbitrary yMin+k·span values that change every frame.
+    const niceTicks=(min,max)=>{ if(!(max>min)) return [min]; const raw=(max-min)/TICKS, mag=Math.pow(10,Math.floor(Math.log10(raw))), nrm=raw/mag,
+      step=(nrm<1.5?1:nrm<3?2:nrm<7?5:10)*mag, out=[]; for(let v=Math.ceil(min/step-1e-9)*step; v<=max+step*1e-9; v+=step) out.push(Math.abs(v)<step*1e-6?0:v); return out; };
+    niceTicks(view.yMin,view.yMax).forEach(v=>{ const y=yL(v); if(y<m.t-1||y>m.t+ph+1) return;
       s+=`<line x1="${m.l}" y1="${y.toFixed(1)}" x2="${(W-m.r).toFixed(1)}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
       s+=`<text x="${m.l-6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="end">${fmt(v)}</text>`;
-    }
-    if(right.length) for(let k=0;k<=TICKS;k++){ const v=ry.yMin+rySpan*k/TICKS, y=yR(v);
-      s+=`<text x="${W-m.r+6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="start">${fmt(v)}</text>`; }
+    });
+    if(right.length) niceTicks(ry.yMin,ry.yMax).forEach(v=>{ const y=yR(v); if(y<m.t-1||y>m.t+ph+1) return;
+      s+=`<text x="${W-m.r+6}" y="${(y+3).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="start">${fmt(v)}</text>`; });
     // x labels: calendar-aware (Data-repo timeBands style). Multi-year span → one YEAR label
     // at each year change; zoomed into a single year → short "Mon" labels. A pixel-gap guard
     // drops any label that would collide with the previous one, so they never run together.
