@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.163</title>
+<title>Market Analytics — LT agencies · v0.1.164</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -106,7 +106,7 @@
   .pos{color:var(--green)} .neg{color:var(--red)}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
   .grid .full{grid-column:1/-1}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;min-width:0}
   .card h2{font-size:15px;font-weight:600;margin-bottom:4px}
   .card .desc{color:var(--muted);font-size:12px;margin-bottom:12px}
   .chartbox{position:relative;height:340px}
@@ -319,7 +319,7 @@
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .yr-row button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   /* Size-vs-profit small multiples: one horizontally scrollable row of mini scatters (DATA-16). */
-  .scatter-strip{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  .scatter-strip{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;max-width:100%;min-width:0}
   .scatter-mini{flex:0 0 auto;width:230px}
   .scatter-mini-t{font:700 13px/1 inherit;color:var(--text);text-align:center;margin-bottom:4px}
   .scatter-mini-c{position:relative;height:200px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:4px}
@@ -422,7 +422,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.163</span>
+      <span class="nav-version">v0.1.164</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1342,24 +1342,29 @@ function scatterDataForYear(y){
     .map(d=>({x:d.estimatedIncome, y:d.profit/d.estimatedIncome*100, r:Math.max(4,Math.sqrt(d.employees)*2.2),
               brand:d.brand, emp:d.employees, seg:d.activities[0]||'Other'}));
 }
-// One Chart.js bubble config for a given year. mini=true strips axes/legend for the all-years strip.
+// One Chart.js bubble config for a given year. mini=true = compact cell in the all-years strip:
+// strips axes/legend, shrinks the bubbles to fit (pixel radii would overflow a 230px chart) and
+// disables hover/tooltips (they overflowed the cell as stuck pop-ups).
 function buildScatterCfg(rows, {mini=false}={}){
+  const sc = mini ? (p=>({...p, r:Math.max(1.5, p.r*0.42)})) : (p=>p);   // scale bubble radius for minis
   return {type:'bubble', data:{
     datasets: topSegs.concat(['Other']).map(s=>({
       label:segName(s),
-      data:rows.filter(r=> r.brand!==MY_BRAND && (s==='Other' ? !topSegs.includes(r.seg) : r.seg===s)),
-      backgroundColor:(SEGCOLORS[s]||'#888')+'99', borderColor:SEGCOLORS[s]||'#888'
+      data:rows.filter(r=> r.brand!==MY_BRAND && (s==='Other' ? !topSegs.includes(r.seg) : r.seg===s)).map(sc),
+      backgroundColor:(SEGCOLORS[s]||'#888')+'99', borderColor:SEGCOLORS[s]||'#888', borderWidth:mini?0.5:1
     })).concat([{
       label:'★ Fabula (you)',
-      data:rows.filter(r=>r.brand===MY_BRAND).map(r=>({...r, r:Math.max(r.r, mini?6:9)})),
-      backgroundColor:'rgba(244,197,66,.95)', borderColor:cssVar('--text'), borderWidth:2
+      data:rows.filter(r=>r.brand===MY_BRAND).map(r=>({...r, r:Math.max(mini?r.r*0.42:r.r, mini?3:9)})),
+      backgroundColor:'rgba(244,197,66,.95)', borderColor:cssVar('--text'), borderWidth:mini?1:2
     }])},
-    options:{maintainAspectRatio:false, animation:false,
-      plugins:{legend:{display:!mini}, tooltip:{callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
+    options:{maintainAspectRatio:false, animation:false, responsive:true,
+      layout:{padding:mini?4:0},
+      events: mini? [] : undefined,                 // minis: no hover → no stuck tooltips overflowing the cell
+      plugins:{legend:{display:!mini}, tooltip:{enabled:!mini, callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
       scales:{
-        x:{type:'logarithmic', title:{display:!mini,text:'Revenue (€, log)'}, grid:{color:GRID},
+        x:{type:'logarithmic', title:{display:!mini,text:'Revenue (€, log)'}, grid:{display:!mini,color:GRID},
            ticks:{display:!mini, callback:v=>[5e4,1e5,3e5,1e6,3e6,1e7].includes(v)?'€'+fmtM(v):''}},
-        y:{title:{display:!mini,text:'Net profit margin % (from revenue)'}, grid:{color:GRID}, suggestedMin:-30, suggestedMax:45,
+        y:{title:{display:!mini,text:'Net profit margin % (from revenue)'}, grid:{display:!mini,color:GRID}, suggestedMin:-30, suggestedMax:45,
            ticks:{display:!mini}}
       }}
   };
@@ -1429,6 +1434,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.164', date:'2026-06-23 09:40', sp:2, title:'Fix scatter strip overflow',
+    desc:'The size-vs-profitability mini scatters no longer overflow their cells or push the page wider than the screen (which was cutting 2024 off the other all-time charts). Bubbles are shrunk to fit the small cells, hover tooltips that got stuck on the minis are disabled, and the strip is contained.',
+    detail:'buildScatterCfg mini mode scales bubble radius ×0.42, drops point borders/grid, sets events:[] (no stuck tooltips) + layout padding. CSS: .card min-width:0 and .scatter-strip max-width:100%/min-width:0 so the fixed-width flex row scrolls internally instead of blowing out the grid track.',
+    cat:'CHART'},
   {v:'v0.1.163', date:'2026-06-23 09:20', sp:3, title:'Rankings share the year + basis',
     desc:'The Company rankings (Top 20 + Growth leaders) no longer have their own year picker — they follow the page year row, and the Full company / Per-employee toggle now drives them too. Removed the separate Top-20 year <select>.',
     detail:'drawTop uses coYear (own year select deleted) and, in Per-employee mode, divides the absolute € metrics (revenue/turnover/profit) by headcount (€/employee axis); ratio metrics (margin, salary) and counts stay raw. drawGrowth is now a function over a rolling 3-yr window ending on coYear, basis-aware (revenue or revenue/employee). Both re-render on year-row + basis change; titles show the year/basis.',
