@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.168</title>
+<title>Market Analytics — LT agencies · v0.1.169</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -432,7 +432,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.168</span>
+      <span class="nav-version">v0.1.169</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -596,10 +596,16 @@
     </div>
     <div id="sddLegend" class="sdd-legend"></div>
     <div class="grid">
-      <div class="card"><h2>Revenue / sales over time</h2><div class="desc" id="sddRevDesc"></div><div class="chartbox"><div class="svgwrap" id="sddRev" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddRevEmpty"></div></div></div>
-      <div class="card"><h2>Profit &amp; margin over time</h2><div class="desc" id="sddProfitDesc"></div><div class="chartbox"><div class="svgwrap" id="sddProfit" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddProfitEmpty"></div></div></div>
-      <div class="card"><h2>Headcount over time</h2><div class="desc" id="sddEmpDesc"></div><div class="chartbox"><div class="svgwrap" id="sddEmp" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddEmpEmpty"></div></div></div>
-      <div class="card"><h2>Average wage over time</h2><div class="desc" id="sddWageDesc"></div><div class="chartbox"><div class="svgwrap" id="sddWage" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddWageEmpty"></div></div></div>
+      <div class="card full">
+        <div class="seg" id="sddMetric" style="margin-bottom:8px">
+          <button data-m="ddRev" class="active">Revenue</button>
+          <button data-m="ddProfit">Profit</button>
+          <button data-m="ddEmp">Headcount</button>
+          <button data-m="ddWage">Wage</button>
+        </div>
+        <h2 id="sddChartTitle">Revenue / sales over time</h2><div class="desc" id="sddChartDesc"></div>
+        <div class="chartbox"><div class="svgwrap" id="sddChart" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddChartEmpty"></div></div>
+      </div>
     </div>
   </div>
 
@@ -1440,6 +1446,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.169', date:'2026-06-23 10:55', sp:1.5, title:'Deep-dive metric toggle',
+    desc:'The Company deep-dive now shows ONE chart with a Revenue / Profit / Headcount / Wage toggle instead of four stacked graphs — less scrolling, same data.',
+    detail:'Replaced the four sdd* cards with a single #sddChart + #sddMetric pill toggle; drawSDD renders only the selected DD_SPECS metric (title/desc update), wired in initSDD.',
+    cat:'CHART'},
   {v:'v0.1.168', date:'2026-06-23 10:40', sp:3, title:'Multi-company compare on trajectory',
     desc:'The top company picker now takes several companies (chips with ✕, like the deep-dive). The all-year Revenue/profit/headcount trajectory overlays one revenue line per company so you can compare them; the rest (profile, money-flow, KPIs, vs-market, rankings) stay on the primary (first) company.',
     detail:'ovBrands[] holds the set, ovBrand = primary; buildOvList toggles membership (panel stays open), renderOvChips shows the scrolling chip row. renderCompany’s chMine block overlays per-company revenue (basis-aware, €M or €k/emp) when >1 selected, else the rich single-company 4-series view.',
@@ -2491,7 +2501,7 @@ function drawBarsSvg(container, cfg){
 }
 
 // ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
-let sddCos = DD_COMPANIES[0] ? [DD_COMPANIES[0]] : [], sddSrc='combined';
+let sddCos = DD_COMPANIES[0] ? [DD_COMPANIES[0]] : [], sddSrc='combined', sddMetric='ddRev';
 const SDD_PALETTE=['--accent','--green','--amber','--purple','--red','--gold','--muted'];
 const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
 const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
@@ -2535,21 +2545,22 @@ function buildSDDLegend(){
     + `<span class="sdd-leg-it">${sample(cssVar('--muted'),true)} Initial — yearly avg</span>`
     + `<span class="sdd-leg-note">colour = company (chips above)</span>`;
 }
+// One chart, metric chosen by the #sddMetric toggle (Revenue / Profit / Headcount / Wage).
 function drawSDD(){
   const cos=sddCos.filter(Boolean);
   buildSDDLegend();
-  Object.keys(DD_SPECS).forEach(id=>{
-    const sid='s'+id; // ddRev -> sddRev
-    const spec=sddSpec(id, sddSrc, cos);
-    const cont=document.getElementById(sid), emptyEl=document.getElementById(sid+'Empty'), descEl=document.getElementById(sid+'Desc');
-    if(!cont) return;
-    const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
-    if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
-    if(emptyEl) emptyEl.classList.remove('show');
-    const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
-    if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
-    drawFinSvg(cont, spec, {noLegend:true});
-  });
+  const id = DD_SPECS[sddMetric] ? sddMetric : 'ddRev';
+  const spec=sddSpec(id, sddSrc, cos);
+  const cont=document.getElementById('sddChart'), emptyEl=document.getElementById('sddChartEmpty'),
+        descEl=document.getElementById('sddChartDesc'), titleEl=document.getElementById('sddChartTitle');
+  if(titleEl) titleEl.textContent=DD_SPECS[id].title+' over time';
+  if(!cont) return;
+  const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
+  if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
+  if(emptyEl) emptyEl.classList.remove('show');
+  const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
+  if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+  drawFinSvg(cont, spec, {noLegend:true});
 }
 // Removable chips for the selected companies (colour dot = its compare-mode line colour).
 function buildSDDChips(){
@@ -2603,6 +2614,12 @@ function initSDD(){
   }));
   document.addEventListener('click', closeAll);
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(); });
+  // metric toggle: Revenue / Profit / Headcount / Wage — switches the single chart
+  const mseg=document.getElementById('sddMetric');
+  if(mseg) mseg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    mseg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+    sddMetric=b.dataset.m; drawSDD();
+  }));
   let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawSDD,150);});
   drawSDD();
 }
