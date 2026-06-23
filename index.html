@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.161</title>
+<title>Market Analytics — LT agencies · v0.1.162</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -422,7 +422,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.161</span>
+      <span class="nav-version">v0.1.162</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1130,7 +1130,7 @@ function renderMarket(mode){
     `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
     +(k.formula?`<details class="kpi-f"><summary>formula</summary><div class="kpi-form">${k.formula}</div></details>`:'')+`</div>`).join('');
 }
-renderMarket('avg');
+try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderMarket: '+err.message, error:err})); }
 (function(){ const c=document.getElementById('topCoCount'); if(c) c.textContent=BRANDS.length;
   const s=document.getElementById('topCoSub'); if(s) s.textContent=SEGMENTS.length+' service segments'; })();
 (function(){ const row=document.getElementById('mktYearRow'); if(!row) return;
@@ -1413,6 +1413,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.162', date:'2026-06-23 09:00', sp:1.5, title:'Harden init against white-screen',
+    desc:'A single failing init step can no longer blank the whole page. Wrapped the bare renderMarket/renderCompany init calls so one thrown error is shown in the on-screen banner and the rest of the page still builds (this was why the scatter crash blanked everything, not just the scatter).',
+    detail:'Root fix for the “nothing is showing” class: renderMarket(\'avg\') and the post-tabs renderCompany call were bare, so any throw halted the whole synchronous script (no tabs, no charts). Both now try/catch → dispatch an ErrorEvent (visible) instead of cascading. Verified pre/post with a jsdom harness.',
+    cat:'META'},
   {v:'v0.1.161', date:'2026-06-23 08:40', sp:1, title:'Fix scatter init crash',
     desc:'Fixed a blank page / “Cannot access scatterChart before initialization” error: the first renderMarket call fired the new scatter render before its module (scatterChart, topSegs) had initialized.',
     detail:'renderMarket now gates the single-year scatter behind window.__scatterReady, which the scatter module sets true only after its own state + helpers exist; the initial paint still happens from the module’s own renderScatterYear()/buildScatterStrip() calls. Fixes the TDZ on let scatterChart.',
@@ -2959,7 +2963,7 @@ function makeSectionsCollapsible(){
 }
 try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
-try { renderCompany(ovBrand); } catch(e){}   // re-run so the company tab labels show brand + year now the tabs exist
+try { renderCompany(ovBrand); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderCompany: '+err.message, error:err})); }   // re-run so company tab labels show brand+year now the tabs exist (errors surfaced, never silent)
 </script>
 </body>
 </html>
