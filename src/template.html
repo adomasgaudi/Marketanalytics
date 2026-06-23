@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.170</title>
+<title>Market Analytics — LT agencies · v0.1.171</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -432,7 +432,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.170</span>
+      <span class="nav-version">v0.1.171</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -573,27 +573,6 @@
 
   <h2 class="section">Company deep-dive</h2>
   <div class="dd-wrap">
-    <div class="dd-bar">
-      <div class="co-select" id="sddCompanySelect">
-        <button class="co-select-btn" id="sddCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddCoLabel">Select companies</span><span class="co-caret">▾</span></button>
-        <div class="co-select-panel" id="sddCoPanel">
-          <input class="co-select-search" id="sddCoSearch" placeholder="Search company…" autocomplete="off">
-          <div class="co-select-list" id="sddCoList" role="listbox"></div>
-        </div>
-      </div>
-      <div class="co-select" id="sddSourceSel" style="min-width:150px">
-        <button class="co-select-btn" id="sddSrcBtn" aria-haspopup="listbox" aria-expanded="false"><span id="sddSrcLabel">Combined</span><span class="co-caret">▾</span></button>
-        <div class="co-select-panel" id="sddSrcPanel" style="width:min(220px,70vw)">
-          <div class="co-select-list" role="listbox">
-            <div class="co-select-opt active" role="option" data-src="combined">Combined</div>
-            <div class="co-select-opt" role="option" data-src="initial">Initial</div>
-            <div class="co-select-opt" role="option" data-src="rekvizitai">Rekvizitai</div>
-            <div class="co-select-opt" role="option" data-src="sodra">Sodra</div>
-          </div>
-        </div>
-      </div>
-      <div id="sddCoChips" style="flex:1 1 100%;display:flex;gap:4px;overflow-x:auto;padding-bottom:2px"></div>
-    </div>
     <div id="sddLegend" class="sdd-legend"></div>
     <div class="grid">
       <div class="card full">
@@ -1070,7 +1049,7 @@ function renderOvChips(){ const w=document.getElementById('ovCoChips'); if(!w) r
   w.querySelectorAll('.ov-chip-x').forEach(x=>x.addEventListener('click',e=>{ e.stopPropagation();
     if(ovBrands.length>1){ ovBrands=ovBrands.filter(z=>z!==x.dataset.rm); ovChanged(); } }));
 }
-function ovChanged(){ ovBrand=ovBrands[0]; syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); }
+function ovChanged(){ ovBrand=ovBrands[0]; syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); if(typeof syncSddFromTop==='function') syncSddFromTop(); }
 function buildOvList(){
   const list=document.getElementById('ovCoList'); if(!list) return;
   const q=(document.getElementById('ovCoSearch')?.value||'').trim().toLowerCase();
@@ -1446,6 +1425,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.171', date:'2026-06-23 11:20', sp:1.5, title:'Deep-dive uses top picker',
+    desc:'The deep-dive no longer has its own company picker or source dropdown — it follows the top page company selection and always overlays all available sources (Combined).',
+    detail:'Removed the .dd-bar (company select, source select, chips). syncSddFromTop maps ovBrands → scraped company objects (brands without scraped data still get the Initial series); wired into ovChanged. sddSrc fixed at combined.',
+    cat:'CHART'},
   {v:'v0.1.170', date:'2026-06-23 11:05', sp:1, title:'Deep-dive into all-time tab',
     desc:'The scraped-sources deep-dive (a multi-year time series) now lives inside the “Company all time” tab where the other over-time graphs are, instead of a separate section at the bottom.',
     detail:'makeSectionsCollapsible folds the Company deep-dive section’s nodes into the “Company all time” tab under a sub-heading and drops the standalone collapsible deep-dive card.',
@@ -2566,58 +2549,16 @@ function drawSDD(){
   if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
   drawFinSvg(cont, spec, {noLegend:true});
 }
-// Removable chips for the selected companies (colour dot = its compare-mode line colour).
-function buildSDDChips(){
-  const wrap=document.getElementById('sddCoChips'); if(!wrap) return;
-  wrap.innerHTML=sddCos.map((c,i)=>`<span class="sdd-chip" data-slug="${esc(c.slug)}" style="display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;white-space:nowrap;font-size:11px;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--panel2)"><i style="width:8px;height:8px;border-radius:50%;background:${sddColor(i)};flex:0 0 auto"></i>${esc(coShort(c))}<b data-x="1" style="cursor:pointer;opacity:.55;font-weight:700">✕</b></span>`).join('');
-  wrap.querySelectorAll('.sdd-chip b[data-x]').forEach(x=>x.addEventListener('click',e=>{
-    e.stopPropagation(); const slug=x.parentNode.dataset.slug, idx=sddCos.findIndex(c=>c.slug===slug);
-    if(idx>=0){ sddCos.splice(idx,1); buildSDDChips(); buildSDDCompanies(); drawSDD(); }
-  }));
-}
-function buildSDDCompanies(){
-  const list=document.getElementById('sddCoList'); if(!list) return;
-  const label=document.getElementById('sddCoLabel');
-  if(label) label.textContent = !sddCos.length?'Select companies':sddCos.length===1?(sddCos[0].name||sddCos[0].slug):sddCos.length+' companies';
-  const q=(document.getElementById('sddCoSearch')?.value||'').trim().toLowerCase();
-  const opts=DD_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
-  const sel=new Set(sddCos.map(c=>c.slug));
-  list.innerHTML = opts.length
-    ? opts.map(c=>`<div class="co-select-opt${sel.has(c.slug)?' active':''}" role="option" aria-selected="${sel.has(c.slug)}" data-slug="${esc(c.slug)}">${srcCubes(c.brand)}${esc(c.name||c.slug)}</div>`).join('')
-    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
-  list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
-    const slug=o.dataset.slug, co=DD_COMPANIES.find(c=>c.slug===slug); if(!co) return;
-    const idx=sddCos.findIndex(c=>c.slug===slug);
-    if(idx>=0) sddCos.splice(idx,1); else sddCos.push(co);   // toggle in/out; panel stays open
-    buildSDDChips(); buildSDDCompanies(); drawSDD();
-  }));
+// Companies come from the TOP page picker (ovBrands) — one selector for the whole Companies page.
+// Map each brand → its scraped company object (for rekvizitai/sodra series); brands without scraped
+// data still get the Initial yearly series. Source is ALWAYS combined (overlay everything available).
+function syncSddFromTop(){
+  if(typeof ovBrands==='undefined') return;
+  sddCos = ovBrands.map(b=> DD_COMPANIES.find(c=>c.brand===b) || {brand:b, name:b, slug:b});
+  if(document.getElementById('sddChart')) drawSDD();
 }
 function initSDD(){
-  if(!DD_COMPANIES.length) return;
-  buildSDDCompanies(); buildSDDChips();
-  const sel=document.getElementById('sddCompanySelect'), btn=document.getElementById('sddCoBtn'),
-        panel=document.getElementById('sddCoPanel'), search=document.getElementById('sddCoSearch');
-  btn.addEventListener('click',e=>{ e.stopPropagation();
-    const willOpen=!sel.classList.contains('open');
-    document.getElementById('sddSourceSel')?.classList.remove('open');
-    sel.classList.toggle('open',willOpen); btn.setAttribute('aria-expanded',willOpen?'true':'false');
-    if(willOpen){ search.value=''; buildSDDCompanies(); search.focus(); }
-  });
-  panel.addEventListener('click',e=>e.stopPropagation());
-  search.addEventListener('input', buildSDDCompanies);
-  // Source picker — custom dropdown (DATA-20), replaces the old 4-button segmented row.
-  const ssel=document.getElementById('sddSourceSel'), sbtn=document.getElementById('sddSrcBtn'),
-        spanel=document.getElementById('sddSrcPanel'), slabel=document.getElementById('sddSrcLabel');
-  const closeAll=()=>{ [sel,ssel].forEach(x=>x&&x.classList.remove('open')); btn.setAttribute('aria-expanded','false'); sbtn.setAttribute('aria-expanded','false'); };
-  sbtn.addEventListener('click',e=>{ e.stopPropagation(); const open=!ssel.classList.contains('open'); closeAll(); ssel.classList.toggle('open',open); sbtn.setAttribute('aria-expanded',open?'true':'false'); });
-  spanel.addEventListener('click',e=>e.stopPropagation());
-  spanel.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
-    sddSrc=o.dataset.src; slabel.textContent=o.textContent;
-    spanel.querySelectorAll('.co-select-opt').forEach(x=>x.classList.toggle('active',x.dataset.src===sddSrc));
-    ssel.classList.remove('open'); sbtn.setAttribute('aria-expanded','false'); drawSDD();
-  }));
-  document.addEventListener('click', closeAll);
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(); });
+  syncSddFromTop();
   // metric toggle: Revenue / Profit / Headcount / Wage — switches the single chart
   const mseg=document.getElementById('sddMetric');
   if(mseg) mseg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
