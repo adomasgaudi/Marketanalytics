@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.140</title>
+<title>Market Analytics — LT agencies · v0.1.141</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -413,7 +413,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.140</span>
+      <span class="nav-version">v0.1.141</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -481,6 +481,13 @@
   </div>
 
   <h2 class="section">Market all time</h2>
+  <div class="mkt-sticky">
+    <div class="seg" id="marketMode2">
+      <button data-mode="avg" class="active">Average / company</button>
+      <button data-mode="emp">Per employee</button>
+      <button data-mode="total">Whole market</button>
+    </div>
+  </div>
   <div class="grid">
     <div class="card full">
       <h2>Total market money-flow by year (2019–2024)</h2>
@@ -1061,12 +1068,15 @@ renderMarket('avg');
   row.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; mktYear=+b.dataset.y; paint();
     renderMarket(); renderSegView(); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
-  seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-    renderMarket(b.dataset.mode);                 // top basis toggle drives every graph
+  // one global basis: both sticky toggles (#marketMode in Market <year>, #marketMode2 in Market all time) drive EVERY graph and stay in sync
+  window.setBasis=function(mode){
+    document.querySelectorAll('#marketMode button, #marketMode2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+    renderMarket(mode);
     if(typeof renderSegView==='function') renderSegView();
     if(typeof renderRevSegAll==='function') renderRevSegAll();
-  }));
+    if(typeof renderMoneyFlowAll==='function') renderMoneyFlowAll();
+  };
+  document.querySelectorAll('#marketMode button, #marketMode2 button').forEach(b=>b.addEventListener('click',()=>setBasis(b.dataset.mode)));
 })();
 
 // ---------- Insights ----------
@@ -1113,19 +1123,23 @@ function segDesc(metric, basis){
 // ---------- Total-market money-flow, all years (stacked columns, same look as the single-year bar) ----------
 function renderMoneyFlowAll(){
   const host=document.getElementById('mfaAll'); if(!host) return;
-  const agg=YEARS.map(y=>marketAgg(y)), maxT=Math.max(...agg.map(a=>a.rev))||1;
+  const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
+  const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
+  const agg=YEARS.map(y=>marketAgg(y));
+  const V=agg.map(a=>({T:dv(a.rev,a), R:dv(a.ei,a), P:Math.max(0,dv(a.profit,a))}));
+  const maxT=Math.max(...V.map(v=>v.T))||1;
   const seg=(cls,val)=> val>0?`<div class="vf-seg ${cls}" style="flex:${val.toFixed(3)}"></div>`:'';
-  const cols=YEARS.map((y,i)=>{ const a=agg[i], T=a.rev, R=a.ei, P=Math.max(0,a.profit);
-    const pass=Math.max(0,T-R), costs=Math.max(0,R-P), h=(T/maxT*100).toFixed(1);
+  const cols=YEARS.map((y,i)=>{ const v=V[i], pass=Math.max(0,v.T-v.R), costs=Math.max(0,v.R-v.P), h=(v.T/maxT*100).toFixed(1);
     return `<div class="mfa-col"><div class="mfa-barwrap"><div class="vf-bar mfa-bar" style="height:${h}%">`
-      +`${seg('profit',P)}${seg('cost',costs)}${seg('pass',pass)}</div></div>`
-      +`<div class="mfa-val">${fmtEur(T)}</div><div class="mfa-yr">${y}</div></div>`;
+      +`${seg('profit',v.P)}${seg('cost',costs)}${seg('pass',pass)}</div></div>`
+      +`<div class="mfa-val">${fmtEur(v.T)}</div><div class="mfa-yr">${y}</div></div>`;
   }).join('');
+  const scope = mktMode==='avg'?'per company':mktMode==='emp'?'per employee':'whole market';
   host.innerHTML=`<div class="mfa"><div class="mfa-leg">`
     +`<span class="mfa-lg"><span class="vf-dot profit"></span>Net profit</span>`
     +`<span class="mfa-lg"><span class="vf-dot cost"></span>Costs</span>`
     +`<span class="mfa-lg"><span class="vf-dot pass"></span>Pass-through</span>`
-    +`<span class="mfa-lg" style="margin-left:auto;color:var(--text)">bar = turnover (apyvarta)</span>`
+    +`<span class="mfa-lg" style="margin-left:auto;color:var(--text)">bar = turnover · ${scope}</span>`
     +`</div><div class="mfa-cols">${cols}</div></div>`;
 }
 renderMoneyFlowAll();
@@ -1282,6 +1296,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.141', date:'2026-06-23 03:00', sp:2, title:'All-time basis toggle',
+    desc:'The Market all time tab now has its own sticky Average/Per employee/Whole market toggle that drives all its graphs, synced with the Market <year> one. The all-years money-flow now follows the basis too.',
+    detail:'Added #marketMode2 in a sticky bar atop Market all time; both toggles call one setBasis() that re-renders the money-flow, KPIs, segment card, all-years segment chart and the per-year money-flow, and keeps both toggles in sync. renderMoneyFlowAll divides each year by company count / employees / 1 per the basis.',
+    cat:'CHART'},
   {v:'v0.1.140', date:'2026-06-23 02:45', sp:2, title:'One global basis toggle',
     desc:'The sticky top basis toggle (Average/Per employee/Whole market) now drives every graph, so the duplicate per-graph basis toggles are gone. The %/€ switch relabels the doughnut without rebuilding it.',
     detail:'Segment doughnut/bars and the all-years chart read the basis from the top toggle (avg→per-company, emp→per-employee, total→whole-market); changing it re-renders them alongside the money-flow. Removed segBasis and revAllMode toggles. %/€ now calls chart.update("none") so only the on-slice numbers change — no flash/reload.',
