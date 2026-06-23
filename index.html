@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.147</title>
+<title>Market Analytics — LT agencies · v0.1.148</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.147</span>
+      <span class="nav-version">v0.1.148</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -426,8 +426,8 @@
 <div class="wrap">
   <header class="page-hero"><h1>Market Analytics</h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
   <div class="top-cards">
-    <div class="card"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
-    <div class="card"><div class="label">Data sources</div>
+    <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
+    <div class="kpi"><div class="label">Data sources</div>
       <div class="src-list">
         <span><span class="src-cube initial"></span>Initial dataset</span>
         <span><span class="src-cube rekvizitai"></span>Rekvizitai.vz.lt</span>
@@ -1326,6 +1326,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.148', date:'2026-06-23 04:45', sp:1, title:'Top cards as KPI style',
+    desc:'The Companies-tracked and Data-sources cards now use the KPI card styling (uppercase label, big value) so they match the rest of the dashboard.',
+    detail:'Switched the two .top-cards from plain .card to .kpi so the label/value/sub typography applies.',
+    cat:'CHART'},
   {v:'v0.1.147', date:'2026-06-23 04:35', sp:2, title:'Employees chart + visible costs',
     desc:'Added an Employees-by-year chart to the Market all time tab (total, or per company under Average). Gave the money-flow bars an outline and a darker Costs colour so they’re visible, especially in dark mode.',
     detail:'New chEmpAll line chart follows the basis via setBasis. Added a --cost token (medium slate, lighter in dark mode) for .vf-seg.cost/.pass and a 1px border on .vf-bar / .mfa-bar.',
