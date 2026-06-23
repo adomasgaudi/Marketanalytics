@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.171</title>
+<title>Market Analytics — LT agencies · v0.1.172</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -432,7 +432,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.171</span>
+      <span class="nav-version">v0.1.172</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -482,10 +482,6 @@
     <div class="card full">
       <h2 id="chCoFlowTitle">Money-flow by year</h2>
       <div class="chartbox"><div class="svgwrap" id="chCoFlowAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="chCoFlowEmpty"></div></div>
-    </div>
-    <div class="card full">
-      <h2 id="chMineTitle">Revenue, profit &amp; headcount (2019–2024)</h2>
-      <div class="chartbox"><div class="svgwrap" id="chMine" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
 
@@ -917,7 +913,6 @@ function renderCompany(brand){
   noteEl.innerHTML=head+infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('')
     +(desc?`<div class="co-desc">${esc(desc)}</div>`:`<div class="co-info-row"><span class="co-info-k">About</span><span class="co-info-v">${nd}</span></div>`);
   noteEl.style.display='';
-  document.getElementById('chMineTitle').textContent = brand+': '+(coPerEmp?'revenue, profit & pay per employee':'revenue, profit & headcount')+' ('+mineYears[0]+'–'+LAST+')';
   document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+coYear+(coPerEmp?', per employee':'')+')';
   // sticky year row + tab labels follow the selected year
   const yr=document.getElementById('coYearRow'); if(yr) yr.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===coYear));
@@ -965,39 +960,9 @@ function renderCompany(brand){
   document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
     `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
 
-  // Charts — SVG engine, static. Keep the card but show "No data" if the company lacks it.
-  const mineHasData = mineYears.some(y=>{ const r=mine[y]||{}; return r.revenue!=null||r.estimatedIncome!=null||r.profit!=null||r.employees!=null; });
-  const multi = (typeof ovBrands!=='undefined') && ovBrands.length>1;   // compare set selected → overlay
-  if(multi){
-    // MULTI-COMPANY (all-year view): one revenue line per selected company, basis-aware. Single-company
-    // widgets (profile/money-flow/KPIs/vs-market) stay on the primary; only this trajectory overlays.
-    const PAL=['--gold','--accent','--green','--amber','--purple','--red','--muted'];
-    const series=ovBrands.map((b,i)=>{ const mm=byBrand[b]||{};
-      return {label:b, color:cssVar(PAL[i%PAL.length]),
-        data:YEARS.map(y=>{ const r=mm[y]||{}; let v=r.estimatedIncome;
-          v = coPerEmp ? ((r.employees>0 && v!=null)? v/r.employees/1e3 : 0) : (v||0)/1e6;
-          return {x:y, y:v}; }) }; });
-    drawFinSvg(chMine, { yTitle: coPerEmp?'revenue €k / employee':'revenue €M', series });
-    document.getElementById('chMineTitle').textContent='Revenue by year — '+ovBrands.length+' companies'+(coPerEmp?' · per employee':'');
-  }
-  else if(mineHasData){
-    if(coPerEmp){
-      // Per-employee: revenue/turnover/profit divided by headcount (€k/emp), avg pay replaces raw headcount.
-      const pv=(y,k)=>{ const r=mine[y]||{}, e=r.employees; return (e>0 && r[k]!=null)? r[k]/e/1e3 : 0; };
-      drawFinSvg(chMine, { yTitle:'€k / employee', y2Title:'avg pay €k/mo', series:[
-        {label:'Revenue €k/emp',  kind:'bar', color:cssVar('--gold'),  data:mineYears.map(y=>({x:y, y:pv(y,'estimatedIncome')}))},
-        {label:'Turnover €k/emp', kind:'bar', color:cssVar('--muted'), data:mineYears.map(y=>({x:y, y:pv(y,'revenue')}))},
-        {label:'Profit €k/emp',   color:cssVar('--green'), data:mineYears.map(y=>({x:y, y:pv(y,'profit')}))},
-        {label:'Avg pay €k/mo',   color:cssVar('--accent'), yAxisID:'y2', dash:[6,4], data:mineYears.map(y=>({x:y, y:(mine[y]?.avgSalary>500?mine[y].avgSalary/1e3:0)}))},
-      ]});
-    } else drawFinSvg(chMine, { yTitle:'€M', y2Title:'profit €k / emp', series:[
-      {label:'Revenue €M', kind:'bar', color:cssVar('--gold'), data:mineYears.map(y=>({x:y, y:(mine[y]?.estimatedIncome||0)/1e6}))},
-      {label:'Turnover €M', kind:'bar', color:cssVar('--muted'), data:mineYears.map(y=>({x:y, y:(mine[y]?.revenue||0)/1e6}))},
-      {label:'Net profit €k', color:cssVar('--green'), yAxisID:'y2', data:mineYears.map(y=>({x:y, y:(mine[y]?.profit||0)/1e3}))},
-      {label:'Employees', color:cssVar('--accent'), yAxisID:'y2', dash:[6,4], data:mineYears.map(y=>({x:y, y:mine[y]?.employees||0}))},
-    ]});
-  }
-  else clearChart(chMine);
+  // (The revenue/profit/headcount trajectory was removed — it duplicated the money-flow below + the
+  //  multi-company deep-dive; the money-flow note still flags when a compare set is selected.)
+  const multi = (typeof ovBrands!=='undefined') && ovBrands.length>1;
 
   // All-years money-flow for this company — stacked SVG (net profit at bottom), basis-aware.
   (function(){ const el=document.getElementById('chCoFlowAll'), empty=document.getElementById('chCoFlowEmpty'); if(!el) return;
@@ -1417,7 +1382,7 @@ function renderRevSegAll(){
 renderRevSegAll();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
-const SVG_DASH_IDS=['chMine','chMineRank','chTop','chSalary','chRevPerEmp','chRevSegAll','chEmpAll','mfaAll','chCoFlowAll'];
+const SVG_DASH_IDS=['chMineRank','chTop','chSalary','chRevPerEmp','chRevSegAll','chEmpAll','mfaAll','chCoFlowAll'];
 function redrawDashSvg(){ SVG_DASH_IDS.forEach(id=>{ const el=document.getElementById(id); if(!el) return;
   if(el.__fin) el.__fin.render(); else if(el.__bar) el.__bar.render(); }); }
 let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dashRT=setTimeout(redrawDashSvg,160); });
@@ -1425,6 +1390,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.172', date:'2026-06-23 11:30', sp:0.5, title:'Drop redundant trajectory',
+    desc:'Removed the “revenue, profit & headcount” trajectory chart from the all-time tab — it duplicated the money-flow-by-year chart above it and the multi-company deep-dive below.',
+    detail:'Deleted the chMine card + its render block (single + multi-company branches) and chMine from the resize list; the money-flow note still flags when a compare set is selected.',
+    cat:'CHART'},
   {v:'v0.1.171', date:'2026-06-23 11:20', sp:1.5, title:'Deep-dive uses top picker',
     desc:'The deep-dive no longer has its own company picker or source dropdown — it follows the top page company selection and always overlays all available sources (Combined).',
     detail:'Removed the .dd-bar (company select, source select, chips). syncSddFromTop maps ovBrands → scraped company objects (brands without scraped data still get the Initial series); wired into ovChanged. sddSrc fixed at combined.',
