@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.133</title>
+<title>Market Analytics — LT agencies · v0.1.134</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -81,6 +81,13 @@
   .kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
   .kpi .value{font-size:21px;font-weight:700;margin-top:2px}
   .kpi .sub{font-size:12px;margin-top:2px}
+  .kpi-f{margin-top:7px}
+  .kpi-f>summary{cursor:pointer;list-style:none;font-size:10.5px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+  .kpi-f>summary::-webkit-details-marker{display:none}
+  .kpi-f>summary::before{content:'ƒ';font-style:italic;font-weight:700}
+  .kpi-f>summary::after{content:'▸';font-size:9px}
+  .kpi-f[open]>summary{color:var(--text)} .kpi-f[open]>summary::after{content:'▾'}
+  .kpi-f .kpi-form{margin-top:5px;font-size:11px;color:var(--muted);line-height:1.45}
   .kpi-wide{grid-column:1/-1}
   .kp-two{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:5px}
   .kp-metric{font-size:13px;color:var(--muted);display:flex;align-items:baseline;gap:6px}
@@ -402,7 +409,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.133</span>
+      <span class="nav-version">v0.1.134</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1019,24 +1026,34 @@ function renderMarket(mode){
   const flow = moneyFlowHtml(dv(aCur.rev,aCur), dv(aCur.ei,aCur), dv(aCur.profit,aCur), {prev: hasPrev?{T:dv(aPrev.rev,aPrev)}:undefined, tag});
   const mf = document.getElementById('marketFlow'); if(mf){ mf.innerHTML=flow; mf.style.display=flow?'':'none'; }
   // Employees card: in per-employee mode headcount is the denominator, so show whole-market total instead.
+  const basis = mode==='avg' ? ' ÷ '+aCur.n+' companies' : mode==='emp' ? ' ÷ '+Math.round(aCur.emp).toLocaleString()+' employees' : ' (whole-market total)';
   let empCard;
   if(mode==='emp'){
-    empCard = {label:'Total employees '+y, value:Math.round(aCur.emp).toLocaleString(), sub:hasPrev?fmtPct(aCur.emp/aPrev.emp-1)+' YoY':'—', cls:hasPrev&&aCur.emp>=aPrev.emp?'pos':'neg'};
+    empCard = {label:'Total employees '+y, value:Math.round(aCur.emp).toLocaleString(), sub:hasPrev?fmtPct(aCur.emp/aPrev.emp-1)+' YoY':'—', cls:hasPrev&&aCur.emp>=aPrev.emp?'pos':'neg',
+      formula:'Sum of reported headcount across all '+aCur.n+' companies with '+y+' data. YoY = this year ÷ last year − 1.'};
   } else {
     const eC=dv(aCur.emp,aCur), eP=hasPrev?dv(aPrev.emp,aPrev):0;
-    empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+y, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg'};
+    empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+y, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg',
+      formula:(mode==='avg'?'Total headcount ÷ '+aCur.n+' companies':'Sum of reported headcount')+'. YoY = this year ÷ last year − 1.'};
   }
   const cT=cagrOf(a=>a.rev), cR=cagrOf(a=>a.ei);
   const msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
+  const cagrF=(g,name)=> span<=0 ? 'Needs ≥2 years — pick a year after '+YEARS[0]+'.'
+    : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(a0),a0))+') ^ (1 ÷ '+span+' yrs) − 1. '+name+basis+'.';
   const kpis = [
-    {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–'+y2, value:cT==null?'—':fmtPct(cT), sub:fmtEur(dv(a0.rev,a0))+' → '+fmtEur(dv(aCur.rev,aCur)), cls:cT!=null&&cT>=0?'pos':'neg'},
-    {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–'+y2, value:cR==null?'—':fmtPct(cR), sub:fmtEur(dv(a0.ei,a0))+' → '+fmtEur(dv(aCur.ei,aCur)), cls:cR!=null&&cR>=0?'pos':'neg'},
+    {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–'+y2, value:cT==null?'—':fmtPct(cT), sub:fmtEur(dv(a0.rev,a0))+' → '+fmtEur(dv(aCur.rev,aCur)), cls:cT!=null&&cT>=0?'pos':'neg',
+      formula:'Compound annual growth of turnover (apyvarta). '+cagrF(a=>a.rev,'Turnover')},
+    {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–'+y2, value:cR==null?'—':fmtPct(cR), sub:fmtEur(dv(a0.ei,a0))+' → '+fmtEur(dv(aCur.ei,aCur)), cls:cR!=null&&cR>=0?'pos':'neg',
+      formula:'Compound annual growth of revenue (spėjamos pajamos). '+cagrF(a=>a.ei,'Revenue')},
     empCard,
-    {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:y===YEARS[0]?'baseline':fmtPct(msC/ms0-1)+' vs '+YEARS[0], cls:msC>=ms0?'pos':'neg'},
-    {label:'Companies tracked '+y, value:aCur.n, sub:SEGMENTS.length+' service segments', cls:''},
+    {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:y===YEARS[0]?'baseline':fmtPct(msC/ms0-1)+' vs '+YEARS[0], cls:msC>=ms0?'pos':'neg',
+      formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). Change vs '+YEARS[0]+' = this ÷ '+YEARS[0]+' − 1.'},
+    {label:'Companies tracked '+y, value:aCur.n, sub:SEGMENTS.length+' service segments', cls:'',
+      formula:'Count of companies with reported '+y+' financials, across '+SEGMENTS.length+' service segments.'},
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k=>
-    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
+    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
+    +(k.formula?`<details class="kpi-f"><summary>formula</summary><div class="kpi-form">${k.formula}</div></details>`:'')+`</div>`).join('');
 }
 renderMarket('avg');
 (function(){ const b=document.getElementById('mktYearBtn'); if(!b) return;
@@ -1239,6 +1256,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.134', date:'2026-06-23 01:10', sp:2, title:'KPI formula dropdowns',
+    desc:'Every Market <year> KPI card now has a small “ƒ formula” dropdown explaining exactly how the number is computed, with the live values plugged in.',
+    detail:'Each kpi carries a formula string (CAGR = (end ÷ start)^(1/yrs) − 1 with the real €, employees = total ÷ companies, median salary definition, companies-tracked count). Rendered as a compact <details> under the value; the text reflects the current basis (per company / per employee / whole market).',
+    cat:'META'},
   {v:'v0.1.133', date:'2026-06-23 00:55', sp:3, title:'All-years money-flow bars',
     desc:'Replaced the “Total market” grouped chart with an all-years money-flow: one stacked column per year (net profit + costs + pass-through = turnover), in the same colours as the single-year money-flow bar.',
     detail:'New renderMoneyFlowAll builds 2019→2024 columns from the whole-market totals, each scaled to the biggest year’s turnover and split into the same .vf-seg segments (net profit green, costs grey, pass-through light) with the turnover value under each bar. Removed the old chMarket SVG (revenue/turnover bars + profit/employees lines).',
