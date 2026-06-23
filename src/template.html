@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.126</title>
+<title>Market Analytics — LT agencies · v0.1.127</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -292,6 +292,8 @@
   .seg button:last-child{border-right:none}
   .seg button:hover{color:var(--text)}
   .seg button.active{background:var(--accent);color:#fff}
+  .yr-cycle{display:inline-block;font-family:inherit;font-size:15px;font-weight:700;padding:7px 16px;background:var(--accent);color:#fff;border:none;border-radius:7px;cursor:pointer;transition:.12s}
+  .yr-cycle:hover{filter:brightness(1.08)}
   /* Custom (non-native, DATA-20) company dropdown + sticky deep-dive bar */
   .co-select{position:relative;display:inline-block;min-width:210px}
   /* sticky company picker: stays under the nav while the long profile/charts scroll */
@@ -390,7 +392,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.126</span>
+      <span class="nav-version">v0.1.127</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -427,7 +429,8 @@
     </div>
   </div>
 
-  <h2 class="section">Market summary</h2>
+  <h2 class="section">Market 2024</h2>
+  <button class="yr-cycle" id="mktYearBtn" type="button" title="Tap to cycle the year" style="margin-bottom:10px">2024 ▸</button>
   <div class="seg" id="marketMode" style="margin-bottom:12px">
     <button data-mode="avg" class="active">Average / company</button>
     <button data-mode="emp">Per employee</button>
@@ -441,7 +444,7 @@
     <div class="insights" id="insights"></div>
   </details>
 
-  <h2 class="section">Market overview</h2>
+  <h2 class="section">Market all time</h2>
   <div class="grid">
     <div class="card full">
       <h2>Total market: revenue (spėjamos pajamos), turnover, profit & headcount (2019–2024)</h2>
@@ -979,36 +982,46 @@ function medianSalary(y){
   const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
   return s[Math.floor(s.length/2)];
 }
+let mktMode='avg', mktYear=LAST;
 function renderMarket(mode){
+  mode = mktMode = mode || mktMode;                  // remember basis across year cycles
+  const y=mktYear, aCur=marketAgg(y), aPrev=marketAgg(y-1), a0=marketAgg(YEARS[0]);
+  const span=y-YEARS[0], y2=String(y).slice(2), hasPrev=aPrev.n>0;
   // Three views of the same money: ÷ company count (avg), ÷ total employees (per-employee), or raw totals.
   const den = mode==='avg' ? (a=>a.n) : mode==='emp' ? (a=>a.emp) : (a=>1);
   const dv = (v,a)=>{ const d=den(a); return d? v/d : 0; };
-  const cagrOf = g=>{ const a=dv(g(a19),a19), b=dv(g(a24),a24); return a>0? Math.pow(b/a,1/(LAST-YEARS[0]))-1 : 0; };
-  const tag = mode==='avg' ? 'per company · '+a24.n+' cos'
-            : mode==='emp' ? 'per employee · '+Math.round(a24.emp).toLocaleString()+' staff'
+  const cagrOf = g=>{ if(span<=0) return null; const a=dv(g(a0),a0), b=dv(g(aCur),aCur); return a>0? Math.pow(b/a,1/span)-1 : null; };
+  const tag = mode==='avg' ? 'per company · '+aCur.n+' cos'
+            : mode==='emp' ? 'per employee · '+Math.round(aCur.emp).toLocaleString()+' staff'
             : 'whole market';
-  const flow = moneyFlowHtml(dv(a24.rev,a24), dv(a24.ei,a24), dv(a24.profit,a24), {prev:{T:dv(a23.rev,a23)}, tag});
+  const flow = moneyFlowHtml(dv(aCur.rev,aCur), dv(aCur.ei,aCur), dv(aCur.profit,aCur), {prev: hasPrev?{T:dv(aPrev.rev,aPrev)}:undefined, tag});
   const mf = document.getElementById('marketFlow'); if(mf){ mf.innerHTML=flow; mf.style.display=flow?'':'none'; }
   // Employees card: in per-employee mode headcount is the denominator, so show whole-market total instead.
   let empCard;
   if(mode==='emp'){
-    empCard = {label:'Total employees '+LAST, value:Math.round(a24.emp).toLocaleString(), sub:fmtPct(a24.emp/a23.emp-1)+' YoY', cls:a24.emp>=a23.emp?'pos':'neg'};
+    empCard = {label:'Total employees '+y, value:Math.round(aCur.emp).toLocaleString(), sub:hasPrev?fmtPct(aCur.emp/aPrev.emp-1)+' YoY':'—', cls:hasPrev&&aCur.emp>=aPrev.emp?'pos':'neg'};
   } else {
-    const e24=dv(a24.emp,a24), e23=dv(a23.emp,a23);
-    empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+LAST, value:mode==='avg'?e24.toFixed(1):Math.round(e24).toLocaleString(), sub:fmtPct(e24/e23-1)+' YoY', cls:e24>=e23?'pos':'neg'};
+    const eC=dv(aCur.emp,aCur), eP=hasPrev?dv(aPrev.emp,aPrev):0;
+    empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+y, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg'};
   }
   const cT=cagrOf(a=>a.rev), cR=cagrOf(a=>a.ei);
+  const msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
   const kpis = [
-    {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–24', value:fmtPct(cT), sub:fmtEur(dv(a19.rev,a19))+' → '+fmtEur(dv(a24.rev,a24)), cls:cT>=0?'pos':'neg'},
-    {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–24', value:fmtPct(cR), sub:fmtEur(dv(a19.ei,a19))+' → '+fmtEur(dv(a24.ei,a24)), cls:cR>=0?'pos':'neg'},
+    {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–'+y2, value:cT==null?'—':fmtPct(cT), sub:fmtEur(dv(a0.rev,a0))+' → '+fmtEur(dv(aCur.rev,aCur)), cls:cT!=null&&cT>=0?'pos':'neg'},
+    {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–'+y2, value:cR==null?'—':fmtPct(cR), sub:fmtEur(dv(a0.ei,a0))+' → '+fmtEur(dv(aCur.ei,aCur)), cls:cR!=null&&cR>=0?'pos':'neg'},
     empCard,
-    {label:'Median salary '+LAST, value:'€'+medianSalary(LAST).toLocaleString()+'/mo', sub:fmtPct(medianSalary(LAST)/medianSalary(YEARS[0])-1)+' vs '+YEARS[0], cls:'pos'},
-    {label:'Companies tracked', value:BRANDS.length, sub:SEGMENTS.length+' service segments', cls:''},
+    {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:y===YEARS[0]?'baseline':fmtPct(msC/ms0-1)+' vs '+YEARS[0], cls:msC>=ms0?'pos':'neg'},
+    {label:'Companies tracked '+y, value:aCur.n, sub:SEGMENTS.length+' service segments', cls:''},
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k=>
     `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
+  // keep the year pill + the tab label in sync with the chosen year
+  const yb=document.getElementById('mktYearBtn'); if(yb) yb.textContent=y+' ▸';
+  const tab=[...document.querySelectorAll('.grp-tab')].find(t=>/^Market \d{4}$/.test(t.textContent.trim())); if(tab) tab.textContent='Market '+y;
 }
 renderMarket('avg');
+(function(){ const b=document.getElementById('mktYearBtn'); if(!b) return;
+  b.addEventListener('click',()=>{ const i=YEARS.indexOf(mktYear); mktYear=YEARS[(i+1)%YEARS.length]; renderMarket(); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
   seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
@@ -1170,6 +1183,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.127', date:'2026-06-22 23:20', sp:3, title:'Market year cycle',
+    desc:'“Market summary” is now “Market 2024” with a tappable year pill that cycles 2019→2024 — the money-flow and all KPIs recompute for the chosen year, and the tab label follows. “Market overview” renamed “Market all time”.',
+    detail:'Added mktYear (default 2024) + a forward-cycling year pill. renderMarket recomputes the money-flow, employees, median salary and the CAGR (19→selected year) for the picked year; YoY/CAGR show “—” at the 2019 baseline. The Market-summary tab text updates to “Market <year>”. The all-time charts (totals 2019–2024, segment doughnut) are unchanged under the renamed “Market all time”.',
+    cat:'CHART'},
   {v:'v0.1.126', date:'2026-06-22 23:05', sp:2, title:'Segment revenue basis toggle',
     desc:'The “Revenue by segment” chart now has a Per employee / Per company / Whole market toggle, recomputing the bars (median or sum) on the fly.',
     detail:'Per employee = median estimatedIncome÷headcount (productivity proxy); Per company = median estimatedIncome per company; Whole market = total estimatedIncome summed per segment. Axis label, value formatting (€k/€M) and the description follow the chosen basis.'},
