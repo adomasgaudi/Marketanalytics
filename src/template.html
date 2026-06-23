@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.141</title>
+<title>Market Analytics — LT agencies · v0.1.142</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -413,7 +413,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.141</span>
+      <span class="nav-version">v0.1.142</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -491,7 +491,7 @@
   <div class="grid">
     <div class="card full">
       <h2>Total market money-flow by year (2019–2024)</h2>
-      <div class="desc">Each bar is total turnover (apyvarta) for that year across all 113 companies, split into net profit, costs and pass-through media spend — the all-years version of the single-year money-flow bar.</div>
+      <div class="desc">Each bar is total turnover for that year across all 113 companies, split into net profit, costs and pass-through media spend — the all-years version of the single-year money-flow bar.</div>
       <div class="chartbox"><div id="mfaAll" style="position:absolute;inset:0;padding:8px 4px"></div></div>
     </div>
     <div class="card">
@@ -515,8 +515,8 @@
       <h2>Top 20 companies</h2>
       <div class="controls">
         <select id="rankMetric">
-          <option value="estimatedIncome">Revenue – spėjamos pajamos (€)</option>
-          <option value="revenue">Turnover – apyvarta (€)</option>
+          <option value="estimatedIncome">Revenue (€)</option>
+          <option value="revenue">Turnover (€)</option>
           <option value="profit">Net profit (€)</option>
           <option value="employees">Employees</option>
           <option value="avgSalary">Avg. salary (€/mo)</option>
@@ -528,13 +528,13 @@
       <div class="chartbox tall"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
     </div>
     <div class="card">
-      <h2>Growth leaders & laggards (revenue – spėjamos pajamos, 2021 → 2024)</h2>
-      <div class="desc">Companies with ≥ €150k revenue (spėjamos pajamos) in 2024 and ≥ €30k in 2021. Top 8 growers vs bottom 8 decliners.</div>
+      <h2>Growth leaders & laggards (revenue – 2021 → 2024)</h2>
+      <div class="desc">Companies with ≥ €150k revenue in 2024 and ≥ €30k in 2021. Top 8 growers vs bottom 8 decliners.</div>
       <div class="chartbox tall"><div class="svgwrap" id="chGrowth" style="position:absolute;inset:0"></div></div>
     </div>
     <div class="card">
       <h2>Size vs profitability (2024)</h2>
-      <div class="desc">X = revenue (spėjamos pajamos, log scale), Y = net profit margin % from revenue, bubble size = employees. Healthy zone is up & right.</div>
+      <div class="desc">X = revenue (log scale), Y = net profit margin % from revenue, bubble size = employees. Healthy zone is up & right.</div>
       <div class="chartbox tall"><span class="eng-tag">Chart.js</span><canvas id="chScatter"></canvas></div>
     </div>
   </div>
@@ -754,6 +754,8 @@ const BRANDS = Object.keys(byBrand);
 
 const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
 const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
+const SEGLABEL = {'Kūryba':'Creative','Konsultantai':'Consulting','Renginiai':'Events'}; // English display names; data keys stay LT
+const segName = s => SEGLABEL[s] || s;
 const SVG_SHAPES = ['circle','diamond','square','triangle']; // SVG chart-engine marker shapes — declared here (early) because dashboard charts render above the engine block (TDZ fix)
 
 // Read a CSS custom property off <html> so charts track the active theme.
@@ -841,9 +843,9 @@ function moneyFlowHtml(T0,R,P,opts){
   const brk = (pass>0 && R!=null)? `<div class="vf-brk"><div class="vf-brk-rev" style="flex:${revPct.toFixed(2)}"><span>Revenue ${fmtEur(R)}</span></div><div style="flex:${(100-revPct).toFixed(2)}"></div></div>` : '';
   const margin=(R>0 && P!=null)?P/R*100:null;
   const mtxt=margin!=null?(loss?`<b style="color:var(--red)">−${Math.abs(margin).toFixed(1)}%</b>`:`<b>${margin.toFixed(1)}%</b>`):'–';
-  const note = R!=null ? `<b>Revenue</b> (spėj. pajamos) ${fmtEur(R)} ${rk(ranks.ei)} = net profit + costs (fee income, excludes pass-through) · <b>Net margin</b> = profit ÷ revenue = ${mtxt}${ranks.profit?` · #${ranks.profit.pos}`:''}` : '';
+  const note = R!=null ? `<b>Revenue</b> ${fmtEur(R)} ${rk(ranks.ei)} = net profit + costs (fee income, excludes pass-through) · <b>Net margin</b> = profit ÷ revenue = ${mtxt}${ranks.profit?` · #${ranks.profit.pos}`:''}` : '';
   const tag = opts.tag? `<span class="ff-scope">${opts.tag}</span>` : '';
-  return `<div class="ff"><div class="vf-head"><b>Turnover</b> <span class="ff-sub2">apyvarta</span> <span class="ff-v">${fmtEur(T)}</span> ${tag} ${yo(T0,prev.T)} ${rk(ranks.rev)}</div>`
+  return `<div class="ff"><div class="vf-head"><b>Turnover</b> <span class="ff-v">${fmtEur(T)}</span> ${tag} ${yo(T0,prev.T)} ${rk(ranks.rev)}</div>`
     +`<div class="vf-body"><div class="vf-bar">${bar}</div>${brk}<div class="vf-legend">${leg}</div></div>`
     +(note?`<div class="ff-note">${note}</div>`:'')+`</div>`;
 }
@@ -933,7 +935,7 @@ function renderCompany(brand){
      sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue),
      cls:mCagr>=0?'pos':'neg',
      formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
-    {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
+    {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).map(segName).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
   ];
   document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
     `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
@@ -949,7 +951,7 @@ function renderCompany(brand){
   else clearChart(chMine);
 
   const rankData = [
-    {label:'Revenue (spėj. pajamos)', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit},
+    {label:'Revenue', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit},
     {label:'Profit margin', r:mMargin}, {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
   ].filter(x=>x.r);
   if(rankData.length) drawBarsSvg(chMineRank, {
@@ -1048,9 +1050,9 @@ function renderMarket(mode){
     : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(a0),a0))+') ^ (1 ÷ '+span+' yrs) − 1. '+name+basis+'.';
   const kpis = [
     {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–'+y2, value:cT==null?'—':fmtPct(cT), sub:fmtEur(dv(a0.rev,a0))+' → '+fmtEur(dv(aCur.rev,aCur)), cls:cT!=null&&cT>=0?'pos':'neg',
-      formula:'Compound annual growth of turnover (apyvarta). '+cagrF(a=>a.rev,'Turnover')},
+      formula:'Compound annual growth of turnover. '+cagrF(a=>a.rev,'Turnover')},
     {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–'+y2, value:cR==null?'—':fmtPct(cR), sub:fmtEur(dv(a0.ei,a0))+' → '+fmtEur(dv(aCur.ei,aCur)), cls:cR!=null&&cR>=0?'pos':'neg',
-      formula:'Compound annual growth of revenue (spėjamos pajamos). '+cagrF(a=>a.ei,'Revenue')},
+      formula:'Compound annual growth of revenue. '+cagrF(a=>a.ei,'Revenue')},
     empCard,
     {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:y===YEARS[0]?'baseline':fmtPct(msC/ms0-1)+' vs '+YEARS[0], cls:msC>=ms0?'pos':'neg',
       formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). Change vs '+YEARS[0]+' = this ÷ '+YEARS[0]+' − 1.'},
@@ -1097,8 +1099,8 @@ const median=a=>a.length?a.slice().sort((x,y)=>x-y)[Math.floor(a.length/2)]:0;
 const fmtAbs=v=> v>=1e6 ? (v/1e6).toFixed(v>=1e7?0:1)+'M' : v>=1e3 ? Math.round(v/1e3)+'k' : String(Math.round(v));
 const eur=v=> v==null?'–': (v<0?'−€'+fmtAbs(-v):'€'+fmtAbs(v));
 const METRICS = {
-  revenue:  {label:'Revenue',    short:'revenue (spėj. pajamos)', f:d=>d.estimatedIncome, pos:true},
-  turnover: {label:'Turnover',   short:'turnover (apyvarta)',     f:d=>d.revenue,         pos:true},
+  revenue:  {label:'Revenue',    short:'revenue', f:d=>d.estimatedIncome, pos:true},
+  turnover: {label:'Turnover',   short:'turnover',     f:d=>d.revenue,         pos:true},
   profit:   {label:'Net profit', short:'net profit',              f:d=>d.profit,          pos:false},
   costs:    {label:'Costs',      short:'costs',                   f:d=>(d.estimatedIncome!=null&&d.profit!=null)?d.estimatedIncome-d.profit:null, pos:false},
 };
@@ -1176,14 +1178,14 @@ function renderSegView(){
         ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.55)'; ctx.strokeText(txt,pos.x,pos.y);
         ctx.fillStyle='#fff'; ctx.fillText(txt,pos.x,pos.y); });
       ctx.restore(); } };
-    segChart=new Chart(canvas, {type:'doughnut', data:{labels:rows.map(o=>o.s),
+    segChart=new Chart(canvas, {type:'doughnut', data:{labels:rows.map(o=>segName(o.s)),
       datasets:[{data:slice, backgroundColor:rows.map(o=>SEGCOLORS[o.s]||'#888'), borderColor:cssVar('--chart-bg'), borderWidth:2}]},
       options:{maintainAspectRatio:false, plugins:{
         legend:{position:'right', labels:{boxWidth:12, font:{size:11}, generateLabels:ch=>ch.data.labels.map((lab,i)=>(
           {text:lab+' · '+eur(rows[i].v)+' · '+pct(i).toFixed(pct(i)<10?1:0)+'%', fillStyle:ch.data.datasets[0].backgroundColor[i], strokeStyle:'transparent', lineWidth:0, index:i}))}},
         tooltip:{callbacks:{label:c=>` ${c.label}: ${eur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`}}}}, plugins:[onSlice]});
   } else {
-    drawBarsSvg(svg, { rows: rows.map(o=>({label:o.s, value:o.v, color:SEGCOLORS[o.s]||cssVar('--muted')})),
+    drawBarsSvg(svg, { rows: rows.map(o=>({label:segName(o.s), value:o.v, color:SEGCOLORS[o.s]||cssVar('--muted')})),
       xTitle:(b==='total'?'Total ':'Median ')+METRICS[m].short+', €', fmt:eur,
       tip:r=>`<b>${esc(String(r.label))}</b>: ${eur(r.value)} (${basisWord(b)})` });
   }
@@ -1233,7 +1235,7 @@ const growthRows = BRANDS.map(b=>{
 const gShow = [...growthRows.slice(0,8), ...growthRows.slice(-8)];
 drawBarsSvg(chGrowth, {
   rows: gShow.map(r=>({label:r.brand, value:r.g, color: r.g>=0?cssVar('--green'):cssVar('--red'), rev:r.rev})),
-  xTitle:'Revenue (spėjamos pajamos) change 2021→2024, %', fmt:v=>Math.round(v)+'%',
+  xTitle:'Revenue change 2021→2024, %', fmt:v=>Math.round(v)+'%',
   tip:r=>`<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}% · 2024 rev €${fmtM(r.rev)}`
 });
 
@@ -1243,7 +1245,7 @@ const scatterRows = DATA.filter(d=>d.year===LAST && d.estimatedIncome>50000 && d
             seg:d.activities[0]||'Other'}));
 new Chart(chScatter, {type:'bubble', data:{
   datasets: topSegs.concat(['Other']).map(s=>({
-    label:s,
+    label:segName(s),
     data:scatterRows.filter(r=> r.brand!==MY_BRAND && (s==='Other' ? !topSegs.includes(r.seg) : r.seg===s)),
     backgroundColor:(SEGCOLORS[s]||'#888')+'99', borderColor:SEGCOLORS[s]||'#888'
   })).concat([{
@@ -1254,7 +1256,7 @@ new Chart(chScatter, {type:'bubble', data:{
   options:{maintainAspectRatio:false,
     plugins:{tooltip:{callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
     scales:{
-      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (spėjamos pajamos, €, log)'}, grid:{color:GRID},
+      x:{type:'logarithmic', title:{display:true,text:'Revenue 2024 (€, log)'}, grid:{color:GRID},
          ticks:{callback:v=>[5e4,1e5,3e5,1e6,3e6,1e7].includes(v)?'€'+fmtM(v):''}},
       y:{title:{display:true,text:'Net profit margin % (from revenue)'}, grid:{color:GRID}, suggestedMin:-30, suggestedMax:45}
     }}
@@ -1278,7 +1280,7 @@ let revAllMetric='revenue';
 function renderRevSegAll(){
   const m=revAllMetric, b=basisFromMode(mktMode);
   const ranked = SEGMENTS.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
-  const series = ranked.map(s=>({label:s, color:SEGCOLORS[s]||cssVar('--muted'),
+  const series = ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
     data:YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
   drawFinSvg(chRevSegAll, { yTitle:'€', series });
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
@@ -1296,6 +1298,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.142', date:'2026-06-23 03:20', sp:2, title:'English-only labels',
+    desc:'Removed the Lithuanian terms from the dashboard — “apyvarta” and “spėjamos pajamos” are gone, and the segments Kūryba/Konsultantai/Renginiai now show as Creative/Consulting/Events.',
+    detail:'Stripped the LT parentheticals across money-flow, KPI formulas, chart titles/axes and the metric system; added a SEGLABEL display map (data keys stay LT) applied to the doughnut, bars, all-years chart, scatter legend and company segments. The raw Data Explorer / company deep-dive still shows the registry’s own Lithuanian field names.',
+    cat:'META'},
   {v:'v0.1.141', date:'2026-06-23 03:00', sp:2, title:'All-time basis toggle',
     desc:'The Market all time tab now has its own sticky Average/Per employee/Whole market toggle that drives all its graphs, synced with the Market <year> one. The all-years money-flow now follows the basis too.',
     detail:'Added #marketMode2 in a sticky bar atop Market all time; both toggles call one setBasis() that re-renders the money-flow, KPIs, segment card, all-years segment chart and the per-year money-flow, and keeps both toggles in sync. renderMoneyFlowAll divides each year by company count / employees / 1 per the basis.',
@@ -1656,7 +1662,7 @@ const VERSIONS = [
     detail:'Created docs for AI assistants: AGENTS.md with project context, the data dictionary, conventions and the full prompt history, plus a CLAUDE.md pointer. Later folded into a single CLAUDE.md.'},
   {v:'v0.1.28', date:'2026-06-10 19:00', sp:4,   title:'Turnover vs revenue split',
     desc:'Turnover and revenue separated across the dashboard.',
-    detail:'Split turnover from revenue (spėjamos pajamos) across the whole dashboard: reordered the KPI strip, the market chart shows both, and segments, rankings, growth, scatter, rev-per-employee and the explorer were switched or extended to revenue. Touched every chart — each threshold and tooltip had to be re-checked.'},
+    detail:'Split turnover from revenue across the whole dashboard: reordered the KPI strip, the market chart shows both, and segments, rankings, growth, scatter, rev-per-employee and the explorer were switched or extended to revenue. Touched every chart — each threshold and tooltip had to be re-checked.'},
   {v:'v0.1.27', date:'2026-06-10 18:51', sp:3,   title:'SP history overlay',
     desc:'Added the version-history button and overlay.',
     detail:'Added the SP & version history feature: the button plus the history overlay, with the version log embedded so changes are visible in-page.'},
