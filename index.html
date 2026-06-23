@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.164</title>
+<title>Market Analytics — LT agencies · v0.1.165</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -422,7 +422,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.164</span>
+      <span class="nav-version">v0.1.165</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1313,9 +1313,9 @@ function drawTop(){
 [rankMetric, rankSegment].forEach(el=>el.addEventListener('change', drawTop));
 drawTop();
 
-// ---------- Growth leaders (rolling 3-yr window ending on the chosen year, basis-aware) ----------
+// ---------- Growth leaders (year-over-year: prior year → the chosen year, basis-aware) ----------
 function drawGrowth(){
-  const endY = coYear, startY = Math.max(YEARS[0], endY-3);
+  const endY = coYear, startY = endY-1;
   const perEmp = coFlowMode==='emp';
   const valOf = d=>{ if(!d || d.estimatedIncome==null) return null; let v=d.estimatedIncome;
     if(perEmp){ if(!(d.employees>0)) return null; v=v/d.employees; } return v; };
@@ -1434,6 +1434,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.165', date:'2026-06-23 09:50', sp:1, title:'Growth chart is year-over-year',
+    desc:'Growth leaders & laggards now measures a single year’s change (prior year → the selected year) instead of a 3-year window, so it’s strictly “by year” like the other Companies charts. 2019 shows no data (no prior year).',
+    detail:'drawGrowth startY = coYear−1 (was max(YEARS[0], coYear−3)); the empty-state already covers the missing-prior-year case via the no-rows guard.',
+    cat:'CHART'},
   {v:'v0.1.164', date:'2026-06-23 09:40', sp:2, title:'Fix scatter strip overflow',
     desc:'The size-vs-profitability mini scatters no longer overflow their cells or push the page wider than the screen (which was cutting 2024 off the other all-time charts). Bubbles are shrunk to fit the small cells, hover tooltips that got stuck on the minis are disabled, and the strip is contained.',
     detail:'buildScatterCfg mini mode scales bubble radius ×0.42, drops point borders/grid, sets events:[] (no stuck tooltips) + layout padding. CSS: .card min-width:0 and .scatter-strip max-width:100%/min-width:0 so the fixed-width flex row scrolls internally instead of blowing out the grid track.',
