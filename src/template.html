@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.173</title>
+<title>Market Analytics — LT agencies · v0.1.174</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -433,7 +433,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.173</span>
+      <span class="nav-version">v0.1.174</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -462,6 +462,10 @@
     </div>
   </div>
   <div class="mkt-sticky">
+    <div class="seg" id="coViewToggle" style="margin-bottom:8px">
+      <button data-v="0" class="active">Per year</button>
+      <button data-v="1">All time</button>
+    </div>
     <div class="yr-row" id="coYearRow"></div>
     <div class="seg" id="coFlowMode">
       <button data-mode="total" class="active">Full company</button>
@@ -1395,6 +1399,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.174', date:'2026-06-23 12:00', sp:1.5, title:'Per-year / all-time top toggle',
+    desc:'Per-year vs All-time is now a toggle in the top sticky bar (it changes the whole Companies page) instead of tabs buried inside the Company-data card.',
+    detail:'Added #coViewToggle to the lifted control bar; after makeSectionsCollapsible it drives the Company-data card’s grp-tabs (clicks the matching tab) and the in-card tab row is hidden.',
+    cat:'CHART'},
   {v:'v0.1.173', date:'2026-06-23 11:45', sp:1.5, title:'Turnover, net profit + colour key',
     desc:'Deep-dive metric toggle gains Turnover and Net profit (now Revenue · Turnover · Net profit · Headcount · Wage). And each company chip now carries its line colour so you can tell which line is which when comparing.',
     detail:'Split DD_SPECS ddRev (Revenue = estimatedIncome) from new ddTurnover (revenue / Pardavimo pajamos); ddProfit relabelled “Net profit”. Top chips render a colour dot from CMP_PAL, shared with sddColor so chip colour = its deep-dive lines.',
@@ -2984,6 +2992,20 @@ try{ (function(){
   const firstCard=wrap.querySelector('.group-card');
   wrap.insertBefore(bar, firstCard || wrap.querySelector('.explore-btn') || wrap.querySelector('.mini-foot'));
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'liftCompanyControls: '+err.message, error:err})); }
+
+// Per-year / All-time is now a TOP toggle (it changes the whole Companies page) — drive the
+// Company-data card's tabs from it and hide the in-card tab row.
+try{ (function(){
+  const seg=document.getElementById('coViewToggle'); if(!seg) return;
+  const card=document.querySelector('#companiesView .group-card');         // first = Company data (gold)
+  const grpTabs=card && card.querySelector('.grp-tabs');
+  const tabBtns=grpTabs ? [...grpTabs.querySelectorAll('.grp-tab')] : [];
+  if(grpTabs) grpTabs.style.display='none';
+  seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+    const t=tabBtns[+b.dataset.v]; if(t) t.click();
+  }));
+})(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'coViewToggle: '+err.message, error:err})); }
 </script>
 </body>
 </html>
