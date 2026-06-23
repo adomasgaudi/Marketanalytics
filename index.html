@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.127</title>
+<title>Market Analytics — LT agencies · v0.1.128</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -392,7 +392,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.127</span>
+      <span class="nav-version">v0.1.128</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1183,6 +1183,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.128', date:'2026-06-22 23:30', sp:1, title:'Fix missing Market card',
+    desc:'The v127 rename dropped both Market tabs because the card still keyed on the old titles — re-pointed to “Market 2024” and “Market all time”, so the all-years graph view is back.',
+    detail:'makeSectionsCollapsible built the Market card from keys [“Market summary”,“Market overview”] which no longer matched the renamed sections, so the whole card was null. Updated to [“Market 2024”,“Market all time”].'},
   {v:'v0.1.127', date:'2026-06-22 23:20', sp:3, title:'Market year cycle',
     desc:'“Market summary” is now “Market 2024” with a tappable year pill that cycles 2019→2024 — the money-flow and all KPIs recompute for the chosen year, and the tab label follows. “Market overview” renamed “Market all time”.',
     detail:'Added mktYear (default 2024) + a forward-cycling year pill. renderMarket recomputes the money-flow, employees, median salary and the CAGR (19→selected year) for the picked year; YoY/CAGR show “—” at the 2019 baseline. The Market-summary tab text updates to “Market <year>”. The all-time charts (totals 2019–2024, segment doughnut) are unchanged under the renamed “Market all time”.',
@@ -2536,7 +2539,7 @@ function makeSectionsCollapsible(){
   place(compWrap, buildCard('Company data',    ['Overview','Company rankings'], {gold:true, hoist:'#ovCompanySelect'}));
   place(compWrap, buildCard('Company deep-dive',['Company deep-dive'],          {collapsible:true}));
   // Market → dashboard
-  place(dashWrap, buildCard('Market data',     ['Market summary','Market overview'], {}));
+  place(dashWrap, buildCard('Market data',     ['Market 2024','Market all time'], {}));
   place(dashWrap, buildCard('People & pay',    ['People & pay'],                {collapsible:true}));
 }
 try { makeSectionsCollapsible(); }
