@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.124</title>
+<title>Market Analytics — LT agencies · v0.1.125</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -158,8 +158,9 @@
   .sec>summary.section::-webkit-details-marker{display:none}
   .sec>summary.section::after{content:'▾';font-size:13px;color:var(--muted);transition:transform .15s}
   .sec:not([open])>summary.section::after{transform:rotate(-90deg)}
-  /* Dashboard cards. div.group-card = always-visible (tabbed); details.group-card = collapsible "rest". */
-  .group-card{border:1px solid var(--border);border-radius:12px;background:var(--panel);margin:16px 0;padding:0 16px}
+  /* Dashboard sections. div.group-card = always-visible (plain, no card chrome); details.group-card = collapsible "rest" (a card, since it toggles). */
+  .group-card{margin:16px 0}
+  details.group-card{border:1px solid var(--border);border-radius:12px;background:var(--panel);padding:0 16px}
   .group-sum{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;padding:16px 2px;border-bottom:1px solid var(--border);margin-bottom:12px}
   .group-card.mine>.group-sum{color:var(--gold)}
   details.group-card>summary.group-sum{cursor:pointer;list-style:none}
@@ -389,7 +390,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.124</span>
+      <span class="nav-version">v0.1.125</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1145,6 +1146,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.125', date:'2026-06-22 22:50', sp:1, title:'Plain always-visible sections',
+    desc:'The always-visible groups (Market data, Company data) are no longer wrapped in a card box, since they don’t collapse. Only the collapsible groups keep card chrome.',
+    detail:'Dropped the border/background/padding from non-collapsible div.group-card; collapsible details cards keep their box because they toggle.'},
   {v:'v0.1.124', date:'2026-06-22 22:40', sp:1, title:'Footer copyright wording',
     desc:'Footer now reads “by adomasgaudi.github on behalf of Fabula, copyright.” on both pages.',
     detail:'Updated the footer text on the Market Analytics and Companies pages.'},
