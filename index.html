@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.145</title>
+<title>Market Analytics — LT agencies · v0.1.146</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.145</span>
+      <span class="nav-version">v0.1.146</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -844,16 +844,18 @@ function moneyFlowHtml(T0,R,P,opts){
   const pass=(T0!=null && R!=null && T0>R)?T0-R:0;
   const costs=(R!=null && P!=null)?R-P:null, loss=P!=null && P<0;
   const pctOf=v=> T>0? v/T*100 : 0;
+  const pr=prev.R, pp=prev.P;   // previous-year revenue & profit (same basis) → YoY per item
+  const prevCosts=(pr!=null&&pp!=null)?pr-pp:null, prevPass=(prev.T!=null&&pr!=null&&prev.T>pr)?prev.T-pr:null;
   const segs=[];
-  if(P!=null && !loss) segs.push({cls:'profit', pct:pctOf(P), name:'Net profit', val:fmtEur(P), desc:''});
-  if(costs!=null) segs.push({cls:loss?'cost loss':'cost', pct:pctOf(loss?R:costs), name:loss?'Costs (loss)':'Costs', val:fmtEur(costs), desc:'salaries, overheads & other expenses'});
-  else if(R!=null) segs.push({cls:'rev', pct:pctOf(R), name:'Revenue', val:fmtEur(R), desc:'fee income kept'});
-  if(pass>0) segs.push({cls:'pass', pct:pctOf(pass), name:'Pass-through', val:fmtEur(pass), desc:'media spend bought for clients, billed through the agency'});
+  if(P!=null && !loss) segs.push({cls:'profit', pct:pctOf(P), name:'Net profit', val:fmtEur(P), desc:'', yoy:yo(P,pp)});
+  if(costs!=null) segs.push({cls:loss?'cost loss':'cost', pct:pctOf(loss?R:costs), name:loss?'Costs (loss)':'Costs', val:fmtEur(costs), desc:'salaries, overheads & other expenses', yoy:yo(costs,prevCosts)});
+  else if(R!=null) segs.push({cls:'rev', pct:pctOf(R), name:'Revenue', val:fmtEur(R), desc:'fee income kept', yoy:yo(R,pr)});
+  if(pass>0) segs.push({cls:'pass', pct:pctOf(pass), name:'Pass-through', val:fmtEur(pass), desc:'media spend bought for clients, billed through the agency', yoy:yo(pass,prevPass)});
   const fx=s=>Math.max(s.pct,3).toFixed(2);
   const bar=segs.map(s=>`<div class="vf-seg ${s.cls}" style="flex:${fx(s)}"></div>`).join('');
-  const leg=segs.map(s=>`<div class="vf-item" style="flex:${fx(s)}"><span class="vf-dot ${s.cls}"></span><div class="vf-txt"><b>${s.name} ${s.val}</b>${s.desc?`<span class="vf-desc">${s.desc}</span>`:''}</div></div>`).join('');
+  const leg=segs.map(s=>`<div class="vf-item" style="flex:${fx(s)}"><span class="vf-dot ${s.cls}"></span><div class="vf-txt"><b>${s.name} ${s.val} ${s.yoy||''}</b>${s.desc?`<span class="vf-desc">${s.desc}</span>`:''}</div></div>`).join('');
   const revPct = R!=null ? Math.max(0,Math.min(100,pctOf(R))) : 100;
-  const brk = (pass>0 && R!=null)? `<div class="vf-brk"><div class="vf-brk-rev" style="flex:${revPct.toFixed(2)}"><span>Revenue ${fmtEur(R)}</span></div><div style="flex:${(100-revPct).toFixed(2)}"></div></div>` : '';
+  const brk = (pass>0 && R!=null)? `<div class="vf-brk"><div class="vf-brk-rev" style="flex:${revPct.toFixed(2)}"><span>Revenue ${fmtEur(R)} ${yo(R,pr)}</span></div><div style="flex:${(100-revPct).toFixed(2)}"></div></div>` : '';
   const margin=(R>0 && P!=null)?P/R*100:null;
   const mtxt=margin!=null?(loss?`<b style="color:var(--red)">−${Math.abs(margin).toFixed(1)}%</b>`:`<b>${margin.toFixed(1)}%</b>`):'–';
   return `<div class="ff"><div class="vf-head"><b>Turnover</b> <span class="ff-v">${fmtEur(T)}</span> ${yo(T0,prev.T)} ${rk(ranks.rev)}</div>`
@@ -1041,7 +1043,7 @@ function renderMarket(mode){
   const tag = mode==='avg' ? 'per company · '+aCur.n+' cos'
             : mode==='emp' ? 'per employee · '+Math.round(aCur.emp).toLocaleString()+' staff'
             : 'whole market';
-  const flow = moneyFlowHtml(dv(aCur.rev,aCur), dv(aCur.ei,aCur), dv(aCur.profit,aCur), {prev: hasPrev?{T:dv(aPrev.rev,aPrev)}:undefined, tag});
+  const flow = moneyFlowHtml(dv(aCur.rev,aCur), dv(aCur.ei,aCur), dv(aCur.profit,aCur), {prev: hasPrev?{T:dv(aPrev.rev,aPrev), R:dv(aPrev.ei,aPrev), P:dv(aPrev.profit,aPrev)}:undefined, tag});
   const mf = document.getElementById('marketFlow'); if(mf){ mf.innerHTML=flow; mf.style.display=flow?'':'none'; }
   // Employees card: in per-employee mode headcount is the denominator, so show whole-market total instead.
   const basis = mode==='avg' ? ' ÷ '+aCur.n+' companies' : mode==='emp' ? ' ÷ '+Math.round(aCur.emp).toLocaleString()+' employees' : ' (whole-market total)';
@@ -1173,7 +1175,7 @@ function renderSegView(){
         empty=document.getElementById('segViewEmpty'), showT=document.getElementById('segShow'), eng=document.getElementById('segEng');
   if(canvas) canvas.style.display=isD?'':'none';
   if(svg) svg.style.display=isD?'none':'';
-  if(showT) showT.style.display=isD?'':'none';
+  if(showT) showT.style.display='';   // % / € applies to both doughnut and bars
   if(eng) eng.textContent=isD?'Chart.js':'SVG';
   if(segChart){ segChart.destroy(); segChart=null; }
   if(!rows.length){ if(svg) svg.innerHTML=''; if(empty){ empty.textContent='No companies have reported '+y+' figures yet.'; empty.classList.add('show'); } return; }
@@ -1195,9 +1197,10 @@ function renderSegView(){
           {text:lab+' · '+shown(i), fillStyle:ch.data.datasets[0].backgroundColor[i], strokeStyle:'transparent', lineWidth:0, index:i}))}},
         tooltip:{callbacks:{label:c=>` ${c.label}: ${eur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`}}}}, plugins:[onSlice]});
   } else {
-    drawBarsSvg(svg, { rows: rows.map(o=>({label:segName(o.s), value:o.v, color:SEGCOLORS[o.s]||cssVar('--muted')})),
-      xTitle:(b==='total'?'Total ':'Median ')+METRICS[m].short+', €', fmt:eur,
-      tip:r=>`<b>${esc(String(r.label))}</b>: ${eur(r.value)} (${basisWord(b)})` });
+    const isPct=segShow==='pct', tot=rows.reduce((a,o)=>a+Math.max(0,o.v),0)||1;
+    drawBarsSvg(svg, { rows: rows.map(o=>({label:segName(o.s), value:isPct?Math.max(0,o.v)/tot*100:o.v, color:SEGCOLORS[o.s]||cssVar('--muted'), raw:o.v})),
+      xTitle:isPct?'Share of total, %':(b==='total'?'Total ':'Median ')+METRICS[m].short+', €', fmt:isPct?(v=>v.toFixed(v<10?1:0)+'%'):eur,
+      tip:r=> isPct?`<b>${esc(String(r.label))}</b>: ${r.value.toFixed(1)}% (${eur(r.raw)})`:`<b>${esc(String(r.label))}</b>: ${eur(r.value)} (${basisWord(b)})` });
   }
 }
 const seg24 = segTotals(LAST);
@@ -1206,9 +1209,10 @@ renderSegView();
 (function(){ const wire=(id,set)=>{ const seg=document.getElementById(id); if(!seg) return; seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); set(b.dataset.v||b.dataset.m||b.dataset.mode||b.dataset.s); renderSegView(); })); };
   wire('segType', v=>segType=v); wire('segMetric', v=>segMetric=v);
-  // %/€ only relabels the slices — no chart rebuild
+  // %/€: doughnut relabels in place (no rebuild); bars redraw
   const sh=document.getElementById('segShow'); if(sh) sh.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    sh.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); segShow=b.dataset.s; if(segChart) segChart.update('none'); })); })();
+    sh.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); segShow=b.dataset.s;
+    if(segType==='doughnut' && segChart) segChart.update('none'); else renderSegView(); })); })();
 
 // ---------- Segment trend ----------
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-vs-profit scatter grouping
@@ -1308,6 +1312,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.146', date:'2026-06-23 04:20', sp:2, title:'Bars %, money-flow YoY',
+    desc:'The %/€ toggle now works in Bars view (shows each segment’s share). The money-flow shows the year-over-year % change next to Revenue, Net profit, Costs and Pass-through, like Turnover.',
+    detail:'Bars compute share-of-total when % is selected (axis + labels switch to %); %/€ redraws bars / updates the doughnut in place. moneyFlowHtml takes prev {T,R,P}, derives prev costs/pass, and renders a yo() badge on every money item and the Revenue bracket.',
+    cat:'CHART'},
   {v:'v0.1.145', date:'2026-06-23 04:05', sp:2, title:'Top cards + legend tidy',
     desc:'Moved Companies-tracked to a card under the title with a Data-sources card beside it (Initial · Rekvizitai · Sodra). Trimmed the segment-card description, and the doughnut legend now shows only % or € per the toggle (updates in place).',
     detail:'Added a two-up .top-cards row under the page hero; removed the companies KPI from the money-flow grid. Segment desc dropped the “slice = relative magnitude” line. Legend labels use the shown(i) value driven by segShow, so the %/€ toggle relabels legend + slices via chart.update("none").',
