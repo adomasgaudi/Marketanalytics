@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.169</title>
+<title>Market Analytics — LT agencies · v0.1.170</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -432,7 +432,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.169</span>
+      <span class="nav-version">v0.1.170</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1446,6 +1446,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.170', date:'2026-06-23 11:05', sp:1, title:'Deep-dive into all-time tab',
+    desc:'The scraped-sources deep-dive (a multi-year time series) now lives inside the “Company all time” tab where the other over-time graphs are, instead of a separate section at the bottom.',
+    detail:'makeSectionsCollapsible folds the Company deep-dive section’s nodes into the “Company all time” tab under a sub-heading and drops the standalone collapsible deep-dive card.',
+    cat:'CHART'},
   {v:'v0.1.169', date:'2026-06-23 10:55', sp:1.5, title:'Deep-dive metric toggle',
     desc:'The Company deep-dive now shows ONE chart with a Revenue / Profit / Headcount / Wage toggle instead of four stacked graphs — less scrolling, same data.',
     detail:'Replaced the four sdd* cards with a single #sddChart + #sddMetric pill toggle; drawSDD renders only the selected DD_SPECS metric (title/desc update), wired in initSDD.',
@@ -2997,6 +3001,13 @@ function makeSectionsCollapsible(){
     secs[title]={title, nodes, adv:/deep-dive/i.test(title)};
     h.remove();
   });
+  // The deep-dive is a multi-year time series → it belongs in the "Company all time" (multi-year) tab,
+  // not a separate section. Fold its content into the all-time tab under a sub-heading.
+  if(secs['Company all time'] && secs['Company deep-dive']){
+    const hd=document.createElement('h2'); hd.textContent='Deep-dive — scraped sources over time'; hd.style.cssText='margin:20px 0 6px';
+    secs['Company all time'].nodes = secs['Company all time'].nodes.concat([hd], secs['Company deep-dive'].nodes);
+    delete secs['Company deep-dive'];
+  }
   const buildCard=(title, keys, {gold, collapsible, hoist}={})=>{
     const items=keys.map(k=>secs[k]).filter(Boolean); if(!items.length) return null;
     const card=document.createElement(collapsible?'details':'div'); card.className='group-card'+(gold?' mine':'');
@@ -3027,7 +3038,6 @@ function makeSectionsCollapsible(){
   // Company → Companies page
   place(compWrap, buildCard('Company data',     ['Company 2024','Company all time'], {gold:true, hoist:'#ovCompanySelect'}));
   place(compWrap, buildCard('Company rankings', ['Company rankings'],           {collapsible:true}));
-  place(compWrap, buildCard('Company deep-dive',['Company deep-dive'],          {collapsible:true}));
   // Market → dashboard
   place(dashWrap, buildCard('Market data',     ['Market 2024','Market all time'], {}));
 }
