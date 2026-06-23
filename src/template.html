@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.128</title>
+<title>Market Analytics — LT agencies · v0.1.129</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -392,7 +392,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.128</span>
+      <span class="nav-version">v0.1.129</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -982,10 +982,18 @@ function medianSalary(y){
   const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
   return s[Math.floor(s.length/2)];
 }
+const MKT_YEARS = YEARS.concat([LAST+1, LAST+2]); // cycle also offers future years (empty until reported)
 let mktMode='avg', mktYear=LAST;
 function renderMarket(mode){
   mode = mktMode = mode || mktMode;                  // remember basis across year cycles
   const y=mktYear, aCur=marketAgg(y), aPrev=marketAgg(y-1), a0=marketAgg(YEARS[0]);
+  const yb=document.getElementById('mktYearBtn'); if(yb) yb.textContent=y+' ▸';
+  const tab=[...document.querySelectorAll('.grp-tab')].find(t=>/^Market \d{4}$/.test(t.textContent.trim())); if(tab) tab.textContent='Market '+y;
+  if(!aCur.n){                                        // future / unreported year → empty state
+    const mf=document.getElementById('marketFlow'); if(mf){ mf.innerHTML='<div class="ff-empty">No companies have reported '+y+' figures yet.</div>'; mf.style.display=''; }
+    document.getElementById('kpis').innerHTML='';
+    return;
+  }
   const span=y-YEARS[0], y2=String(y).slice(2), hasPrev=aPrev.n>0;
   // Three views of the same money: ÷ company count (avg), ÷ total employees (per-employee), or raw totals.
   const den = mode==='avg' ? (a=>a.n) : mode==='emp' ? (a=>a.emp) : (a=>1);
@@ -1015,13 +1023,10 @@ function renderMarket(mode){
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k=>
     `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div></div>`).join('');
-  // keep the year pill + the tab label in sync with the chosen year
-  const yb=document.getElementById('mktYearBtn'); if(yb) yb.textContent=y+' ▸';
-  const tab=[...document.querySelectorAll('.grp-tab')].find(t=>/^Market \d{4}$/.test(t.textContent.trim())); if(tab) tab.textContent='Market '+y;
 }
 renderMarket('avg');
 (function(){ const b=document.getElementById('mktYearBtn'); if(!b) return;
-  b.addEventListener('click',()=>{ const i=YEARS.indexOf(mktYear); mktYear=YEARS[(i+1)%YEARS.length]; renderMarket(); }); })();
+  b.addEventListener('click',()=>{ const i=MKT_YEARS.indexOf(mktYear); mktYear=MKT_YEARS[(i+1)%MKT_YEARS.length]; renderMarket(); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
   seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
@@ -1183,6 +1188,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.129', date:'2026-06-22 23:40', sp:1, title:'Year cycle adds 2025–2026',
+    desc:'The Market year pill now also offers 2025 and 2026; until any company reports them the view shows “No companies have reported <year> figures yet.”',
+    detail:'Cycle list is MKT_YEARS = data years + 2025 + 2026. When the selected year has zero records, renderMarket shows an empty-state note instead of the money-flow and clears the KPIs; the all-years charts still cover only real data (2019–2024).'},
   {v:'v0.1.128', date:'2026-06-22 23:30', sp:1, title:'Fix missing Market card',
     desc:'The v127 rename dropped both Market tabs because the card still keyed on the old titles — re-pointed to “Market 2024” and “Market all time”, so the all-years graph view is back.',
     detail:'makeSectionsCollapsible built the Market card from keys [“Market summary”,“Market overview”] which no longer matched the renamed sections, so the whole card was null. Updated to [“Market 2024”,“Market all time”].'},
