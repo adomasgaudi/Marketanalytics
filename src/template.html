@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.165</title>
+<title>Market Analytics — LT agencies · v0.1.166</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -327,6 +327,10 @@
   .co-select{position:relative;display:inline-block;min-width:210px}
   /* sticky company picker: stays under the nav while the long profile/charts scroll */
   .co-sticky{position:sticky;top:44px;z-index:80;display:block;background:var(--panel);padding:8px 0;margin:0 0 12px}
+  /* page-level sticky control bar (picker + year row + Full/Per-employee) — stays pinned across the WHOLE Companies page */
+  .co-stickybar{position:sticky;top:44px;z-index:80;background:var(--bg);padding:8px 0 6px;margin-bottom:10px;border-bottom:1px solid var(--border)}
+  .co-stickybar .co-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0 0 6px}
+  .co-stickybar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0}
   #companiesView .mkt-sticky{top:98px;z-index:79}   /* sit just below the sticky company picker */
   .co-sticky .co-select-btn{max-width:340px}
   .co-select-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 14px;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
@@ -422,7 +426,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.165</span>
+      <span class="nav-version">v0.1.166</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -467,12 +471,6 @@
   </div>
 
   <h2 class="section">Company all time</h2>
-  <div class="mkt-sticky">
-    <div class="seg" id="coFlowMode2">
-      <button data-mode="total" class="active">Full company</button>
-      <button data-mode="emp">Per employee</button>
-    </div>
-  </div>
   <div class="grid">
     <div class="card full">
       <h2 id="chCoFlowTitle">Money-flow by year</h2>
@@ -1434,6 +1432,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.166', date:'2026-06-23 10:05', sp:2, title:'Persistent Companies control bar',
+    desc:'The company picker, year row and Full company / Per-employee toggle now stay pinned across the WHOLE Companies page — they keep following you down into Company rankings and the deep-dive, instead of unsticking after the first card. Removed the duplicate all-time basis toggle.',
+    detail:'position:sticky only holds within its parent, so the controls were lifted out of the Company-data card into one page-level .co-stickybar at the top of #companiesView .wrap (after makeSectionsCollapsible). Nested sticky neutralised; #coFlowMode2 (redundant all-time toggle) removed.',
+    cat:'CHART'},
   {v:'v0.1.165', date:'2026-06-23 09:50', sp:1, title:'Growth chart is year-over-year',
     desc:'Growth leaders & laggards now measures a single year’s change (prior year → the selected year) instead of a 3-year window, so it’s strictly “by year” like the other Companies charts. 2019 shows no data (no prior year).',
     detail:'drawGrowth startY = coYear−1 (was max(YEARS[0], coYear−3)); the empty-state already covers the missing-prior-year case via the no-rows guard.',
@@ -2997,6 +2999,22 @@ function makeSectionsCollapsible(){
 try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
 try { renderCompany(ovBrand); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderCompany: '+err.message, error:err})); }   // re-run so company tab labels show brand+year now the tabs exist (errors surfaced, never silent)
+
+// Lift the company picker + year row + Full/Per-employee toggle into ONE page-level sticky bar at the
+// top of the Companies page, so the menu KEEPS following you past the Company-data card (through the
+// rankings + deep-dive). position:sticky only holds within its parent, so the controls must live at
+// page level — they drive every company chart now, not just the first card.
+try{ (function(){
+  const wrap=document.querySelector('#companiesView .wrap'); if(!wrap) return;
+  const picker=document.getElementById('ovCompanySelect');
+  const ctrl=document.getElementById('coYearRow') && document.getElementById('coYearRow').closest('.mkt-sticky');
+  if(!picker && !ctrl) return;
+  const bar=document.createElement('div'); bar.className='co-stickybar';
+  if(picker) bar.appendChild(picker);
+  if(ctrl) bar.appendChild(ctrl);
+  const firstCard=wrap.querySelector('.group-card');
+  wrap.insertBefore(bar, firstCard || wrap.querySelector('.explore-btn') || wrap.querySelector('.mini-foot'));
+})(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'liftCompanyControls: '+err.message, error:err})); }
 </script>
 </body>
 </html>
