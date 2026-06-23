@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.143</title>
+<title>Market Analytics — LT agencies · v0.1.144</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -413,7 +413,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.143</span>
+      <span class="nav-version">v0.1.144</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1041,20 +1041,20 @@ function renderMarket(mode){
     empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+y, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg',
       formula:(mode==='avg'?'Total headcount ÷ '+aCur.n+' companies':'Sum of reported headcount')+'. YoY = this year ÷ last year − 1.'};
   }
-  const cT=cagrOf(a=>a.rev), cR=cagrOf(a=>a.ei);
-  const msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
-  const cagrF=(g,name)=> span<=0 ? 'Needs ≥2 years — pick a year after '+YEARS[0]+'.'
-    : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(a0),a0))+') ^ (1 ÷ '+span+' yrs) − 1. '+name+basis+'.';
+  const py2=String(y-1).slice(2), msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
+  const yoyOf=g=>{ if(!hasPrev) return null; const a=dv(g(aPrev),aPrev), b=dv(g(aCur),aCur); return a>0? b/a-1 : null; };
+  const tT=yoyOf(a=>a.rev), tR=yoyOf(a=>a.ei);
+  const yoyF=(g,name)=> !hasPrev ? 'No prior year before '+y+' in the data.'
+    : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(aPrev),aPrev))+') − 1 = change from '+(y-1)+' to '+y+'. '+name+basis+'.';
   const kpis = [
-    {label:(mode==='emp'?'Turnover/empl. CAGR':'Turnover CAGR')+' 19–'+y2, value:cT==null?'—':fmtPct(cT), sub:fmtEur(dv(a0.rev,a0))+' → '+fmtEur(dv(aCur.rev,aCur)), cls:cT!=null&&cT>=0?'pos':'neg',
-      formula:'Compound annual growth of turnover. '+cagrF(a=>a.rev,'Turnover')},
-    {label:(mode==='emp'?'Revenue/empl. CAGR':'Revenue CAGR')+' 19–'+y2, value:cR==null?'—':fmtPct(cR), sub:fmtEur(dv(a0.ei,a0))+' → '+fmtEur(dv(aCur.ei,aCur)), cls:cR!=null&&cR>=0?'pos':'neg',
-      formula:'Compound annual growth of revenue. '+cagrF(a=>a.ei,'Revenue')},
+    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+py2+'→'+y2, value:tT==null?'—':fmtPct(tT), sub:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):'first year', cls:tT!=null&&tT>=0?'pos':'neg',
+      formula:'Year-over-year change in turnover. '+yoyF(a=>a.rev,'Turnover')},
+    {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+py2+'→'+y2, value:tR==null?'—':fmtPct(tR), sub:hasPrev?fmtEur(dv(aPrev.ei,aPrev))+' → '+fmtEur(dv(aCur.ei,aCur)):'first year', cls:tR!=null&&tR>=0?'pos':'neg',
+      formula:'Year-over-year change in revenue. '+yoyF(a=>a.ei,'Revenue')},
     empCard,
-    {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:y===YEARS[0]?'baseline':fmtPct(msC/ms0-1)+' vs '+YEARS[0], cls:msC>=ms0?'pos':'neg',
-      formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). Change vs '+YEARS[0]+' = this ÷ '+YEARS[0]+' − 1.'},
-    {label:'Companies tracked '+y, value:aCur.n, sub:SEGMENTS.length+' service segments', cls:'',
-      formula:'Count of companies with reported '+y+' financials, across '+SEGMENTS.length+' service segments.'},
+    {label:'Median salary '+y, value:'€'+msC.toLocaleString()+'/mo', sub:hasPrev?fmtPct(msC/medianSalary(y-1)-1)+' YoY':'first year', cls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
+      formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). YoY = this ÷ '+(y-1)+' − 1.'},
+    {label:'Companies tracked '+y, value:aCur.n, sub:SEGMENTS.length+' service segments', cls:''},
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k=>
     `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
@@ -1295,6 +1295,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.144', date:'2026-06-23 03:50', sp:1, title:'KPIs year-over-year',
+    desc:'Turnover, Revenue and Median salary now show the change from the previous year to the chosen year (YoY) instead of 19→year CAGR / vs-2019. Dropped the obvious formula from the companies-tracked card.',
+    detail:'Replaced the two CAGR cards with YoY (prev→chosen year) cards (label “Turnover 23→24”), median salary switched from “vs 2019” to YoY, and the companies-tracked KPI lost its formula dropdown. 2019 (no prior year) shows “—”/“first year”.',
+    cat:'CHART'},
   {v:'v0.1.143', date:'2026-06-23 03:35', sp:1, title:'Declutter money-flow',
     desc:'Removed the redundant restated-formula text from the money-flow: the scope tag, the “kept after costs” line and the bottom Revenue/Net-margin note. The bar, values and the real cost/pass-through descriptions stay.',
     detail:'moneyFlowHtml no longer renders opts.tag, the Net-profit sub-description or the ff-note summary line; empty descriptions are skipped so the legend stays tidy.',
