@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.123</title>
+<title>Market Analytics — LT agencies · v0.1.124</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -389,7 +389,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.123</span>
+      <span class="nav-version">v0.1.124</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -537,7 +537,7 @@
   </div>
 
   <button class="explore-btn" data-view="rekView">Explore the raw data &amp; sources →</button>
-  <footer class="mini-foot">made by Adomas for Fabula</footer>
+  <footer class="mini-foot">by adomasgaudi.github on behalf of Fabula, copyright.</footer>
 </div>
 </div>
 
@@ -545,7 +545,7 @@
 <div class="wrap">
   <header class="page-hero"><h1>Companies</h1><p>Profiles, rankings &amp; deep-dives for the 113 tracked agencies</p></header>
   <button class="explore-btn" data-view="rekView">Explore the raw data &amp; sources →</button>
-  <footer class="mini-foot">made by Adomas for Fabula</footer>
+  <footer class="mini-foot">by adomasgaudi.github on behalf of Fabula, copyright.</footer>
 </div>
 </div>
 
@@ -1145,6 +1145,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.124', date:'2026-06-22 22:40', sp:1, title:'Footer copyright wording',
+    desc:'Footer now reads “by adomasgaudi.github on behalf of Fabula, copyright.” on both pages.',
+    detail:'Updated the footer text on the Market Analytics and Companies pages.'},
   {v:'v0.1.123', date:'2026-06-22 22:30', sp:1, title:'Explorer button on Companies',
     desc:'The Companies page now also has the full-width “Explore the raw data & sources →” button at the bottom, matching the Market Analytics dashboard.',
     detail:'Added the data-explorer button to the foot of the Companies page so it’s reachable from either page, not just the market dashboard.'},
