@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.149</title>
+<title>Market Analytics — LT agencies · v0.1.150</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.149</span>
+      <span class="nav-version">v0.1.150</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -505,7 +505,7 @@
     <div class="card full">
       <h2>Total market money-flow by year (2019–2024)</h2>
       <div class="desc">Each bar is total turnover for that year across all 113 companies, split into net profit, costs and pass-through media spend — the all-years version of the single-year money-flow bar.</div>
-      <div class="chartbox"><div id="mfaAll" style="position:absolute;inset:0;padding:8px 4px"></div></div>
+      <div class="chartbox"><div class="svgwrap" id="mfaAll" style="position:absolute;inset:0"></div></div>
     </div>
     <div class="card">
       <h2>By segment, all years</h2>
@@ -1141,27 +1141,18 @@ function segDesc(metric, basis){
                     :'Median '+M.short+' per company in each segment.');
 }
 
-// ---------- Total-market money-flow, all years (stacked columns, same look as the single-year bar) ----------
+// ---------- Total-market money-flow, all years — interactive STACKED SVG (net profit at the bottom) ----------
 function renderMoneyFlowAll(){
-  const host=document.getElementById('mfaAll'); if(!host) return;
+  const el=document.getElementById('mfaAll'); if(!el) return;
   const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
   const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
-  const agg=YEARS.map(y=>marketAgg(y));
-  const V=agg.map(a=>({T:dv(a.rev,a), R:dv(a.ei,a), P:Math.max(0,dv(a.profit,a))}));
-  const maxT=Math.max(...V.map(v=>v.T))||1;
-  const seg=(cls,val)=> val>0?`<div class="vf-seg ${cls}" style="flex:${val.toFixed(3)}"></div>`:'';
-  const cols=YEARS.map((y,i)=>{ const v=V[i], pass=Math.max(0,v.T-v.R), costs=Math.max(0,v.R-v.P), h=(v.T/maxT*100).toFixed(1);
-    return `<div class="mfa-col"><div class="mfa-barwrap"><div class="vf-bar mfa-bar" style="height:${h}%">`
-      +`${seg('profit',v.P)}${seg('cost',costs)}${seg('pass',pass)}</div></div>`
-      +`<div class="mfa-val">${fmtEur(v.T)}</div><div class="mfa-yr">${y}</div></div>`;
-  }).join('');
-  const scope = mktMode==='avg'?'per company':mktMode==='emp'?'per employee':'whole market';
-  host.innerHTML=`<div class="mfa"><div class="mfa-leg">`
-    +`<span class="mfa-lg"><span class="vf-dot profit"></span>Net profit</span>`
-    +`<span class="mfa-lg"><span class="vf-dot cost"></span>Costs</span>`
-    +`<span class="mfa-lg"><span class="vf-dot pass"></span>Pass-through</span>`
-    +`<span class="mfa-lg" style="margin-left:auto;color:var(--text)">bar = turnover · ${scope}</span>`
-    +`</div><div class="mfa-cols">${cols}</div></div>`;
+  const rows=YEARS.map(y=>{ const a=marketAgg(y), T=dv(a.rev,a), R=dv(a.ei,a), P=Math.max(0,dv(a.profit,a));
+    return { x:y, profit:P, costs:Math.max(0,R-P), pass:Math.max(0,T-R) }; });
+  drawFinSvg(el, { stacked:true, yTitle:'€', series:[
+    {label:'Net profit',  kind:'bar', color:cssVar('--green'), data:rows.map(d=>({x:d.x,y:d.profit}))},
+    {label:'Costs',       kind:'bar', color:cssVar('--cost'),  data:rows.map(d=>({x:d.x,y:d.costs}))},
+    {label:'Pass-through',kind:'bar', color:cssVar('--cost'),  opacity:0.5, data:rows.map(d=>({x:d.x,y:d.pass}))},
+  ]});
 }
 renderMoneyFlowAll();
 // ---------- Employees by year (all years; follows the basis: total or per company) ----------
@@ -1318,7 +1309,7 @@ function renderRevSegAll(){
 renderRevSegAll();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
-const SVG_DASH_IDS=['chMine','chMineRank','chTop','chGrowth','chSalary','chRevPerEmp','chRevSegAll','chEmpAll'];
+const SVG_DASH_IDS=['chMine','chMineRank','chTop','chGrowth','chSalary','chRevPerEmp','chRevSegAll','chEmpAll','mfaAll'];
 function redrawDashSvg(){ SVG_DASH_IDS.forEach(id=>{ const el=document.getElementById(id); if(!el) return;
   if(el.__fin) el.__fin.render(); else if(el.__bar) el.__bar.render(); }); }
 let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dashRT=setTimeout(redrawDashSvg,160); });
@@ -1326,6 +1317,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.150', date:'2026-06-23 05:20', sp:5, title:'Money-flow → stacked SVG',
+    desc:'The all-years money-flow is now an interactive pan/zoom SVG with net profit at the BOTTOM (then costs, then pass-through). Added stacked-bar support to the SVG engine.',
+    detail:'drawFinSvg gained spec.stacked: bar series stack cumulatively (first = bottom), the extent uses per-year sums, and bars take a fill-opacity. renderMoneyFlowAll now emits Net profit / Costs / Pass-through bar series into a .svgwrap (chart id mfaAll, in SVG_DASH_IDS), so it pans/zooms and follows the basis toggle like the other charts.',
+    cat:'CHART'},
   {v:'v0.1.149', date:'2026-06-23 05:00', sp:3, title:'Nice round axis ticks',
     desc:'SVG chart y-axes now show round values (1M, 2M, 3M) at 1/2/5 steps that SCROLL as you pan, instead of arbitrary numbers like 927k / −124k that re-derived every frame. (Recurring axis bug — root fix.)',
     detail:'#persistent: replaced the yMin+k·span/TICKS labelling with a niceTicks(min,max) generator (1/2/5 ×10ⁿ step, ticks at round multiples inside the view), drawn only inside the plot. Cleaner number formatting (1M not 1.0M). The pan/zoom math already re-renders lines + axis together and the ResizeObserver repaints (not re-fits), so the round ticks now visibly scroll with the data.',
@@ -1980,11 +1975,18 @@ function svgMarker(shape, X, Y, r, color){
 function drawFinSvg(container, spec, opts){
   const interactive = !(opts && opts.interactive===false); // dashboard overview charts pass {interactive:false} → static, page still scrolls
   const showLegend = !(opts && opts.noLegend); // comparison charts use a shared legend under the dropdown instead
+  const stacked = !!spec.stacked;   // stacked bars (first series at the bottom)
   const cats = [...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))].sort();
   const n = cats.length;
   const st = container.__fin || (container.__fin = { cid:'fcl'+Math.random().toString(36).slice(2,8) });
   const left=spec.series.filter(s=>s.yAxisID!=='y2'), right=spec.series.filter(s=>s.yAxisID==='y2');
-  const ext=ss=>{ let lo=Infinity,hi=-Infinity; ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;})); if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0; return [lo,hi]; };
+  const ext=ss=>{ let lo=Infinity,hi=-Infinity;
+    if(stacked){ const cum={};
+      ss.forEach(s=>{ if(s.kind==='bar') s.data.forEach(p=>{ cum[p.x]=(cum[p.x]||0)+(p.y||0); }); });
+      Object.values(cum).forEach(v=>{ if(v<lo)lo=v; if(v>hi)hi=v; });
+      ss.forEach(s=>{ if(s.kind!=='bar') s.data.forEach(p=>{ if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y; }); });
+    } else ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;}));
+    if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0; return [lo,hi]; };
   // Full fit = x over the category index + y over each axis' data extent — all pannable/zoomable.
   const fitState=()=>{ const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
     return { view:{ xMin:n<=1?-0.5:0, xMax:n<=1?0.5:n-1, yMin:lLo, yMax:lHi }, ry:{ yMin:rLo, yMax:rHi } }; };
@@ -2031,17 +2033,30 @@ function drawFinSvg(container, spec, opts){
     });
     // series, clipped to the plot rect. Bar series (kind:'bar') render as grouped bars per category.
     const barIdx={}; let nbar=0; spec.series.forEach((s,i)=>{ if(s.kind==='bar') barIdx[i]=nbar++; });
-    const slotPx=pw/span, groupW=nbar?Math.min(slotPx*0.7, 64):0, barW=nbar?groupW/nbar:0;
+    const slotPx=pw/span, groupW=nbar?Math.min(slotPx*0.7, 64):0, barW=(nbar&&!stacked)?groupW/nbar:groupW;
+    const stackBase={};   // running cumulative (data units) per category for stacked bars
     let body='';
     spec.series.forEach((ser,si)=>{
       const yf= ser.yAxisID==='y2'?yR:yL;
       if(ser.kind==='bar'){
+        const op = ser.opacity!=null?` fill-opacity="${ser.opacity}"`:'';
+        if(stacked){
+          const w=Math.max(1,barW*0.9);
+          cats.forEach((c,i)=>{ const p=ser.data.find(d=>String(d.x)===c); if(!p) return;
+            const prev=stackBase[c]||0, next=prev+(p.y||0); stackBase[c]=next;
+            const x0=xAt(i)-w/2, yTop=yf(Math.max(view.yMin,Math.min(view.yMax,next))), yBot=yf(Math.max(view.yMin,Math.min(view.yMax,prev)));
+            const y0=Math.min(yTop,yBot), hh=Math.max(0,Math.abs(yTop-yBot));
+            if(x0+w<m.l-2 || x0>W-m.r+2) return;
+            body+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${ser.color}"${op} rx="2"/>`;
+          });
+          return;
+        }
         const bi=barIdx[si], base=yf(Math.max(view.yMin, Math.min(view.yMax, 0)));
         cats.forEach((c,i)=>{ const p=ser.data.find(d=>String(d.x)===c); if(!p) return;
           const cx=xAt(i)-groupW/2+(bi+0.5)*barW, w=Math.max(1,barW*0.82), x0=cx-w/2;
           const yv=yf(p.y), y0=Math.min(yv,base), hh=Math.max(0,Math.abs(yv-base));
           if(x0+w<m.l-2 || x0>W-m.r+2) return;
-          body+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${ser.color}" rx="2"/>`;
+          body+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${ser.color}"${op} rx="2"/>`;
         });
         return;
       }
