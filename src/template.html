@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.138</title>
+<title>Market Analytics — LT agencies · v0.1.139</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -413,7 +413,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.138</span>
+      <span class="nav-version">v0.1.139</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1152,13 +1152,21 @@ function renderSegView(){
   if(empty) empty.classList.remove('show');
   if(isD){
     const slice=rows.map(o=>Math.max(0,o.v)), tot=slice.reduce((a,c)=>a+c,0)||1;
-    const pct=i=>slice[i]/tot*100, shown=i=> segShow==='pct'? pct(i).toFixed(pct(i)<10?1:0)+'%' : eur(rows[i].v);
+    const pct=i=>slice[i]/tot*100;
+    // draw the % or € number directly on each (big enough) slice — the toggle picks which
+    const onSlice={ id:'segOnSlice', afterDatasetsDraw(ch){ const ctx=ch.ctx, meta=ch.getDatasetMeta(0);
+      ctx.save(); ctx.font='700 11px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      meta.data.forEach((arc,i)=>{ const p=pct(i); if(p<5) return; const pos=arc.tooltipPosition();
+        const txt= segShow==='pct'? p.toFixed(0)+'%' : eur(rows[i].v);
+        ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.55)'; ctx.strokeText(txt,pos.x,pos.y);
+        ctx.fillStyle='#fff'; ctx.fillText(txt,pos.x,pos.y); });
+      ctx.restore(); } };
     segChart=new Chart(canvas, {type:'doughnut', data:{labels:rows.map(o=>o.s),
       datasets:[{data:slice, backgroundColor:rows.map(o=>SEGCOLORS[o.s]||'#888'), borderColor:cssVar('--chart-bg'), borderWidth:2}]},
       options:{maintainAspectRatio:false, plugins:{
         legend:{position:'right', labels:{boxWidth:12, font:{size:11}, generateLabels:ch=>ch.data.labels.map((lab,i)=>(
-          {text:lab+' · '+shown(i), fillStyle:ch.data.datasets[0].backgroundColor[i], strokeStyle:'transparent', lineWidth:0, index:i}))}},
-        tooltip:{callbacks:{label:c=>` ${c.label}: ${eur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`}}}}});
+          {text:lab+' · '+eur(rows[i].v)+' · '+pct(i).toFixed(pct(i)<10?1:0)+'%', fillStyle:ch.data.datasets[0].backgroundColor[i], strokeStyle:'transparent', lineWidth:0, index:i}))}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${eur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`}}}}, plugins:[onSlice]});
   } else {
     drawBarsSvg(svg, { rows: rows.map(o=>({label:o.s, value:o.v, color:SEGCOLORS[o.s]||cssVar('--muted')})),
       xTitle:(b==='total'?'Total ':'Median ')+METRICS[m].short+', €', fmt:eur,
@@ -1271,6 +1279,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.139', date:'2026-06-23 02:30', sp:1, title:'Numbers on doughnut slices',
+    desc:'The %/€ toggle now draws the number directly onto each doughnut slice instead of swapping the legend; the legend shows both € and % so nothing is lost.',
+    detail:'Inline Chart.js plugin (segOnSlice) writes the chosen value (% or €) at each big-enough arc’s centroid in white with a dark outline; slices under 5% are skipped to avoid clutter. Legend labels now read “name · €X · Y%”.',
+    cat:'CHART'},
   {v:'v0.1.138', date:'2026-06-23 02:15', sp:3, title:'Merge segment views',
     desc:'The segment doughnut and the segment bar were the same data two ways, so they’re now one card with a Doughnut / Bars toggle sharing the metric, basis and %/€ controls.',
     detail:'New renderSegView swaps the Chart.js doughnut and the SVG bars in a single chartbox, hiding the inactive one; the %/€ toggle shows only for the doughnut. Removed the separate renderRevSeg/renderSegDoughnut and the duplicate card. The all-years multi-line chart stays its own card.',
