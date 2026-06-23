@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.139</title>
+<title>Market Analytics — LT agencies · v0.1.140</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -413,7 +413,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.139</span>
+      <span class="nav-version">v0.1.140</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -474,7 +474,6 @@
       <div class="seg-row">
         <div class="seg" id="segType"><button data-v="doughnut" class="active">Doughnut</button><button data-v="bars">Bars</button></div>
         <div class="seg" id="segMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="costs">Costs</button></div>
-        <div class="seg" id="segBasis"><button data-mode="total" class="active">Whole market</button><button data-mode="company">Per company</button><button data-mode="emp">Per employee</button></div>
         <div class="seg" id="segShow"><button data-s="pct" class="active">%</button><button data-s="eur">€</button></div>
       </div>
       <div class="chartbox"><span class="eng-tag" id="segEng">Chart.js</span><canvas id="chSegments"></canvas><div class="svgwrap" id="chRevPerEmp" style="position:absolute;inset:0;display:none"></div><div class="chart-empty" id="segViewEmpty"></div></div>
@@ -493,7 +492,6 @@
       <div class="desc" id="revAllDesc">Each segment over 2019→2024 — the all-years version of the single-year chart in the “Market &lt;year&gt;” tab. Same segment colours as the bar.</div>
       <div class="seg-row">
         <div class="seg" id="revAllMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="costs">Costs</button></div>
-        <div class="seg" id="revAllMode"><button data-mode="emp" class="active">Per employee</button><button data-mode="company">Per company</button><button data-mode="total">Whole market</button></div>
       </div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div></div>
     </div>
@@ -1065,7 +1063,9 @@ renderMarket('avg');
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
   seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-    renderMarket(b.dataset.mode);
+    renderMarket(b.dataset.mode);                 // top basis toggle drives every graph
+    if(typeof renderSegView==='function') renderSegView();
+    if(typeof renderRevSegAll==='function') renderRevSegAll();
   }));
 })();
 
@@ -1093,6 +1093,7 @@ const METRICS = {
   costs:    {label:'Costs',      short:'costs',                   f:d=>(d.estimatedIncome!=null&&d.profit!=null)?d.estimatedIncome-d.profit:null, pos:false},
 };
 const basisWord=b=> b==='emp'?'per employee':b==='company'?'per company':'whole-market total';
+const basisFromMode=m=> m==='avg'?'company': m;   // top toggle (avg/emp/total) → segment basis (company/emp/total)
 // one segment's value for metric+basis+year (null = not enough data)
 function segMetricVal(seg, metric, basis, year){
   const M=METRICS[metric];
@@ -1135,9 +1136,9 @@ function segTotals(y){   // kept for topSegs / segSorted (revenue, whole-market)
   DATA.forEach(d=>{ if(d.year===y && d.estimatedIncome) d.activities.forEach(a=>s[a]=(s[a]||0)+d.estimatedIncome); });
   return s;
 }
-let segChart=null, segMetric='revenue', segBasis='total', segShow='pct', segType='doughnut';
+let segChart=null, segMetric='revenue', segShow='pct', segType='doughnut';
 function renderSegView(){
-  const y=mktYear, m=segMetric, b=segBasis, isD=segType==='doughnut';
+  const y=mktYear, m=segMetric, b=basisFromMode(mktMode), isD=segType==='doughnut';
   const rows=SEGMENTS.map(s=>({s, v:segMetricVal(s,m,b,y)})).filter(o=>o.v!=null).sort((a,c)=>c.v-a.v);
   const t=document.getElementById('segViewTitle'); if(t) t.textContent=y+' '+METRICS[m].label+' by segment'+(b==='total'?'':' · '+basisWord(b));
   const dd=document.getElementById('segViewDesc'); if(dd) dd.textContent=segDesc(m,b)+(isD?(' Slice = relative magnitude'+(b==='total'?' (share of the market).':'; not a part-of-whole per company/employee.')):'');
@@ -1178,7 +1179,10 @@ const segSorted = Object.entries(seg24).sort((a,b)=>b[1]-a[1]);
 renderSegView();
 (function(){ const wire=(id,set)=>{ const seg=document.getElementById(id); if(!seg) return; seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); set(b.dataset.v||b.dataset.m||b.dataset.mode||b.dataset.s); renderSegView(); })); };
-  wire('segType', v=>segType=v); wire('segMetric', v=>segMetric=v); wire('segBasis', v=>segBasis=v); wire('segShow', v=>segShow=v); })();
+  wire('segType', v=>segType=v); wire('segMetric', v=>segMetric=v);
+  // %/€ only relabels the slices — no chart rebuild
+  const sh=document.getElementById('segShow'); if(sh) sh.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    sh.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); segShow=b.dataset.s; if(segChart) segChart.update('none'); })); })();
 
 // ---------- Segment trend ----------
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-vs-profit scatter grouping
@@ -1256,18 +1260,17 @@ drawFinSvg(chSalary, { yTitle:'€/mo', series:[
 ]});
 
 // ---------- By segment: all years (multi-line, metric × basis) ----------
-let revAllBasis='emp', revAllMetric='revenue';
+let revAllMetric='revenue';
 function renderRevSegAll(){
-  const m=revAllMetric, b=revAllBasis;
+  const m=revAllMetric, b=basisFromMode(mktMode);
   const ranked = SEGMENTS.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
   const series = ranked.map(s=>({label:s, color:SEGCOLORS[s]||cssVar('--muted'),
     data:YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
   drawFinSvg(chRevSegAll, { yTitle:'€', series });
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
 }
-(function(){ const wire=(id,set)=>{ const seg=document.getElementById(id); if(!seg) return; seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); set(b.dataset.m||b.dataset.mode); renderRevSegAll(); })); };
-  wire('revAllMetric', v=>revAllMetric=v); wire('revAllMode', v=>revAllBasis=v); })();
+(function(){ const seg=document.getElementById('revAllMetric'); if(seg) seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); revAllMetric=b.dataset.m; renderRevSegAll(); })); })();
 renderRevSegAll();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
@@ -1279,6 +1282,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.140', date:'2026-06-23 02:45', sp:2, title:'One global basis toggle',
+    desc:'The sticky top basis toggle (Average/Per employee/Whole market) now drives every graph, so the duplicate per-graph basis toggles are gone. The %/€ switch relabels the doughnut without rebuilding it.',
+    detail:'Segment doughnut/bars and the all-years chart read the basis from the top toggle (avg→per-company, emp→per-employee, total→whole-market); changing it re-renders them alongside the money-flow. Removed segBasis and revAllMode toggles. %/€ now calls chart.update("none") so only the on-slice numbers change — no flash/reload.',
+    cat:'CHART'},
   {v:'v0.1.139', date:'2026-06-23 02:30', sp:1, title:'Numbers on doughnut slices',
     desc:'The %/€ toggle now draws the number directly onto each doughnut slice instead of swapping the legend; the legend shows both € and % so nothing is lost.',
     detail:'Inline Chart.js plugin (segOnSlice) writes the chosen value (% or €) at each big-enough arc’s centroid in white with a dark outline; slices under 5% are skipped to avoid clutter. Legend labels now read “name · €X · Y%”.',
