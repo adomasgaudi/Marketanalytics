@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.154</title>
+<title>Market Analytics — LT agencies · v0.1.155</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.154</span>
+      <span class="nav-version">v0.1.155</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -435,7 +435,7 @@
       </div>
     </div>
   </div>
-  <h2 class="section mine">Overview</h2>
+  <h2 class="section mine">Company 2024</h2>
   <div class="co-select co-sticky" id="ovCompanySelect">
     <button class="co-select-btn" id="ovCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovCoLabel">Fabula</span><span class="co-caret">▾</span></button>
     <div class="co-select-panel" id="ovCoPanel">
@@ -443,19 +443,28 @@
       <div class="co-select-list" id="ovCoList" role="listbox"></div>
     </div>
   </div>
-  <div class="mine-note" id="mineNote"></div>
-  <div class="seg" id="coFlowMode" style="margin-bottom:10px">
-    <button data-mode="total" class="active">Total</button>
-    <button data-mode="emp">Per employee</button>
+  <div class="mkt-sticky">
+    <div class="yr-row" id="coYearRow"></div>
+    <div class="seg" id="coFlowMode">
+      <button data-mode="total" class="active">Full company</button>
+      <button data-mode="emp">Per employee</button>
+    </div>
   </div>
+  <div class="mine-note" id="mineNote"></div>
   <div id="finFlow"></div>
   <div class="kpis" id="mineKpis"></div>
   <div class="grid">
     <div class="card">
-      <h2 id="chMineTitle">Revenue, profit &amp; headcount (2019–2024)</h2>      <div class="chartbox"><div class="svgwrap" id="chMine" style="position:absolute;inset:0"></div></div>
+      <h2 id="chMineRankTitle">vs the market (2024)</h2>
+      <div class="chartbox"><div class="svgwrap" id="chMineRank" style="position:absolute;inset:0"></div></div>
     </div>
-    <div class="card">
-      <h2 id="chMineRankTitle">vs the market (2024)</h2>      <div class="chartbox"><div class="svgwrap" id="chMineRank" style="position:absolute;inset:0"></div></div>
+  </div>
+
+  <h2 class="section">Company all time</h2>
+  <div class="grid">
+    <div class="card full">
+      <h2 id="chMineTitle">Revenue, profit &amp; headcount (2019–2024)</h2>
+      <div class="chartbox"><div class="svgwrap" id="chMine" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
 
@@ -811,8 +820,9 @@ const REK_HAS={}; ((REK_DATA&&REK_DATA.companies)||[]).forEach(c=>{ if(!c.brand)
 const srcCubes=brand=>{ const h=REK_HAS[brand]||{}, have={initial:true, rekvizitai:!!h.rekvizitai, sodra:!!h.sodra};
   return `<span class="co-cubes">${['initial','rekvizitai','sodra'].map(s=>`<span class="src-cube ${s}${have[s]?'':' empty'}"></span>`).join('')}</span>`; };
 
+let coYear = LAST;   // selected year on the Companies page (mirrors the Market year row)
 function rankOf(metricFn, cur24){
-  const vals = BRANDS.map(b=>metricFn(byBrand[b][LAST]||{})).filter(v=>v!=null && !isNaN(v));
+  const vals = BRANDS.map(b=>metricFn(byBrand[b][coYear]||{})).filter(v=>v!=null && !isNaN(v));
   const mineVal = metricFn(cur24);
   if(mineVal==null || isNaN(mineVal)) return null;
   const sorted = vals.slice().sort((a,b)=>b-a);
@@ -862,8 +872,8 @@ let coFlowMode='total', _coFlowRerender=null;
 function renderCompany(brand){
   const mine = byBrand[brand] || {};
   const mineYears = Object.keys(mine).map(Number).sort((a,b)=>a-b);
-  const m24 = mine[LAST] || {};
-  const m23 = mine[LAST-1] || {};
+  const m24 = mine[coYear] || {};       // m24 = the SELECTED year (kept name to limit churn)
+  const m23 = mine[coYear-1] || {};
   const mFirst = mine[mineYears[0]] || {};
   const co = MY_COMPANIES.find(c=>c.brand===brand);
 
@@ -897,8 +907,13 @@ function renderCompany(brand){
   noteEl.innerHTML=head+infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('')
     +(desc?`<div class="co-desc">${esc(desc)}</div>`:`<div class="co-info-row"><span class="co-info-k">About</span><span class="co-info-v">${nd}</span></div>`);
   noteEl.style.display='';
-  document.getElementById('chMineTitle').textContent = brand+': revenue, profit & headcount (2019–'+LAST+')';
-  document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+LAST+')';
+  document.getElementById('chMineTitle').textContent = brand+': revenue, profit & headcount ('+mineYears[0]+'–'+LAST+')';
+  document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+coYear+')';
+  // sticky year row + tab labels follow the selected year
+  const yr=document.getElementById('coYearRow'); if(yr) yr.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===coYear));
+  const cTabs=[...document.querySelectorAll('#companiesView .grp-tab')];
+  const ct=cTabs.find(t=>/\d{4}$/.test(t.textContent.trim())); if(ct) ct.textContent=brand+' '+coYear;
+  const at=cTabs.find(t=>/all time$/i.test(t.textContent.trim())); if(at) at.textContent=brand+' all time';
 
   // Financial flow — one turnover bar (reusable helper; also used for the market totals).
   // Total mode = absolute €; Per-employee divides every figure by headcount for a like-for-like view.
@@ -909,9 +924,9 @@ function renderCompany(brand){
     let h='';
     if(perEmp && (e24>0)){
       const d=v=> v==null? null : v/e24, dp=v=> (v!=null && e23>0)? v/e23 : null;
-      h=moneyFlowHtml(d(m24.revenue), d(m24.estimatedIncome), d(m24.profit), {prev:{T:dp(m23.revenue)}, tag:'per employee · '+Math.round(e24)+' staff'});
+      h=moneyFlowHtml(d(m24.revenue), d(m24.estimatedIncome), d(m24.profit), {prev:{T:dp(m23.revenue), R:dp(m23.estimatedIncome), P:dp(m23.profit)}, tag:'per employee · '+Math.round(e24)+' staff'});
     } else {
-      h=moneyFlowHtml(m24.revenue, m24.estimatedIncome, m24.profit, {prev:{T:m23.revenue}, ranks:{rev:mRev, ei:mEI, profit:mProfit}});
+      h=moneyFlowHtml(m24.revenue, m24.estimatedIncome, m24.profit, {prev:{T:m23.revenue, R:m23.estimatedIncome, P:m23.profit}, ranks:{rev:mRev, ei:mEI, profit:mProfit}});
     }
     el.innerHTML=h; el.style.display=h?'':'none';
   }
@@ -923,7 +938,7 @@ function renderCompany(brand){
   const payroll=(emp!=null && sal!=null)?emp*sal*12:null;
   const empD=m23.employees?`<span class="kp-d ${m24.employees>=m23.employees?'pos':'neg'}">${fmtPct(m24.employees/m23.employees-1)}</span>`:'';
   const salD=m23.avgSalary?`<span class="kp-d ${m24.avgSalary>=m23.avgSalary?'pos':'neg'}">${fmtPct(m24.avgSalary/m23.avgSalary-1)}</span>`:'';
-  const peopleCard=`<div class="kpi mine kpi-wide"><div class="label">People &amp; pay ${LAST}</div>`
+  const peopleCard=`<div class="kpi mine kpi-wide"><div class="label">People &amp; pay ${coYear}</div>`
     +`<div class="kp-two">`
     +`<div class="kp-metric"><b>${emp!=null?emp:'–'}</b> <span class="kp-u">employees</span> ${empD} ${mEmp?`<span class="rank">#${mEmp.pos}</span>`:''}</div>`
     +`<div class="kp-metric"><b>${sal!=null?'€'+sal.toLocaleString():'–'}</b> <span class="kp-u">/mo avg</span> ${salD} ${mSal?`<span class="rank">#${mSal.pos}</span>`:''}</div>`
@@ -1071,6 +1086,10 @@ renderMarket('avg');
   row.innerHTML=MKT_YEARS.map(y=>`<button data-y="${y}">${y}</button>`).join(''); paint();
   row.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; mktYear=+b.dataset.y; paint();
     renderMarket(); renderSegView(); }); })();
+// Companies page year row — selects coYear, re-renders the whole company view
+(function(){ const row=document.getElementById('coYearRow'); if(!row) return;
+  row.innerHTML=MKT_YEARS.map(y=>`<button data-y="${y}"${y===coYear?' class="active"':''}>${y}</button>`).join('');
+  row.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; coYear=+b.dataset.y; renderCompany(ovBrand); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
   // one global basis: both sticky toggles (#marketMode in Market <year>, #marketMode2 in Market all time) drive EVERY graph and stay in sync
   window.setBasis=function(mode){
@@ -1311,6 +1330,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.155', date:'2026-06-23 07:10', sp:5, title:'Companies page tabs (1/2)',
+    desc:'Companies page now mirrors Market: a per-year and an all-time tab with a scrollable year row and a Full-company / Per-employee toggle. The company money-flow, KPIs and market-rank follow the chosen year, with YoY badges on every money item. Rankings + deep-dive are their own cards.',
+    detail:'Part 1 of the Companies rework (see docs/companies-page-plan.md). coYear state drives renderCompany + rankOf; the picker stays hoisted; tabs read “<brand> <year>” / “<brand> all time”. Money-flow passes prev {T,R,P} for per-item YoY. The all-years money-flow stacked SVG + extra charts come next.',
+    cat:'CHART'},
   {v:'v0.1.154', date:'2026-06-23 06:40', sp:2, title:'Soft labels + salary bands',
     desc:'Removed the explanation paragraphs under the graphs. Number labels use a soft shadow instead of a hard outline, and chart legends are readable in dark mode. Salary chart adds 95th/5th bands; 75th/25th are now dashed & thinner.',
     detail:'Dropped the .desc under every dashboard chart. SVG labels use an feDropShadow filter; doughnut on-slice uses canvas shadowBlur. Doughnut legend + .svg-legend use --text. Salary: 95/5 thin dotted + faint, 75/25 dashed 1.5px, median solid.',
@@ -2821,13 +2844,15 @@ function makeSectionsCollapsible(){
   };
   const place=(wrap, card)=>{ if(wrap && card){ const before=wrap.querySelector('.explore-btn')||wrap.querySelector('.mini-foot'); wrap.insertBefore(card, before); } };
   // Company → Companies page
-  place(compWrap, buildCard('Company data',    ['Overview','Company rankings'], {gold:true, hoist:'#ovCompanySelect'}));
+  place(compWrap, buildCard('Company data',     ['Company 2024','Company all time'], {gold:true, hoist:'#ovCompanySelect'}));
+  place(compWrap, buildCard('Company rankings', ['Company rankings'],           {collapsible:true}));
   place(compWrap, buildCard('Company deep-dive',['Company deep-dive'],          {collapsible:true}));
   // Market → dashboard
   place(dashWrap, buildCard('Market data',     ['Market 2024','Market all time'], {}));
 }
 try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
+try { renderCompany(ovBrand); } catch(e){}   // re-run so the company tab labels show brand + year now the tabs exist
 </script>
 </body>
 </html>
