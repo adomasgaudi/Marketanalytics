@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.152</title>
+<title>Market Analytics — LT agencies · v0.1.153</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -120,7 +120,7 @@
   .sdd-leg-note{font-style:italic;opacity:.8}
   .chart-nodata{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
   /* overlay shown when the chosen source has no data for a chart */
-  .chart-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:0 24px;color:var(--muted);font-size:13px;line-height:1.5}
+  .chart-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:0 24px;color:var(--muted);font-size:13px;line-height:1.5;background:var(--panel)}
   .chart-empty.show{display:flex}
   .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
   select,input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
@@ -416,7 +416,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.152</span>
+      <span class="nav-version">v0.1.153</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -504,7 +504,6 @@
   <div class="grid">
     <div class="card full">
       <h2>Total market money-flow by year (2019–2024)</h2>
-      <div class="desc">Each bar is total turnover for that year across all 113 companies, split into net profit, costs and pass-through media spend — the all-years version of the single-year money-flow bar.</div>
       <div class="chartbox"><div class="svgwrap" id="mfaAll" style="position:absolute;inset:0"></div></div>
     </div>
     <div class="card">
@@ -523,7 +522,7 @@
     <div class="card">
       <h2 id="empAllTitle">Employees by year</h2>
       <div class="desc">Reported headcount across all companies, 2019→2024 — total, or per company under “Average / company”.</div>
-      <div class="chartbox"><div class="svgwrap" id="chEmpAll" style="position:absolute;inset:0"></div></div>
+      <div class="chartbox"><div class="svgwrap" id="chEmpAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="empAllEmpty"></div></div>
     </div>
   </div>
 
@@ -1158,6 +1157,14 @@ function renderMoneyFlowAll(){
 renderMoneyFlowAll();
 // ---------- Employees by year (all years; follows the basis: total or per company) ----------
 function renderEmpAll(){
+  const empty=document.getElementById('empAllEmpty');
+  if(mktMode==='emp'){   // headcount ÷ headcount = 1 — meaningless, so show nothing
+    if(chEmpAll) chEmpAll.innerHTML=''; if(chEmpAll&&chEmpAll.__fin) chEmpAll.__fin.sig=null;
+    const t=document.getElementById('empAllTitle'); if(t) t.textContent='Employees by year';
+    if(empty){ empty.textContent='Headcount per employee isn’t meaningful — pick “Average / company” or “Whole market”.'; empty.classList.add('show'); }
+    return;
+  }
+  if(empty) empty.classList.remove('show');
   const perCo = mktMode==='avg';
   const t=document.getElementById('empAllTitle'); if(t) t.textContent = perCo?'Employees per company by year':'Total employees by year';
   drawFinSvg(chEmpAll, { yTitle:'people', series:[{label:perCo?'Avg employees / company':'Total employees', color:cssVar('--amber'),
@@ -1318,7 +1325,11 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.1.152', date:'2026-06-23 06:00', sp:3, title:'Animated auto-fit + bar labels',
+  {v:'v0.1.153', date:'2026-06-23 06:20', sp:2, title:'Per-segment bar values',
+    desc:'Money-flow bars now also show each segment’s value once it’s tall enough (zoom in to reveal more). Fixed total labels getting clipped at the edges. Employees-by-year shows “no data” under Per employee. Removed the money-flow blurb.',
+    detail:'Stacked segments print their value (white, outlined) when the slice ≥13px tall. Total/% labels are clamped inside the plot so the first/last year isn’t cut. renderEmpAll shows an empty-state in per-employee mode (headcount ÷ headcount = 1). .chart-empty got an opaque background.',
+    cat:'CHART'},
+  {v:'v0.1.153', date:'2026-06-23 06:00', sp:3, title:'Animated auto-fit + bar labels',
     desc:'SVG charts now smoothly re-fit (≈0.34s) when the basis/metric changes, so bars no longer end up tiny or clipped. The money-flow shows each year’s total on top of the bar and the year-over-year % between bars.',
     detail:'drawFinSvg sig now includes the fit extent, so a value change triggers an eased (easeOutCubic) animateTo() of the view instead of staying on the old scale. Stacked charts get 14% headroom; spec.totalLabels draws the per-year total + the change vs the previous year.',
     cat:'CHART'},
@@ -2071,6 +2082,8 @@ function drawFinSvg(container, spec, opts){
             const y0=Math.min(yTop,yBot), hh=Math.max(0,Math.abs(yTop-yBot));
             if(x0+w<m.l-2 || x0>W-m.r+2) return;
             body+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${ser.color}"${op} rx="2"/>`;
+            if(hh>=13 && w>=22 && p.y>0)   // per-segment value, shown once the slice is tall enough (e.g. zoomed in)
+              body+=`<text x="${(x0+w/2).toFixed(1)}" y="${(y0+hh/2+3).toFixed(1)}" fill="#fff" font-size="9" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="rgba(0,0,0,.5)" stroke-width="2">${fmt(p.y)}</text>`;
           });
           return;
         }
@@ -2090,12 +2103,13 @@ function drawFinSvg(container, spec, opts){
       if(span<=40 && !ser.noMarkers) pts.forEach(p=>{ if(p && p.X>=m.l-4 && p.X<=W-m.r+4) body+=svgMarker(shape,p.X,p.Y,ser.mr!=null?ser.mr:3,ser.color); });
     });
     // stacked-bar totals + year-over-year % between bars (spec.totalLabels)
-    if(stacked && spec.totalLabels){ const gr=cssVar('--green')||'#1faa72', rd=cssVar('--red')||'#dc4d4d'; let pT=null,pX=null;
+    if(stacked && spec.totalLabels){ const gr=cssVar('--green')||'#1faa72', rd=cssVar('--red')||'#dc4d4d';
+      const clampX=x=>Math.max(m.l+16, Math.min(W-m.r-16, x)); let pT=null,pX=null;   // keep labels off the axis / right edge
       cats.forEach((c,i)=>{ const tot=stackBase[c]; if(tot==null) return; const X=xAt(i);
         if(X<m.l-2||X>W-m.r+2){ pT=tot; pX=X; return; }
         const yTop=yL(Math.max(view.yMin,Math.min(view.yMax,tot)));
-        body+=`<text x="${X.toFixed(1)}" y="${(yTop-6).toFixed(1)}" fill="${text}" font-size="10" font-weight="700" text-anchor="middle">${fmt(tot)}</text>`;
-        if(pT!=null && pT>0){ const ch=tot/pT-1, mx=(X+pX)/2, yy=Math.min(yTop, yL(Math.max(view.yMin,Math.min(view.yMax,pT))))-18;
+        body+=`<text x="${clampX(X).toFixed(1)}" y="${(yTop-6).toFixed(1)}" fill="${text}" font-size="10" font-weight="700" text-anchor="middle">${fmt(tot)}</text>`;
+        if(pT!=null && pT>0){ const ch=tot/pT-1, mx=clampX((X+pX)/2), yy=Math.min(yTop, yL(Math.max(view.yMin,Math.min(view.yMax,pT))))-18;
           body+=`<text x="${mx.toFixed(1)}" y="${yy.toFixed(1)}" fill="${ch>=0?gr:rd}" font-size="9" font-weight="600" text-anchor="middle">${(ch>=0?'+':'')+(ch*100).toFixed(0)+'%'}</text>`; }
         pT=tot; pX=X;
       });
