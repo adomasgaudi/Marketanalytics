@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.178</title>
+<title>Market Analytics — LT agencies · v0.1.179</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -434,7 +434,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.178</span>
+      <span class="nav-version">v0.1.179</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1289,12 +1289,14 @@ function drawTop(){
   rows = rows.map(d=>{ const v=mv(d), p=mv(byBrand[d.brand][year-1]);
       return {brand:d.brand, val:v, delta:(p!=null && p>0 && v!=null)? (v/p-1)*100 : null}; })
     .filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
-  rows = rows.length>20 ? [...rows.slice(0,10), ...rows.slice(-10)] : rows;   // top 10 + bottom 10
+  // top 10 + bottom 10, colour-coded green = leaders, red = laggards
+  const split = rows.length>20;
+  rows = split ? [...rows.slice(0,10).map(r=>({...r,grp:'top'})), ...rows.slice(-10).map(r=>({...r,grp:'bot'}))] : rows;
   const isEur = moneyMetric;
   const tfmt = v=> isEur ? (perEmp ? '€'+Math.round(v).toLocaleString() : '€'+v.toFixed(2)+'M')
                   : metric==='margin' ? v.toFixed(1)+'%' : Math.round(v).toLocaleString();
   drawBarsSvg(chTop, {
-    rows: rows.map(r=>({label:r.brand, value: (isEur && !perEmp)? r.val/1e6 : r.val, color: r.val<0?cssVar('--red'):cssVar('--accent'), delta:r.delta})),
+    rows: rows.map(r=>({label:r.brand, value: (isEur && !perEmp)? r.val/1e6 : r.val, color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent')), delta:r.delta})),
     xTitle: isEur?(perEmp?'€/employee':'€M'):metric==='margin'?'%':'', fmt:tfmt,
     tip:r=>`<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}${r.delta!=null?` · ${r.delta>=0?'+':''}${Math.round(r.delta)}% vs ${year-1}`:''}`
   });
@@ -1401,6 +1403,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.179', date:'2026-06-23 12:55', sp:0.5, title:'Green leaders, red laggards',
+    desc:'In the top 10 / bottom 10 ranking the leaders’ bars are green and the laggards’ bars red, so the two groups are visually distinct.',
+    detail:'drawTop tags the top-10 slice grp:top → --green and the bottom-10 slice grp:bot → --red; unsplit small lists keep accent/red-by-sign.',
+    cat:'CHART'},
   {v:'v0.1.178', date:'2026-06-23 12:45', sp:0.5, title:'Colour deep-dive lines by company',
     desc:'In the multi-company deep-dive each line is now coloured by company (matching its chip dot) so you can tell which is which — the source is shown by line style (scraped solid, Initial dashed) instead of grey.',
     detail:'srcStyle now keeps the company colour for the Initial source (was forced grey, which made same-source metrics like Revenue all-grey); legend updated to solid/dashed.',
