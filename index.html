@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.176</title>
+<title>Market Analytics — LT agencies · v0.1.177</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -434,7 +434,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.176</span>
+      <span class="nav-version">v0.1.177</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1401,6 +1401,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.177', date:'2026-06-23 12:30', sp:0.5, title:'Hide years in All-time',
+    desc:'The year row is hidden when “All time” is selected — it only applies to the per-year view.',
+    detail:'coViewToggle now toggles #coYearRow display (none on All time, shown on Per year).',
+    cat:'CHART'},
   {v:'v0.1.176', date:'2026-06-23 12:20', sp:0.5, title:'View toggle above the bar',
     desc:'Moved the Per-year / All-time toggle above the company picker, outside the sticky control bar — it sits at the very top of the Companies page as the page-mode switch.',
     detail:'liftCompanyControls now pulls #coViewToggle out of the sticky bar and inserts it (class .co-viewbar) directly into the wrap above the .co-stickybar.',
@@ -3016,9 +3020,12 @@ try{ (function(){
   const grpTabs=card && card.querySelector('.grp-tabs');
   const tabBtns=grpTabs ? [...grpTabs.querySelectorAll('.grp-tab')] : [];
   if(grpTabs) grpTabs.style.display='none';
+  const yearRow=document.getElementById('coYearRow');   // year picker is only meaningful in "Per year"
   seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-    const t=tabBtns[+b.dataset.v]; if(t) t.click();
+    const v=+b.dataset.v;
+    if(yearRow) yearRow.style.display = v===1 ? 'none' : '';
+    const t=tabBtns[v]; if(t) t.click();
   }));
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'coViewToggle: '+err.message, error:err})); }
 </script>
