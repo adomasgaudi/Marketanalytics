@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.184</title>
+<title>Markets — LT agencies · v0.1.185</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -436,7 +436,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.184</span>
+      <span class="nav-version">v0.1.185</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1401,6 +1401,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.185', date:'2026-06-23 13:55', sp:0.5, title:'Softer bar-name shadow',
+    desc:'Toned down the drop-shadow behind the in-bar company names — it was too strong, especially in light mode.',
+    detail:'drawBarsSvg feDropShadow flood-opacity 0.85→0.35, stdDeviation 1.1→0.6, dy 0.6→0.4.',
+    cat:'CHART'},
   {v:'v0.1.184', date:'2026-06-23 13:45', sp:1, title:'Markets renamed + title toggle',
     desc:'Renamed “Market Analytics” to “Markets” (nav + title), and gave the Markets page the same clickable “per year / all years” word in its title that switches Market 2024 ⇄ Market all time.',
     detail:'#mktViewWord in the Markets hero drives the Market-data card tabs (in-card tabs hidden); the year row lives in the year panel so it hides automatically in all-time. Nav + <title> say Markets.',
@@ -2466,7 +2470,7 @@ function drawBarsSvg(container, cfg){
     });
     s+=`<clipPath id="${st.cid}p"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath>`;
     s+=`<g clip-path="url(#${st.cid}p)">${plot}</g>`;
-    const defs=`<defs><filter id="${st.cid}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.6" stdDeviation="1.1" flood-color="#000" flood-opacity="0.85"/></filter></defs>`;
+    const defs=`<defs><filter id="${st.cid}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.4" stdDeviation="0.6" flood-color="#000" flood-opacity="0.35"/></filter></defs>`;
     container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${defs}${s}</svg>`;
     st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     const tag=document.createElement('span'); tag.className='eng-tag'; tag.textContent='SVG'; container.appendChild(tag);
