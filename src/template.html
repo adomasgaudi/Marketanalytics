@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.188</title>
+<title>Markets — LT agencies · v0.1.189</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -437,7 +437,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.188</span>
+      <span class="nav-version">v0.1.189</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -750,8 +750,9 @@ document.getElementById('viewToggle').addEventListener('click', ()=>{
   document.getElementById('settingsMenu').classList.remove('open');
 });
 
-const YEARS = [...new Set(DATA.map(d=>d.year))].sort();
-const LAST = YEARS[YEARS.length-1];
+const YEARS = [...new Set(DATA.map(d=>d.year))].sort();           // every year with ANY data (incl. partial 2025: Sodra headcount/pay only)
+const LAST = Math.max(...DATA.filter(d=>d.revenue!=null).map(d=>d.year)); // latest COMPLETE financial year (2024) — every market default/aggregate pins here so a partial 2025 can't hijack the headline views
+const FIN_YEARS = YEARS.filter(y=>y<=LAST);                       // full-coverage financial years → Market section + all every-year charts
 
 const fmtM = v => (v>=1e6? (v/1e6).toFixed(1)+'M' : v>=1e3? (v/1e3).toFixed(0)+'k' : Math.round(v));
 const fmtEur = v => v==null? '–' : '€'+fmtM(v);
@@ -874,6 +875,10 @@ function renderCompany(brand){
   const m24 = mine[coYear] || {};       // m24 = the SELECTED year (kept name to limit churn)
   const m23 = mine[coYear-1] || {};
   const mFirst = mine[mineYears[0]] || {};
+  const mLastFin = mine[LAST] || {};    // latest COMPLETE financial year for this brand (history metrics anchor here, not the selected year)
+  const partialYear = coYear>LAST;      // 2025+: Sodra headcount/pay only, financials not filed yet
+  const hasFin = m24.revenue!=null;     // does the selected year carry financials for this brand?
+  const hasYearRec = mineYears.includes(coYear);
   const co = MY_COMPANIES.find(c=>c.brand===brand);
 
   // Basis toggle (Full company / Per-employee) drives EVERY company graph, not just money-flow.
@@ -884,10 +889,12 @@ function renderCompany(brand){
   const mEI     = rankOf(pe(d=>d.estimatedIncome), m24);
   const mProfit = rankOf(pe(d=>d.profit), m24);
   // Headcount itself is the per-employee denominator, so it's only a ranking metric in Full mode.
-  const mEmp    = coPerEmp ? null : rankOf(d=>d.employees, m24);
-  const mSal    = rankOf(d=>d.avgSalary>500?d.avgSalary:null, m24);   // already a ratio
+  // Ranks compare against the whole market for the year. On a partial year only ~12 cos report,
+  // so "#3" would mislead (it'd be #3 of 12, not of 113) — suppress rank chips there.
+  const mEmp    = (coPerEmp||partialYear) ? null : rankOf(d=>d.employees, m24);
+  const mSal    = partialYear ? null : rankOf(d=>d.avgSalary>500?d.avgSalary:null, m24);   // already a ratio
   const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null, m24);
-  const mCagr   = (m24.revenue && mFirst.revenue)? Math.pow(m24.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
+  const mCagr   = (mLastFin.revenue && mFirst.revenue)? Math.pow(mLastFin.revenue/mFirst.revenue, 1/(LAST-mineYears[0]))-1 : null;
 
   // Compact profile box, shown for every company (missing fields read "no data").
   const fullName = Object.values(mine).map(r=>r.company).find(Boolean) || '';
@@ -922,6 +929,12 @@ function renderCompany(brand){
   // Total mode = absolute €; Per-employee divides every figure by headcount for a like-for-like view.
   function renderFinFlow(){
     const el=document.getElementById('finFlow'); if(!el) return;
+    if(!hasFin){   // partial year (2025+): no financials filed yet, or this brand has no record this year
+      el.innerHTML = hasYearRec
+        ? '<div class="ff-empty">'+coYear+' financials aren’t filed yet — Lithuanian annual reports land ~mid-'+(coYear+1)+'. Showing Sodra headcount &amp; pay only.</div>'
+        : '<div class="ff-empty">No '+coYear+' data for '+esc(brand)+' yet — only ~12 companies have a partial '+coYear+' so far.</div>';
+      el.style.display=''; return;
+    }
     const perEmp = coPerEmp;
     const e24=m24.employees, e23=m23.employees;
     let h='';
@@ -950,9 +963,9 @@ function renderCompany(brand){
     +`</div>`;
   const cards = [
     {label:'Revenue CAGR '+mineYears[0]+'–'+LAST, value:fmtPct(mCagr),
-     sub:'€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue),
+     sub: mCagr!=null ? '€'+fmtM(mFirst.revenue)+' → €'+fmtM(mLastFin.revenue) : 'no data',
      cls:mCagr>=0?'pos':'neg',
-     formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
+     formula: mCagr!=null ? `CAGR = (${E(mLastFin.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${LAST-mineYears[0]}) − 1\n= ${fmtPct(mCagr)} over ${LAST-mineYears[0]} years` : ''},
     {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).map(segName).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
   ];
   document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
@@ -1055,7 +1068,7 @@ function medianSalary(y){
   const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
   return s[Math.floor(s.length/2)];
 }
-const MKT_YEARS = YEARS.concat([LAST+1, LAST+2]); // cycle also offers future years (empty until reported)
+const MKT_YEARS = FIN_YEARS;                       // Market year row: full-coverage financial years only (2025 is partial → not offered at market level)
 let mktMode='avg', mktYear=LAST;
 function renderMarket(mode){
   mode = mktMode = mode || mktMode;                  // remember basis across year cycles
@@ -1118,7 +1131,7 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
     renderMarket(); renderSegView(); }); })();
 // Companies page year row — selects coYear, re-renders the whole company view
 (function(){ const row=document.getElementById('coYearRow'); if(!row) return;
-  row.innerHTML=MKT_YEARS.map(y=>`<button data-y="${y}"${y===coYear?' class="active"':''}>${y}</button>`).join('');
+  row.innerHTML=YEARS.map(y=>`<button data-y="${y}"${y===coYear?' class="active"':''}>${y}${y>LAST?'*':''}</button>`).join(''); // company row offers partial 2025 (marked *)
   row.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; coYear=+b.dataset.y; renderCompany(ovBrand);
     if(typeof drawTop==='function') drawTop(); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
@@ -1180,7 +1193,7 @@ function renderMoneyFlowAll(){
   const el=document.getElementById('mfaAll'); if(!el) return;
   const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
   const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
-  const rows=YEARS.map(y=>{ const a=marketAgg(y), T=dv(a.rev,a), R=dv(a.ei,a), P=Math.max(0,dv(a.profit,a));
+  const rows=FIN_YEARS.map(y=>{ const a=marketAgg(y), T=dv(a.rev,a), R=dv(a.ei,a), P=Math.max(0,dv(a.profit,a));
     return { x:y, profit:P, costs:Math.max(0,R-P), pass:Math.max(0,T-R) }; });
   drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
     {label:'Net profit',  kind:'bar', color:cssVar('--green'), data:rows.map(d=>({x:d.x,y:d.profit}))},
@@ -1202,7 +1215,7 @@ function renderEmpAll(){
   const perCo = mktMode==='avg';
   const t=document.getElementById('empAllTitle'); if(t) t.textContent = perCo?'Employees per company by year':'Total employees by year';
   drawFinSvg(chEmpAll, { yTitle:'people', series:[{label:perCo?'Avg employees / company':'Total employees', color:cssVar('--amber'),
-    data:YEARS.map(y=>{ const a=marketAgg(y); return {x:y, y: perCo&&a.n? a.emp/a.n : a.emp}; })}] });
+    data:FIN_YEARS.map(y=>{ const a=marketAgg(y); return {x:y, y: perCo&&a.n? a.emp/a.n : a.emp}; })}] });
 }
 renderEmpAll();
 
@@ -1280,6 +1293,11 @@ function drawTop(){
   rows = rows.map(d=>{ const v=mv(d), p=mv(byBrand[d.brand][year-1]);
       return {brand:d.brand, val:v, delta:(p!=null && p>0 && v!=null)? (v/p-1)*100 : null}; })
     .filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
+  if(!rows.length){   // partial year + financial metric (2025 has headcount/pay only) → nothing to rank
+    chTop.innerHTML='<div class="ff-empty">No '+year+' '+metric+' data yet'+(year>LAST?' — '+year+' financials land ~mid-'+(year+1)+'.':'.')+'</div>';
+    const t0=document.getElementById('rankTitle'); if(t0) t0.textContent='Top 10 & bottom 10 ('+year+')';
+    return;
+  }
   // top 10 + bottom 10, colour-coded green = leaders, red = laggards
   const split = rows.length>20;
   rows = split ? [...rows.slice(0,10).map(r=>({...r,grp:'top'})), ...rows.slice(-10).map(r=>({...r,grp:'bot'}))] : rows;
@@ -1344,7 +1362,7 @@ function renderScatterYear(){
 function buildScatterStrip(){
   const row=document.getElementById('scatterStrip'); if(!row) return;
   row.innerHTML='';
-  YEARS.forEach(y=>{ const rows=scatterDataForYear(y); if(!rows.length) return;
+  FIN_YEARS.forEach(y=>{ const rows=scatterDataForYear(y); if(!rows.length) return;
     const cell=document.createElement('div'); cell.className='scatter-mini';
     cell.innerHTML='<div class="scatter-mini-t">'+y+'</div><div class="scatter-mini-c"><canvas></canvas></div>';
     row.appendChild(cell);
@@ -1361,14 +1379,14 @@ function salaryQuartiles(y){
   const q = p => s[Math.floor(s.length*p)];
   return {q05:q(.05), q1:q(.25), med:q(.5), q3:q(.75), q95:q(.95)};
 }
-const sq = YEARS.map(salaryQuartiles);
+const sq = FIN_YEARS.map(salaryQuartiles);
 const A=cssVar('--accent');
 drawFinSvg(chSalary, { yTitle:'€/mo', series:[
-  {label:'95th pct', color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:YEARS.map((y,k)=>({x:y, y:sq[k].q95}))},
-  {label:'75th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:YEARS.map((y,k)=>({x:y, y:sq[k].q3}))},
-  {label:'Median',   color:cssVar('--amber'), width:2,             data:YEARS.map((y,k)=>({x:y, y:sq[k].med}))},
-  {label:'25th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:YEARS.map((y,k)=>({x:y, y:sq[k].q1}))},
-  {label:'5th pct',  color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:YEARS.map((y,k)=>({x:y, y:sq[k].q05}))},
+  {label:'95th pct', color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q95}))},
+  {label:'75th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q3}))},
+  {label:'Median',   color:cssVar('--amber'), width:2,             data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].med}))},
+  {label:'25th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q1}))},
+  {label:'5th pct',  color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q05}))},
 ]});
 
 // ---------- By segment: all years (multi-line, metric × basis) ----------
@@ -1377,7 +1395,7 @@ function renderRevSegAll(){
   const m=revAllMetric, b=basisFromMode(mktMode);
   const ranked = SEGMENTS.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
   const series = ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
-    data:YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
+    data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
   drawFinSvg(chRevSegAll, { yTitle:'€', series });
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
 }
@@ -1394,6 +1412,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.189', date:'2026-06-24 14:00', sp:5, title:'Partial 2025 added',
+    desc:'Added a partial 2025 year (Sodra headcount + pay for the 12 companies we have); financials aren’t filed yet, so 2024 stays the default everywhere.',
+    detail:'12 new 2025 records (employees + avgSalary, financials null). LAST now = latest FINANCIAL year (2024) so every market default/aggregate stays put; FIN_YEARS (2019–2024) drives the Market section + all every-year charts. Company year row offers 2025 (marked *); on 2025 the money-flow/rank/CAGR show a “financials not filed yet” note, People & pay shows the Sodra numbers, rank chips suppressed (pool would be ~12, not 113).',
+    cat:'DATA'},
   {v:'v0.1.188', date:'2026-06-23 14:30', sp:0.5, title:'Nav title wraps',
     desc:'The nav link reads “Market Analytics” again but is allowed to wrap onto two lines so it stays compact (the page hero stays “Markets per year”).',
     detail:'.topnav .logo white-space normal + line-height ~1.1 + max-width (mobile) so “Market Analytics” wraps; centred by the nav’s align-items:center.',
