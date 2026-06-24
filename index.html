@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.183</title>
+<title>Markets — LT agencies · v0.1.184</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -427,7 +427,7 @@
 <body>
 
 <nav class="topnav">
-  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
+  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Markets</div>
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
@@ -436,7 +436,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.183</span>
+      <span class="nav-version">v0.1.184</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -444,7 +444,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Market Analytics</h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -1401,6 +1401,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.184', date:'2026-06-23 13:45', sp:1, title:'Markets renamed + title toggle',
+    desc:'Renamed “Market Analytics” to “Markets” (nav + title), and gave the Markets page the same clickable “per year / all years” word in its title that switches Market 2024 ⇄ Market all time.',
+    detail:'#mktViewWord in the Markets hero drives the Market-data card tabs (in-card tabs hidden); the year row lives in the year panel so it hides automatically in all-time. Nav + <title> say Markets.',
+    cat:'CHART'},
   {v:'v0.1.183', date:'2026-06-23 13:35', sp:1, title:'View toggle in the title',
     desc:'The page title now reads “Companies per year”, where the coloured “per year” word is tappable and switches to “all years” — replacing the separate toggle pill above the picker.',
     detail:'Replaced #coViewToggle with a clickable #coViewWord span in the hero <h1> (accent colour, dotted underline = tappable); it drives the Company-data card tabs and hides the year row in all-time, same as before.',
@@ -3058,6 +3062,21 @@ try{ (function(){
   word.addEventListener('click', toggle);
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'coViewWord: '+err.message, error:err})); }
+
+// Same clickable-title-word view switch for the Markets page ("Markets per year" ⇄ "…all years").
+// The year row lives inside the Market-2024 panel, so switching tabs hides it automatically.
+try{ (function(){
+  const word=document.getElementById('mktViewWord'); if(!word) return;
+  const card=document.querySelector('#dashView .group-card');   // Market data card (Market 2024 / all time)
+  const grpTabs=card && card.querySelector('.grp-tabs');
+  const tabBtns=grpTabs ? [...grpTabs.querySelectorAll('.grp-tab')] : [];
+  if(grpTabs) grpTabs.style.display='none';
+  let v=0;
+  const apply=()=>{ word.textContent = v===1?'all years':'per year'; const t=tabBtns[v]; if(t) t.click(); };
+  const toggle=()=>{ v=v?0:1; apply(); };
+  word.addEventListener('click', toggle);
+  word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+})(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'mktViewWord: '+err.message, error:err})); }
 </script>
 </body>
 </html>
