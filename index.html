@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.190</title>
+<title>Markets — LT agencies · v0.1.191</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -437,7 +437,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.190</span>
+      <span class="nav-version">v0.1.191</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -893,8 +893,9 @@ function renderCompany(brand){
   const mEmp    = (coPerEmp||partialYear) ? null : rankOf(d=>d.employees, m24);
   const mSal    = partialYear ? null : rankOf(d=>d.avgSalary>500?d.avgSalary:null, m24);   // already a ratio
   const mMargin = rankOf(d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null, m24);
-  const cagrSpan = coYear - mineYears[0];   // CAGR end-year follows the selected year, like every other card
-  const mCagr   = (m24.revenue && mFirst.revenue && cagrSpan>0)? Math.pow(m24.revenue/mFirst.revenue, 1/cagrSpan)-1 : null;
+  // PB-2: per-year YoY (prev→chosen), NOT a 2019-anchored CAGR — matches every other card on this view
+  // and the market section's Turnover YoY card. (.revenue field = Turnover per WORD-01.)
+  const turnYoY = (m24.revenue!=null && m23.revenue>0)? m24.revenue/m23.revenue-1 : null;
 
   // Compact profile box, shown for every company (missing fields read "no data").
   const fullName = Object.values(mine).map(r=>r.company).find(Boolean) || '';
@@ -962,10 +963,10 @@ function renderCompany(brand){
     +(payroll!=null?`<div class="sub" style="margin-top:6px">≈ ${fmtEur(payroll)} payroll/yr · ${emp} × €${sal.toLocaleString()} × 12</div>`:'')
     +`</div>`;
   const cards = [
-    {label:'Revenue CAGR '+mineYears[0]+'–'+coYear, value:fmtPct(mCagr),
-     sub: mCagr!=null ? '€'+fmtM(mFirst.revenue)+' → €'+fmtM(m24.revenue) : (partialYear?'no '+coYear+' financials yet':(cagrSpan<=0?'first year':'no data')),
-     cls:mCagr>=0?'pos':'neg',
-     formula: mCagr!=null ? `CAGR = (${E(m24.revenue)} ÷ ${E(mFirst.revenue)}) ^ (1 ÷ ${cagrSpan}) − 1\n= ${fmtPct(mCagr)} over ${cagrSpan} years` : ''},
+    {label:'Turnover '+String(coYear-1).slice(2)+'→'+String(coYear).slice(2), value:fmtPct(turnYoY),
+     sub: turnYoY!=null ? '€'+fmtM(m23.revenue)+' → €'+fmtM(m24.revenue) : (partialYear?'no '+coYear+' financials yet':(m23.revenue==null?'first year':'no data')),
+     cls:turnYoY!=null&&turnYoY>=0?'pos':'neg',
+     formula: turnYoY!=null ? `YoY = (${E(m24.revenue)} ÷ ${E(m23.revenue)}) − 1\n= ${fmtPct(turnYoY)} · turnover ${coYear-1} → ${coYear}` : ''},
     {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).map(segName).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
   ];
   document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
@@ -1412,9 +1413,13 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.1.190', date:'2026-06-24 14:30', sp:1, title:'Revenue CAGR per year',
-    desc:'The Revenue CAGR card now ends on the selected year like every other company card, instead of being frozen at 2024.',
-    detail:'CAGR end-year + exponent now use coYear (cagrSpan = coYear − firstYear), label reads firstYear–coYear, value/label/formula finally consistent (the value used the selected year while the label/exponent said 2024). First-year → “first year”; a partial year with no financials (2025) → “no <year> financials yet”.',
+  {v:'v0.1.191', date:'2026-06-24 15:00', sp:2, title:'Turnover card now YoY',
+    desc:'Replaced the lone “Revenue CAGR 2019–year” card with a per-year Turnover YoY card, so it matches every other card on the company view (PB-2).',
+    detail:'The company growth card was the last 2019-anchored CAGR holdout after the market cards were converted to YoY long ago — fixed the root, not the label. Now shows turnover prev→chosen year (e.g. “Turnover 22→23 +16% · €3.9M → €4.5M”), mirroring the market Turnover YoY card. Also corrected the noun: the .revenue field is Turnover per the data dictionary (the money-flow already uses “Revenue” for estimated income). First year → “first year”; partial 2025 → “no financials yet”.',
+    cat:'CHART'},
+  {v:'v0.1.190', date:'2026-06-24 14:30', sp:1, title:'CAGR end-year follows pill',
+    desc:'Interim fix (superseded by v191): made the Revenue CAGR card’s end-year track the selected year instead of being frozen at 2024.',
+    detail:'CAGR end-year + exponent used coYear; value/label/formula made consistent. Still a 2019-anchored CAGR though, which is why v191 replaced it with a per-year YoY card.',
     cat:'CHART'},
   {v:'v0.1.189', date:'2026-06-24 14:00', sp:5, title:'Partial 2025 added',
     desc:'Added a partial 2025 year (Sodra headcount + pay for the 12 companies we have); financials aren’t filed yet, so 2024 stays the default everywhere.',

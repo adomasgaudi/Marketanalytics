@@ -20,3 +20,23 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
     line engine was fixed — same class, different function.)*
 - **Guard against re-introduction:** any new chart axis MUST use a niceTicks-style round-step
   generator, never `min + k·span/N`. Both engines now share the same logic; copy it for any new one.
+
+---
+
+## PB-2 — Company "Revenue CAGR 2019–YYYY" card is a 2019-anchored outlier, not per-year
+- **Recurrences:** 2 (label-year patch, then full YoY conversion)
+- **Seen on:** Android / Brave (owner's phone), Companies page, every company (e.g. Fabula, APG media).
+- **Symptom:** every other card on the Companies view shows the SELECTED year (money-flow YoY badges,
+  People & pay 2023, Credit risk, vs-market 2023) — but this one card showed a 5-year compound CAGR
+  from 2019. Owner: "this one should be per year as the others."
+- **Prior failed fix:** v0.1.190 made the CAGR end-year follow the selected year (label "2019→2023")
+  — a SYMPTOM patch. It was still a 2019-anchored CAGR, not a per-year figure, so it stayed wrong.
+- **Root cause:** when the MARKET cards were converted CAGR→YoY (prev-year → chosen-year) long ago,
+  the COMPANY-page Revenue card was missed — same class, different render path. The card kept the
+  old CAGR paradigm while everything around it became per-year YoY.
+- **Fix:** v0.1.191 — replaced the CAGR card with a YoY (prev→chosen year) card, mirroring the market
+  Turnover YoY card exactly; also corrected the noun (the `.revenue` field = Turnover per WORD-01,
+  the card had mislabelled it "Revenue"). First year → "first year"; partial 2025 → "no financials yet".
+- **Guard against re-introduction:** any "growth" card on a per-year view is YoY (prev→chosen), never a
+  CAGR-from-2019. If you convert one section's growth cards, grep `CAGR`/`cagr` and convert the SIBLINGS
+  in every other render path the same turn (this miss is exactly why it recurred).
