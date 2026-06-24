@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Analytics — LT agencies · v0.1.181</title>
+<title>Market Analytics — LT agencies · v0.1.182</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = advanced (full data sources/tabs).
@@ -434,7 +434,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.181</span>
+      <span class="nav-version">v0.1.182</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1403,6 +1403,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.182', date:'2026-06-23 13:25', sp:0.5, title:'Soft shadow on bar names',
+    desc:'Replaced the heavy outline behind the in-bar company names with a soft drop-shadow, so they read cleanly instead of looking boxed.',
+    detail:'drawBarsSvg name text now uses filter=feDropShadow (added a defs to the bar SVG) instead of a thick panel-colour stroke.',
+    cat:'CHART'},
   {v:'v0.1.181', date:'2026-06-23 13:15', sp:0.5, title:'Round axis ticks on bars',
     desc:'The ranking chart’s horizontal axis now shows round numbers (€0M, €1M, €2M…) that move when you pan instead of arbitrary values that change — the recurring axis bug, this time in the bar engine.',
     detail:'PB-1: drawBarsSvg replaced min+k·span/N ticks with niceTicks (1/2/5×10ⁿ), matching the line engine. Logged in docs/persistent-bugs.md.',
@@ -2443,10 +2447,10 @@ function drawBarsSvg(container, cfg){
     rows.forEach((r,i)=>{ const cy=rowY(i); if(cy<m.t-bandH||cy>m.t+ph+bandH) return;
       const x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
       plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${r.color||cssVar('--accent')}" rx="2"/>`;
-      // company name INSIDE the graph, at the bar's start (moves with the bar). A soft shadow keeps it
-      // legible whether it sits on a coloured bar or on the dark plot beyond a short bar.
+      // company name INSIDE the graph, at the bar's start (moves with the bar). A soft drop-shadow keeps
+      // it legible whether it sits on a coloured bar or on the dark plot beyond a short bar.
       const nameX=(x1>=base?base:x1)+4, nm=esc(String(r.label));
-      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${text}" font-size="10" text-anchor="start" style="paint-order:stroke" stroke="${cssVar('--panel')||'#11151c'}" stroke-width="2.4" stroke-linejoin="round">${nm}</text>`;
+      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${text}" font-size="10" text-anchor="start" filter="url(#${st.cid}sh)">${nm}</text>`;
       // value + YoY% after the bar end, never overlapping the name
       const dStr = r.delta!=null ? (r.delta>=0?'+':'')+Math.round(r.delta)+'%' : '';
       const dCol = r.delta>=0 ? (cssVar('--green')||'#3bd16f') : (cssVar('--red')||'#e2575b');
@@ -2456,7 +2460,8 @@ function drawBarsSvg(container, cfg){
     });
     s+=`<clipPath id="${st.cid}p"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath>`;
     s+=`<g clip-path="url(#${st.cid}p)">${plot}</g>`;
-    container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${s}</svg>`;
+    const defs=`<defs><filter id="${st.cid}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.6" stdDeviation="1.1" flood-color="#000" flood-opacity="0.85"/></filter></defs>`;
+    container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${defs}${s}</svg>`;
     st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     const tag=document.createElement('span'); tag.className='eng-tag'; tag.textContent='SVG'; container.appendChild(tag);
     const tip=document.createElement('div');
