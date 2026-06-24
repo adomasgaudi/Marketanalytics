@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.187</title>
+<title>Markets — LT agencies · v0.1.188</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -248,7 +248,7 @@
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
   @media(max-width:600px){
     .topnav{padding:0 8px;overflow:visible;flex-wrap:nowrap;min-height:46px}
-    .topnav .logo{display:block;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:nowrap;flex-shrink:0;color:var(--text);line-height:46px}
+    .topnav .logo{display:block;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:normal;line-height:1.12;max-width:96px;flex-shrink:0;color:var(--text)}
     .nav-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;flex:1;min-width:0}
     .nav-btn{padding:0 8px;font-size:13px;white-space:nowrap;flex-shrink:0;line-height:46px;height:46px}
     .settings-cog{padding:4px 6px}
@@ -270,7 +270,7 @@
   /* All nav items share font-size + line-height = the nav height, so centred text lines up by
      baseline (PB: "Data exploration misaligned" — was caused by size diff + the 2px underline border). */
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;min-height:50px}
-  .topnav .logo{font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:nowrap;cursor:pointer;color:var(--text);transition:color .15s;line-height:50px}
+  .topnav .logo{font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:normal;line-height:1.15;cursor:pointer;color:var(--text);transition:color .15s}
   .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
   .home-ic{display:none;font-size:1.15em;font-weight:700;color:var(--muted);margin-right:5px;vertical-align:-1px;transition:color .15s}
   html.not-home .home-ic{display:inline}
@@ -428,7 +428,7 @@
 <body>
 
 <nav class="topnav">
-  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Markets</div>
+  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
@@ -437,7 +437,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.187</span>
+      <span class="nav-version">v0.1.188</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1394,6 +1394,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.188', date:'2026-06-23 14:30', sp:0.5, title:'Nav title wraps',
+    desc:'The nav link reads “Market Analytics” again but is allowed to wrap onto two lines so it stays compact (the page hero stays “Markets per year”).',
+    detail:'.topnav .logo white-space normal + line-height ~1.1 + max-width (mobile) so “Market Analytics” wraps; centred by the nav’s align-items:center.',
+    cat:'CHART'},
   {v:'v0.1.187', date:'2026-06-23 14:20', sp:1, title:'Default / Dev mode',
     desc:'Renamed the Simplified/Advanced toggle to Default / Dev mode. Default is now the startup view and hides the version + changelog popup; Dev mode shows everything as before.',
     detail:'data-mode values default/dev (was advanced/simplified); html[data-mode=default] hides .nav-version + .hist-fab; settings button reads Default / Dev mode; dropped the old .adv/raw-data hiding.',
