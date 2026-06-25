@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.188</title>
+<title>Markets — LT agencies · v0.1.189</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -423,6 +423,9 @@
   .pager button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px;font-family:inherit}
   .pager button:hover{border-color:var(--accent)}
   .pager button:disabled{opacity:.3;cursor:default}
+  /* DANGEROUS (by request): force ALL text white in dark mode. Charts keep
+     their colours (SVG uses fill, canvas is unaffected); only HTML text flips. */
+  html[data-theme="dark"] *{color:#fff !important}
 </style>
 </head>
 <body>
@@ -437,7 +440,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.188</span>
+      <span class="nav-version">v0.1.189</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1394,6 +1397,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.189', date:'2026-06-25 14:10', sp:0.5, title:'Dark mode all-white text',
+    desc:'Dangerous override: every text element is white in dark mode.',
+    detail:'By request — html[data-theme="dark"] *{color:#fff!important} forces all HTML text white in dark mode for maximum contrast. Charts keep their colours (SVG fill / canvas are unaffected). Blunt by design; easy to scope back later.'},
   {v:'v0.1.188', date:'2026-06-23 14:30', sp:0.5, title:'Nav title wraps',
     desc:'The nav link reads “Market Analytics” again but is allowed to wrap onto two lines so it stays compact (the page hero stays “Markets per year”).',
     detail:'.topnav .logo white-space normal + line-height ~1.1 + max-width (mobile) so “Market Analytics” wraps; centred by the nav’s align-items:center.',
