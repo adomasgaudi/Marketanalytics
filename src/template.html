@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.1.209</title>
+<title>Markets — LT agencies · v0.1.210</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -466,7 +466,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.209</span>
+      <span class="nav-version">v0.1.210</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1193,14 +1193,14 @@ function renderMarket(mode){
   const tT=yoyOf(a=>a.rev), tR=yoyOf(a=>a.ei);
   const yoyF=(g,name)=> !hasPrev ? 'No prior year before '+y+' in the data.'
     : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(aPrev),aPrev))+') − 1 = change from '+(y-1)+' to '+y+'. '+name+basis+'.';
-  const kpis = [
-    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+py2+'→'+y2, value:tT==null?'—':fmtPct(tT), sub:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):'first year', cls:tT!=null&&tT>=0?'pos':'neg',
-      formula:'Year-over-year change in turnover. '+yoyF(a=>a.rev,'Turnover')},
+  const kpis = [   // order: Revenue, Employees, Salary, Turnover
     {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+py2+'→'+y2, value:tR==null?'—':fmtPct(tR), sub:hasPrev?fmtEur(dv(aPrev.ei,aPrev))+' → '+fmtEur(dv(aCur.ei,aCur)):'first year', cls:tR!=null&&tR>=0?'pos':'neg',
       formula:'Year-over-year change in revenue. '+yoyF(a=>a.ei,'Revenue')},
     empCard,
     {label:'Median salary '+yrLab, value:'€'+msC.toLocaleString()+'/mo', sub:hasPrev?fmtPct(msC/medianSalary(y-1)-1)+' YoY':'first year', cls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
       formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). YoY = this ÷ '+(y-1)+' − 1.'},
+    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+py2+'→'+y2, value:tT==null?'—':fmtPct(tT), sub:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):'first year', cls:tT!=null&&tT>=0?'pos':'neg',
+      formula:'Year-over-year change in turnover. '+yoyF(a=>a.rev,'Turnover')},
   ];
   document.getElementById('kpis').innerHTML = kpis.map(k=>
     `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
@@ -1641,6 +1641,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.210', date:'2026-06-25 14:15', sp:0.5, title:'KPI card order',
+    desc:'Market KPI cards reordered to Revenue, Employees, Salary, Turnover (was Turnover-first), across all basis views.',
+    detail:'Reordered the kpis array in renderMarket; one source feeds the avg/per-employee/whole-market views so all stay in sync.',
+    cat:'CHART'},
   {v:'v0.1.209', date:'2026-06-25 14:00', sp:5, title:'New segment chart (parallel)',
     desc:'Built a fresh “Revenue by segment” card below the old one with pill toggles (spans, not buttons) so the toggle text can’t hit the native-button force-dark quirk. Old card kept for comparison; delete once approved.',
     detail:'New sg2Card + renderSeg2() reuse the shared compute (segMetricVal/SEGMENTS/SEGCOLORS/METRICS) but with an independent sg2- namespace and <span class="sg2-pill" role=button> toggles instead of <button>. Doughnut+Bars, metric and %/€ all work; hooked into setBasis, the year row and applyTheme. The original card is untouched. The probe earlier proved the old toggle computes white (rgb 255,255,255) — this rebuild is the owner’s call to be sure; the span toggles also sidestep PB-5 at the source.',
