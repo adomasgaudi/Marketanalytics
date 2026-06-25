@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.5</title>
+<title>Markets — LT agencies · v0.2.6</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -27,6 +27,7 @@
     --text:#1a1f2b; --muted:#5e6678; --accent:#2f6fe0; --green:#1faa72;
     --red:#dc4d4d; --amber:#d08a1f; --purple:#7c5cf0; --gold:#c79410;
     --hover:rgba(47,111,224,.07); --grid:#e6e9ef; --chart-bg:#ffffff; --zebra:rgba(0,0,0,.022);
+    --mf-rev:#5e6678; --mf-turn:#c2c8d2;   /* money-flow bars: Revenue = dark gray, Turnover = light gray (both kept visible on each theme's bg) */
     --app-w:840px;   /* desktop width limiter — caps the app to ~iPad width so wide screens render the single-column tablet layout */
   }
   [data-theme="dark"]{
@@ -35,6 +36,7 @@
     --text:#e6e9f0; --muted:#8b93a7; --accent:#4f8ef7; --green:#34c98e;
     --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542;
     --hover:rgba(79,142,247,.07); --grid:#222a3a; --chart-bg:#0e1117; --zebra:rgba(255,255,255,.015);
+    --mf-rev:#7d8696; --mf-turn:#c2c8d2;   /* dark theme: Revenue still the darker gray, Turnover the lighter — both lift off the dark bg */
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
@@ -505,7 +507,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.5</span>
+      <span class="nav-version">v0.2.6</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1141,11 +1143,12 @@ function renderCompany(brand){
     const t=document.getElementById('chCoFlowTitle'); if(t) t.textContent='Money-flow by year'+(multi?' — '+brand:'')+(perEmp?' · per employee':'');
     if(!rows.some(d=>d.turnover||d.revenue)){ el.innerHTML=''; if(empty){ empty.textContent='No data for this company.'; empty.classList.add('show'); } return; }
     if(empty) empty.classList.remove('show');
-    // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion, plus a Net-profit line. No costs/pass-through.
+    // ONE stacked bar per year = Turnover (total label). Bottom→top: Net profit, rest-of-Revenue (dark gray),
+    // rest-of-Turnover (light gray) — profit at the base, each colour's top marks its metric.
     drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
-      {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
-      {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
-      {label:'Net profit', color:cssVar('--green'), width:2, data:rows.map(d=>({x:d.x,y:d.profit}))},
+      {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
+      {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
+      {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
     ]});
   })();
 
@@ -1382,11 +1385,12 @@ function renderMoneyFlowAll(){
   const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
   const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
   const rows=FIN_YEARS.map(y=>{ const a=marketAgg(y); return { x:y, turnover:dv(a.rev,a), revenue:dv(a.ei,a), profit:dv(a.profit,a) }; });
-  // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion, plus a Net-profit line. No costs/pass-through.
+  // ONE stacked bar per year = Turnover (total label). Bottom→top: Net profit, rest-of-Revenue (dark gray),
+  // rest-of-Turnover (light gray) — so profit sits at the base and each colour's top marks its metric.
   drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
-    {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
-    {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
-    {label:'Net profit', color:cssVar('--green'), width:2, data:rows.map(d=>({x:d.x,y:d.profit}))},
+    {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
+    {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
+    {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
   ]});
 }
 renderMoneyFlowAll();
@@ -1746,6 +1750,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.6', date:'2026-06-25 17:30', sp:3, title:'Money-flow fixes + fit on load',
+    desc:'Money-flow bars: profit stacked at the base, Revenue dark-gray, Turnover light-gray; and charts now fit correctly on first load.',
+    detail:'Both all-years money-flow charts now stack ONE turnover bar bottom→top as Net profit (green) · rest-of-Revenue (--mf-rev dark gray) · rest-of-Turnover (--mf-turn light gray) — profit moved from a separate line to the base of the stack, and the blue/cost colours reverted to the gray pair (new theme-aware tokens). PB-6 root fix: makeSectionsCollapsible() reparents the charts into cards AFTER they render, changing their width, so they were sized for the old layout and "didn’t fit" on first load (worse since pan went off by default). A double-rAF + window-load now re-fits every chart in the active view once the card layout settles.',
+    cat:'CHART'},
   {v:'v0.2.5', date:'2026-06-25 17:05', sp:3, title:'Segments + money-flow upgrade',
     desc:'By-segment all-years gains Employees & Wages metrics and a per-segment filter; money-flow charts now show net profit; Costs dropped everywhere.',
     detail:'“By segment, all years” now toggles Revenue / Turnover / Profit / Employees / Wages (Costs removed from every segment toggle) and has a scrolling per-segment filter (multi-select pills, keep ≥1) so you can isolate segments; the axis switches €↔people. Both all-years money-flow charts (market + company) add a Net-profit line over the Turnover/Revenue bars. Stacked-bar headroom raised 14→22% so the total labels aren’t clipped now that pan is off by default. Removed the blue “SEG PROBE” dev diagnostic popup.',
@@ -3650,6 +3658,16 @@ try{ (function(){
   const before=firstCard || wrap.querySelector('.explore-btn') || wrap.querySelector('.mini-foot');
   wrap.insertBefore(bar, before);
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'liftCompanyControls: '+err.message, error:err})); }
+
+// PB-6 ROOT FIX: charts render during init, then makeSectionsCollapsible() + the controls-lift above
+// REPARENT them into cards, changing each container's width — so they kept the pre-card pixel scale and
+// looked "too big / didn't fit" on first load (and pan is OFF by default now, so you couldn't nudge them
+// back). Re-fit every chart in the active view once the new layout has flushed (double-rAF), with a
+// window-load backstop for fonts/images. refitSvg was already wired to resize/view-switch/toggle — it just
+// never ran once after the initial DOM restructuring.
+function fitActiveCharts(){ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} refitSvg(document.querySelector('.view.active')); }
+requestAnimationFrame(()=>requestAnimationFrame(fitActiveCharts));
+window.addEventListener('load', fitActiveCharts);
 
 // Per-year / All-time is the clickable coloured word IN THE TITLE ("Companies per year" ⇄ "…all years").
 // It drives the Company-data card's tabs and hides the in-card tab row + the year picker in all-time.

@@ -98,3 +98,27 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 - **Guard against re-introduction:** every custom-styled `<button>` MUST set `appearance:none` so the UA
   can't override authored colours. When source clearly says a colour but the device disagrees, suspect a
   UA quirk (appearance / color-scheme) or stale cache — not the cascade.
+
+---
+
+## PB-6 — SVG dashboard charts don't fit on FIRST load (correct only after a resize/toggle)
+- **Recurrences:** 1 logged (money-flow chart "doesn't fit when first running the website").
+- **Seen on:** Android / Brave (owner's phone), Market dashboard — money-flow + by-segment all-years.
+- **Symptom:** on first page load a chart is mis-sized (content overflows / clipped); it snaps to the
+  right size only after a window resize, a theme toggle, a basis toggle or switching views — anything that
+  re-renders. Got worse once pan/zoom went OFF by default (v0.2.0): a chart that renders too big can't be
+  panned back into view, so a first-render mistake is now permanently stuck until an unrelated re-render.
+- **Prior failed fix:** v0.2.5 raised stacked-bar headroom 14→22% — that only addressed label clipping,
+  not the real cause, so "still doesn't fit" (this entry).
+- **Root cause:** `drawFinSvg`'s `render()` sizes the SVG from `container.clientWidth/clientHeight` at the
+  moment it runs. The charts are drawn during init, but `makeSectionsCollapsible()` runs *afterwards* and
+  REPARENTS every chart node into `.group-card` cards (`insertBefore`), changing each container's width —
+  and nothing re-fit the charts after that move. So every chart kept the pixel scale of the pre-card layout
+  until some later event called `refitSvg`. (`refitSvg` already existed and is wired to resize / view-switch
+  / card-toggle — it was just never called once after the initial DOM restructuring.)
+- **Fix:** v0.2.6 — after `makeSectionsCollapsible()` + the company-controls lift finish, a double-rAF
+  (layout-flushed) calls `Chart.instances.resize()` + `refitSvg('.view.active')`, plus a `window load`
+  handler as a fonts/images-settled backstop. Re-fits to the NEW container size on first paint.
+- **Guard against re-introduction:** any code that MOVES a rendered chart's container in the DOM, or changes
+  its width, MUST call `refitSvg(...)` (or the chart's `.fit()`) afterwards. With pan off by default, a chart
+  MUST be correct on first render — it can't be rescued by panning.
