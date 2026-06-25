@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.196</title>
+<title>Markets — LT agencies · v0.1.197</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -442,7 +442,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.196</span>
+      <span class="nav-version">v0.1.197</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -783,7 +783,7 @@ const SVG_SHAPES = ['circle','diamond','square','triangle']; // SVG chart-engine
 // Read a CSS custom property off <html> so charts track the active theme.
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 // ---- TEMP on-screen debug console (DATA-51 / #debug) — REMOVE once the per-employee root is confirmed ----
-const DBG_VER='v0.1.196';
+const DBG_VER='v0.1.197';
 function DBG(msg){ try{
   let el=document.getElementById('dbgPanel');
   if(!el){ el=document.createElement('div'); el.id='dbgPanel';
@@ -1343,9 +1343,9 @@ function drawTop(){
 drawTop();
 
 // ---------- Scatter: size vs profitability (per year + scrollable all-years strip) ----------
-function scatterDataForYear(y){
+function scatterDataForYear(y, perEmp){
   return DATA.filter(d=>d.year===y && d.estimatedIncome>50000 && d.profit!=null && d.employees>0)
-    .map(d=>({x:d.estimatedIncome, y:d.profit/d.estimatedIncome*100, r:Math.max(4,Math.sqrt(d.employees)*2.2),
+    .map(d=>({x: perEmp ? d.estimatedIncome/d.employees : d.estimatedIncome, y:d.profit/d.estimatedIncome*100, r:Math.max(4,Math.sqrt(d.employees)*2.2),
               brand:d.brand, emp:d.employees, seg:d.activities[0]||'Other'}));
 }
 // One Chart.js bubble config for a given year. mini=true = compact cell in the all-years strip:
@@ -1496,6 +1496,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.197', date:'2026-06-25 10:15', sp:1, title:'Per-employee ROOT fixed',
+    desc:'The on-screen debug proved it: perEmp reached the data function but scatterDataForYear still ignored it (the divide-by-employees body never landed). Fixed the definition.',
+    detail:'scatterDataForYear(y, perEmp) now actually returns x = estimatedIncome/employees when perEmp — the parameter + division had failed to land twice (same lost-edit class as PB-3). Verified the built index.html contains the division and the old total-only line is gone. Debug console kept one version so the owner can confirm the xRange now changes on Per-employee, then it gets removed.',
+    cat:'CHART'},
   {v:'v0.1.196', date:'2026-06-25 10:00', sp:2, title:'On-screen debug (#debug)',
     desc:'Per-employee scatter still reported broken — added a temporary on-screen debug console that logs the whole basis→scatter flow, so the root is visible on the phone.',
     detail:'TEMP: a fixed-position DBG() panel (version-stamped) logs every step — which toggle was clicked + its container id, setBasis, mktMode after renderMarket, buildScatterScrub perEmp + x-range + Fabula sample. Reveals whether it’s device cache, the wrong toggle, or a logic path. Removed once the root is confirmed. Also persisted the #debug protocol (abandon/simplify + 10× on-screen logging) as a rule + debug_reminder.py hook.',
