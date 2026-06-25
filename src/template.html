@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.206</title>
+<title>Markets — LT agencies · v0.1.207</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -319,10 +319,10 @@
   .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
   .seg-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
   .seg-row .seg button{padding:6px 11px}
-  .seg button{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 14px;background:var(--panel2);color:var(--muted);border:none;border-right:1px solid var(--border);cursor:pointer;transition:.12s}
+  .seg button{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 14px;background:var(--panel2);color:var(--muted);border:none;border-right:1px solid var(--border);cursor:pointer;transition:.12s;-webkit-appearance:none;appearance:none}
   .seg button:last-child{border-right:none}
   .seg button:hover{color:var(--text)}
-  .seg button.active{background:var(--accent);color:#fff}
+  .seg button.active{background:var(--accent);color:#fff !important}   /* PB-5: some Android browsers (Brave) imposed system text colour on the active <button> despite this rule — appearance:none above is the root, !important guarantees white */
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
@@ -458,7 +458,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.206</span>
+      <span class="nav-version">v0.1.207</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1566,6 +1566,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.207', date:'2026-06-25 12:40', sp:2, title:'Doughnut toggle white (PB-5)',
+    desc:'The active Doughnut toggle showed dark text on Brave despite the CSS saying white — a native-button appearance quirk. Forced appearance:none + white.',
+    detail:'Source proved clean (one .seg button.active{color:#fff}, identical HTML to the white siblings, no inline/JS recolour), so the dark text was a UA rendering quirk — some Android browsers impose system button text colour. Fix (PB-5): -webkit-appearance:none;appearance:none on .seg button (root, kills UA button styling) + color:#fff !important on .seg button.active (guarantee). Guard: every custom button gets appearance:none.',
+    cat:'CHART'},
   {v:'v0.1.206', date:'2026-06-25 12:20', sp:3, title:'Dev contrast auditor',
     desc:'A dev-mode-only “🔍 contrast” button scans every text node and outlines + lists ALL low-contrast (black-on-black) text at once, so the whole class is found, not one instance.',
     detail:'#debug tool (mirrors the Data repo’s fixed-position on-screen diagnostic convention). auditContrast() walks body *, computes WCAG contrast of each text node’s colour (or SVG fill) vs its effective background, flags <2.6:1 with a magenta outline + a bottom panel listing tag/text/colours sorted worst-first. Verified: catches border-on-dark at 1.48:1, passes muted (6.15) / text (15.55). Gated to Dev mode (hidden in Default) so the public/owner view is untouched.',

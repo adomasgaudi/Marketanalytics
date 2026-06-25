@@ -79,3 +79,22 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
   accent token — NEVER `--bg/--panel/--panel2/--border/--cost/--chart-bg` (those are surfaces). SVG
   `<text>` must always carry an explicit `fill`. Native `<select>` MUST have styled `option`s (or be the
   custom dropdown, DATA-20). Candidate for a Stop-hook grep: `color:var(--border|bg|panel...)`.
+
+---
+
+## PB-5 — Active "Doughnut" toggle text rendered dark despite CSS saying white
+- **Recurrences:** multiple (kept reporting "doughnut text dark"; survived several looks).
+- **Seen on:** Android / Brave (owner's phone), dark theme, segment-card chart-type toggle.
+- **Symptom:** the ACTIVE "Doughnut" `.seg` button shows dark text on the blue active background, while
+  its identical siblings (Revenue, %, Average/company) are correctly white on blue.
+- **Why it kept beating me:** exhaustive static analysis proved there was NO cause in source — exactly one
+  `.seg button.active{...color:#fff}` rule, identical HTML to the white siblings, no inline styles, no JS
+  recolouring. Source said white; only the device rendered dark.
+- **Root cause:** native `<button>` `appearance` — some Android browsers (Brave/Samsung WebView) impose
+  the system button text colour over an authored `color` in certain focus/active states. A UA-rendering
+  quirk, invisible to source inspection (that's why it "wasn't there").
+- **Fix:** v0.1.207 — `-webkit-appearance:none;appearance:none` on `.seg button` (root: removes UA button
+  styling so authored colours win) + `color:#fff !important` on `.seg button.active` (guarantee).
+- **Guard against re-introduction:** every custom-styled `<button>` MUST set `appearance:none` so the UA
+  can't override authored colours. When source clearly says a colour but the device disagrees, suspect a
+  UA quirk (appearance / color-scheme) or stale cache — not the cascade.
