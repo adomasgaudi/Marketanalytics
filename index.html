@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.1.215</title>
+<title>Markets — LT agencies · v0.1.216</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -468,7 +468,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.215</span>
+      <span class="nav-version">v0.1.216</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -665,6 +665,7 @@
       <button data-mode="rekvizitai">Rekvizitai</button>
       <button data-mode="sodra">Sodra</button>
     </div>
+    <button class="btn" id="rekLangBtn" title="Translate field names to English">🌐 English</button>
     <input type="text" id="rekSearch" placeholder="Search field & value…" style="min-width:200px">
     <span class="badge" id="rekRowCount"></span>
     <span class="src-legend" id="rekLegend"></span>
@@ -1676,6 +1677,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.216', date:'2026-06-25 15:43', sp:2.5, title:'Data explorer EN toggle',
+    desc:'🌐 toggle translates the company data explorer field names to English.',
+    detail:'Added an EN/LT toggle to the Sourced-Data explorer: a LT→EN dictionary covers all 55 registry field bases (Įmonė/Finansai/Darbuotojai/Skolos) + the 4 tab names + credit-risk values, applied to field labels, tabs and activity/risk values. Unmapped labels fall back to Lithuanian; free text (names, addresses, descriptions) and numbers stay as-is.'},
   {v:'v0.1.215', date:'2026-06-25 15:37', sp:0.5, title:'Fix black chart tooltip',
     desc:'SVG chart hover tooltip was black-on-black in light mode.',
     detail:'The SVG tooltip + fit-button used cssVar("--card") for background, but --card is never defined, so it fell back to hardcoded dark #1b1f27 while text stayed --text (dark in light mode) → invisible black popup on Mac Chrome / light mode. Switched to the real --panel token, so it is theme-aware (white in light, dark in dark).'},
@@ -3216,7 +3220,7 @@ function buildRekTabs(){
   if(!order.length){ el.innerHTML=''; return; }
   el.innerHTML=order.map(t=>{
     const n=rowsForMode(t).length;
-    return `<button class="data-tab${t===rekTab?' active':''}" data-rt="${t}">${t} <span style="opacity:.55">(${n})</span></button>`;
+    return `<button class="data-tab${t===rekTab?' active':''}" data-rt="${t}">${tTab(t)} <span style="opacity:.55">(${n})</span></button>`;
   }).join('');
   el.querySelectorAll('.data-tab').forEach(btn=>btn.addEventListener('click',()=>{
     rekTab=btn.dataset.rt; rekSort=-1; document.getElementById('rekSearch').value='';
@@ -3241,6 +3245,49 @@ function cubeCell(sources){
   return `<td class="srccell"><span class="cube-cell">${cubes}</span></td>`;
 }
 
+// ---- Data-explorer LT→EN translation (toggle). Field bases + tab names + risk
+// values; unmapped labels fall back to Lithuanian. Free text (names, addresses,
+// descriptions) and numbers are left as-is. ----
+let rekLang='lt';
+const FIELD_EN = {
+  'Adresas':'Address','Ataskaita':'Report','Atsiskaitomoji sąskaita':'Bank account','Bankas':'Bank',
+  'Buhalterijos telefonas':'Accounting phone','Darbo laikas':'Working hours','Darbuotojai':'Employees',
+  'Eksportas':'Export','El. pašto adresas':'Email','Facebook paskyra':'Facebook','Faksas':'Fax',
+  'Instagram paskyra':'Instagram','Kreditavimo rizika':'Credit risk','Kredito rizika':'Credit risk',
+  'LinkedIn paskyra':'LinkedIn','Mobilus telefonas':'Mobile phone','PVM mokėtojo kodas':'VAT payer code',
+  'Pardavimai':'Sales','Pavadinimas':'Name','Pranešimai':'Announcements','Prekių ženklai':'Trademarks',
+  'SODRA (VSDFV)':'Sodra (social insurance)','Telefonas':'Phone','TikTok paskyra':'TikTok','Tinklalapis':'Website',
+  'Transportas':'Transport','Vadovas':'CEO','Vadovo telefonas':'CEO phone','Veiklos sritys':'Activities',
+  'Vidutinis atlyginimas':'Average salary','Įmonės amžius':'Company age','Įmonės aprašymas':'Company description',
+  'Įmonės kodas':'Company code','Įstatinis kapitalas':'Share capital','Įvertinimas':'Rating',
+  'Grynasis pelnas (grafikas)':'Net profit (chart)','Grynasis pelnas (nuostoliai)':'Net profit (loss)',
+  'Grynasis pelningumas':'Net profitability','Ilgalaikis turtas':'Non-current assets',
+  'Mokėtinos sumos ir įsipareigojimai':'Payables & liabilities','Nuosavas kapitalas':'Equity',
+  'Pardavimo pajamos':'Sales revenue','Pardavimo pajamos (grafikas)':'Sales revenue (chart)',
+  'Pelnas (nuostoliai) prieš mokesčius':'Profit (loss) before tax','Pelnas prieš mokesčius (grafikas)':'Profit before tax (chart)',
+  'Pelningumas prieš mokesčius':'Pre-tax profitability','Trumpalaikis turtas':'Current assets',
+  'Darbuotojų (apdraustųjų) skaičius':'Employees (insured)','Darbuotojų skaičius (grafikas)':'Employee count (chart)',
+  'Metinis darbuotojų vidurkis':'Annual average employees',
+  'Kreditingumas (Juris LT)':'Creditworthiness (Juris LT)','Registruotos skolos':'Registered debts',
+  'Skola Sodrai':'Debt to Sodra','Skola VMI':'Debt to tax authority (VMI)','Skolų pokyčių įrašai':'Debt change records',
+};
+const TAB_EN = {'Įmonė':'Company','Finansai':'Financials','Darbuotojai':'Employees','Skolos':'Debts'};
+const RISK_EN = {'Žemiausia':'Lowest','Labai žema':'Very low','Žema':'Low','Vidutinė':'Medium','Vidutiniška':'Medium','Aukšta':'High','Labai aukšta':'Very high','Aukščiausia':'Highest'};
+function tField(label){
+  if(rekLang!=='en' || label==null) return label;
+  const m=String(label).match(/^(.*?)(\s+\d{4}(?:-\d{2}(?:-\d{2})?)?)$/);   // peel trailing year/date
+  const base=m?m[1]:String(label), suf=m?m[2]:'';
+  return (FIELD_EN[base]||base)+suf;
+}
+function tTab(name){ return rekLang==='en' ? (TAB_EN[name]||name) : name; }
+function tVal(value, field){
+  if(rekLang!=='en' || value==null) return value;
+  const s=String(value).trim();
+  if(RISK_EN[s]) return RISK_EN[s];
+  if(/rizik/i.test(field||'')) return RISK_EN[s]||value;            // credit-risk field
+  if(/Veiklos sritys/i.test(field||'')) return s.split(/,\s*/).map(p=>segName(p)).join(', ');
+  return value;
+}
 function renderRek(){
   if(!rekCo || !rekCo.order || !rekCo.order.length){
     document.getElementById('rekTableWrap').innerHTML='<div class="null" style="text-align:center;padding:20px">No data for this company.</div>';
@@ -3268,7 +3315,7 @@ function renderRek(){
     html+=`<table><thead><tr><th class="colField">Metric</th>`
       + years.map(y=>`<th class="colYear num" style="text-align:right">${y}</th>`).join('') + srcTh + `</tr></thead><tbody>`;
     matrix.forEach(m=>{
-      html+=`<tr><td class="fieldcell">${eh(m.base)}</td>`
+      html+=`<tr><td class="fieldcell">${eh(tField(m.base))}</td>`
         + years.map(y=>cellHtml(m.cells[y])).join('')
         + (merged?cubeCell(m.sources):'') + `</tr>`;
     });
@@ -3279,7 +3326,7 @@ function renderRek(){
   const SPAN_LABEL={year:'Yearly', month:'Monthly'};
   series.forEach(sObj=>{
     const spans=['year','month'].filter(sp=>sObj.rows.some(r=>r.kind===sp));
-    html+=`<table style="margin-top:14px"><thead><tr><th class="colField">${eh(sObj.base)} — time</th>`
+    html+=`<table style="margin-top:14px"><thead><tr><th class="colField">${eh(tField(sObj.base))} — time</th>`
       + spans.map(sp=>`<th class="num" style="text-align:right">${SPAN_LABEL[sp]}</th>`).join('') + srcTh + `</tr></thead><tbody>`;
     sObj.rows.forEach(c=>{
       const valCells = spans.map(sp=>{
@@ -3299,7 +3346,7 @@ function renderRek(){
   if(flat.length){
     html+=`<table style="margin-top:${matrix.length||series.length?'14px':'0'}"><thead><tr><th class="colField">Field</th><th>Value</th>${srcTh}</tr></thead><tbody>`;
     flat.forEach(r=>{
-      html+=`<tr><td class="fieldcell">${eh(r.field)}</td><td class="${numLike(r.value)?'num':''}">${eh(r.value)}</td>${srcTd(r)}</tr>`;
+      html+=`<tr><td class="fieldcell">${eh(tField(r.field))}</td><td class="${numLike(r.value)?'num':''}">${eh(tVal(r.value, r.field))}</td>${srcTd(r)}</tr>`;
     });
     html+=`</tbody></table>`;
   }
@@ -3317,6 +3364,12 @@ function initRek(){
     rekMode=b.dataset.mode; rekSort=-1;
     syncModeButtons(); buildRekTabs(); renderRek();
   }));
+  const langBtn=document.getElementById('rekLangBtn');
+  if(langBtn){
+    const syncLang=()=>langBtn.textContent = rekLang==='en' ? '🌐 Lietuvių' : '🌐 English';
+    syncLang();
+    langBtn.addEventListener('click',()=>{ rekLang = rekLang==='en'?'lt':'en'; syncLang(); buildRekTabs(); renderRek(); });
+  }
   document.getElementById('rekSearch').addEventListener('input', renderRek);
   // Custom company dropdown open/close/search (wired once).
   (function(){
