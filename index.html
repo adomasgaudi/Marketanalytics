@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.194</title>
+<title>Markets — LT agencies · v0.1.195</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -442,7 +442,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.194</span>
+      <span class="nav-version">v0.1.195</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -553,7 +553,7 @@
     </div>
     <div class="card full">
       <h2>Size vs profitability by year</h2>
-      <div class="desc" style="margin-bottom:6px">Each company = one bubble (revenue × margin, size = headcount); Fabula in gold. <b>Drag the slider</b> to watch every company glide year to year.</div>
+      <div class="desc" id="scrubDesc" style="margin-bottom:6px">Each company = one bubble (revenue × margin, size = headcount); Fabula in gold. <b>Drag the slider</b> to watch every company glide year to year.</div>
       <div id="scrubYearLbl" class="scrub-yearlbl">2019</div>
       <div class="chartbox"><div class="svgwrap" id="scrubChart" style="position:absolute;inset:0"></div></div>
       <div class="scrub-ctrl">
@@ -1155,6 +1155,7 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
     if(typeof renderRevSegAll==='function') renderRevSegAll();
     if(typeof renderMoneyFlowAll==='function') renderMoneyFlowAll();
     if(typeof renderEmpAll==='function') renderEmpAll();
+    if(typeof buildScatterScrub==='function') buildScatterScrub();   // scatter follows the basis (total revenue ↔ per employee)
   };
   document.querySelectorAll('#marketMode button, #marketMode2 button').forEach(b=>b.addEventListener('click',()=>setBasis(b.dataset.mode)));
 })();
@@ -1376,9 +1377,12 @@ function renderScatterYear(){
 // (Replaces the old mini-carousel of separate Chart.js cells.)
 function buildScatterScrub(){
   const host=document.getElementById('scrubChart'); if(!host) return;
-  const years=FIN_YEARS.filter(y=>scatterDataForYear(y).length);
+  const perEmp = (typeof mktMode!=='undefined' && mktMode==='emp');   // follow the Average/Per-employee/Whole-market basis toggle
+  const years=FIN_YEARS.filter(y=>scatterDataForYear(y, perEmp).length);
   if(years.length<2){ host.innerHTML='<div class="ff-empty" style="padding:20px">Not enough years to animate.</div>'; return; }
-  const perYear=years.map(y=>{ const mm={}; scatterDataForYear(y).forEach(d=>mm[d.brand]=d); return mm; });
+  const perYear=years.map(y=>{ const mm={}; scatterDataForYear(y, perEmp).forEach(d=>mm[d.brand]=d); return mm; });
+  const descEl=document.getElementById('scrubDesc');
+  if(descEl) descEl.innerHTML='Each company = one bubble ('+(perEmp?'revenue / employee':'revenue')+' × margin, size = headcount); Fabula in gold. <b>Drag the slider</b> to watch every company glide year to year.';
   const lx=v=>Math.log10(Math.max(1,v));
   let xs=[], ys=[]; perYear.forEach(mm=>Object.values(mm).forEach(d=>{ xs.push(lx(d.x)); ys.push(d.y); }));
   const xMin=Math.min(...xs), xMax=Math.max(...xs);
@@ -1401,7 +1405,7 @@ function buildScatterScrub(){
   const W=640,H=360, m={t:14,r:14,b:30,l:46}, pw=W-m.l-m.r, ph=H-m.t-m.b;
   const xAt=l=> m.l + (l-xMin)/((xMax-xMin)||1)*pw;
   const yAt=v=> m.t+ph - (v-yLo)/((yHi-yLo)||1)*ph;
-  const X_TICKS=[5e4,1e5,3e5,1e6,3e6,1e7,3e7,1e8];
+  const X_TICKS=[1e4,3e4,1e5,3e5,1e6,3e6,1e7,3e7,1e8];   // covers total revenue AND the smaller per-employee scale
   function draw(t){
     const grid=cssVar('--grid'), muted=cssVar('--muted'), text=cssVar('--text');
     let g='';
@@ -1425,9 +1429,10 @@ function buildScatterScrub(){
       lblEl.textContent = f<0.06? String(years[i0]) : f>0.94? String(years[j]) : years[i0]+'–'+String(years[j]).slice(2); }
     if(ticksEl) ticksEl.querySelectorAll('span').forEach(s=>s.style.color=(+s.dataset.i===Math.round(_t))?'var(--text)':''); }
   function setT(t){ _t=Math.max(0,Math.min(lastIdx,t)); if(!_raf) _raf=requestAnimationFrame(render); }
-  if(range){ range.addEventListener('input',()=>setT(+range.value)); }
-  if(ticksEl){ ticksEl.addEventListener('click',e=>{ const s=e.target.closest('span'); if(!s) return; const i=+s.dataset.i; if(range) range.value=i; setT(i); }); }
-  host.__scrub={render:()=>draw(_t)};            // theme re-tint hook (applyTheme calls this)
+  host.__scrub={render:()=>draw(_t), setT};       // theme re-tint hook + delegate for the once-wired listeners
+  // Listeners wired ONCE (buildScatterScrub re-runs on basis change); they delegate to the latest closures.
+  if(range && !range.__scrubWired){ range.addEventListener('input',()=>host.__scrub.setT(+range.value)); range.__scrubWired=1; }
+  if(ticksEl && !ticksEl.__scrubWired){ ticksEl.addEventListener('click',e=>{ const s=e.target.closest('span'); if(!s) return; const i=+s.dataset.i; if(range) range.value=i; host.__scrub.setT(i); }); ticksEl.__scrubWired=1; }
   render();
 }
 window.__scatterReady=true;   // now renderMarket (on year change) may drive the single-year scatter
@@ -1473,6 +1478,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.195', date:'2026-06-25 09:40', sp:1, title:'Scatter per-employee (for real)',
+    desc:'The per-employee basis now actually drives the scatter scrubber — v194’s edits never reached the build, so it did nothing until now (PB-3).',
+    detail:'Re-applied + verified in the built index.html: buildScatterScrub reads mktMode and passes perEmp, setBasis rebuilds it on toggle, the caption switches to “revenue / employee × margin”, x-ticks widened, listeners wired once. Root was a lost-edit (v194 diff was only the function signature + version), now guarded by grepping the built artifact before shipping (PB-3).',
+    cat:'CHART'},
   {v:'v0.1.194', date:'2026-06-24 16:20', sp:2, title:'Scatter per-employee',
     desc:'The size-vs-profitability scrubber now follows the Per-employee basis — the x-axis switches to revenue per employee when that toggle is on.',
     detail:'scatterDataForYear(y, perEmp) divides revenue by headcount when perEmp; buildScatterScrub reads mktMode, rebuilds on setBasis, and updates its caption (“revenue / employee × margin”). x-ticks widened to cover the smaller €/employee scale; slider listeners wired once and delegate to the latest closures so rebuilds don’t stack handlers.',

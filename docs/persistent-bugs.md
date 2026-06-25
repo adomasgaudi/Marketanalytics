@@ -40,3 +40,22 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 - **Guard against re-introduction:** any "growth" card on a per-year view is YoY (prev→chosen), never a
   CAGR-from-2019. If you convert one section's growth cards, grep `CAGR`/`cagr` and convert the SIBLINGS
   in every other render path the same turn (this miss is exactly why it recurred).
+
+---
+
+## PB-3 — "Fixed" change never actually reached the deployed build
+- **Recurrences:** 1 (scatter per-employee basis "fixed" in v194 but unchanged on the live site)
+- **Seen on:** Android / Brave (owner's phone), the size-vs-profitability scrubber.
+- **Symptom:** owner toggles Per employee, nothing changes — even the caption text didn't update,
+  proving the new code path never ran. I had reported it shipped in v0.1.194.
+- **Root cause:** NOT a logic bug. A batch of Edit calls (the `perEmp` read in buildScatterScrub, the
+  setBasis rebuild call, the `scrubDesc` id, the listener refactor) were not present in the committed
+  `index.html` — only the `scatterDataForYear(y, perEmp)` signature + version bump landed (v194 diff was
+  just 8 lines). So the function ACCEPTED perEmp but nothing PASSED it. Likely a context-summary boundary
+  where I bumped the version and committed without the body edits actually being in the file, and I did
+  not re-verify the built output.
+- **Fix:** v0.1.195 — re-applied all five edits and CONFIRMED each by grepping the built `index.html`
+  before committing (perEmp read, passes perEmp, scrubDesc id, setBasis rebuild, once-wired listeners).
+- **Guard against re-introduction:** after editing `src/template.html`, ALWAYS `grep` the rebuilt
+  `index.html` for a unique string from the change before claiming it's shipped. "Edit returned success"
+  is not proof it's in the deploy — only the built artifact is. (Candidate for a build-check hook.)
