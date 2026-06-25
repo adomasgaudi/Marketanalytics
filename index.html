@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.4</title>
+<title>Markets — LT agencies · v0.2.5</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -337,6 +337,13 @@
   .sg2-pill{font:600 12.5px/1 inherit;padding:9px 13px;background:var(--panel2);color:var(--muted);cursor:pointer;user-select:none;border-right:1px solid var(--border);display:inline-flex;align-items:center;transition:.12s;-webkit-tap-highlight-color:transparent}
   .sg2-pill:last-child{border-right:none}
   .sg2-pill.active{background:var(--accent);color:#fff}
+  /* "Filter by segment" pills — multi-select toggles in one horizontally-scrolling row */
+  .seg-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;margin:8px 0 2px;-webkit-overflow-scrolling:touch}
+  .seg-filter .sf-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 inherit;padding:0 11px;min-height:var(--tap-min,30px);border:1px solid var(--border);border-radius:var(--r-pill,7px);background:var(--panel2);color:var(--muted);cursor:pointer;white-space:nowrap;user-select:none;-webkit-tap-highlight-color:transparent;transition:.12s}
+  .seg-filter .sf-pill.on{color:var(--text);border-color:var(--accent)}
+  .seg-filter .sf-pill.sf-all{font-style:italic}
+  .seg-filter .sf-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto;opacity:.3;transition:.12s}
+  .seg-filter .sf-pill.on .sf-dot{opacity:1}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
@@ -498,7 +505,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.4</span>
+      <span class="nav-version">v0.2.5</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -572,7 +579,7 @@
     <div class="card full">
       <h2 id="segViewTitle">Revenue by segment (2024)</h2>      <div class="seg-row">
         <div class="seg" id="segType"><button data-v="doughnut" class="active">Doughnut</button><button data-v="bars">Bars</button></div>
-        <div class="seg" id="segMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="costs">Costs</button></div>
+        <div class="seg" id="segMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button></div>
         <div class="seg" id="segShow"><button data-s="pct" class="active">%</button><button data-s="eur">€</button></div>
       </div>
       <div class="chartbox"><span class="eng-tag" id="segEng">Chart.js</span><canvas id="chSegments"></canvas><div class="svgwrap" id="chRevPerEmp" style="position:absolute;inset:0;display:none"></div><div class="chart-empty" id="segViewEmpty"></div></div>
@@ -581,7 +588,7 @@
       <h2 id="sg2Title">Revenue by segment (2024)</h2>
       <div class="sg2-bar">
         <div class="sg2-grp" id="sg2Type"><span class="sg2-pill active" data-v="doughnut" role="button" tabindex="0">Doughnut</span><span class="sg2-pill" data-v="bars" role="button" tabindex="0">Bars</span></div>
-        <div class="sg2-grp" id="sg2Metric"><span class="sg2-pill active" data-m="revenue" role="button" tabindex="0">Revenue</span><span class="sg2-pill" data-m="turnover" role="button" tabindex="0">Turnover</span><span class="sg2-pill" data-m="profit" role="button" tabindex="0">Profit</span><span class="sg2-pill" data-m="costs" role="button" tabindex="0">Costs</span></div>
+        <div class="sg2-grp" id="sg2Metric"><span class="sg2-pill active" data-m="revenue" role="button" tabindex="0">Revenue</span><span class="sg2-pill" data-m="turnover" role="button" tabindex="0">Turnover</span><span class="sg2-pill" data-m="profit" role="button" tabindex="0">Profit</span></div>
         <div class="sg2-grp" id="sg2Show"><span class="sg2-pill active" data-s="pct" role="button" tabindex="0">%</span><span class="sg2-pill" data-s="eur" role="button" tabindex="0">€</span></div>
       </div>
       <div class="chartbox"><span class="eng-tag">new · v2</span><canvas id="sg2Canvas"></canvas><div class="svgwrap" id="sg2Svg" style="position:absolute;inset:0;display:none"></div><div class="chart-empty" id="sg2Empty"></div></div>
@@ -606,9 +613,11 @@
     </div>
     <div class="card">
       <h2>By segment, all years</h2>      <div class="seg-row">
-        <div class="seg" id="revAllMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="costs">Costs</button></div>
+        <div class="seg" id="revAllMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="employees">Employees</button><button data-m="wages">Wages</button></div>
       </div>
+      <div class="seg-filter" id="revAllSegs"></div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div></div>
+      <div class="desc" id="revAllDesc" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2>Median monthly salary by year</h2>      <div class="chartbox"><div class="svgwrap" id="chSalary" style="position:absolute;inset:0"></div></div>
@@ -1128,14 +1137,15 @@ function renderCompany(brand){
     const perEmp=coFlowMode==='emp';
     const rows=mineYears.map(yy=>{ const r=mine[yy]||{}, e=r.employees;
       const dv=v=> perEmp? ((e>0&&v!=null)? v/e:0) : (v||0);
-      return {x:yy, turnover:dv(r.revenue), revenue:dv(r.estimatedIncome)}; });
+      return {x:yy, turnover:dv(r.revenue), revenue:dv(r.estimatedIncome), profit:dv(r.profit)}; });
     const t=document.getElementById('chCoFlowTitle'); if(t) t.textContent='Money-flow by year'+(multi?' — '+brand:'')+(perEmp?' · per employee':'');
     if(!rows.some(d=>d.turnover||d.revenue)){ el.innerHTML=''; if(empty){ empty.textContent='No data for this company.'; empty.classList.add('show'); } return; }
     if(empty) empty.classList.remove('show');
-    // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion. No costs/pass-through.
+    // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion, plus a Net-profit line. No costs/pass-through.
     drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
       {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
       {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
+      {label:'Net profit', color:cssVar('--green'), width:2, data:rows.map(d=>({x:d.x,y:d.profit}))},
     ]});
   })();
 
@@ -1342,10 +1352,11 @@ const median=a=>a.length?a.slice().sort((x,y)=>x-y)[Math.floor(a.length/2)]:0;
 const fmtAbs=v=> v>=1e6 ? (v/1e6).toFixed(v>=1e7?0:1)+'M' : v>=1e3 ? Math.round(v/1e3)+'k' : String(Math.round(v));
 const eur=v=> v==null?'–': (v<0?'−€'+fmtAbs(-v):'€'+fmtAbs(v));
 const METRICS = {
-  revenue:  {label:'Revenue',    short:'revenue', f:d=>d.estimatedIncome, pos:true},
-  turnover: {label:'Turnover',   short:'turnover',     f:d=>d.revenue,         pos:true},
-  profit:   {label:'Net profit', short:'net profit',              f:d=>d.profit,          pos:false},
-  costs:    {label:'Costs',      short:'costs',                   f:d=>(d.estimatedIncome!=null&&d.profit!=null)?d.estimatedIncome-d.profit:null, pos:false},
+  revenue:  {label:'Revenue',    short:'revenue',    f:d=>d.estimatedIncome, pos:true,  unit:'€'},
+  turnover: {label:'Turnover',   short:'turnover',   f:d=>d.revenue,         pos:true,  unit:'€'},
+  profit:   {label:'Net profit', short:'net profit', f:d=>d.profit,          pos:false, unit:'€'},
+  employees:{label:'Employees',  short:'employees',  f:d=>d.employees,       pos:true,  unit:'ppl'},
+  wages:    {label:'Wages',      short:'wages',      f:d=>d.salaryCosts,     pos:true,  unit:'€'},
 };
 const basisWord=b=> b==='emp'?'per employee':b==='company'?'per company':'whole-market total';
 const basisFromMode=m=> m==='avg'?'company': m;   // top toggle (avg/emp/total) → segment basis (company/emp/total)
@@ -1370,11 +1381,12 @@ function renderMoneyFlowAll(){
   const el=document.getElementById('mfaAll'); if(!el) return;
   const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
   const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
-  const rows=FIN_YEARS.map(y=>{ const a=marketAgg(y); return { x:y, turnover:dv(a.rev,a), revenue:dv(a.ei,a) }; });
-  // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion. No costs/pass-through.
+  const rows=FIN_YEARS.map(y=>{ const a=marketAgg(y); return { x:y, turnover:dv(a.rev,a), revenue:dv(a.ei,a), profit:dv(a.profit,a) }; });
+  // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion, plus a Net-profit line. No costs/pass-through.
   drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
     {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
     {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
+    {label:'Net profit', color:cssVar('--green'), width:2, data:rows.map(d=>({x:d.x,y:d.profit}))},
   ]});
 }
 renderMoneyFlowAll();
@@ -1456,15 +1468,6 @@ function paintSegActive(){ document.querySelectorAll('.seg button').forEach(b=>{
   if(b.classList.contains('active')) b.style.setProperty('color','#fff','important'); else b.style.removeProperty('color'); }); }
 paintSegActive();
 document.addEventListener('click',e=>{ if(e.target.closest('.seg')) requestAnimationFrame(paintSegActive); });
-// Dev-only probe: prints the active toggles' COMPUTED colour + the live version (cache check).
-(function(){ if(currentMode()!=='dev') return; setTimeout(()=>{
-  const ver=((document.querySelector('.nav-version')||{}).textContent||'?');
-  const info=[...document.querySelectorAll('.seg button.active')].map(b=>b.textContent.trim()+'='+getComputedStyle(b).color).join(' · ');
-  const p=document.createElement('div'); p.className='dbg-overlay'; p.title='tap to dismiss';
-  p.style.cssText='position:fixed;top:58px;left:6px;right:6px;z-index:150;background:#39c;color:#fff;font:11px/1.35 monospace;padding:6px 8px;border-radius:6px;font-weight:bold;cursor:pointer';
-  p.textContent='SEG PROBE '+ver+' | '+info+' | white but looks dark? → Brave force-dark';
-  p.addEventListener('click',()=>p.remove()); document.body.appendChild(p); setTimeout(()=>{try{p.remove();}catch(_){}} ,25000);
-}, 600); })();
 
 // ---------- NEW segment chart (v2): independent card below the old one; pill toggles (<span>), shared compute ----------
 let sg2Chart=null, sg2Type='doughnut', sg2Metric='revenue', sg2Show='pct';
@@ -1708,16 +1711,30 @@ drawFinSvg(chSalary, { yTitle:'€/mo', series:[
 
 // ---------- By segment: all years (multi-line, metric × basis) ----------
 let revAllMetric='revenue';
+const revAllSegs = new Set(SEGMENTS);   // "filter by segment": which segments to plot (all on by default)
 function renderRevSegAll(){
   const m=revAllMetric, b=basisFromMode(mktMode);
-  const ranked = SEGMENTS.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
+  const segs = SEGMENTS.filter(s=>revAllSegs.has(s));
+  const ranked = segs.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
   const series = ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
     data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-  drawFinSvg(chRevSegAll, { yTitle:'€', series });
+  drawFinSvg(chRevSegAll, { yTitle: METRICS[m].unit==='€'?'€':'people', series });
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
+}
+// "Filter by segment" pills (multi-select toggles, #toggle) — one scrolling row, colour-keyed to the lines.
+function buildRevAllSegFilter(){
+  const host=document.getElementById('revAllSegs'); if(!host) return;
+  host.innerHTML = SEGMENTS.map(s=>`<span class="sf-pill${revAllSegs.has(s)?' on':''}" role="button" tabindex="0" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</span>`).join('')
+    + `<span class="sf-pill sf-all" role="button" tabindex="0" data-all="1">All</span>`;
+  host.querySelectorAll('.sf-pill').forEach(p=>p.addEventListener('click',()=>{
+    if(p.dataset.all){ SEGMENTS.forEach(s=>revAllSegs.add(s)); }
+    else { const s=p.dataset.s; if(revAllSegs.has(s)){ if(revAllSegs.size>1) revAllSegs.delete(s); } else revAllSegs.add(s); }   // keep at least one
+    buildRevAllSegFilter(); renderRevSegAll();
+  }));
 }
 (function(){ const seg=document.getElementById('revAllMetric'); if(seg) seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); revAllMetric=b.dataset.m; renderRevSegAll(); })); })();
+buildRevAllSegFilter();
 renderRevSegAll();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
@@ -1729,6 +1746,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.5', date:'2026-06-25 17:05', sp:3, title:'Segments + money-flow upgrade',
+    desc:'By-segment all-years gains Employees & Wages metrics and a per-segment filter; money-flow charts now show net profit; Costs dropped everywhere.',
+    detail:'“By segment, all years” now toggles Revenue / Turnover / Profit / Employees / Wages (Costs removed from every segment toggle) and has a scrolling per-segment filter (multi-select pills, keep ≥1) so you can isolate segments; the axis switches €↔people. Both all-years money-flow charts (market + company) add a Net-profit line over the Turnover/Revenue bars. Stacked-bar headroom raised 14→22% so the total labels aren’t clipped now that pan is off by default. Removed the blue “SEG PROBE” dev diagnostic popup.',
+    cat:'CHART'},
   {v:'v0.2.4', date:'2026-06-25 16:50', sp:2, title:'Initial Data EN toggle',
     desc:'The Initial Data raw-sheet explorer now toggles LT/English too.',
     detail:'Added a 🌐 toggle to mountSheetExplorer (Initial Data + the raw-sheets section): sheet tabs show the LT key in Lietuvių mode and the English SHEET_DESC title in English; column headers translate via a base dictionary + suffix-peeling (year / change-range / % / dup) + a Veikla(X)→Activity(X) pattern. Shares the global rekLang with the Sourced-Data toggle; unmapped/cryptic columns fall back to Lithuanian.',
@@ -2679,7 +2700,7 @@ function drawFinSvg(container, spec, opts){
       ss.forEach(s=>{ if(s.kind!=='bar') s.data.forEach(p=>{ if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y; }); });
     } else ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;}));
     if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0;
-    if(stacked && hi>lo) hi += (hi-lo)*0.14;   // headroom above the tallest bar for the total/% labels
+    if(stacked && hi>lo) hi += (hi-lo)*0.22;   // headroom above the tallest bar so the total/% labels aren't clipped (pan is off by default, so they must fit on first render)
     return [lo,hi]; };
   // Full fit = x over the category index + y over each axis' data extent — all pannable/zoomable.
   const fitState=()=>{ const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
