@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.1.211</title>
+<title>Markets — LT agencies · v0.1.212</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -466,7 +466,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.211</span>
+      <span class="nav-version">v0.1.212</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -936,13 +936,19 @@ function moneyFlowHtml(T0,R,P,opts){
   if(pass>0) segs.push({cls:'pass', pct:pctOf(pass), name:'Pass-through', val:fmtEur(pass), desc:'media spend bought for clients, billed through the agency', yoy:yo(pass,prevPass)});
   const fx=s=>Math.max(s.pct,3).toFixed(2);
   const bar=segs.map(s=>`<div class="vf-seg ${s.cls}" style="flex:${fx(s)}"></div>`).join('');
-  const leg=segs.map(s=>`<div class="vf-item" style="flex:${fx(s)}"><span class="vf-dot ${s.cls}"></span><div class="vf-txt"><b>${s.name} ${s.val} ${s.yoy||''}</b>${s.desc?`<span class="vf-desc">${s.desc}</span>`:''}</div></div>`).join('');
+  // Legend shows Turnover, Revenue, Net profit (Costs + Pass-through dropped; Net profit kept).
+  const legItems=[
+    (P!=null && !loss)? {cls:'profit', name:'Net profit', val:fmtEur(P), yoy:yo(P,pp)} : null,
+    (R!=null)?          {cls:'rev',    name:'Revenue',    val:fmtEur(R), yoy:yo(R,pr)} : null,
+    (T!=null)?          {cls:'pass',   name:'Turnover',   val:fmtEur(T), yoy:yo(T0,prev.T)} : null,
+  ].filter(Boolean);
+  const leg=legItems.map(s=>`<div class="vf-item" style="flex:1"><span class="vf-dot ${s.cls}"></span><div class="vf-txt"><b>${s.name} ${s.val} ${s.yoy||''}</b></div></div>`).join('');
   const revPct = R!=null ? Math.max(0,Math.min(100,pctOf(R))) : 100;
   const brk = (pass>0 && R!=null)? `<div class="vf-brk"><div class="vf-brk-rev" style="flex:${revPct.toFixed(2)}"><span>Revenue ${fmtEur(R)} ${yo(R,pr)}</span></div><div style="flex:${(100-revPct).toFixed(2)}"></div></div>` : '';
   const margin=(R>0 && P!=null)?P/R*100:null;
   const mtxt=margin!=null?(loss?`<b style="color:var(--red)">−${Math.abs(margin).toFixed(1)}%</b>`:`<b>${margin.toFixed(1)}%</b>`):'–';
   return `<div class="ff"><div class="vf-head"><b>Turnover</b> <span class="ff-v">${fmtEur(T)}</span> ${yo(T0,prev.T)} ${rk(ranks.rev)}</div>`
-    +`<div class="vf-body"><div class="vf-bar">${bar}</div>${brk}</div></div>`;   // breakdown legend (Net profit/Costs/Pass-through) removed — Turnover + Revenue only
+    +`<div class="vf-body"><div class="vf-bar">${bar}</div>${brk}<div class="vf-legend">${leg}</div></div></div>`;
 }
 
 let coFlowMode='total', _coFlowRerender=null;
@@ -1066,12 +1072,13 @@ function renderCompany(brand){
     const rows=mineYears.map(yy=>{ const r=mine[yy]||{}, e=r.employees;
       const dv=v=> perEmp? ((e>0&&v!=null)? v/e:0) : (v||0);
       return {x:yy, turnover:dv(r.revenue), revenue:dv(r.estimatedIncome)}; });
-    const t=document.getElementById('chCoFlowTitle'); if(t) t.textContent='Turnover & revenue by year'+(multi?' — '+brand:'')+(perEmp?' · per employee':'');
+    const t=document.getElementById('chCoFlowTitle'); if(t) t.textContent='Money-flow by year'+(multi?' — '+brand:'')+(perEmp?' · per employee':'');
     if(!rows.some(d=>d.turnover||d.revenue)){ el.innerHTML=''; if(empty){ empty.textContent='No data for this company.'; empty.classList.add('show'); } return; }
     if(empty) empty.classList.remove('show');
-    drawFinSvg(el, { yTitle:'€', series:[
-      {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:d.turnover}))},
+    // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion. No costs/pass-through.
+    drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
       {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
+      {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
     ]});
   })();
 
@@ -1282,9 +1289,10 @@ function renderMoneyFlowAll(){
   const den = mktMode==='avg'?(a=>a.n):mktMode==='emp'?(a=>a.emp):(a=>1);   // follow the top basis toggle
   const dv=(v,a)=>{ const d=den(a); return d? v/d : 0; };
   const rows=FIN_YEARS.map(y=>{ const a=marketAgg(y); return { x:y, turnover:dv(a.rev,a), revenue:dv(a.ei,a) }; });
-  drawFinSvg(el, { yTitle:'€', series:[
-    {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:d.turnover}))},
+  // One stacked bar per year = Turnover (total label), with Revenue as the bottom portion. No costs/pass-through.
+  drawFinSvg(el, { stacked:true, totalLabels:true, yTitle:'€', series:[
     {label:'Revenue',  kind:'bar', color:cssVar('--accent'), data:rows.map(d=>({x:d.x,y:d.revenue}))},
+    {label:'Turnover', kind:'bar', color:cssVar('--cost'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
   ]});
 }
 renderMoneyFlowAll();
@@ -1465,7 +1473,7 @@ function scatterDataForYear(y, perEmp){
 // One Chart.js bubble config for a given year. mini=true = compact cell in the all-years strip:
 // strips axes/legend, shrinks the bubbles to fit (pixel radii would overflow a 230px chart) and
 // disables hover/tooltips (they overflowed the cell as stuck pop-ups).
-function buildScatterCfg(rows, {mini=false}={}){
+function buildScatterCfg(rows, {mini=false, perEmp=false}={}){
   const sc = mini ? (p=>({...p, r:Math.max(1.5, p.r*0.42)})) : (p=>p);   // scale bubble radius for minis
   return {type:'bubble', data:{
     datasets: topSegs.concat(['Other']).map(s=>({
@@ -1480,10 +1488,10 @@ function buildScatterCfg(rows, {mini=false}={}){
     options:{maintainAspectRatio:false, animation:false, responsive:true,
       layout:{padding:mini?4:0},
       events: mini? [] : undefined,                 // minis: no hover → no stuck tooltips overflowing the cell
-      plugins:{legend:{display:!mini}, tooltip:{enabled:!mini, callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} rev, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
+      plugins:{legend:{display:!mini}, tooltip:{enabled:!mini, callbacks:{label:c=>{const p=c.raw; return ` ${p.brand}: €${fmtM(p.x)} ${perEmp?'rev/emp':'rev'}, ${p.y.toFixed(1)}% margin, ${p.emp} empl.`}}}},
       scales:{
-        x:{type:'logarithmic', title:{display:!mini,text:'Revenue (€, log)'}, grid:{display:!mini,color:GRID},
-           ticks:{display:!mini, callback:v=>[5e4,1e5,3e5,1e6,3e6,1e7].includes(v)?'€'+fmtM(v):''}},
+        x:{type:'logarithmic', title:{display:!mini,text:perEmp?'Revenue / employee (€, log)':'Revenue (€, log)'}, grid:{display:!mini,color:GRID},
+           ticks:{display:!mini, callback:v=>[1e4,2e4,3e4,5e4,1e5,2e5,3e5,5e5,1e6,3e6,1e7,3e7].includes(v)?'€'+fmtM(v):''}},
         y:{title:{display:!mini,text:'Net profit margin % (from revenue)'}, grid:{display:!mini,color:GRID}, suggestedMin:-30, suggestedMax:45,
            ticks:{display:!mini}}
       }}
@@ -1494,11 +1502,12 @@ let scatterChart=null;
 function renderScatterYear(){
   const el=document.getElementById('chScatter'); if(!el) return;
   if(scatterChart){ try{scatterChart.destroy();}catch(e){} scatterChart=null; }
-  const t=document.getElementById('chScatterTitle'); if(t) t.textContent='Size vs profitability ('+mktYear+')';
-  const rows=scatterDataForYear(mktYear), empty=document.getElementById('chScatterEmpty');
+  const perEmp = (typeof mktMode!=='undefined' && mktMode==='emp');
+  const t=document.getElementById('chScatterTitle'); if(t) t.textContent='Size vs profitability ('+mktYear+(perEmp?' · per employee':'')+')';
+  const rows=scatterDataForYear(mktYear, perEmp), empty=document.getElementById('chScatterEmpty');
   if(!rows.length){ if(empty){ empty.textContent='No data for '+mktYear+'.'; empty.classList.add('show'); } el.style.display='none'; return; }
   if(empty) empty.classList.remove('show'); el.style.display='';
-  scatterChart=new Chart(el, buildScatterCfg(rows));
+  scatterChart=new Chart(el, buildScatterCfg(rows, {perEmp}));
 }
 // All-years size-vs-profitability: ONE custom-SVG bubble chart + a draggable year scrubber.
 // Dragging the slider interpolates every company's bubble (x=revenue log, y=margin, r=headcount)
@@ -1637,6 +1646,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.212', date:'2026-06-25 14:45', sp:2, title:'Money-flow fixes + scatter per-emp',
+    desc:'Corrected the money-flow: single-year legend now lists Turnover, Revenue, Net profit (kept) instead of being blank; all-years reverted to one stacked Turnover bar with the Revenue portion. Single-year bubble chart now follows per-employee too.',
+    detail:'moneyFlowHtml legend rebuilt as Turnover/Revenue/Net-profit (Costs + Pass-through dropped, not the whole legend). The two all-years charts went back to a single stacked bar = Turnover (total label) with Revenue as the bottom portion (was over-changed to grouped bars). renderScatterYear/buildScatterCfg read mktMode → the Market single-year bubble chart switches its x-axis to revenue/employee on the Per-employee basis, like the all-years scrubber.',
+    cat:'CHART'},
   {v:'v0.1.211', date:'2026-06-25 14:30', sp:2, title:'Money-flow: Turnover + Revenue only',
     desc:'Stripped the Pass-through / Costs / Net-profit breakdown from every money-flow — single-year keeps the bar + Turnover header + Revenue bracket; the two all-years charts now show Turnover + Revenue bars.',
     detail:'moneyFlowHtml drops the breakdown legend (market + company single-year). The company all-time (chCoFlowAll) and market all-time (renderMoneyFlowAll) stacked profit/costs/pass charts became grouped Turnover + Revenue bars. Applies across one-year, all-years, market and company views.',
