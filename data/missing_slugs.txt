@@ -1,0 +1,12 @@
+# Slugs found for previously-missing companies (run scrape_batch once rekvizitai
+# lifts the temporary 403 rate-block). Verified during the working search window.
+coagency               # co:agency, UAB
+digitfruition          # DigitFruition (Digitfruition, MB)
+fotokomanda            # Foko / Fotokomanda
+uab_love_media         # Love media
+socialus_marketingas   # SOMA Agency = Havas Creative SOMA, UAB
+whatabout_agency       # WhatAbout (Whatabout agency, UAB)
+be_reklamos            # Be reklamos negerai = BE REKLAMOS, UAB (verify brand match)
+# --- still unresolved (search blocked / legal name differs); retry later: ---
+# Berta&Agency, Convo, Expertmedia, FAD, Influenceriai.lt, Madiavo, Maniac, RAIBEC
+# Note: Headline, Not Perfect, SOMA already covered (Headline Agency / Not Perfect Vilnius / Havas Media)
