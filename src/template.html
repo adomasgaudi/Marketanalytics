@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.3</title>
+<title>Markets — LT agencies · v0.2.4</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -498,7 +498,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.3</span>
+      <span class="nav-version">v0.2.4</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1729,6 +1729,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.4', date:'2026-06-25 16:50', sp:2, title:'Initial Data EN toggle',
+    desc:'The Initial Data raw-sheet explorer now toggles LT/English too.',
+    detail:'Added a 🌐 toggle to mountSheetExplorer (Initial Data + the raw-sheets section): sheet tabs show the LT key in Lietuvių mode and the English SHEET_DESC title in English; column headers translate via a base dictionary + suffix-peeling (year / change-range / % / dup) + a Veikla(X)→Activity(X) pattern. Shares the global rekLang with the Sourced-Data toggle; unmapped/cryptic columns fall back to Lithuanian.',
+    cat:'DATA'},
   {v:'v0.2.3', date:'2026-06-25 16:40', sp:2, title:'Data coverage squares',
     desc:'Data explorer now opens with a square-per-company×year grid showing how much data each year holds or is missing.',
     detail:'New “📊 Data coverage by year” matrix at the top of the explorer: one square per company × year (2019–2025), coloured by how many of the 7 core metrics that record carries — Full (all 7) / Partial / Headcount-pay-only (the partial 2025 Sodra rows) / No data (no record). Headline counts how many company-years have data; a filter box narrows the list and clicking a row opens that company in the explorer.',
@@ -2489,7 +2493,7 @@ function mountSheetExplorer(root, order){
   root.classList.add('sheet-explorer');
   order=(order||ALL_SHEETS).filter(s=>SHEETS[s]);
   root.innerHTML=`<div class="data-tabs"></div><div class="sheet-desc"></div>`
-    +`<div class="data-controls"><input type="text" class="exp-search" placeholder="Search across all columns…" style="min-width:220px"><span class="badge exp-rowcount"></span><button class="btn exp-csv">Export CSV</button></div>`
+    +`<div class="data-controls"><button class="btn exp-lang" title="Translate to English">🌐 English</button><input type="text" class="exp-search" placeholder="Search across all columns…" style="min-width:220px"><span class="badge exp-rowcount"></span><button class="btn exp-csv">Export CSV</button></div>`
     +`<div class="table-wrap exp-wrap"><table><thead><tr class="exp-head"></tr></thead><tbody class="exp-body"></tbody></table></div>`
     +`<div class="pager"><button class="exp-prev">← Prev</button><span class="exp-pginfo"></span><button class="exp-next">Next →</button><span style="margin-left:auto">Rows per page:</span><select class="exp-psize"><option value="50">50</option><option value="100" selected>100</option><option value="250">250</option><option value="999999">All</option></select></div>`;
   const $=s=>root.querySelector(s);
@@ -2498,7 +2502,7 @@ function mountSheetExplorer(root, order){
         prevEl=$('.exp-prev'), nextEl=$('.exp-next'), psizeEl=$('.exp-psize'), csvEl=$('.exp-csv');
   let sheet=order[0], sortCol=-1, sortDir=1, page=0, pageSize=100, filtered=[], colTypes=[];
   function buildTabs(){
-    tabsEl.innerHTML=order.map(s=>`<button class="data-tab${s===sheet?' active':''}" data-sheet="${s}">${(SHEET_DESC[s]&&SHEET_DESC[s].title)||s}</button>`).join('');
+    tabsEl.innerHTML=order.map(s=>`<button class="data-tab${s===sheet?' active':''}" data-sheet="${s}">${rekLang==='en' ? ((SHEET_DESC[s]&&SHEET_DESC[s].title)||s) : s}</button>`).join('');
     tabsEl.querySelectorAll('.data-tab').forEach(btn=>btn.addEventListener('click',()=>{ sheet=btn.dataset.sheet; sortCol=-1; page=0; searchEl.value=''; buildTabs(); renderSheet(); }));
   }
   function renderSheet(){
@@ -2506,7 +2510,7 @@ function mountSheetExplorer(root, order){
     const sd=SHEET_DESC[sheet], tl=sd&&TIER_LABEL[sd.tier];
     descEl.innerHTML = sd ? `<div class="sd-head"><span class="sd-title">${sd.title}</span><span class="sd-tier" style="color:${tl.c};border-color:${tl.c}">${tl.t}</span></div><div class="sd-what">${sd.what}</div><div class="sd-best"><b>Best for:</b> ${sd.best}</div>` : '';
     colTypes=cols.map((c,i)=>{ const sample=sh.rows.slice(0,20).map(r=>r[i]); const isMoney=MONEY_COLS.has(c); const isPct=PCT_PARTIAL.some(p=>c.includes(p)); const isUrl=URL_PARTIAL.some(p=>c.includes(p)); const isNum=!isPct&&!isUrl&&isNumCol(c,sample); return{name:c,isMoney,isPct,isUrl,isNum:isNum||isMoney}; });
-    headEl.innerHTML='<th class="row-num">#</th>'+cols.map((c,i)=>`<th data-col="${i}" class="${sortCol===i?(sortDir===1?'sorted-asc':'sorted-desc'):''}">${c||'—'}</th>`).join('');
+    headEl.innerHTML='<th class="row-num">#</th>'+cols.map((c,i)=>`<th data-col="${i}" class="${sortCol===i?(sortDir===1?'sorted-asc':'sorted-desc'):''}">${tCol(c)||'—'}</th>`).join('');
     headEl.querySelectorAll('th[data-col]').forEach(th=>th.addEventListener('click',()=>{ const ci=+th.dataset.col; if(sortCol===ci)sortDir*=-1; else{sortCol=ci;sortDir=-1;} page=0; renderRows(); headEl.querySelectorAll('th[data-col]').forEach(t=>t.className=''); th.className=sortDir===1?'sorted-asc':'sorted-desc'; }));
     filterRows();
   }
@@ -2535,6 +2539,12 @@ function mountSheetExplorer(root, order){
   nextEl.addEventListener('click',()=>{page++;renderRows();wrapEl.scrollTop=0;});
   psizeEl.addEventListener('change',e=>{pageSize=+e.target.value;page=0;renderRows();});
   csvEl.addEventListener('click',()=>{ const sh=SHEETS[sheet],BOM='﻿'; const cesc=v=>{if(v===null||v===undefined)return'';const s=String(v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}; let csv=BOM+sh.columns.map(cesc).join(',')+'\n'; filtered.forEach(row=>{csv+=row.map(cesc).join(',')+'\n';}); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=sheet.replace(/\s+/g,'_')+'.csv';a.click(); });
+  const langEl=$('.exp-lang');
+  if(langEl){
+    const syncLang=()=>langEl.textContent = rekLang==='en' ? '🌐 Lietuvių' : '🌐 English';
+    syncLang();
+    langEl.addEventListener('click',()=>{ rekLang = rekLang==='en'?'lt':'en'; syncLang(); buildTabs(); renderSheet(); });
+  }
   buildTabs(); renderSheet();
 }
 
@@ -3391,6 +3401,32 @@ function tVal(value, field){
   if(/rizik/i.test(field||'')) return RISK_EN[s]||value;            // credit-risk field
   if(/Veiklos sritys/i.test(field||'')) return s.split(/,\s*/).map(p=>segName(p)).join(', ');
   return value;
+}
+// Raw-sheet (Initial Data) column headers: base dict + peel year/range/%/dup suffixes
+// + "Veikla (X)" pattern. Falls back to Lithuanian for unmapped/cryptic columns.
+const COL_EN = {
+  'Apyvarta':'Turnover','Apyvart. Pokytis':'Turnover change','Apyvartos pokytis':'Turnover change',
+  'Atlyginimo vidurkis':'Avg salary','Atlyginimų vidurkis':'Avg salary','Atlyginimo pokytis':'Salary change',
+  'Atl. Pokytis':'Salary change','Atl .Pokytis':'Salary change','Atlyginimų sąnaudos':'Salary costs',
+  'Darbuotojai':'Employees','Darbuotojų skaičius':'Employee count','Darbuotojų pokytis':'Employees change','Darb. Pokytis':'Employees change',
+  'DU sąnaudos':'Wage costs','DU sąnaudų pokytis':'Wage costs change',
+  'Gr. Peln. Pokytis':'Net profit change','Grynasis pelnas':'Net profit','Grynasis pelningumas':'Net profitability',
+  'Pelnas':'Profit','Pelnas prieš mokesčius':'Profit before tax','Pelno mokestis':'Profit tax',
+  'Fiks ir pelno mokestis':'Fixed & profit tax','EVRK v2 veikla':'NACE v2 activity','EVRK v2 veiklos kodas':'NACE v2 activity code',
+  'El. paštas':'Email','Pagrindinis brandas':'Main brand','Svetainė':'Website','Kodas':'Code','PVM kodas':'VAT code',
+  'Metai':'Year','Įmonės pavadinimas':'Company name','Įmonė':'Company','Miestas':'City','Rizika':'Risk',
+  'Pavadinimas':'Name','Adresas':'Address','Sektorius':'Sector',
+};
+function tCol(c){
+  if(rekLang!=='en' || c==null) return c;
+  let s=String(c).trim(); if(!s) return c;
+  const veik=s.match(/^Veikla \((.+)\)$/i); if(veik) return 'Activity ('+segName(veik[1])+')';
+  let pct=''; if(/,\s*%$/.test(s)){ pct=', %'; s=s.replace(/,\s*%$/,'').trim(); }
+  let suf=''; const ym=s.match(/\s+(\d{4}(?:\s\d{2}(?:\s\d{2})?)?|\d{2}-\d{2})$/);
+  if(ym){ suf=' '+ym[1]; s=s.slice(0,ym.index).trim(); }
+  let dup=''; const dm=s.match(/(-|\.\d+)$/); if(dm){ dup=dm[1]; s=s.slice(0,dm.index).trim(); }
+  const en=COL_EN[s]||FIELD_EN[s];
+  return en ? en+suf+pct+dup : c;
 }
 function renderRek(){
   if(!rekCo || !rekCo.order || !rekCo.order.length){
