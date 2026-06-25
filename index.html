@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.7</title>
+<title>Markets — LT agencies · v0.2.8</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -507,7 +507,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.7</span>
+      <span class="nav-version">v0.2.8</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1152,7 +1152,7 @@ function renderCompany(brand){
     drawFinSvg(el, { stacked:true, totalLabels:true, zoomOut:0.2, yTitle:'€', series:[
       {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
       {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
-      {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
+      {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), noVal:true, data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
     ]});
   })();
 
@@ -1394,7 +1394,7 @@ function renderMoneyFlowAll(){
   drawFinSvg(el, { stacked:true, totalLabels:true, zoomOut:0.2, yTitle:'€', series:[
     {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
     {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
-    {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
+    {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), noVal:true, data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
   ]});
 }
 renderMoneyFlowAll();
@@ -1754,6 +1754,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.8', date:'2026-06-25 18:00', sp:0.5, title:'Hide pass-through number',
+    desc:'The all-years money-flow no longer prints the pass-through residual (turnover − revenue) inside the top bar segment.',
+    detail:'drawFinSvg stacked segments take a per-series noVal flag that suppresses the inline value label; the Turnover (top) series in both money-flow charts sets it, so the confusing pass-through residual number is gone while the Net-profit value and the Turnover total stay.',
+    cat:'CHART'},
   {v:'v0.2.7', date:'2026-06-25 17:50', sp:2, title:'Money-flow: 3 metrics only + zoom-out',
     desc:'Company money-flow bar drops the Costs/Pass-through segments — only Net profit, Revenue, Turnover (profit always written, even a tiny bar); all-years money-flow defaults 20% zoomed out.',
     detail:'moneyFlowHtml’s bar is now Net profit (green) · rest-of-Revenue (dark gray) · rest-of-Turnover (light gray) — the Costs/Pass-through segments are gone, matching the all-years chart; the legend always writes Net profit even at a 3%-min sliver or a loss. New drawFinSvg spec.zoomOut expands the initial view to (1+z)× the data box (content centred); both all-years money-flow charts pass 0.2 so they open 20% zoomed out with margin all round.',
@@ -2795,7 +2799,7 @@ function drawFinSvg(container, spec, opts){
             const y0=Math.min(yTop,yBot), hh=Math.max(0,Math.abs(yTop-yBot));
             if(x0+w<m.l-2 || x0>W-m.r+2) return;
             body+=`<rect x="${x0.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${hh.toFixed(1)}" fill="${ser.color}"${op} rx="2"/>`;
-            if(hh>=13 && w>=22 && p.y>0)   // per-segment value, shown once the slice is tall enough (e.g. zoomed in)
+            if(hh>=13 && w>=22 && p.y>0 && !ser.noVal)   // per-segment value, shown once the slice is tall enough (ser.noVal hides it, e.g. the pass-through residual)
               body+=`<text x="${(x0+w/2).toFixed(1)}" y="${(y0+hh/2+3).toFixed(1)}" fill="#fff" font-size="9" font-weight="600" text-anchor="middle" filter="url(#${st.cid}sh)">${fmt(p.y)}</text>`;
           });
           return;
