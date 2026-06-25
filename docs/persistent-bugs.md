@@ -71,6 +71,11 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
   (option lists, scrollbars) had no `color-scheme`, so the OS rendered them light → dark option text.
 - **Fix:** v0.1.203 — those two → `var(--muted)` (the faint-but-visible text token); added
   `color-scheme:light/dark` to `:root` / `[data-theme=dark]` so native controls follow the theme.
+  v0.1.205 — `color-scheme` alone wasn't enough on the owner's browser: added explicit
+  `select option,select optgroup{background:var(--panel);color:var(--text)}` because native dropdown
+  lists default to dark-on-dark without it. (Real root per DATA-20: these should be the custom dropdown,
+  not native `<select>` — 4 still remain: rankMetric, rankSegment, exp-psize, page-size. Convert later.)
 - **Guard against re-introduction:** TEXT/`fill` colour may ONLY be `--text`, `--muted`, or a series/
   accent token — NEVER `--bg/--panel/--panel2/--border/--cost/--chart-bg` (those are surfaces). SVG
-  `<text>` must always carry an explicit `fill`. Candidate for a Stop-hook grep: `color:var(--border|bg|panel...)`.
+  `<text>` must always carry an explicit `fill`. Native `<select>` MUST have styled `option`s (or be the
+  custom dropdown, DATA-20). Candidate for a Stop-hook grep: `color:var(--border|bg|panel...)`.

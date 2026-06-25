@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.204</title>
+<title>Markets — LT agencies · v0.1.205</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -129,6 +129,7 @@
   .chart-empty.show{display:flex}
   .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
   select,input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px}
+  select option,select optgroup{background:var(--panel);color:var(--text)}   /* native dropdown lists fall back to dark-on-dark in some browsers without explicit colours */
   .ins-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:24px}
   .ins-card>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:12px 16px;font-weight:700;font-size:15px}
   .ins-card>summary::-webkit-details-marker{display:none}
@@ -453,7 +454,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.204</span>
+      <span class="nav-version">v0.1.205</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1523,6 +1524,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.205', date:'2026-06-25 12:00', sp:1, title:'Dark dropdown options fix',
+    desc:'Native dropdown lists (metric/segment/page-size selects) were black-on-dark in dark mode; gave their options explicit colours (PB-4).',
+    detail:'Added select option,select optgroup{background:var(--panel);color:var(--text)} — color-scheme alone didn’t fix the option text on the owner’s browser. CSS color sweep otherwise clean (no surface-token-as-text, no fill-less SVG text, no hardcoded light bg). Per DATA-20 these 4 native selects should become the custom dropdown later.',
+    cat:'CHART'},
   {v:'v0.1.204', date:'2026-06-25 11:45', sp:0.5, title:'Keep tab on company switch',
     desc:'In the Rekvizitai explorer, switching companies now keeps you on the same sub-tab (e.g. Finansai) instead of jumping back to the first one.',
     detail:'selectCompany preserves the previous rekTab when the newly-picked company has it (all share the Įmonė/Finansai/Darbuotojai/Skolos order), falling back to the first tab only if missing.',
