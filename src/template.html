@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.190</title>
+<title>Markets — LT agencies · v0.1.191</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -423,9 +423,6 @@
   .pager button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px;font-family:inherit}
   .pager button:hover{border-color:var(--accent)}
   .pager button:disabled{opacity:.3;cursor:default}
-  /* DANGEROUS (by request): force ALL text white in dark mode. Charts keep
-     their colours (SVG uses fill, canvas is unaffected); only HTML text flips. */
-  html[data-theme="dark"] *{color:#fff !important}
 </style>
 </head>
 <body>
@@ -440,7 +437,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.190</span>
+      <span class="nav-version">v0.1.191</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1422,6 +1419,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.191', date:'2026-06-25 15:12', sp:0.5, title:'Revert dark all-white text',
+    desc:'Removed the *{color:#fff!important} override — it fought Brave force-dark.',
+    detail:'Reverted v189: html[data-theme="dark"] *{color:#fff!important} forced every text white, which Brave\'s force-dark then re-inverted ("white but looks dark"). Back to the theme\'s own colours; readability handled per-token instead of a blanket override.'},
   {v:'v0.1.190', date:'2026-06-25 14:20', sp:1.5, title:'Market 2025/26 uses Sodra',
     desc:'Future-year market view now surfaces Sodra data + how many companies reported.',
     detail:'For years with no filed financials (2025+), the market view no longer just says "nothing reported" — it now shows the Sodra coverage we do have (e.g. "12 of 113 companies report monthly Sodra data · N employees · avg wage €X/mo") and marks revenue/turnover/profit as not-yet-filed. Data reality: 2025–26 exists only in Sodra, headcount+wage, ~12 companies.'},
