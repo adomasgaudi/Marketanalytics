@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.199</title>
+<title>Markets — LT agencies · v0.1.201</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -451,7 +451,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.199</span>
+      <span class="nav-version">v0.1.201</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1521,7 +1521,7 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.1.199', date:'2026-06-25 11:00', sp:1, title:'Desktop width limiter',
+  {v:'v0.1.201', date:'2026-06-25 11:05', sp:1, title:'Desktop width limiter',
     desc:'On wide screens the app now caps to ~iPad width and centers, so desktop renders the clean single-column tablet layout instead of sprawling.',
     detail:'New --app-w token (840px); .wrap and .topnav both max-width:var(--app-w);margin:0 auto so nav + content share one centered column. .grid is now single-column everywhere (desktop matched to the iPad/mobile layout; the old 2-col was the only desktop divergence). Phone/iPad unchanged — their viewport is already ≤840 so the cap is a no-op there.',
     cat:'CHART'},
