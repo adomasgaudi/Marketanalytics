@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.191</title>
+<title>Markets — LT agencies · v0.1.192</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -437,7 +437,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.191</span>
+      <span class="nav-version">v0.1.192</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1413,6 +1413,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.192', date:'2026-06-24 15:30', sp:1, title:'Denser chart grids',
+    desc:'Every SVG chart now has roughly twice as many horizontal gridlines and adds vertical gridlines at each x label, for easier reading.',
+    detail:'drawFinSvg TICKS 4→8 (≈2× horizontal lines) and a vertical gridline drawn at every x-axis label; drawBarsSvg value gridlines 4→8. Grid renders behind the series (it sits before body in the SVG string), theme-aware via the grid token. Scatter grid follows when it moves to SVG.',
+    cat:'CHART'},
   {v:'v0.1.191', date:'2026-06-24 15:00', sp:2, title:'Turnover card now YoY',
     desc:'Replaced the lone “Revenue CAGR 2019–year” card with a per-year Turnover YoY card, so it matches every other card on the company view (PB-2).',
     detail:'The company growth card was the last 2019-anchored CAGR holdout after the market cards were converted to YoY long ago — fixed the root, not the label. Now shows turnover prev→chosen year (e.g. “Turnover 22→23 +16% · €3.9M → €4.5M”), mirroring the market Turnover YoY card. Also corrected the noun: the .revenue field is Turnover per the data dictionary (the money-flow already uses “Revenue” for estimated income). First year → “first year”; partial 2025 → “no financials yet”.',
@@ -2284,7 +2288,7 @@ function drawFinSvg(container, spec, opts){
     const yR=v=> m.t+ph - ph*(v-ry.yMin)/rySpan;
     const fmt=v=>{ const a=Math.abs(v); if(a>=1e6){ const n=v/1e6; return (Number.isInteger(n)?n:+n.toFixed(1))+'M'; }
       if(a>=1e3){ const n=v/1e3; return (Number.isInteger(n)?n:Math.round(n))+'k'; } return String(Math.round(v*10)/10); };
-    let s=''; const TICKS=4;
+    let s=''; const TICKS=8;   // ~2× horizontal gridlines (was 4) — denser grid
     // "nice" round tick values inside [min,max] (1/2/5 × 10ⁿ) so the axis shows round numbers that
     // SCROLL when you pan, instead of arbitrary yMin+k·span values that change every frame.
     const niceTicks=(min,max)=>{ if(!(max>min)) return [min]; const raw=(max-min)/TICKS, mag=Math.pow(10,Math.floor(Math.log10(raw))), nrm=raw/mag,
@@ -2304,7 +2308,8 @@ function drawFinSvg(container, spec, opts){
     const vis=[]; cats.forEach((c,i)=>{ const X=xAt(i); if(X>=m.l-1&&X<=W-m.r+1) vis.push({c,X}); });
     const multiYear = new Set(vis.map(v=>yrOf(v.c))).size>1;
     let lastX=-1e9, prevKey=null; const minGap=34;
-    const putX=(lbl,X)=>{ s+=`<text x="${X.toFixed(1)}" y="${H-8}" fill="${muted}" font-size="10" text-anchor="middle">${lbl}</text>`; };
+    const putX=(lbl,X)=>{ s+=`<line x1="${X.toFixed(1)}" y1="${m.t}" x2="${X.toFixed(1)}" y2="${(m.t+ph).toFixed(1)}" stroke="${grid}" stroke-width="1"/>`   // vertical gridline at each x label
+      +`<text x="${X.toFixed(1)}" y="${H-8}" fill="${muted}" font-size="10" text-anchor="middle">${lbl}</text>`; };
     vis.forEach(v=>{ const key = multiYear ? yrOf(v.c) : moOf(v.c);
       if(key===prevKey) { prevKey=key; return; }            // dedupe consecutive same-label
       if(v.X-lastX < minGap) { prevKey=key; return; }        // would collide → skip
@@ -2484,7 +2489,7 @@ function drawBarsSvg(container, cfg){
     // values (PB-1: recurring "axis numbers changing" — see docs/persistent-bugs.md). Same logic as the line engine.
     const niceTicks=(min,max,target)=>{ if(!(max>min)) return [min]; const raw=(max-min)/target, mag=Math.pow(10,Math.floor(Math.log10(raw))), nrm=raw/mag,
       step=(nrm<1.5?1:nrm<3?2:nrm<7?5:10)*mag, out=[]; for(let v=Math.ceil(min/step-1e-9)*step; v<=max+step*1e-9; v+=step) out.push(Math.abs(v)<step*1e-6?0:v); return out; };
-    niceTicks(view.vMin, view.vMax, 4).forEach(v=>{ const x=xAt(v); if(x<m.l-1||x>W-m.r+1) return;
+    niceTicks(view.vMin, view.vMax, 8).forEach(v=>{ const x=xAt(v); if(x<m.l-1||x>W-m.r+1) return;   // ~2× value gridlines (was 4)
       s+=`<line x1="${x.toFixed(1)}" y1="${m.t}" x2="${x.toFixed(1)}" y2="${(m.t+ph).toFixed(1)}" stroke="${grid}" stroke-width="1"/>`;
       s+=`<text x="${x.toFixed(1)}" y="${(H-12).toFixed(1)}" fill="${muted}" font-size="10" text-anchor="middle">${esc(fmt(v))}</text>`;
     });
