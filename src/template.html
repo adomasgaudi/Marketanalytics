@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — LT agencies · v0.1.201</title>
+<title>Markets — LT agencies · v0.1.202</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -270,7 +270,7 @@
   /* ── Top nav ── */
   /* All nav items share font-size + line-height = the nav height, so centred text lines up by
      baseline (PB: "Data exploration misaligned" — was caused by size diff + the 2px underline border). */
-  .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;min-height:50px;max-width:var(--app-w);margin:0 auto}   /* nav shares the width limiter so it aligns with the content column */
+  .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 max(24px, calc((100% - var(--app-w)) / 2));position:sticky;top:0;z-index:100;min-height:50px}   /* bar is full-width; padding centers the contents to the --app-w column */
   .topnav .logo{font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:normal;line-height:1.15;cursor:pointer;color:var(--text);transition:color .15s}
   .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
   .home-ic{display:none;font-size:1.15em;font-weight:700;color:var(--muted);margin-right:5px;vertical-align:-1px;transition:color .15s}
@@ -451,7 +451,7 @@
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
-      <span class="nav-version">v0.1.201</span>
+      <span class="nav-version">v0.1.202</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1521,6 +1521,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.1.202', date:'2026-06-25 11:15', sp:0.5, title:'Full-width nav bar',
+    desc:'The top nav bar now spans the full screen again; only its contents (logo, tabs, gear) stay centered to the iPad-width column.',
+    detail:'.topnav padding switched to max(24px, calc((100% - var(--app-w))/2)) — the bar background + border-bottom go edge-to-edge while the inner items align to --app-w, no HTML wrapper needed. Content .wrap stays a centered --app-w column.',
+    cat:'CHART'},
   {v:'v0.1.201', date:'2026-06-25 11:05', sp:1, title:'Desktop width limiter',
     desc:'On wide screens the app now caps to ~iPad width and centers, so desktop renders the clean single-column tablet layout instead of sprawling.',
     detail:'New --app-w token (840px); .wrap and .topnav both max-width:var(--app-w);margin:0 auto so nav + content share one centered column. .grid is now single-column everywhere (desktop matched to the iPad/mobile layout; the old 2-col was the only desktop divergence). Phone/iPad unchanged — their viewport is already ≤840 so the cap is a no-op there.',
