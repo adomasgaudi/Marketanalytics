@@ -81,3 +81,61 @@ Supabase backend, so data can update without a rebuild and could be written to.
   first (companies, financials, sodra_monthly)? Free tier limits vs dataset size.
 - Caveat: introduces a network dependency + keys; the current "open the file, no
   server" simplicity is a feature worth preserving as a fallback.
+
+---
+
+## 4. Verifiability — every stat links to its source ("all info checkable")
+
+Every number on the dashboard should be traceable: tapping a KPI / chart point /
+table cell reveals where it came from (which source — Initial export / Rekvizitai /
+Sodra — which field, which year) so a sceptical user can verify it.
+
+- Why: trust. A competitor-intelligence tool is only as credible as its provenance.
+- Approach: each datum already knows its source (the explorer's source cubes prove
+  it); surface that on hover/tap elsewhere — a small "ⓘ source" affordance that
+  shows the raw field + value + a link/anchor into the Data Explorer row.
+- Open questions: how deep (every aggregate, or just leaf records)? Aggregates need
+  to show their formula + inputs (the dev-mode formula disclosures are a start).
+
+## 5. Predicting values — forecast future financials
+
+Project each company's turnover / revenue / profit / headcount forward from its
+historical trend (e.g. 2025–2026 estimates).
+
+- Why: turns a backward-looking dataset into a forward-looking one (a stronger hook).
+- Approach: simple, explainable models first (CAGR / linear / last-3yr trend);
+  show the projection as a dashed continuation on the existing line charts.
+- MUST pair with #6 (error margins) — a forecast without uncertainty is misleading.
+- Open questions: per-company vs per-segment; how to handle the partial-2025 Sodra
+  headcount (real signal) vs missing financials.
+
+## 6. Error margins — confidence / uncertainty on estimates
+
+Show uncertainty on every estimate: `estimatedIncome` (the fee-income model), any
+forecasts (#5), and per-employee/per-company medians.
+
+- Why: honesty + #19-style "don't claim precision you don't have."
+- Approach: shaded band on charts, ± range on KPI cards; derive from the model's
+  residuals / the spread within a segment.
+- Open questions: what confidence level (50/80/95%)? How to compute for the
+  fee-income estimate specifically (its derivation defines its error).
+
+## 7. More grouping options — by employee count, company age, city
+
+Today segments group by **activity**. Add grouping by **employee-count bands**
+(1–10 / 11–50 / 51–200 / 200+), **company age** (founding-year buckets), and
+**city**. Also: more sorting + expand/collapse on the grouped views.
+
+- Why: different lenses on the same market (size, maturity, geography).
+- Smallest/most-actionable item in this list — the segment compute already takes a
+  grouping key; add alternate key-functions + a "group by" pill.
+- Open questions: company age needs the founding year (Rekvizitai has it for
+  scraped companies; the base export may not for all 113).
+
+---
+
+> Colosseum (the Data/strength repo) backlog items from the same 2026-06-26 dump —
+> customer-readiness, science curriculum, editable tags, 1RM-% set view, projection
+> curve (steepness/limit/drag/coefficient), merged-exercise strength, failed-set
+> exclusion, weights→RM in history, %CSA muscle-gain — belong in that repo's roadmap,
+> not here.
