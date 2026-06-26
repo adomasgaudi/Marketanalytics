@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.9</title>
+<title>Markets — LT agencies · v0.2.10</title>
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -173,7 +173,7 @@
   th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
   th:hover{color:var(--text)}
   tr:hover td{background:var(--hover)}
-  .tablebox{max-height:560px;overflow:auto;border-radius:8px}
+  .tablebox{max-height:82vh;overflow:auto;border-radius:8px}
   .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11px;margin:1px;color:var(--muted)}
   .risk-low{color:var(--green)} .risk-mid{color:var(--amber)} .risk-high{color:var(--red)}
   footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
@@ -326,6 +326,10 @@
   .view.active{display:block}
 
   /* ── Data explorer view ── */
+  /* The explorer is data-dense, so it breaks OUT of the --app-w iPad cap: full screen width +
+     near-full-height scrollable tables (the dashboard/company pages stay the centred column). */
+  #rekView .wrap{max-width:none;padding:20px 16px}
+  #rekView .sheet-explorer{max-width:none}
   .sheet-explorer{max-width:100%;margin:0 auto;padding:20px 24px;overflow-x:hidden}
   .data-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .data-tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;white-space:nowrap;font-family:inherit}
@@ -434,7 +438,7 @@
   .cov-tools input{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:inherit;min-width:170px}
   .cov-legend{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
   .cov-legend>span{display:inline-flex;align-items:center;gap:5px}
-  .cov-scroll{max-height:430px;overflow:auto;border:1px solid var(--border);border-radius:8px}
+  .cov-scroll{max-height:72vh;overflow:auto;border:1px solid var(--border);border-radius:8px}
   .cov-grid{display:grid;grid-template-columns:minmax(130px,1.5fr) repeat(7,minmax(28px,1fr));font-size:12px;min-width:380px}
   .cov-grid>div{padding:5px 6px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border)}
   .cov-grid>div.clk{cursor:pointer}
@@ -473,7 +477,7 @@
   .sheet-desc .sd-what{color:var(--muted);line-height:1.45}
   .sheet-desc .sd-best{color:var(--muted);font-size:12px;margin-top:5px}
   .sheet-desc .sd-best b{color:var(--text);font-weight:600}
-  .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:var(--panel);min-height:200px;max-height:65vh}
+  .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:var(--panel);min-height:200px;max-height:86vh}
   .sheet-explorer table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
   .sheet-explorer thead{position:sticky;top:0;z-index:2}
   .sheet-explorer th{background:var(--panel2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s}
@@ -519,7 +523,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.9</span>
+      <span class="nav-version">v0.2.10</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1766,6 +1770,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.10', date:'2026-06-25 18:35', sp:1, title:'Explorer fills the screen',
+    desc:'The Data Explorer breaks out of the iPad-width cap — full screen width and near-full-height scrollable tables.',
+    detail:'#rekView .wrap drops the --app-w max-width (and the sheet-explorer cap) so the explorer uses the whole viewport width on desktop; the dashboard/company pages keep the centred iPad-width column. Table heights raised so each scroll area is close to screen height: sourced-data .table-wrap 65→86vh, raw-sheets .tablebox 560px→82vh, coverage .cov-scroll 430px→72vh.',
+    cat:'DATA'},
   {v:'v0.2.9', date:'2026-06-25 18:20', sp:2, title:'Grouped version history',
     desc:'The version-history modal now nests releases into ~30-SP sub-groups and those into ~100-SP groups, like the Data repo.',
     detail:'Replaced the 10-per-page changelog with a collapsible tree: a greedy SP bucketer (histBucketBySp, mirroring the Data repo’s buildChangelogTree) folds the chronological releases into ~30-SP sub-groups, then folds those into ~100-SP groups. Each level shows its summed SP, version span and the highest-SP leaf’s title; the newest group + sub-group open by default, the rest collapsed. Pagination removed.',
