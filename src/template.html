@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.16</title>
+<title>Markets — LT agencies · v0.2.17</title>
+<!--
+  DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
+  rekvizitai's free page gives only revenue + profit for 2025; the three cost/
+  income fields are reconstructed with the dataset's own definitions:
+    salaryCosts    = avgSalary * employees * 12          (exact; reproduces 2019-2024)
+    nonSalaryCosts = revenue - profit - salaryCosts      (exact accounting identity)
+    estimatedIncome = revenue * feeRatio                 (ESTIMATE)
+      feeRatio = mean of the brand's last <=3 yrs of (estimatedIncome/revenue);
+                 fallback 0.60 (all-company median). Per-company, fairly stable.
+  Authoritative, re-runnable source of these formulas: scripts/estimate_2025.py
+-->
 <script>
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
@@ -520,7 +531,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.16</span>
+      <span class="nav-version">v0.2.17</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1737,6 +1748,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.17', date:'2026-06-30', sp:2, title:'2025 cost/income fields filled',
+    desc:'2025 now reaches Full coverage for the 98 agencies with filed turnover — salaryCosts, nonSalaryCosts and estimatedIncome derived so the by-year matrix stops reading Partial.',
+    detail:'salaryCosts = avgSalary*employees*12 and nonSalaryCosts = revenue-profit-salaryCosts are the dataset’s own exact definitions (they reproduce 2019-2024 to the cent), so 2025’s are as solid as any year. estimatedIncome (spėjamos pajamos) is the one true estimate: revenue * the brand’s own recent fee-ratio (mean of its last <=3 yrs of estimatedIncome/revenue, fallback 0.60) — per-company because pass-through media share ranges from ~0.10 (BPN/Dentsu) to 1.00. 98 brands go to 7/7; the 14 without 2025 turnover get salaryCosts only (3/7). Formulas live in scripts/estimate_2025.py and a non-rendered DEV NOTE comment in the page head.',
+    cat:'DATA'},
   {v:'v0.2.16', date:'2026-06-30', sp:3, title:'2025 turnover + net profit',
     desc:'99 agencies now have 2025 turnover and net profit pulled from rekvizitai (Registrų centro filings); 14 await 2025 statements or have no found page.',
     detail:'rekvizitai.vz.lt is Cloudflare-gated, but once the human clears the “Verify you are human” checkbox the tab holds a cf_clearance cookie, so same-origin in-page fetch() reads each /imone/<slug>/apyvarta/ finances table — 98 rek_tabs slugs plus 7 code-verified slug guesses for previously slug-less brands. Filled data.json 2025 revenue (=Pardavimo pajamos / turnover) and profit (=Grynasis pelnas / net). 5 firms have no 2025 filing yet (BE1ST, Evolvery, Publicis groupe, Some Films, Wide wings); 9 have no resolvable rekvizitai slug (Be reklamos negerai, Convo, Expertmedia, Influenceriai.lt, Love media, Madiavo, Maniac, PR service, RAIBEC — Sodra search-by-code is blocked by the URL-privacy guard). estimatedIncome / salaryCosts / nonSalaryCosts stay null (not on the apyvarta page).',
