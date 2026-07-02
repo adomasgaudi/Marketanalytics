@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.18</title>
+<title>Markets — LT agencies · v0.2.19</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -116,6 +116,11 @@
   .src-list{display:flex;flex-direction:column;gap:6px;margin-top:7px;font-size:13px;color:var(--text)}
   .src-list>span{display:flex;align-items:center;gap:8px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px}
+  .kpi-topbar{display:flex;justify-content:flex-end;align-items:center;margin:-4px 0 8px}
+  .kpi-mode{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--panel)}
+  .kpi-mode button{width:34px;height:28px;border:none;border-right:1px solid var(--border);background:var(--panel2);color:var(--muted);font:700 12px/1 inherit;cursor:pointer;transition:.12s}
+  .kpi-mode button:last-child{border-right:none}
+  .kpi-mode button.active{background:var(--accent);color:#fff}
   .kpi{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
   .kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
   .kpi .value{font-size:21px;font-weight:700;margin-top:2px}
@@ -531,7 +536,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.18</span>
+      <span class="nav-version">v0.2.19</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -568,6 +573,7 @@
   </div>
   <div class="mine-note" id="mineNote"></div>
   <div id="finFlow"></div>
+  <div class="kpi-topbar"><div class="kpi-mode" id="coKpiMode"><button data-mode="value" class="active" title="Show number">#</button><button data-mode="change" title="Show percent change">%</button></div></div>
   <div class="kpis" id="mineKpis"></div>
   <div class="grid">
     <div class="card">
@@ -594,6 +600,7 @@
     </div>
   </div>
   <div id="marketFlow" style="margin-bottom:14px"></div>
+  <div class="kpi-topbar"><div class="kpi-mode" id="marketKpiMode"><button data-mode="value" class="active" title="Show number">#</button><button data-mode="change" title="Show percent change">%</button></div></div>
   <div class="kpis" id="kpis"></div>
 
   <details class="ins-card" id="insCard">
@@ -1058,12 +1065,38 @@ function moneyFlowHtml(T0,R,P,opts){
 }
 
 let coFlowMode='total', _coFlowRerender=null;
+let coKpiMode='value';
+const KPI_AUTO={};
+function resetKpiAuto(key, getMode, setMode){
+  const s=KPI_AUTO[key]||(KPI_AUTO[key]={});
+  if(s.timeout) clearTimeout(s.timeout);
+  if(s.interval) clearInterval(s.interval);
+  const flip=()=>setMode(getMode()==='value'?'change':'value', false);
+  s.timeout=setTimeout(()=>{ flip(); s.interval=setInterval(flip,15000); }, 8000);
+}
+function kpiCardHtml(card, mode, formulaClass){
+  const showChange = mode==='change';
+  const main = showChange ? (card.changeText ?? '—') : (card.valueText ?? '–');
+  const sub = showChange ? (card.rangeText ?? card.valueText ?? '–') : (card.changeText ?? '—');
+  const subCls = card.changeCls||'';
+  return `<div class="kpi"><div class="label">${card.label}</div><div class="value">${main}</div><div class="sub ${subCls}">${sub}</div>`
+    +(card.formula?`<details class="${formulaClass}"><summary>formula</summary><div class="${formulaClass==='kpi-f'?'kpi-form':'formula-body'}">${card.formula.replace(/\n/g,'<br>')}</div></details>`:'')
+    +`</div>`;
+}
 function setCoBasis(mode){ coFlowMode=mode;   // Full company / Per-employee — drives both company tabs, synced
   document.querySelectorAll('#coFlowMode button, #coFlowMode2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   if(typeof renderCompany==='function') renderCompany(ovBrand);
   if(typeof drawTop==='function') drawTop();
 }
+function setCoKpiDisplay(mode, reset=true){
+  coKpiMode=mode;
+  document.querySelectorAll('#coKpiMode button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  if(typeof renderCompany==='function') renderCompany(ovBrand);
+  if(reset) resetKpiAuto('company', ()=>coKpiMode, setCoKpiDisplay);
+}
 (function(){ document.querySelectorAll('#coFlowMode button, #coFlowMode2 button').forEach(b=>b.addEventListener('click',()=>{ DBG('CLICK company-basis="'+b.dataset.mode+'" in #'+(b.parentElement&&b.parentElement.id)+' (this is the COMPANY toggle, NOT the market scatter)'); setCoBasis(b.dataset.mode); })); })();
+(function(){ document.querySelectorAll('#coKpiMode button').forEach(b=>b.addEventListener('click',()=>setCoKpiDisplay(b.dataset.mode))); })();
+resetKpiAuto('company', ()=>coKpiMode, setCoKpiDisplay);
 
 function renderCompany(brand){
   const mine = byBrand[brand] || {};
@@ -1151,32 +1184,41 @@ function renderCompany(brand){
 
   const emp=m24.employees!=null?Math.round(m24.employees):null, sal=(m24.avgSalary>500)?Math.round(m24.avgSalary):null;
   const prevEmp=m23.employees!=null?Math.round(m23.employees):null, prevSal=(m23.avgSalary>500)?Math.round(m23.avgSalary):null;
+  const curCoDen = coPerEmp && m24.employees>0 ? m24.employees : 1;
+  const prevCoDen = coPerEmp && m23.employees>0 ? m23.employees : 1;
+  const curRevenue = coPerEmp && m24.estimatedIncome!=null ? m24.estimatedIncome/curCoDen : m24.estimatedIncome;
+  const prevRevenue = coPerEmp && m23.estimatedIncome!=null && m23.employees>0 ? m23.estimatedIncome/prevCoDen : m23.estimatedIncome;
+  const curTurnover = coPerEmp && m24.revenue!=null ? m24.revenue/curCoDen : m24.revenue;
+  const prevTurnover = coPerEmp && m23.revenue!=null && m23.employees>0 ? m23.revenue/prevCoDen : m23.revenue;
+  const revYoY = (curRevenue!=null && prevRevenue>0) ? curRevenue/prevRevenue-1 : null;
+  const turnCardYoY = (curTurnover!=null && prevTurnover>0) ? curTurnover/prevTurnover-1 : null;
   const companyCards = [
-    {label:'Revenue '+yrLab,
-     value: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? fmtPct(m24.estimatedIncome/m23.estimatedIncome-1) : fmtEur(m24.estimatedIncome)) : '–',
-     sub: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? '€'+fmtM(m23.estimatedIncome)+' → €'+fmtM(m24.estimatedIncome) : 'first year')
-                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
-     cls: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? (m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg') : '',
-     formula: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? `Year-over-year change in revenue. (${E(m24.estimatedIncome)} ÷ ${E(m23.estimatedIncome)}) − 1.` : ''},
+    {label:(coPerEmp?'Revenue/empl. ':'Revenue ')+yrLab,
+     valueText: hasFin ? fmtEur(curRevenue) : '–',
+     changeText: hasFin ? (revYoY!=null ? fmtPct(revYoY) : '—') : '—',
+     rangeText: revYoY!=null ? fmtEur(prevRevenue)+' → '+fmtEur(curRevenue) : fmtEur(curRevenue),
+     changeCls: revYoY!=null ? (revYoY>=0?'pos':'neg') : '',
+     formula: revYoY!=null ? `Year-over-year change in revenue. (${E(curRevenue)} ÷ ${E(prevRevenue)}) − 1.` : ''},
     {label:'Employees '+yrLab,
-     value: emp!=null ? emp.toLocaleString() : '–',
-     sub: m24.employees!=null && hasPrev && prevEmp>0 ? fmtPct(m24.employees/prevEmp-1)+' YoY' : 'first year',
-     cls: m24.employees!=null && hasPrev && prevEmp>0 ? (m24.employees>=prevEmp?'pos':'neg') : '',
+     valueText: emp!=null ? emp.toLocaleString() : '–',
+     changeText: m24.employees!=null && hasPrev && prevEmp>0 ? fmtPct(m24.employees/prevEmp-1) : '—',
+     rangeText: m24.employees!=null && hasPrev && prevEmp>0 ? prevEmp.toLocaleString()+' → '+emp.toLocaleString() : (emp!=null ? emp.toLocaleString() : '–'),
+     changeCls: m24.employees!=null && hasPrev && prevEmp>0 ? (m24.employees>=prevEmp?'pos':'neg') : '',
      formula: m24.employees!=null && hasPrev && prevEmp>0 ? `Sum of reported headcount in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
     {label:'Median salary '+yrLab,
-     value: sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–',
-     sub: m24.avgSalary!=null && hasPrev && prevSal>0 ? fmtPct(m24.avgSalary/prevSal-1)+' YoY' : 'first year',
-     cls: m24.avgSalary!=null && hasPrev && prevSal>0 ? (m24.avgSalary>=prevSal?'pos':'neg') : '',
+     valueText: sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–',
+     changeText: m24.avgSalary!=null && hasPrev && prevSal>0 ? fmtPct(m24.avgSalary/prevSal-1) : '—',
+     rangeText: m24.avgSalary!=null && hasPrev && prevSal>0 ? '€'+prevSal.toLocaleString()+'/mo → €'+sal.toLocaleString()+'/mo' : (sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–'),
+     changeCls: m24.avgSalary!=null && hasPrev && prevSal>0 ? (m24.avgSalary>=prevSal?'pos':'neg') : '',
      formula: m24.avgSalary!=null && hasPrev && prevSal>0 ? `Middle value of the company's average monthly salary in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
-    {label:'Turnover '+yrLab,
-     value: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? fmtPct(turnYoY) : fmtEur(m24.revenue)) : '–',
-     sub: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? '€'+fmtM(m23.revenue)+' → €'+fmtM(m24.revenue) : 'first year')
-                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
-     cls: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? (turnYoY>=0?'pos':'neg') : '',
-     formula: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? `Year-over-year change in turnover. (${E(m24.revenue)} ÷ ${E(m23.revenue)}) − 1.` : ''},
+    {label:(coPerEmp?'Turnover/empl. ':'Turnover ')+yrLab,
+     valueText: hasFin ? fmtEur(curTurnover) : '–',
+     changeText: hasFin ? (turnCardYoY!=null ? fmtPct(turnCardYoY) : '—') : '—',
+     rangeText: turnCardYoY!=null ? fmtEur(prevTurnover)+' → '+fmtEur(curTurnover) : fmtEur(curTurnover),
+     changeCls: turnCardYoY!=null ? (turnCardYoY>=0?'pos':'neg') : '',
+     formula: turnCardYoY!=null ? `Year-over-year change in turnover. (${E(curTurnover)} ÷ ${E(prevTurnover)}) − 1.` : ''},
   ];
-  document.getElementById('mineKpis').innerHTML = companyCards.map(k=>
-    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
+  document.getElementById('mineKpis').innerHTML = companyCards.map(k=>kpiCardHtml(k, coKpiMode, 'formula')).join('');
 
   // (The revenue/profit/headcount trajectory was removed — it duplicated the money-flow below + the
   //  multi-company deep-dive; the money-flow note still flags when a compare set is selected.)
@@ -1278,6 +1320,7 @@ function medianSalary(y){
 }
 const MKT_YEARS = FIN_YEARS;                       // Market year row: full-coverage financial years only (2025 is partial → not offered at market level)
 let mktMode='avg', mktYear=LAST;
+let mktKpiMode='value';
 // Sodra-only coverage for a year with no filed financials (2025+): how many of
 // the tracked companies report monthly Sodra data, and the headcount/wage we do
 // have. month is an int YYYYMM.
@@ -1336,23 +1379,29 @@ function renderMarket(mode){
     empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+yrLab, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg',
       formula:(mode==='avg'?'Total headcount ÷ '+aCur.n+' companies':'Sum of reported headcount')+'. YoY = this year ÷ last year − 1.'};
   }
-  const py2=String(y-1).slice(2), msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
+  const prevEmpDisplay = mode==='avg'
+    ? (hasPrev ? dv(aPrev.emp,aPrev).toFixed(1) : null)
+    : (hasPrev ? Math.round(aPrev.emp).toLocaleString() : null);
+  const msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
   const yoyOf=g=>{ if(!hasPrev) return null; const a=dv(g(aPrev),aPrev), b=dv(g(aCur),aCur); return a>0? b/a-1 : null; };
   const tT=yoyOf(a=>a.rev), tR=yoyOf(a=>a.ei);
   const yoyF=(g,name)=> !hasPrev ? 'No prior year before '+y+' in the data.'
     : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(aPrev),aPrev))+') − 1 = change from '+(y-1)+' to '+y+'. '+name+basis+'.';
   const kpis = [   // order: Revenue, Employees, Salary, Turnover
-    {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+py2+'→'+y2, value:tR==null?'—':fmtPct(tR), sub:hasPrev?fmtEur(dv(aPrev.ei,aPrev))+' → '+fmtEur(dv(aCur.ei,aCur)):'first year', cls:tR!=null&&tR>=0?'pos':'neg',
+    {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+yrLab, valueText:fmtEur(dv(aCur.ei,aCur)), changeText:tR==null?'—':fmtPct(tR), rangeText:hasPrev?fmtEur(dv(aPrev.ei,aPrev))+' → '+fmtEur(dv(aCur.ei,aCur)):fmtEur(dv(aCur.ei,aCur)), changeCls:tR!=null&&tR>=0?'pos':'neg',
       formula:'Year-over-year change in revenue. '+yoyF(a=>a.ei,'Revenue')},
     empCard,
-    {label:'Median salary '+yrLab, value:'€'+msC.toLocaleString()+'/mo', sub:hasPrev?fmtPct(msC/medianSalary(y-1)-1)+' YoY':'first year', cls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
+    {label:'Median salary '+yrLab, valueText:'€'+msC.toLocaleString()+'/mo', changeText:hasPrev?fmtPct(msC/medianSalary(y-1)-1):'—', rangeText:hasPrev?'€'+medianSalary(y-1).toLocaleString()+'/mo → €'+msC.toLocaleString()+'/mo':'€'+msC.toLocaleString()+'/mo', changeCls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
       formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). YoY = this ÷ '+(y-1)+' − 1.'},
-    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+py2+'→'+y2, value:tT==null?'—':fmtPct(tT), sub:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):'first year', cls:tT!=null&&tT>=0?'pos':'neg',
+    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+yrLab, valueText:fmtEur(dv(aCur.rev,aCur)), changeText:tT==null?'—':fmtPct(tT), rangeText:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):fmtEur(dv(aCur.rev,aCur)), changeCls:tT!=null&&tT>=0?'pos':'neg',
       formula:'Year-over-year change in turnover. '+yoyF(a=>a.rev,'Turnover')},
   ];
-  document.getElementById('kpis').innerHTML = kpis.map(k=>
-    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
-    +(k.formula?`<details class="kpi-f"><summary>formula</summary><div class="kpi-form">${k.formula}</div></details>`:'')+`</div>`).join('');
+  empCard.valueText = empCard.value;
+  empCard.changeText = hasPrev?empCard.sub.replace(/\s+YoY$/,''):'—';
+  empCard.rangeText = hasPrev && prevEmpDisplay!=null ? prevEmpDisplay+' → '+empCard.valueText : empCard.valueText;
+  empCard.changeCls = empCard.cls||'';
+  delete empCard.value; delete empCard.sub; delete empCard.cls;
+  document.getElementById('kpis').innerHTML = kpis.map(k=>kpiCardHtml(k, mktKpiMode, 'kpi-f')).join('');
 }
 try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderMarket: '+err.message, error:err})); }
 (function(){ const c=document.getElementById('topCoCount'); if(c) c.textContent=BRANDS.length;
@@ -1383,6 +1432,16 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
   };
   document.querySelectorAll('#marketMode button, #marketMode2 button').forEach(b=>b.addEventListener('click',()=>{ DBG('CLICK basis="'+b.dataset.mode+'" in #'+(b.parentElement&&b.parentElement.id)); setBasis(b.dataset.mode); }));
 })();
+(function(){
+  window.setMarketKpiDisplay=function(mode, reset=true){
+    mktKpiMode=mode;
+    document.querySelectorAll('#marketKpiMode button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+    renderMarket();
+    if(reset) resetKpiAuto('market', ()=>mktKpiMode, setMarketKpiDisplay);
+  };
+  document.querySelectorAll('#marketKpiMode button').forEach(b=>b.addEventListener('click',()=>setMarketKpiDisplay(b.dataset.mode)));
+})();
+resetKpiAuto('market', ()=>mktKpiMode, setMarketKpiDisplay);
 
 // ---------- Insights ----------
 const insights = [
@@ -1758,7 +1817,7 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.2.18', date:'2026-07-02', sp:2, title:'Company pills mirror market',
+  {v:'v0.2.19', date:'2026-07-02', sp:2, title:'Company pills mirror market',
     desc:'The Companies page now uses the same four KPI cards as the Markets page: revenue, employees, median salary and turnover.',
     detail:'Replaced the wide People & pay pill with separate employees and salary cards, added the missing revenue card, and kept the company Risk field in the profile box instead. First-year company turnover now shows the turnover value directly instead of a fake YoY comparison when no prior year exists.',
     cat:'UI'},

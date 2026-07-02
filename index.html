@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.18</title>
+<title>Markets — LT agencies · v0.2.19</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -531,7 +531,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.18</span>
+      <span class="nav-version">v0.2.19</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -565,6 +565,10 @@
       <button data-mode="total" class="active">Full company</button>
       <button data-mode="emp">Per employee</button>
     </div>
+    <div class="seg" id="coKpiMode">
+      <button data-mode="value" class="active">Number</button>
+      <button data-mode="change">% change</button>
+    </div>
   </div>
   <div class="mine-note" id="mineNote"></div>
   <div id="finFlow"></div>
@@ -591,6 +595,10 @@
       <button data-mode="avg" class="active">Average / company</button>
       <button data-mode="emp">Per employee</button>
       <button data-mode="total">Whole market</button>
+    </div>
+    <div class="seg" id="marketKpiMode">
+      <button data-mode="value" class="active">Number</button>
+      <button data-mode="change">% change</button>
     </div>
   </div>
   <div id="marketFlow" style="margin-bottom:14px"></div>
@@ -621,6 +629,10 @@
       <button data-mode="avg" class="active">Average / company</button>
       <button data-mode="emp">Per employee</button>
       <button data-mode="total">Whole market</button>
+    </div>
+    <div class="seg" id="marketKpiMode2">
+      <button data-mode="value" class="active">Number</button>
+      <button data-mode="change">% change</button>
     </div>
   </div>
   <div class="grid">
@@ -667,8 +679,15 @@
           <option value="avgSalary">Avg. salary (€/mo)</option>
           <option value="margin">Profit margin (%)</option>
         </select>
-        <select id="rankSegment"><option value="">All segments</option></select>
       </div>
+      <div class="rank-tools">
+        <div class="rank-range" id="rankRange">
+          <label>From <select id="rankFromYear"></select></label>
+          <label>To <select id="rankToYear"></select></label>
+        </div>
+        <button type="button" class="rank-clear" id="rankSegClear">Clear all</button>
+      </div>
+      <div class="seg-filter rank-seg-wrap" id="rankSegments"></div>
       <div class="chartbox tall"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
@@ -1008,6 +1027,7 @@ const srcCubes=brand=>{ const h=REK_HAS[brand]||{}, have={initial:true, rekvizit
   return `<span class="co-cubes">${['initial','rekvizitai','sodra'].map(s=>`<span class="src-cube ${s}${have[s]?'':' empty'}"></span>`).join('')}</span>`; };
 
 let coYear = LAST;   // selected year on the Companies page (mirrors the Market year row)
+let coViewMode = 'year';   // Companies page mode: year vs all-time
 function rankOf(metricFn, cur24){
   const vals = BRANDS.map(b=>metricFn(byBrand[b][coYear]||{})).filter(v=>v!=null && !isNaN(v));
   const mineVal = metricFn(cur24);
@@ -1058,12 +1078,28 @@ function moneyFlowHtml(T0,R,P,opts){
 }
 
 let coFlowMode='total', _coFlowRerender=null;
+let coKpiMode='value';
+function kpiCardHtml(card, mode, formulaClass){
+  const showChange = mode==='change';
+  const main = showChange ? (card.changeText ?? '—') : (card.valueText ?? '–');
+  const sub = showChange ? (card.valueText ?? '–') : (card.changeText ?? '—');
+  const subCls = showChange ? (card.valueCls||'') : (card.changeCls||'');
+  return `<div class="kpi"><div class="label">${card.label}</div><div class="value">${main}</div><div class="sub ${subCls}">${sub}</div>`
+    +(card.formula?`<details class="${formulaClass}"><summary>formula</summary><div class="${formulaClass==='kpi-f'?'kpi-form':'formula-body'}">${card.formula.replace(/\n/g,'<br>')}</div></details>`:'')
+    +`</div>`;
+}
 function setCoBasis(mode){ coFlowMode=mode;   // Full company / Per-employee — drives both company tabs, synced
   document.querySelectorAll('#coFlowMode button, #coFlowMode2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   if(typeof renderCompany==='function') renderCompany(ovBrand);
   if(typeof drawTop==='function') drawTop();
 }
+function setCoKpiDisplay(mode){
+  coKpiMode=mode;
+  document.querySelectorAll('#coKpiMode button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  if(typeof renderCompany==='function') renderCompany(ovBrand);
+}
 (function(){ document.querySelectorAll('#coFlowMode button, #coFlowMode2 button').forEach(b=>b.addEventListener('click',()=>{ DBG('CLICK company-basis="'+b.dataset.mode+'" in #'+(b.parentElement&&b.parentElement.id)+' (this is the COMPANY toggle, NOT the market scatter)'); setCoBasis(b.dataset.mode); })); })();
+(function(){ document.querySelectorAll('#coKpiMode button').forEach(b=>b.addEventListener('click',()=>setCoKpiDisplay(b.dataset.mode))); })();
 
 function renderCompany(brand){
   const mine = byBrand[brand] || {};
@@ -1151,32 +1187,41 @@ function renderCompany(brand){
 
   const emp=m24.employees!=null?Math.round(m24.employees):null, sal=(m24.avgSalary>500)?Math.round(m24.avgSalary):null;
   const prevEmp=m23.employees!=null?Math.round(m23.employees):null, prevSal=(m23.avgSalary>500)?Math.round(m23.avgSalary):null;
+  const curCoDen = coPerEmp && m24.employees>0 ? m24.employees : 1;
+  const prevCoDen = coPerEmp && m23.employees>0 ? m23.employees : 1;
+  const curRevenue = coPerEmp && m24.estimatedIncome!=null ? m24.estimatedIncome/curCoDen : m24.estimatedIncome;
+  const prevRevenue = coPerEmp && m23.estimatedIncome!=null && m23.employees>0 ? m23.estimatedIncome/prevCoDen : m23.estimatedIncome;
+  const curTurnover = coPerEmp && m24.revenue!=null ? m24.revenue/curCoDen : m24.revenue;
+  const prevTurnover = coPerEmp && m23.revenue!=null && m23.employees>0 ? m23.revenue/prevCoDen : m23.revenue;
+  const revYoY = (curRevenue!=null && prevRevenue>0) ? curRevenue/prevRevenue-1 : null;
+  const turnCardYoY = (curTurnover!=null && prevTurnover>0) ? curTurnover/prevTurnover-1 : null;
   const companyCards = [
-    {label:'Revenue '+yrLab,
-     value: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? fmtPct(m24.estimatedIncome/m23.estimatedIncome-1) : fmtEur(m24.estimatedIncome)) : '–',
-     sub: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? '€'+fmtM(m23.estimatedIncome)+' → €'+fmtM(m24.estimatedIncome) : 'first year')
-                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
-     cls: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? (m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg') : '',
-     formula: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? `Year-over-year change in revenue. (${E(m24.estimatedIncome)} ÷ ${E(m23.estimatedIncome)}) − 1.` : ''},
+    {label:(coPerEmp?'Revenue/empl. ':'Revenue ')+yrLab,
+     valueText: hasFin ? fmtEur(curRevenue) : '–',
+     valueCls: '',
+     changeText: hasFin ? (revYoY!=null ? fmtPct(revYoY) : '—') : '—',
+     changeCls: revYoY!=null ? (revYoY>=0?'pos':'neg') : '',
+     formula: revYoY!=null ? `Year-over-year change in revenue. (${E(curRevenue)} ÷ ${E(prevRevenue)}) − 1.` : ''},
     {label:'Employees '+yrLab,
-     value: emp!=null ? emp.toLocaleString() : '–',
-     sub: m24.employees!=null && hasPrev && prevEmp>0 ? fmtPct(m24.employees/prevEmp-1)+' YoY' : 'first year',
-     cls: m24.employees!=null && hasPrev && prevEmp>0 ? (m24.employees>=prevEmp?'pos':'neg') : '',
+     valueText: emp!=null ? emp.toLocaleString() : '–',
+     valueCls: '',
+     changeText: m24.employees!=null && hasPrev && prevEmp>0 ? fmtPct(m24.employees/prevEmp-1) : '—',
+     changeCls: m24.employees!=null && hasPrev && prevEmp>0 ? (m24.employees>=prevEmp?'pos':'neg') : '',
      formula: m24.employees!=null && hasPrev && prevEmp>0 ? `Sum of reported headcount in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
     {label:'Median salary '+yrLab,
-     value: sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–',
-     sub: m24.avgSalary!=null && hasPrev && prevSal>0 ? fmtPct(m24.avgSalary/prevSal-1)+' YoY' : 'first year',
-     cls: m24.avgSalary!=null && hasPrev && prevSal>0 ? (m24.avgSalary>=prevSal?'pos':'neg') : '',
+     valueText: sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–',
+     valueCls: '',
+     changeText: m24.avgSalary!=null && hasPrev && prevSal>0 ? fmtPct(m24.avgSalary/prevSal-1) : '—',
+     changeCls: m24.avgSalary!=null && hasPrev && prevSal>0 ? (m24.avgSalary>=prevSal?'pos':'neg') : '',
      formula: m24.avgSalary!=null && hasPrev && prevSal>0 ? `Middle value of the company's average monthly salary in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
-    {label:'Turnover '+yrLab,
-     value: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? fmtPct(turnYoY) : fmtEur(m24.revenue)) : '–',
-     sub: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? '€'+fmtM(m23.revenue)+' → €'+fmtM(m24.revenue) : 'first year')
-                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
-     cls: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? (turnYoY>=0?'pos':'neg') : '',
-     formula: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? `Year-over-year change in turnover. (${E(m24.revenue)} ÷ ${E(m23.revenue)}) − 1.` : ''},
+    {label:(coPerEmp?'Turnover/empl. ':'Turnover ')+yrLab,
+     valueText: hasFin ? fmtEur(curTurnover) : '–',
+     valueCls: '',
+     changeText: hasFin ? (turnCardYoY!=null ? fmtPct(turnCardYoY) : '—') : '—',
+     changeCls: turnCardYoY!=null ? (turnCardYoY>=0?'pos':'neg') : '',
+     formula: turnCardYoY!=null ? `Year-over-year change in turnover. (${E(curTurnover)} ÷ ${E(prevTurnover)}) − 1.` : ''},
   ];
-  document.getElementById('mineKpis').innerHTML = companyCards.map(k=>
-    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
+  document.getElementById('mineKpis').innerHTML = companyCards.map(k=>kpiCardHtml(k, coKpiMode, 'formula')).join('');
 
   // (The revenue/profit/headcount trajectory was removed — it duplicated the money-flow below + the
   //  multi-company deep-dive; the money-flow note still flags when a compare set is selected.)
@@ -1278,6 +1323,7 @@ function medianSalary(y){
 }
 const MKT_YEARS = FIN_YEARS;                       // Market year row: full-coverage financial years only (2025 is partial → not offered at market level)
 let mktMode='avg', mktYear=LAST;
+let mktKpiMode='value';
 // Sodra-only coverage for a year with no filed financials (2025+): how many of
 // the tracked companies report monthly Sodra data, and the headcount/wage we do
 // have. month is an int YYYYMM.
@@ -1336,23 +1382,25 @@ function renderMarket(mode){
     empCard = {label:(mode==='avg'?'Avg employees/co ':'Total employees ')+yrLab, value:mode==='avg'?eC.toFixed(1):Math.round(eC).toLocaleString(), sub:hasPrev?fmtPct(eC/eP-1)+' YoY':'—', cls:hasPrev&&eC>=eP?'pos':'neg',
       formula:(mode==='avg'?'Total headcount ÷ '+aCur.n+' companies':'Sum of reported headcount')+'. YoY = this year ÷ last year − 1.'};
   }
-  const py2=String(y-1).slice(2), msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
+  const msC=medianSalary(y), ms0=medianSalary(YEARS[0]);
   const yoyOf=g=>{ if(!hasPrev) return null; const a=dv(g(aPrev),aPrev), b=dv(g(aCur),aCur); return a>0? b/a-1 : null; };
   const tT=yoyOf(a=>a.rev), tR=yoyOf(a=>a.ei);
   const yoyF=(g,name)=> !hasPrev ? 'No prior year before '+y+' in the data.'
     : '('+fmtEur(dv(g(aCur),aCur))+' ÷ '+fmtEur(dv(g(aPrev),aPrev))+') − 1 = change from '+(y-1)+' to '+y+'. '+name+basis+'.';
   const kpis = [   // order: Revenue, Employees, Salary, Turnover
-    {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+py2+'→'+y2, value:tR==null?'—':fmtPct(tR), sub:hasPrev?fmtEur(dv(aPrev.ei,aPrev))+' → '+fmtEur(dv(aCur.ei,aCur)):'first year', cls:tR!=null&&tR>=0?'pos':'neg',
+    {label:(mode==='emp'?'Revenue/empl. ':'Revenue ')+yrLab, valueText:fmtEur(dv(aCur.ei,aCur)), valueCls:'', changeText:tR==null?'—':fmtPct(tR), changeCls:tR!=null&&tR>=0?'pos':'neg',
       formula:'Year-over-year change in revenue. '+yoyF(a=>a.ei,'Revenue')},
     empCard,
-    {label:'Median salary '+yrLab, value:'€'+msC.toLocaleString()+'/mo', sub:hasPrev?fmtPct(msC/medianSalary(y-1)-1)+' YoY':'first year', cls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
+    {label:'Median salary '+yrLab, valueText:'€'+msC.toLocaleString()+'/mo', valueCls:'', changeText:hasPrev?fmtPct(msC/medianSalary(y-1)-1):'—', changeCls:!hasPrev||msC>=medianSalary(y-1)?'pos':'neg',
       formula:'Middle value of every company’s average monthly salary in '+y+' (only companies reporting > €500/mo). YoY = this ÷ '+(y-1)+' − 1.'},
-    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+py2+'→'+y2, value:tT==null?'—':fmtPct(tT), sub:hasPrev?fmtEur(dv(aPrev.rev,aPrev))+' → '+fmtEur(dv(aCur.rev,aCur)):'first year', cls:tT!=null&&tT>=0?'pos':'neg',
+    {label:(mode==='emp'?'Turnover/empl. ':'Turnover ')+yrLab, valueText:fmtEur(dv(aCur.rev,aCur)), valueCls:'', changeText:tT==null?'—':fmtPct(tT), changeCls:tT!=null&&tT>=0?'pos':'neg',
       formula:'Year-over-year change in turnover. '+yoyF(a=>a.rev,'Turnover')},
   ];
-  document.getElementById('kpis').innerHTML = kpis.map(k=>
-    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>`
-    +(k.formula?`<details class="kpi-f"><summary>formula</summary><div class="kpi-form">${k.formula}</div></details>`:'')+`</div>`).join('');
+  empCard.valueText = empCard.value; empCard.valueCls = '';
+  empCard.changeText = hasPrev?empCard.sub.replace(/\s+YoY$/,''):'—';
+  empCard.changeCls = empCard.cls||'';
+  delete empCard.value; delete empCard.sub; delete empCard.cls;
+  document.getElementById('kpis').innerHTML = kpis.map(k=>kpiCardHtml(k, mktKpiMode, 'kpi-f')).join('');
 }
 try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderMarket: '+err.message, error:err})); }
 (function(){ const c=document.getElementById('topCoCount'); if(c) c.textContent=BRANDS.length;
@@ -1382,6 +1430,14 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
     else DBG('  buildScatterScrub NOT a function!');
   };
   document.querySelectorAll('#marketMode button, #marketMode2 button').forEach(b=>b.addEventListener('click',()=>{ DBG('CLICK basis="'+b.dataset.mode+'" in #'+(b.parentElement&&b.parentElement.id)); setBasis(b.dataset.mode); }));
+})();
+(function(){
+  window.setMarketKpiDisplay=function(mode){
+    mktKpiMode=mode;
+    document.querySelectorAll('#marketKpiMode button, #marketKpiMode2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+    renderMarket();
+  };
+  document.querySelectorAll('#marketKpiMode button, #marketKpiMode2 button').forEach(b=>b.addEventListener('click',()=>setMarketKpiDisplay(b.dataset.mode)));
 })();
 
 // ---------- Insights ----------
@@ -1524,10 +1580,13 @@ document.addEventListener('click',e=>{ if(e.target.closest('.seg')) requestAnima
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-vs-profit scatter grouping
 
 // ---------- Top-N ranking (follows the shared Companies year row + Full/Per-employee basis) ----------
-const rankSegSel = document.getElementById('rankSegment');
-SEGMENTS.forEach(s=>rankSegSel.add(new Option(s,s)));
+const rankSegHost = document.getElementById('rankSegments');
+const rankFromYearSel = document.getElementById('rankFromYear');
+const rankToYearSel = document.getElementById('rankToYear');
+const rankClearBtn = document.getElementById('rankSegClear');
+let rankSegments = new Set(SEGMENTS);
 
-function drawTop(){
+function drawTopLegacy(){
   const metric = rankMetric.value, year = coYear, seg = rankSegment.value;
   const moneyMetric = ['revenue','profit','estimatedIncome'].includes(metric);
   const perEmp = coFlowMode==='emp' && moneyMetric;   // per-employee only divides absolute € metrics
@@ -1558,7 +1617,124 @@ function drawTop(){
   });
   const t=document.getElementById('rankTitle'); if(t) t.textContent='Top 10 & bottom 10 — value & YoY % ('+year+(coFlowMode==='emp'?' · per employee':'')+')';
 }
-[rankMetric, rankSegment].forEach(el=>el.addEventListener('change', drawTop));
+function renderRankSegments(){
+  if(!rankSegHost) return;
+  rankSegHost.innerHTML = SEGMENTS.map(s=>`<span class="sf-pill${rankSegments.has(s)?' on':''}" role="button" tabindex="0" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</span>`).join('');
+  const toggle = s => {
+    if(rankSegments.has(s) && rankSegments.size===1) return;
+    if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
+    renderRankSegments();
+    drawTop();
+  };
+  rankSegHost.querySelectorAll('.sf-pill').forEach(p=>{
+    p.addEventListener('click',()=>toggle(p.dataset.s));
+    p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(p.dataset.s); } });
+  });
+  if(rankClearBtn && !rankClearBtn.__wired){
+    rankClearBtn.addEventListener('click',()=>{ rankSegments = new Set(SEGMENTS); renderRankSegments(); drawTop(); });
+    rankClearBtn.__wired = 1;
+  }
+}
+function syncRankControls(){
+  const isAll = coViewMode === 'all';
+  const range = document.getElementById('rankRange');
+  if(range) range.style.display = isAll ? '' : 'none';
+  if(rankFromYearSel && rankToYearSel){
+    const opts = YEARS.map(y=>`<option value="${y}">${y}${y>LAST?'*':''}</option>`).join('');
+    if(!rankFromYearSel.options.length) rankFromYearSel.innerHTML = opts;
+    if(!rankToYearSel.options.length) rankToYearSel.innerHTML = opts;
+    if(!rankFromYearSel.value) rankFromYearSel.value = String(YEARS[0]);
+    if(!rankToYearSel.value) rankToYearSel.value = String(YEARS[YEARS.length-1]);
+  }
+  renderRankSegments();
+}
+function rankMetricValue(d, metric, perEmp){
+  if(!d) return null;
+  let v = metric==='margin' ? (d.estimatedIncome>50000 && d.profit!=null ? d.profit/d.estimatedIncome*100 : null) : d[metric];
+  if(perEmp && v!=null) v = d.employees>0 ? v/d.employees : null;
+  return v;
+}
+function drawTop(){
+  const metric = rankMetric.value;
+  const moneyMetric = ['revenue','profit','estimatedIncome'].includes(metric);
+  const perEmp = coFlowMode==='emp' && moneyMetric;
+  const yearMode = coViewMode === 'all' ? 'all' : 'year';
+  const fromYear = rankFromYearSel ? (+rankFromYearSel.value || YEARS[0]) : YEARS[0];
+  const toYear = rankToYearSel ? (+rankToYearSel.value || YEARS[YEARS.length-1]) : YEARS[YEARS.length-1];
+  const startYear = Math.min(fromYear, toYear);
+  const endYear = Math.max(fromYear, toYear);
+  const yearLabel = yearMode==='all' ? (fromYear===toYear ? String(fromYear) : `${startYear}→${endYear}`) : String(coYear);
+  const selectedSegs = rankSegments.size ? [...rankSegments] : SEGMENTS;
+  const matchesSegs = brand => {
+    const years = yearMode==='all' ? YEARS.filter(y=>y>=startYear && y<=endYear) : [coYear];
+    return years.some(y=>{
+      const d = byBrand[brand] && byBrand[brand][y];
+      return d && d.activities.some(a=>selectedSegs.includes(a));
+    });
+  };
+  const progressOf = (startVal, endVal) => {
+    if(startVal==null || endVal==null) return null;
+    if(metric==='margin') return endVal - startVal;
+    if(startVal>0 && endVal>0) return (endVal/startVal - 1) * 100;
+    return endVal - startVal;
+  };
+  const pctFmt = v => `${v>=0?'+':''}${v.toFixed(1)}${metric==='margin'?' pp':'%'}`;
+  const valueFmt = v => {
+    if(v==null) return 'â€“';
+    if(metric==='margin') return v.toFixed(1)+'%';
+    if(moneyMetric) return perEmp ? 'â‚¬'+Math.round(v).toLocaleString() : 'â‚¬'+v.toFixed(2)+'M';
+    return Math.round(v).toLocaleString();
+  };
+  let rows;
+  if(yearMode==='year'){
+    rows = DATA.filter(d=>d.year===coYear && matchesSegs(d.brand)).map(d=>{
+      const v = rankMetricValue(d, metric, perEmp);
+      const p = rankMetricValue(byBrand[d.brand][coYear-1], metric, perEmp);
+      return {brand:d.brand, val:v, delta:(p!=null && p>0 && v!=null)? (v/p-1)*100 : null};
+    }).filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
+  } else {
+    rows = BRANDS.map(brand=>{
+      if(!matchesSegs(brand)) return null;
+      const startRec = byBrand[brand] && byBrand[brand][startYear];
+      const endRec = byBrand[brand] && byBrand[brand][endYear];
+      const startVal = rankMetricValue(startRec, metric, perEmp);
+      const endVal = rankMetricValue(endRec, metric, perEmp);
+      const progress = progressOf(startVal, endVal);
+      return {brand, val:progress, startVal, endVal, delta:progress};
+    }).filter(Boolean).filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
+  }
+  if(!rows.length){
+    chTop.innerHTML='<div class="ff-empty">No '+yearLabel+' '+metric+' data yet'+(yearMode==='year'&&coYear>LAST?' â€” '+coYear+' financials land ~mid-'+(coYear+1)+'.':'.')+'</div>';
+    const t0=document.getElementById('rankTitle'); if(t0) t0.textContent=yearMode==='all' ? 'Progress leaders & laggards ('+yearLabel+')' : 'Top 10 & bottom 10 ('+coYear+')';
+    return;
+  }
+  const split = rows.length>20;
+  rows = split ? [...rows.slice(0,10).map(r=>({...r,grp:'top'})), ...rows.slice(-10).map(r=>({...r,grp:'bot'}))] : rows;
+  const isEur = moneyMetric;
+  const tfmt = v=> yearMode==='all'
+    ? pctFmt(v)
+    : isEur ? (perEmp ? 'â‚¬'+Math.round(v).toLocaleString() : 'â‚¬'+v.toFixed(2)+'M')
+            : metric==='margin' ? v.toFixed(1)+'%' : Math.round(v).toLocaleString();
+  drawBarsSvg(chTop, {
+    rows: rows.map(r=>({label:r.brand, value: yearMode==='all' ? r.val : ((isEur && !perEmp)? r.val/1e6 : r.val), color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent')), delta:r.delta})),
+    xTitle: yearMode==='all' ? (metric==='margin' ? 'pp change' : '% change') : isEur?(perEmp?'â‚¬/employee':'â‚¬M'):metric==='margin'?'%':'',
+    fmt:tfmt,
+    tip:r=>{
+      if(yearMode==='all'){
+        return `<b>${esc(String(r.label))}</b>: ${pctFmt(r.value)} Â· ${valueFmt(r.startVal)} â†’ ${valueFmt(r.endVal)}`;
+      }
+      return `<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}${r.delta!=null?` Â· ${r.delta>=0?'+':''}${Math.round(r.delta)}% vs ${coYear-1}`:''}`;
+    }
+  });
+  const t=document.getElementById('rankTitle');
+  if(t) t.textContent = yearMode==='all'
+    ? 'Progress leaders & laggards â€” '+yearLabel+(coFlowMode==='emp'?' Â· per employee':'')
+    : 'Top 10 & bottom 10 â€” value & YoY % ('+coYear+(coFlowMode==='emp'?' Â· per employee':'')+')';
+}
+if(rankFromYearSel) rankFromYearSel.addEventListener('change', ()=>{ if(+rankFromYearSel.value > +rankToYearSel.value) rankToYearSel.value = rankFromYearSel.value; drawTop(); });
+if(rankToYearSel) rankToYearSel.addEventListener('change', ()=>{ if(+rankToYearSel.value < +rankFromYearSel.value) rankFromYearSel.value = rankToYearSel.value; drawTop(); });
+rankMetric.addEventListener('change', drawTop);
+syncRankControls();
 drawTop();
 
 // ---------- Scatter: size vs profitability (per year + scrollable all-years strip) ----------
@@ -1758,7 +1934,7 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.2.18', date:'2026-07-02', sp:2, title:'Company pills mirror market',
+  {v:'v0.2.19', date:'2026-07-02', sp:2, title:'Company pills mirror market',
     desc:'The Companies page now uses the same four KPI cards as the Markets page: revenue, employees, median salary and turnover.',
     detail:'Replaced the wide People & pay pill with separate employees and salary cards, added the missing revenue card, and kept the company Risk field in the profile box instead. First-year company turnover now shows the turnover value directly instead of a fake YoY comparison when no prior year exists.',
     cat:'UI'},
@@ -3767,9 +3943,11 @@ try{ (function(){
   if(grpTabs) grpTabs.style.display='none';
   const yearRow=document.getElementById('coYearRow');   // year picker is only meaningful in "per year"
   let v=0;                                               // 0 = per year, 1 = all time
-  const apply=()=>{ word.textContent = v===1?'all years':'per year';
+  const apply=()=>{ coViewMode = v===1 ? 'all' : 'year'; word.textContent = v===1?'all years':'per year';
     if(yearRow) yearRow.style.display = v===1?'none':'';
-    const t=tabBtns[v]; if(t) t.click(); };
+    if(typeof syncRankControls==='function') syncRankControls();
+    const t=tabBtns[v]; if(t) t.click();
+    if(typeof drawTop==='function') drawTop(); };
   const toggle=()=>{ v=v?0:1; apply(); };
   word.addEventListener('click', toggle);
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
