@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.17</title>
+<title>Markets — LT agencies · v0.2.18</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -531,7 +531,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.17</span>
+      <span class="nav-version">v0.2.18</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -1092,6 +1092,8 @@ function renderCompany(brand){
   // PB-2: per-year YoY (prev→chosen), NOT a 2019-anchored CAGR — matches every other card on this view
   // and the market section's Turnover YoY card. (.revenue field = Turnover per WORD-01.)
   const turnYoY = (m24.revenue!=null && m23.revenue>0)? m24.revenue/m23.revenue-1 : null;
+  const hasPrev = !!(m23.revenue!=null || m23.estimatedIncome!=null || m23.employees!=null || m23.avgSalary!=null);
+  const yrLab = hasPrev ? String(coYear-1).slice(2)+'→'+String(coYear).slice(2) : String(coYear);
 
   // Compact profile box, shown for every company (missing fields read "no data").
   const fullName = Object.values(mine).map(r=>r.company).find(Boolean) || '';
@@ -1107,6 +1109,7 @@ function renderCompany(brand){
     ['CEO', REK_CEO[brand]?esc(REK_CEO[brand]):nd],
     ['Founded', FOUNDED[brand]?esc(FOUNDED[brand]):nd],
     ['Employees', m24.employees!=null?Math.round(m24.employees):nd],
+    ['Risk', m24.risk?esc(m24.risk):nd],
     ['Type', ctype?esc(ctype):nd],
     ['Website', webV],
   ];
@@ -1146,27 +1149,34 @@ function renderCompany(brand){
   _coFlowRerender = renderFinFlow;
   renderFinFlow();
 
-  // Employees + Avg salary combined into one People & pay card (they relate → annual payroll).
   const emp=m24.employees!=null?Math.round(m24.employees):null, sal=(m24.avgSalary>500)?Math.round(m24.avgSalary):null;
-  const payroll=(emp!=null && sal!=null)?emp*sal*12:null;
-  const empD=m23.employees?`<span class="kp-d ${m24.employees>=m23.employees?'pos':'neg'}">${fmtPct(m24.employees/m23.employees-1)}</span>`:'';
-  const salD=m23.avgSalary?`<span class="kp-d ${m24.avgSalary>=m23.avgSalary?'pos':'neg'}">${fmtPct(m24.avgSalary/m23.avgSalary-1)}</span>`:'';
-  const peopleCard=`<div class="kpi mine kpi-wide"><div class="label">People &amp; pay ${coYear}</div>`
-    +`<div class="kp-two">`
-    +`<div class="kp-metric"><b>${emp!=null?emp:'–'}</b> <span class="kp-u">employees</span> ${empD} ${mEmp?`<span class="rank">#${mEmp.pos}</span>`:''}</div>`
-    +`<div class="kp-metric"><b>${sal!=null?'€'+sal.toLocaleString():'–'}</b> <span class="kp-u">/mo avg</span> ${salD} ${mSal?`<span class="rank">#${mSal.pos}</span>`:''}</div>`
-    +`</div>`
-    +(payroll!=null?`<div class="sub" style="margin-top:6px">≈ ${fmtEur(payroll)} payroll/yr · ${emp} × €${sal.toLocaleString()} × 12</div>`:'')
-    +`</div>`;
-  const cards = [
-    {label:'Turnover '+String(coYear-1).slice(2)+'→'+String(coYear).slice(2), value:fmtPct(turnYoY),
-     sub: turnYoY!=null ? '€'+fmtM(m23.revenue)+' → €'+fmtM(m24.revenue) : (partialYear?'no '+coYear+' financials yet':(m23.revenue==null?'first year':'no data')),
-     cls:turnYoY!=null&&turnYoY>=0?'pos':'neg',
-     formula: turnYoY!=null ? `YoY = (${E(m24.revenue)} ÷ ${E(m23.revenue)}) − 1\n= ${fmtPct(turnYoY)} · turnover ${coYear-1} → ${coYear}` : ''},
-    {label:'Credit risk', value:m24.risk||'–', sub:'Segments: '+(m24.activities||[]).map(segName).join(', '), cls:'', formula:'Source: rekvizitai.vz.lt credit rating\nSegments = activity tags from the dataset'},
+  const prevEmp=m23.employees!=null?Math.round(m23.employees):null, prevSal=(m23.avgSalary>500)?Math.round(m23.avgSalary):null;
+  const companyCards = [
+    {label:'Revenue '+yrLab,
+     value: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? fmtPct(m24.estimatedIncome/m23.estimatedIncome-1) : fmtEur(m24.estimatedIncome)) : '–',
+     sub: hasFin ? (m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? '€'+fmtM(m23.estimatedIncome)+' → €'+fmtM(m24.estimatedIncome) : 'first year')
+                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
+     cls: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? (m24.estimatedIncome>=m23.estimatedIncome?'pos':'neg') : '',
+     formula: hasFin && m24.estimatedIncome!=null && hasPrev && m23.estimatedIncome>0 ? `Year-over-year change in revenue. (${E(m24.estimatedIncome)} ÷ ${E(m23.estimatedIncome)}) − 1.` : ''},
+    {label:'Employees '+yrLab,
+     value: emp!=null ? emp.toLocaleString() : '–',
+     sub: m24.employees!=null && hasPrev && prevEmp>0 ? fmtPct(m24.employees/prevEmp-1)+' YoY' : 'first year',
+     cls: m24.employees!=null && hasPrev && prevEmp>0 ? (m24.employees>=prevEmp?'pos':'neg') : '',
+     formula: m24.employees!=null && hasPrev && prevEmp>0 ? `Sum of reported headcount in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
+    {label:'Median salary '+yrLab,
+     value: sal!=null ? '€'+sal.toLocaleString()+'/mo' : '–',
+     sub: m24.avgSalary!=null && hasPrev && prevSal>0 ? fmtPct(m24.avgSalary/prevSal-1)+' YoY' : 'first year',
+     cls: m24.avgSalary!=null && hasPrev && prevSal>0 ? (m24.avgSalary>=prevSal?'pos':'neg') : '',
+     formula: m24.avgSalary!=null && hasPrev && prevSal>0 ? `Middle value of the company's average monthly salary in ${coYear}. YoY = this year ÷ last year − 1.` : ''},
+    {label:'Turnover '+yrLab,
+     value: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? fmtPct(turnYoY) : fmtEur(m24.revenue)) : '–',
+     sub: hasFin ? (m24.revenue!=null && hasPrev && m23.revenue>0 ? '€'+fmtM(m23.revenue)+' → €'+fmtM(m24.revenue) : 'first year')
+                : (partialYear ? 'no '+coYear+' financials yet' : 'no data'),
+     cls: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? (turnYoY>=0?'pos':'neg') : '',
+     formula: hasFin && m24.revenue!=null && hasPrev && m23.revenue>0 ? `Year-over-year change in turnover. (${E(m24.revenue)} ÷ ${E(m23.revenue)}) − 1.` : ''},
   ];
-  document.getElementById('mineKpis').innerHTML = peopleCard + cards.map(k=>
-    `<div class="kpi mine"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
+  document.getElementById('mineKpis').innerHTML = companyCards.map(k=>
+    `<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub ${k.cls}">${k.sub}</div>${k.formula?`<details class="formula"><summary>formula</summary><div class="formula-body">${k.formula.replace(/\n/g,'<br>')}</div></details>`:''}</div>`).join('');
 
   // (The revenue/profit/headcount trajectory was removed — it duplicated the money-flow below + the
   //  multi-company deep-dive; the money-flow note still flags when a compare set is selected.)
@@ -1748,6 +1758,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.18', date:'2026-07-02', sp:2, title:'Company pills mirror market',
+    desc:'The Companies page now uses the same four KPI cards as the Markets page: revenue, employees, median salary and turnover.',
+    detail:'Replaced the wide People & pay pill with separate employees and salary cards, added the missing revenue card, and kept the company Risk field in the profile box instead. First-year company turnover now shows the turnover value directly instead of a fake YoY comparison when no prior year exists.',
+    cat:'UI'},
   {v:'v0.2.17', date:'2026-06-30', sp:2, title:'2025 cost/income fields filled',
     desc:'2025 now reaches Full coverage for the 98 agencies with filed turnover — salaryCosts, nonSalaryCosts and estimatedIncome derived so the by-year matrix stops reading Partial.',
     detail:'salaryCosts = avgSalary*employees*12 and nonSalaryCosts = revenue-profit-salaryCosts are the dataset’s own exact definitions (they reproduce 2019-2024 to the cent), so 2025’s are as solid as any year. estimatedIncome (spėjamos pajamos) is the one true estimate: revenue * the brand’s own recent fee-ratio (mean of its last <=3 yrs of estimatedIncome/revenue, fallback 0.60) — per-company because pass-through media share ranges from ~0.10 (BPN/Dentsu) to 1.00. 98 brands go to 7/7; the 14 without 2025 turnover get salaryCosts only (3/7). Formulas live in scripts/estimate_2025.py and a non-rendered DEV NOTE comment in the page head.',
