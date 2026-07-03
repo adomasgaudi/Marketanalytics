@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.21</title>
+<title>Markets — LT agencies · v0.2.22</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -382,6 +382,13 @@
   .rank-clear{font:600 12px/1 inherit;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .rank-clear:hover{color:var(--text);border-color:var(--accent)}
   .rank-seg-wrap{margin:8px 0 2px}
+  .rank-sector-select{min-width:210px}
+  .rank-sector-select .co-select-panel{width:min(300px,82vw)}
+  .rank-sector-opt{display:flex;align-items:center;gap:8px}
+  .rank-sector-opt .sf-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto;opacity:1}
+  .rank-seg-wrap .sf-pill{padding-right:8px}
+  .rank-seg-remove{color:var(--muted);font-size:14px;line-height:1;margin-left:2px}
+  .rank-seg-wrap .sf-pill:hover .rank-seg-remove{color:var(--red)}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
@@ -543,7 +550,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.21</span>
+      <span class="nav-version">v0.2.22</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -686,6 +693,14 @@
         <div class="rank-range" id="rankRange">
           <label>From <select id="rankFromYear"></select></label>
           <label>To <select id="rankToYear"></select></label>
+        </div>
+        <div class="co-select rank-sector-select" id="rankSectorSelect">
+          <button type="button" class="co-select-btn" id="rankSectorBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="rankSectorBtnText">Choose sectors</span><span class="co-caret">▼</span>
+          </button>
+          <div class="co-select-panel" id="rankSectorPanel">
+            <div class="co-select-list" id="rankSectorList" role="listbox" aria-multiselectable="true"></div>
+          </div>
         </div>
         <button type="button" class="rank-clear" id="rankSegClear">Clear all</button>
       </div>
@@ -1618,7 +1633,12 @@ const rankSegHost = document.getElementById('rankSegments');
 const rankFromYearSel = document.getElementById('rankFromYear');
 const rankToYearSel = document.getElementById('rankToYear');
 const rankClearBtn = document.getElementById('rankSegClear');
-let rankSegments = new Set(SEGMENTS);
+const rankSectorSelect = document.getElementById('rankSectorSelect');
+const rankSectorBtn = document.getElementById('rankSectorBtn');
+const rankSectorBtnText = document.getElementById('rankSectorBtnText');
+const rankSectorPanel = document.getElementById('rankSectorPanel');
+const rankSectorList = document.getElementById('rankSectorList');
+let rankSegments = new Set(SEGMENTS.slice(0,1));
 
 function drawTopLegacy(){
   const metric = rankMetric.value, year = coYear, seg = rankSegment.value;
@@ -1653,7 +1673,9 @@ function drawTopLegacy(){
 }
 function renderRankSegments(){
   if(!rankSegHost) return;
-  rankSegHost.innerHTML = SEGMENTS.map(s=>`<span class="sf-pill${rankSegments.has(s)?' on':''}" role="button" tabindex="0" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</span>`).join('');
+  rankSegHost.innerHTML = [...rankSegments].map(s=>`<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`).join('');
+  if(rankSectorList) rankSectorList.innerHTML = SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${rankSegments.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${rankSegments.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
+  if(rankSectorBtnText) rankSectorBtnText.textContent = rankSegments.size===1 ? segName([...rankSegments][0]) : `${rankSegments.size} sectors selected`;
   const toggle = s => {
     if(rankSegments.has(s) && rankSegments.size===1) return;
     if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
@@ -1664,10 +1686,24 @@ function renderRankSegments(){
     p.addEventListener('click',()=>toggle(p.dataset.s));
     p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(p.dataset.s); } });
   });
+  if(rankSectorList) rankSectorList.querySelectorAll('.co-select-opt').forEach(o=>{
+    o.addEventListener('click',()=>toggle(o.dataset.s));
+    o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(o.dataset.s); } });
+  });
   if(rankClearBtn && !rankClearBtn.__wired){
-    rankClearBtn.addEventListener('click',()=>{ rankSegments = new Set(SEGMENTS); renderRankSegments(); drawTop(); });
+    rankClearBtn.addEventListener('click',()=>{ rankSegments = new Set([[...rankSegments][0] || SEGMENTS[0]]); renderRankSegments(); drawTop(); });
     rankClearBtn.__wired = 1;
   }
+}
+if(rankSectorBtn && rankSectorSelect){
+  rankSectorBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=rankSectorSelect.classList.toggle('open');
+    rankSectorBtn.setAttribute('aria-expanded',open?'true':'false');
+  });
+  if(rankSectorPanel) rankSectorPanel.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>{ rankSectorSelect.classList.remove('open'); rankSectorBtn.setAttribute('aria-expanded','false'); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ rankSectorSelect.classList.remove('open'); rankSectorBtn.setAttribute('aria-expanded','false'); } });
 }
 function syncRankControls(){
   const isAll = coViewMode === 'all';
@@ -1968,6 +2004,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.22', date:'2026-07-03', sp:1.5, title:'Ranking sector picker',
+    desc:'Rankings now show selected sectors only and add choices through a dropdown.',
+    detail:'Replaced the all-sector pill row with a custom multi-select dropdown and removable selected-sector chips. Clear all now retains the first selected sector, and the final sector cannot be removed, so rankings always have one active sector.',
+    cat:'UI'},
   {v:'v0.2.21', date:'2026-07-02', sp:2, title:'Company rankings range',
     desc:'The Companies page now uses the same four KPI cards as the Markets page: revenue, employees, median salary and turnover.',
     detail:'Replaced the wide People & pay pill with separate employees and salary cards, added the missing revenue card, and kept the company Risk field in the profile box instead. First-year company turnover now shows the turnover value directly instead of a fake YoY comparison when no prior year exists.',
