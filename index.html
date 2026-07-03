@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.22</title>
+<title>Markets — LT agencies · v0.2.23</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -550,7 +550,7 @@
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
-      <span class="nav-version">v0.2.22</span>
+      <span class="nav-version">v0.2.23</span>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -2004,6 +2004,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.23', date:'2026-07-03', sp:0.5, title:'Ranking picker deploy',
+    desc:'Republished the verified ranking sector picker after a failed Pages deployment.',
+    detail:'GitHub Pages built v0.2.22 successfully but its publish step failed and the retry became stuck before entering the queue. This release supersedes that wedged deployment with the same tested ranking-picker behavior.',
+    cat:'OPS'},
   {v:'v0.2.22', date:'2026-07-03', sp:1.5, title:'Ranking sector picker',
     desc:'Rankings now show selected sectors only and add choices through a dropdown.',
     detail:'Replaced the all-sector pill row with a custom multi-select dropdown and removable selected-sector chips. Clear all now retains the first selected sector, and the final sector cannot be removed, so rankings always have one active sector.',
