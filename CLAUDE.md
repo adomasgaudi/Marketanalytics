@@ -14,9 +14,7 @@ Hook-vs-context framework + full events/hooks/permissions map → [Schema.md](Sc
 
 Shorthands the owner may type; mostly inherited from the Data repo. Unknown tag → search for the closest, act on it, confirm (DATA-25).
 
-- **`#remember`** — persist a rule/preference durably, then confirm where saved
-- **`-scr`** — look at the owner's latest screenshot (`~/Pictures/Screenshots`), read it, act on it
-- **`#co-work`** — other AIs editing at once: don't camp on hot files, merge often
+- **`#remember`** — persist a rule/preference durably, then confirm where saved- **`#co-work`** — other AIs editing at once: don't camp on hot files, merge often
 - **`#careful`** — risky/many-part work: split, plan first, one part per turn
 - **`#senior`** — reason like the long-term owner: SSOT, invariants, root cause, blast radius
 - **`#prune`** — fix the whole class, not just the shown case; sweep every sibling
