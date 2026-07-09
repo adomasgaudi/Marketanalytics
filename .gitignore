@@ -8,3 +8,6 @@ data/raw/
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Persistent Chrome profile for the rekvizitai scraper (holds the CF clearance cookie)
+data/.pwprofile/

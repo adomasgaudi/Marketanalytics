@@ -184,6 +184,80 @@ def prose_facts(soup, add):
     m = re.search(r"įmonė yra\s+(neskolinga|skolinga)\s+bendrovei\s+([\w\s,\.\"„“]+?)\s*\.", body)
     if m:
         add("Kreditingumas (Juris LT)", f"{m.group(1)} — {clean(m.group(2))}")
+    # SODRA insurer code (draudėjo kodas) — prose only, no table cell
+    m = re.search(r"draudėjo kodas\s+(\d+)", body)
+    if m:
+        add("SODRA draudėjo kodas", m.group(1))
+    # "as-of" freshness stamp for the headcount/debt figures on this tab
+    m = re.search(r"(\d{4}-\d{2}-\d{2})\s+dienos\s+(?:pradžioje|duomenimis)", body)
+    if m:
+        add("Duomenų data", m.group(1))
+
+
+def info_items(soup, add):
+    """Overview headline widgets that live OUTSIDE tables (div.info-item):
+    e.g. 'Grynasis pelnas' (latest net profit) and 'Sumokėti mokesčiai'
+    (taxes paid). Each is a name/value pair with an optional period in
+    span.extra-info; 'Nauja' badges and 'Plačiau ›' links are chrome."""
+    for item in soup.select("div.info-item"):
+        nm = item.find("div", class_="name")
+        val = item.find("div", class_="value")
+        if not nm or not val:
+            continue
+        for badge in nm.select("span.status-new"):
+            badge.extract()
+        field = clean(nm.get_text(" ", strip=True))
+        extra = val.find("span", class_="extra-info")
+        period = clean(extra.get_text(" ", strip=True)) if extra else ""
+        for junk in val.select("a, span.extra-info, span.status-new"):
+            junk.extract()
+        value = clean(val.get_text(" ", strip=True))
+        if period and period not in value:
+            value = f"{value} {period}".strip()
+        if field and value:
+            add(field, value)
+
+
+def esg_and_reviews(soup, add):
+    """ESG sustainability score (p.certificate-esg__score) and the distinct
+    review count (meta[itemprop=reviewCount]) — neither is a table cell."""
+    esg = soup.select_one("p.certificate-esg__score")
+    if esg:
+        add("Tvarumo indeksas", esg.get_text(strip=True))
+    mc = soup.select_one('meta[itemprop="reviewCount"]')
+    if mc and mc.get("content"):
+        add("Atsiliepimų skaičius", mc["content"])
+
+
+def debt_panels(soup, add):
+    """Current debt cards on the Skolos tab (div.debts-panel-item): each has a
+    title (Įmonės skola VMI / Sodrai / Kitų įmonių paskelbtos skolos) and one or
+    more debt-title/debt-value rows. Emitted as 'Title — debt-title' = value."""
+    for panel in soup.select("div.debts-panel-item"):
+        t = panel.find(class_="debts-panel-item__title")
+        title = clean(t.get_text(" ", strip=True)) if t else ""
+        if not title:
+            continue
+        titles = panel.select("div.debt-title")
+        values = panel.select("div.debt-value")
+        for dt, dv in zip(titles, values):
+            k = clean(dt.get_text(" ", strip=True))
+            v = clean(dv.get_text(" ", strip=True))
+            if k and v:
+                add(f"{title} — {k}", v)
+
+
+def skolos_widgets(soup, add):
+    """Non-table Skolos extras: PreScore creditworthiness class (encoded only in
+    the img.credit-risk filename) and the debt-change record count."""
+    img = soup.select_one("img.credit-risk")
+    if img and img.get("src"):
+        m = re.search(r"kreditingumas/(\d+)\.png", img["src"])
+        if m:
+            add("PreScore kreditingumo klasė", f"{m.group(1)}/10")
+    cnt = soup.select_one("h4.debt-heading span.count")
+    if cnt:
+        add("Skolų pokyčių įrašų skaičius", clean(cnt.get_text()).strip("() "))
 
 
 def parse_tab(key, path):
@@ -204,6 +278,8 @@ def parse_tab(key, path):
     if key == "imone":
         overview_facts(soup, add)
         label_value_rows(soup, add)
+        info_items(soup, add)
+        esg_and_reviews(soup, add)
     elif key == "finansai":
         finances_grid(soup, add)
         chart_series(html, add)
@@ -212,6 +288,9 @@ def parse_tab(key, path):
         prose_facts(soup, add)
         chart_series(html, add)
         label_value_rows(soup, add)
+        if key == "skolos":
+            debt_panels(soup, add)
+            skolos_widgets(soup, add)
     return rows
 
 

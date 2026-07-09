@@ -30,42 +30,42 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from playwright.async_api import async_playwright
+import browser_session as BS
 import scrape_company as SC
 import parse_company as PC
 
-
-async def resolve_slug(page, name):
-    """name -> {slug,name,registerNumber} via the search API, or None."""
-    try:
-        res = await page.evaluate("""async (q) => {
-            const r = await fetch('/api/public/text-search/'+encodeURIComponent(q),
-                                  {headers:{'Accept':'application/json'}});
-            return await r.text();
-        }""", name)
-        data = json.loads(res)
-        items = data.get("data") or []
-        return items[0] if items else None
-    except Exception:
-        return None
+resolve_slug = BS.text_search  # name -> {slug,name,registerNumber} | None
 
 
-async def resolve_all(names):
-    """Resolve a list of company names to slugs (one browser, same-origin XHR)."""
+async def resolve_all_in(ctx, names):
+    """Resolve company names to slugs inside an already-cleared context."""
     out = []  # (slug, requested_name, resolved_name)
-    async with async_playwright() as p:
-        b = await p.chromium.launch(headless=True)
-        pg = await b.new_page()
-        await pg.goto("https://rekvizitai.vz.lt/", wait_until="domcontentloaded", timeout=30000)
-        for nm in names:
-            hit = await resolve_slug(pg, nm)
-            if hit and hit.get("slug"):
-                out.append((hit["slug"], nm, hit.get("name", nm)))
-                print(f"  resolved  {nm!r:32} -> {hit['slug']}  ({hit.get('name')})")
-            else:
-                print(f"  NOT FOUND {nm!r}")
-        await b.close()
+    pg = await ctx.new_page()
+    await pg.goto(BS.BASE + "/", wait_until="domcontentloaded", timeout=45000)
+    for nm in names:
+        hit = await resolve_slug(pg, nm)
+        if hit and hit.get("slug"):
+            out.append((hit["slug"], nm, hit.get("name", nm)))
+            print(f"  resolved  {nm!r:32} -> {hit['slug']}  ({hit.get('name')})")
+        else:
+            print(f"  NOT FOUND {nm!r}")
+    await pg.close()
     return out
+
+
+async def resolve_and_scrape(names, direct_slugs):
+    """One browser, one human check: resolve names, then scrape every slug."""
+    async with BS.session() as ctx:
+        if not await BS.ensure_clearance(ctx):
+            return [], []
+        resolved = await resolve_all_in(ctx, names) if names else []
+        slugs = list(dict.fromkeys([s for s, *_ in resolved] + direct_slugs))
+        if not slugs:
+            return resolved, []
+        print(f"\nScraping {len(slugs)} compan{'y' if len(slugs)==1 else 'ies'}: "
+              f"{', '.join(slugs)}")
+        ok = await SC.scrape_with_context(ctx, slugs)
+        return resolved, ok
 
 
 def read_file(path):
@@ -100,19 +100,13 @@ def main():
         for it in args:
             (direct_slugs if looks_like_slug(it) else names).append(it)
 
-    # 1. resolve names -> slugs
-    resolved = []  # (slug, display_or_None)
+    # 1+2. resolve names -> slugs, then scrape — same browser, one human check
     if names:
         print("Resolving names via search API:")
-        resolved = asyncio.run(resolve_all(names))
-    slugs = [s for s, *_ in resolved] + direct_slugs
-    slugs = list(dict.fromkeys(slugs))  # de-dup, keep order
+    resolved, ok = asyncio.run(resolve_and_scrape(names, direct_slugs))
+    slugs = list(dict.fromkeys([s for s, *_ in resolved] + direct_slugs))
     if not slugs:
         sys.exit("No slugs to scrape.")
-
-    # 2. scrape all
-    print(f"\nScraping {len(slugs)} compan{'y' if len(slugs)==1 else 'ies'}: {', '.join(slugs)}")
-    ok = asyncio.run(SC.scrape_many(slugs))
 
     # 3. parse + upsert each
     print("\nParsing:")

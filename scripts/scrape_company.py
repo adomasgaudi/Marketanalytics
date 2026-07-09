@@ -24,7 +24,8 @@ try:
 except Exception:
     pass
 
-from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import browser_session as BS
 
 TABS = {
     "imone":        "/",                      # Įmonė (overview)
@@ -71,6 +72,12 @@ async def _fetch_tab(context, slug, key, path):
                 html = await page.content()
             except Exception:
                 html = ""
+            if BS.is_challenge(html, await page.title()):
+                # Cloudflare's gate is ~27 kB — big enough to sail past a size
+                # check and poison data/raw with a challenge page. Never save it.
+                print(f"   ! [{slug}/{key}] cloudflare challenge, not saving", flush=True)
+                await asyncio.sleep(2.0)
+                continue
             if len(html) > 2000:      # real page (empty shell is ~39 bytes)
                 with open(os.path.join(OUT_DIR, f"{slug}_{key}.html"), "w", encoding="utf-8") as f:
                     f.write(html)
@@ -97,31 +104,35 @@ async def scrape_slug(context, slug):
     return sizes.get("imone", 0)
 
 
-async def scrape_many(slugs, company_workers=2):
-    """Scrape every slug reusing one browser. Tabs of a company load in parallel;
-    up to `company_workers` companies are processed concurrently."""
+async def scrape_with_context(context, slugs, company_workers=2):
+    """Scrape every slug in an already-cleared context. Tabs of a company load in
+    parallel; up to `company_workers` companies are processed concurrently."""
     os.makedirs(OUT_DIR, exist_ok=True)
     ok = []
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context()
-        sem = asyncio.Semaphore(company_workers)
-        done = 0
+    sem = asyncio.Semaphore(company_workers)
+    done = 0
 
-        async def one(i, slug):
-            nonlocal done
-            async with sem:
-                size = await scrape_slug(context, slug)
-                done += 1
-                if size:
-                    ok.append(slug)
-                    print(f"[{done}/{len(slugs)}] {slug} ok (overview {size} bytes)", flush=True)
-                else:
-                    print(f"[{done}/{len(slugs)}] {slug} ! no overview HTML", flush=True)
+    async def one(slug):
+        nonlocal done
+        async with sem:
+            size = await scrape_slug(context, slug)
+            done += 1
+            if size:
+                ok.append(slug)
+                print(f"[{done}/{len(slugs)}] {slug} ok (overview {size} bytes)", flush=True)
+            else:
+                print(f"[{done}/{len(slugs)}] {slug} ! no overview HTML", flush=True)
 
-        await asyncio.gather(*[one(i, s) for i, s in enumerate(slugs, 1)])
-        await browser.close()
+    await asyncio.gather(*[one(s) for s in slugs])
     return ok
+
+
+async def scrape_many(slugs, company_workers=2):
+    """Own the browser: persistent profile + one human check, then scrape."""
+    async with BS.session() as context:
+        if not await BS.ensure_clearance(context):
+            return []
+        return await scrape_with_context(context, slugs, company_workers)
 
 
 if __name__ == "__main__":

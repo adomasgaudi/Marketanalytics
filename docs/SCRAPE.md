@@ -1,8 +1,8 @@
 # Scraping rekvizitai.vz.lt
 
-> **Status: live (v67).** Generic per-company pipeline in `scripts/`; combined
-> output in `data/rek_tabs.json`, rendered by the standalone **Rekvizitai** page.
-> Currently holds **6 vijos** and **Adell reklama**.
+> **Status: live.** Generic per-company pipeline in `scripts/`; combined output
+> in `data/rek_tabs.json`, rendered by the standalone **Rekvizitai** page.
+> `scripts/autoscrape.py` keeps it in sync with `data/data.json` on its own.
 
 ## What it covers
 
@@ -16,7 +16,32 @@ panels. The pipeline scrapes the four data tabs (Ataskaitos is a paywall, skippe
 | Darbuotojai | `/darbuotoju-skaicius/` | headcount + annual average + dated chart points |
 | Skolos | `/skolos/` | registered-debt status, dated VMI/Sodra debt history, credit check |
 
-## Add a company (the whole flow)
+## The one command (auto-scrape)
+
+`data/data.json` decides *which* companies exist; `data/rek_tabs.json` holds the
+scraped detail. To close the gap between them:
+
+```bash
+python3 scripts/autoscrape.py --dry-run   # list brands with no scraped block
+python3 scripts/autoscrape.py             # resolve slugs, scrape, parse, write
+python3 src/build_site.py                 # then rebuild the site
+```
+
+It diffs the two files, resolves each missing brand's slug through the site's
+search API (slugs are historical registry names — `Fabula` lives at
+`viesuju_rysiu_partneriai`, so they can't be guessed), scrapes every tab, parses
+with the brand forced, and writes `rek_tabs.json` once at the end.
+
+### The Cloudflare check
+
+rekvizitai now gates pages behind a Cloudflare interstitial ("Luktelėkite…") that
+no throwaway browser clears. `scripts/browser_session.py` keeps a **persistent
+Chrome profile** in `data/.pwprofile/` (gitignored): a visible window opens, you
+click the check **once**, the clearance cookie is stored, and every later page —
+and every later run — reuses it. Nothing reloads while you are solving it.
+Once a cookie exists, `REK_HEADLESS=1` runs the whole thing without a window.
+
+## Add one company by hand
 
 `<slug>` is the path segment in `https://rekvizitai.vz.lt/imone/<slug>/`.
 
