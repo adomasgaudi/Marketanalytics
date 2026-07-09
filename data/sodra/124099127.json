@@ -5,9 +5,9 @@
  "ecoActName": "Viešųjų ryšių ir komunikacijos veikla",
  "municipality": "Vilniaus m. sav.",
  "latest": {
-  "month": 202604,
-  "avgWage": 3856.1,
-  "numInsured": 34
+  "month": 202605,
+  "avgWage": 4608.12,
+  "numInsured": 33
  },
  "months": [
   {
@@ -681,6 +681,12 @@
    "avgWage": 3856.1,
    "numInsured": 34,
    "tax": 29275.0
+  },
+  {
+   "month": 202605,
+   "avgWage": 4608.12,
+   "numInsured": 33,
+   "tax": 34040.17
   }
  ],
  "source": "atvira.sodra.lt (open data)"

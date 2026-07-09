@@ -5,9 +5,9 @@
  "ecoActName": "Reklamos agentūrų veikla",
  "municipality": "Vilniaus m. sav.",
  "latest": {
-  "month": 202604,
-  "avgWage": 4211.4,
-  "numInsured": 11
+  "month": 202605,
+  "avgWage": 3444.24,
+  "numInsured": 12
  },
  "months": [
   {
@@ -681,6 +681,12 @@
    "avgWage": 4211.4,
    "numInsured": 11,
    "tax": 10752.88
+  },
+  {
+   "month": 202605,
+   "avgWage": 3444.24,
+   "numInsured": 12,
+   "tax": 9509.46
   }
  ],
  "source": "atvira.sodra.lt (open data)"

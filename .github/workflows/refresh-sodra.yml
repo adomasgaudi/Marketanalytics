@@ -27,13 +27,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      # scrape_sodra.py drives a headless Chromium to read the API as the site's own
-      # UI does; plain requests may be rejected, so keep the browser.
-      - name: Install Playwright
-        run: |
-          pip install playwright
-          playwright install --with-deps chromium
-
+      # No pip install: scrape_sodra.py is stdlib-only (urllib). It used to drive
+      # headless Chromium, which renders a JSON response as an empty body — every
+      # company failed while the job stayed green.
       - name: Scrape every company
         run: python scripts/scrape_sodra.py --all
 
