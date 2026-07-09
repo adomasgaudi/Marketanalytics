@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.24</title>
+<title>Markets — LT agencies · v0.2.28</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -228,7 +228,7 @@
   .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .grp-panel[hidden]{display:none}
   /* Default view hides the dev-only version + changelog popup; Dev mode shows everything. */
-  html[data-mode="default"] .nav-version,html[data-mode="default"] .hist-fab,html[data-mode="default"] .dbg-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] .dev-version{display:none}
+  html[data-mode="default"] .nav-version,html[data-mode="default"] .hist-fab,html[data-mode="default"] .dbg-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] .dev-version{display:none}
   /* Formula disclosures under KPI cards are Dev-only (hidden in the clean Default view). */
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
@@ -545,13 +545,14 @@
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
-  <span class="nav-version">v0.2.24</span>
+  <span class="nav-version">v0.2.28</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
       <button id="viewToggle"></button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
+      <button id="sodraRefresh">🔄 Refresh Sodra</button>
     </div>
   </div>
   <div class="nav-sub">113 brands · 2019–2024</div>
@@ -559,7 +560,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.24</span></h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.28</span></h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -905,6 +906,70 @@ function applyGraphPan(on){ graphPan=!!on; document.documentElement.classList.to
   const b=document.getElementById('graphPanToggle'); if(b) b.textContent = graphPan?'🔓 Graph pan: ON':'🔒 Graph pan: off'; }
 applyGraphPan(false);
 (function(){ const b=document.getElementById('graphPanToggle'); if(b) b.addEventListener('click',()=>{ applyGraphPan(!graphPan); document.getElementById('settingsMenu').classList.remove('open'); }); })();
+
+// ---------- Refresh Sodra (dev-mode only) ----------
+// A static GitHub Pages page cannot scrape — there is no server. So the button fires the
+// refresh-sodra.yml workflow via workflow_dispatch; the Action scrapes atvira.sodra.lt,
+// rebuilds index.html and pushes. Pages then redeploys and we reload.
+//
+// The PAT is read from localStorage and NEVER written into this file: a token committed to
+// a public repo is auto-revoked by GitHub secret scanning within minutes, so an in-page
+// token would break the button by design. Owner pastes it once; visitors just see a prompt
+// for a token they don't have. Clear it with: localStorage.removeItem('ghToken')
+const GH_REPO='adomasgaudi/Marketanalytics', GH_FLOW='refresh-sodra.yml';
+(function(){
+  const btn=document.getElementById('sodraRefresh'); if(!btn) return;
+  const LABEL='🔄 Refresh Sodra';
+  const say=t=>{ btn.textContent=t; };
+  const token=()=>{
+    let t=null; try{ t=localStorage.getItem('ghToken'); }catch(e){}
+    if(!t){
+      t=prompt('GitHub token (repo + workflow scope). Stored in this browser only, never in the page.');
+      if(!t) return null;
+      try{ localStorage.setItem('ghToken', t.trim()); }catch(e){}
+    }
+    return t.trim();
+  };
+  const api=(path,opt={})=>fetch('https://api.github.com/repos/'+GH_REPO+path, Object.assign({
+    headers:{Authorization:'Bearer '+_tok, Accept:'application/vnd.github+json'}}, opt));
+  let _tok=null, busy=false;
+
+  // Poll the run we just created until it leaves 'in_progress'. GitHub gives no run id back
+  // from a dispatch, so we grab the newest run of this workflow started after we fired.
+  async function watch(since){
+    for(let i=0;i<120;i++){                       // ~10 min ceiling; a full 117-company scrape is ~4 min
+      await new Promise(r=>setTimeout(r,5000));
+      const r=await api('/actions/workflows/'+GH_FLOW+'/runs?per_page=5');
+      if(!r.ok) continue;
+      const run=(await r.json()).workflow_runs.find(w=>new Date(w.created_at)>=since);
+      if(!run){ say('⏳ queued…'); continue; }
+      if(run.status!=='completed'){ say('⏳ scraping… '+(i*5)+'s'); continue; }
+      return run.conclusion;                       // 'success' | 'failure' | 'cancelled'
+    }
+    return 'timed_out';
+  }
+
+  btn.addEventListener('click', async e=>{
+    e.stopPropagation();                           // keep the settings menu open while it runs
+    if(busy) return;
+    _tok=token(); if(!_tok) return;
+    busy=true; say('⏳ starting…');                 // DATA-46: immediate feedback, never a frozen control
+    const since=new Date(Date.now()-10000);        // 10s slack for clock skew between us and GitHub
+    try{
+      const r=await api('/actions/workflows/'+GH_FLOW+'/dispatches',
+        {method:'POST', body:JSON.stringify({ref:'main'})});
+      if(r.status===401||r.status===403){
+        try{ localStorage.removeItem('ghToken'); }catch(e){}   // bad/expired token — re-prompt next click
+        say('🔒 bad token'); busy=false; setTimeout(()=>say(LABEL),3000); return;
+      }
+      if(!r.ok){ say('⚠ '+r.status); busy=false; setTimeout(()=>say(LABEL),3000); return; }
+      const outcome=await watch(since);
+      if(outcome==='success'){ say('✅ reloading…'); location.reload(true); return; }
+      say(outcome==='timed_out' ? '⚠ still running' : '⚠ '+outcome);
+    }catch(err){ say('⚠ '+String(err.message||err).slice(0,18)); }
+    busy=false; setTimeout(()=>say(LABEL),4000);
+  });
+})();
 document.getElementById('settingsCog').addEventListener('click', e=>{
   e.stopPropagation();
   document.getElementById('settingsMenu').classList.toggle('open');
@@ -2005,6 +2070,10 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.28', date:'2026-07-09', sp:3, title:'Refresh Sodra button',
+    desc:'Dev-mode Settings button re-scrapes Sodra via a GitHub Action, then reloads.',
+    detail:'A static Pages site has no server, so the button POSTs workflow_dispatch to refresh-sodra.yml, which runs scrape_sodra.py --all (every Įmonės kodas in rek_tabs.json), rebuilds index.html and pushes; Pages redeploys and the page reloads. The PAT lives in localStorage, never in the committed HTML — GitHub secret scanning auto-revokes tokens pushed to a public repo, so an in-page token would kill the feature. The button polls run status with live elapsed time (DATA-46) and clears a rejected token so the next click re-prompts. Hidden in Default mode.',
+    cat:'META'},
   {v:'v0.2.24', date:'2026-07-04', sp:0.5, title:'Version badge nav placement',
     desc:'Moved the version badge out of the settings dropdown into the nav bar for better visibility.',
     detail:'The version badge was previously inside the settings menu, requiring a click to see it. Now it sits directly in the top navigation bar, visible at all times in dev mode. This follows the original intent of having the version visible in the nav area.',

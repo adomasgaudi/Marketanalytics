@@ -3,6 +3,7 @@
 
     python3 scripts/scrape_sodra.py <jarCode> [<jarCode> ...]
     e.g. python3 scripts/scrape_sodra.py 304405052
+    python3 scripts/scrape_sodra.py --all   # every company code in rek_tabs.json
 
 <jarCode> is the Juridinių asmenų registras (company) code — the same code the
 rekvizitai scrape already captures as "Įmonės kodas". For each company we:
@@ -30,7 +31,24 @@ except Exception:
 from playwright.async_api import async_playwright
 
 API = "https://atvira.sodra.lt/imones-rest"
-OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "sodra")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR = os.path.join(ROOT, "data", "sodra")
+REK = os.path.join(ROOT, "data", "rek_tabs.json")
+
+
+def all_jar_codes():
+    """Every "Įmonės kodas" in rek_tabs.json — the same key build_site.py joins on,
+    so --all covers exactly the companies whose Sodra block can reach the page."""
+    rek = json.load(open(REK, encoding="utf-8"))
+    codes = []
+    for block in rek["companies"]:
+        for tab in block.get("tabs", {}).values():
+            for field, value in tab.get("rows", []):
+                if field == "Įmonės kodas":
+                    code = str(value).strip()
+                    if code and code not in codes:
+                        codes.append(code)
+    return codes
 
 
 async def _json(pg, url):
@@ -104,5 +122,8 @@ async def main(jars):
 if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
-        sys.exit("usage: python3 scripts/scrape_sodra.py <jarCode> [<jarCode> ...]  (e.g. 304405052)")
+        sys.exit("usage: python3 scripts/scrape_sodra.py <jarCode> [...] | --all")
+    if "--all" in args:
+        args = all_jar_codes()
+        print(f"--all: {len(args)} company codes from rek_tabs.json")
     asyncio.run(main(args))

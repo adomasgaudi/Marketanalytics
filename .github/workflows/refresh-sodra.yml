@@ -1,0 +1,58 @@
+
+name: Refresh Sodra data
+
+# Triggered from the dashboard's dev-mode "Refresh Sodra" button (workflow_dispatch
+# via the GitHub REST API), or by hand from the Actions tab.
+#
+# Sodra (atvira.sodra.lt) is an open JSON REST API with no bot check, so unlike
+# the rekvizitai scrape this runs fine from a datacenter IP — no Cloudflare.
+on:
+  workflow_dispatch:
+
+# The job rewrites data/sodra/*.json and the generated index.html, so it needs to push.
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-sodra
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # scrape_sodra.py drives a headless Chromium to read the API as the site's own
+      # UI does; plain requests may be rejected, so keep the browser.
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Scrape every company
+        run: python scripts/scrape_sodra.py --all
+
+      # index.html is generated (BULD-01) — never hand-edited. Rebuilding is what
+      # actually puts the new Sodra numbers on the live page (live-deploy rule).
+      - name: Rebuild index.html
+        run: python src/build_site.py
+
+      - name: Commit if data changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- data/sodra index.html; then
+            echo "Sodra data unchanged — nothing to commit."
+            exit 0
+          fi
+          # v0 = data-only refresh, no site version bump (BULD-02 counts human changes).
+          # Subject still satisfies the GIT-01 regex enforced by .githooks/commit-msg.
+          n=$(git diff --name-only -- data/sodra | wc -l)
+          git add data/sodra index.html
+          git commit -m "v0 DATA-46 | refresh Sodra data ($n companies changed) | 0 sp"
+          git push
