@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.42</title>
+<title>Markets — LT agencies · v0.2.43</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -591,7 +591,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.42</span>
+    <span class="nav-version" id="navVersion">v0.2.43</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1322,10 +1322,14 @@ function renderCompany(brand){
   const web=REK_WEB[brand]||WEBSITE[brand]||null;
   let webV=nd;
   if(web){ let u=String(web).trim(); if(!/^https?:\/\//.test(u)) u='https://'+u; const dom=u.replace(/^https?:\/\/(www\.)?/,'').replace(/\/+$/,''); webV=`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(dom)}</a>`; }
+  const acts=(m24.activities&&m24.activities.length)?m24.activities
+    : [...mineYears].reverse().map(y=>mine[y]).find(r=>r.activities&&r.activities.length)?.activities||[];
+  const segV=acts.length?acts.map(s=>`<span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'};opacity:1;vertical-align:-1px;margin-right:4px"></span>${esc(segName(s))}`).join(' '):nd;
   const infoRows=[
     ['CEO', REK_CEO[brand]?esc(REK_CEO[brand]):nd],
     ['Founded', FOUNDED[brand]?esc(FOUNDED[brand]):nd],
     ['Employees', m24.employees!=null?Math.round(m24.employees):nd],
+    ['Segment', segV],
     ['Risk', m24.risk?esc(m24.risk):nd],
     ['Type', ctype?esc(ctype):nd],
     ['Website', webV],
@@ -2325,6 +2329,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.43', date:'2026-07-10', sp:0.5, title:'Company profile segment',
+    desc:'The company info card now shows which market segment(s) the agency belongs to.',
+    detail:'Added a Segment row to the profile box on the Companies page (coloured dot + English label per activity). Uses the selected year’s activities, falling back to the latest year with segment data when missing.'},
   {v:'v0.2.42', date:'2026-07-10', sp:0.5, title:'Segment metric pill toggles',
     desc:'By-segment all-years revenue/people pickers use CSS seg buttons, not native selects.',
     detail:'Replaced revAllMetricSel and peopleAllMode &lt;select&gt;s with the same .seg pill row used elsewhere (Revenue, Turnover, Net profit, Employees, Wages · Employees/company vs Median salary). Horizontally scrollable on narrow screens.'},
