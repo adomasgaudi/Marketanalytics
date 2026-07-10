@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.68</title>
+<title>Markets — LT agencies · v0.2.70</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -75,7 +75,7 @@
   header{margin-bottom:24px}
   header h1{font-size:26px;font-weight:700}
   header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
-  .hist-fab{position:fixed;right:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:#111;background:#fff;border:1px solid #d4d4d4;border-radius:4px;padding:7px 12px;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .hist-fab{position:fixed;right:16px;bottom:60px;z-index:500;font-size:12px;font-weight:600;color:#111;background:#fff;border:1px solid #d4d4d4;border-radius:4px;padding:7px 12px;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .hist-fab:hover{border-color:#aaa;color:#000;background:#fafafa}
   .hist-pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .hist-pager button{font-family:inherit;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer}
@@ -435,6 +435,12 @@
   .sub-hd{font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--text)}
   .sub-hd:first-of-type{margin-top:10px}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
+  /* Fixed bottom control bar: year row + basis toggle pinned to the viewport bottom, always reachable while scrolling. One per view (hidden with its inactive view). */
+  .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:400;background:var(--panel);border-top:1px solid var(--border);box-shadow:0 -1px 6px rgba(0,0,0,.14);padding:7px max(24px, calc((100% - var(--app-w)) / 2))}
+  .bottom-bar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
+  .bottom-bar .yr-row{flex:1 1 200px;min-width:0;margin-bottom:0;padding-bottom:0}
+  .bottom-bar .seg{flex:0 0 auto}
+  #dashView.view.active,#companiesView.view.active{padding-bottom:60px}   /* clear the fixed bottom bar so the footer isn't hidden behind it */
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   /* barely-there horizontal scrollbar for the year row + company pills (very thin, faint) */
   .yr-row::-webkit-scrollbar,.ov-chips::-webkit-scrollbar{height:3px}
@@ -463,7 +469,7 @@
   /* Custom (non-native, DATA-20) company dropdown + sticky deep-dive bar */
   .co-select{position:relative;display:inline-block;min-width:210px}
   /* sticky company picker: stays under the nav while the long profile/charts scroll */
-  .co-sticky{position:static;display:block;background:transparent;padding:0;margin:0 0 12px}
+  .co-sticky{position:relative;display:block;background:transparent;padding:0;margin:0 0 12px}   /* relative (not sticky): scrolls away, but stays the positioning anchor for the dropdown panel */
   /* page-level sticky control bar (picker + year row + Full/Per-employee) — stays pinned across the WHOLE Companies page */
   .co-stickybar{position:sticky;top:44px;z-index:80;background:var(--bg);padding:8px 0 6px;margin-bottom:10px;border-bottom:1px solid var(--border)}
   .co-stickybar .co-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0 0 6px}
@@ -636,15 +642,13 @@
 </head>
 <body>
 
-<div id="tempHello" style="background:#facc15;color:#111;text-align:center;padding:8px;font-weight:600;">hello</div>
-
 <nav class="topnav">
   <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.68</span>
+    <span class="nav-version" id="navVersion">v0.2.70</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1699,7 +1703,7 @@ function buildOvList(){
 (function(){
   const sel=document.getElementById('ovCompanySelect'); if(!sel) return;
   const btn=document.getElementById('ovCoBtn'), panel=document.getElementById('ovCoPanel'), search=document.getElementById('ovCoSearch');
-  btn.addEventListener('click',e=>{ e.stopPropagation(); if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); panel.style.display='none'; } else { sel.classList.add('open'); btn.setAttribute('aria-expanded','true'); panel.style.display='block'; closeOvNestedDropdowns(null); search.value=''; buildOvList(); search.focus(); } });
+  btn.addEventListener('click',e=>{ e.stopPropagation(); if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); panel.style.display='none'; } else { sel.classList.add('open'); btn.setAttribute('aria-expanded','true'); panel.style.display='block'; closeOvNestedDropdowns(null); search.value=''; buildOvList(); search.focus({preventScroll:true}); } });
   panel.addEventListener('click',e=>{
     e.stopPropagation();
     if(e.target.closest('button, .co-select-search, .co-select-opt, .sf-pill')) return;
@@ -2425,6 +2429,12 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.70', date:'2026-07-10', sp:3, title:'Controls to fixed bottom bar',
+    desc:'Removed the temp hello; year row + basis toggle now live in a fixed bottom bar on both Markets and Companies pages.',
+    detail:'Each page-view gets one .bottom-bar pinned to the viewport bottom (ensureBottomBar), so the controls stay reachable while scrolling. Markets: mktYearRow + the Average/company · Per employee · Whole market toggle move there and drive the whole page; the redundant all-time #marketMode2 bar is dropped (the bottom toggle still syncs both). The year row hides in all-time view (it left the auto-hiding tab panel, so mktViewWord now toggles its display explicitly). Companies: only the company pills stay sticky at the top; coYearRow + Full company/Per employee move to the bottom bar (coViewWord already hides the year row in all-time). The Dev-mode version FAB is raised to bottom:60px so it clears the bar without covering it. Views get 60px bottom padding so the footer isn’t hidden.'},
+  {v:'v0.2.69', date:'2026-07-10', sp:2, title:'Fix picker align, jump & pin pills',
+    desc:'Dropdown no longer opens misaligned or jumps the page; company pills stay sticky while the selector scrolls away.',
+    detail:'Three fixes to the company picker: (1) MISALIGN — v67 set the picker to position:static, which removed the anchor its absolutely-positioned dropdown panel relied on, so the panel opened against a distant ancestor (wrong place / hidden). Restored position:relative (still non-sticky, scrolls away, but anchors the panel again). (2) JUMP — opening called search.focus(), scrolling the page down to the search box; now {preventScroll:true} keeps the page put (same fix on the Rekvizitai picker). (3) PILLS — the selected-company pills row is lifted into the sticky bar so it stays pinned while the selector button itself scrolls away.'},
   {v:'v0.2.68', date:'2026-07-10', sp:0.5, title:'Temp hello banner',
     desc:'Added a temporary yellow “hello” banner at the top of the page — to be removed later.',
     detail:'Inserted a #tempHello div just inside <body>, above the topnav, as a throwaway marker. No functional change; will be deleted in a later version.'},
@@ -4611,7 +4621,7 @@ function initRek(){
     const btn=document.getElementById('rekCoBtn'), panel=document.getElementById('rekCoPanel'), search=document.getElementById('rekCoSearch');
     btn.addEventListener('click',e=>{ e.stopPropagation();
       const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false');
-      if(open){ search.value=''; buildRekCompanies(); search.focus(); }
+      if(open){ search.value=''; buildRekCompanies(); search.focus({preventScroll:true}); }
     });
     panel.addEventListener('click',e=>e.stopPropagation());
     search.addEventListener('input', buildRekCompanies);
@@ -4708,22 +4718,39 @@ try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
 try { renderCompany(ovBrand); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderCompany: '+err.message, error:err})); }   // re-run so company tab labels show brand+year now the tabs exist (errors surfaced, never silent)
 
-// Lift the company picker + year row + Full/Per-employee toggle into ONE page-level sticky bar at the
-// top of the Companies page, so the menu KEEPS following you past the Company-data card (through the
-// rankings + deep-dive). position:sticky only holds within its parent, so the controls must live at
-// page level — they drive every company chart now, not just the first card.
+// One fixed control bar per page-view, pinned to the viewport bottom so the year row + basis toggle
+// are always reachable while scrolling. Lives inside the view so it hides with its inactive view.
+function ensureBottomBar(view){
+  if(!view) return null;
+  let bar=view.querySelector('.bottom-bar');
+  if(!bar){ bar=document.createElement('div'); bar.className='bottom-bar'; view.appendChild(bar); }
+  return bar;
+}
+
+// Company controls: the PILLS stay pinned in the top .co-stickybar; the year row + Full/Per-employee
+// toggle move to the fixed BOTTOM bar, so only the pills sit sticky at the top of the Companies page.
 try{ (function(){
   const wrap=document.querySelector('#companiesView .wrap'); if(!wrap) return;
   const picker=document.getElementById('ovCompanySelect');
   const ctrl=document.getElementById('coYearRow') && document.getElementById('coYearRow').closest('.mkt-sticky');
-  if(!picker && !ctrl) return;
   const bar=document.createElement('div'); bar.className='co-stickybar';
-  if(ctrl) bar.appendChild(ctrl);   // year row + Full/Per-employee stay pinned
+  const chips=document.getElementById('ovCoChips');
+  if(chips) bar.appendChild(chips);   // company PILLS stay pinned at the TOP (the selector button does not)
+  if(ctrl) ensureBottomBar(document.getElementById('companiesView')).appendChild(ctrl);   // year row + Full/Per-employee → fixed bottom bar
   const firstCard=wrap.querySelector('.group-card');
   const before=firstCard || wrap.querySelector('.explore-btn') || wrap.querySelector('.mini-foot');
-  if(picker) wrap.insertBefore(picker, before);   // picker scrolls away — once pills exist you don't need it pinned
+  if(picker) wrap.insertBefore(picker, before);   // selector button scrolls away — pills (lifted into the bar) give control
   wrap.insertBefore(bar, before);
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'liftCompanyControls: '+err.message, error:err})); }
+
+// Market controls: year row + avg/emp/whole toggle move to the fixed BOTTOM bar (drives the whole
+// Markets page). The redundant all-time toggle (#marketMode2) is dropped — the bottom toggle syncs both.
+try{ (function(){
+  const ctrl=document.getElementById('mktYearRow') && document.getElementById('mktYearRow').closest('.mkt-sticky');
+  if(ctrl) ensureBottomBar(document.getElementById('dashView')).appendChild(ctrl);
+  const m2=document.getElementById('marketMode2'); const m2bar=m2 && m2.closest('.mkt-sticky');
+  if(m2bar) m2bar.remove();
+})(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'marketBottomBar: '+err.message, error:err})); }
 
 // PB-6 ROOT FIX: charts render during init, then makeSectionsCollapsible() + the controls-lift above
 // REPARENT them into cards, changing each container's width — so they kept the pre-card pixel scale and
@@ -4757,15 +4784,18 @@ try{ (function(){
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'coViewWord: '+err.message, error:err})); }
 
 // Same clickable-title-word view switch for the Markets page ("Markets per year" ⇄ "…all years").
-// The year row lives inside the Market-2024 panel, so switching tabs hides it automatically.
+// The year row now lives in the fixed bottom bar (not the tab panel), so hide it explicitly in all-time.
 try{ (function(){
   const word=document.getElementById('mktViewWord'); if(!word) return;
   const card=document.querySelector('#dashView .group-card');   // Market data card (Market 2024 / all time)
   const grpTabs=card && card.querySelector('.grp-tabs');
   const tabBtns=grpTabs ? [...grpTabs.querySelectorAll('.grp-tab')] : [];
   if(grpTabs) grpTabs.style.display='none';
+  const yearRow=document.getElementById('mktYearRow');   // year picker only meaningful in "per year"
   let v=0;
-  const apply=()=>{ word.textContent = v===1?'all years':'per year'; const t=tabBtns[v]; if(t) t.click(); };
+  const apply=()=>{ word.textContent = v===1?'all years':'per year';
+    if(yearRow) yearRow.style.display = v===1?'none':'';
+    const t=tabBtns[v]; if(t) t.click(); };
   const toggle=()=>{ v=v?0:1; apply(); };
   word.addEventListener('click', toggle);
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
