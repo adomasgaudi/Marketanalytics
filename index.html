@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.50</title>
+<title>Markets — LT agencies · v0.2.51</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -392,10 +392,14 @@
   .seg-filter .sf-pill.sf-all{font-style:italic}
   .seg-filter .sf-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto;opacity:.3;transition:.12s}
   .seg-filter .sf-pill.on .sf-dot{opacity:1}
+  .rank-hd{font-size:15px;font-weight:600;margin:0 0 6px}
+  .rank-chartbox{height:auto;min-height:120px}
   .rank-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
-  .rank-range{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .rank-range label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-  .rank-range select{min-width:96px}
+  .rank-tools.revall-tools{align-items:center}
+  .rank-tools .rank-sector-select{flex:0 1 auto;min-width:180px}
+  .rank-range{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:6px 0 2px}
+  .rank-range-lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .rank-yr-row{margin:0}
   .rank-clear{font:600 12px/1 inherit;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .rank-clear:hover{color:var(--text);border-color:var(--accent)}
   .rank-seg-wrap{margin:8px 0 2px}
@@ -607,7 +611,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.50</span>
+    <span class="nav-version" id="navVersion">v0.2.51</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -780,38 +784,34 @@
   </div>
 
   <h2 class="section">Company rankings</h2>
-  <div class="grid">
-    <div class="card full">
-      <h2 id="rankTitle">Top 10 &amp; bottom 10</h2>
-      <div class="controls">
-        <select id="rankMetric">
-          <option value="estimatedIncome">Revenue (€)</option>
-          <option value="revenue">Turnover (€)</option>
-          <option value="profit">Net profit (€)</option>
-          <option value="employees">Employees</option>
-          <option value="avgSalary">Avg. salary (€/mo)</option>
-          <option value="margin">Profit margin (%)</option>
-        </select>
+  <h2 id="rankTitle" class="rank-hd">Top 10 versus bottom 10</h2>
+  <div class="rank-tools revall-tools">
+    <div class="seg seg-scroll" id="rankMetric" role="group" aria-label="Ranking metric">
+      <button type="button" data-m="estimatedIncome" class="active">Revenue</button>
+      <button type="button" data-m="revenue">Turnover</button>
+      <button type="button" data-m="profit">Net profit</button>
+      <button type="button" data-m="employees">Employees</button>
+      <button type="button" data-m="avgSalary">Avg. salary</button>
+      <button type="button" data-m="margin">Profit margin</button>
+    </div>
+    <div class="co-select rank-sector-select" id="rankSectorSelect">
+      <button type="button" class="co-select-btn" id="rankSectorBtn" aria-haspopup="listbox" aria-expanded="false">
+        <span id="rankSectorBtnText">Choose sectors</span><span class="co-caret">▼</span>
+      </button>
+      <div class="co-select-panel" id="rankSectorPanel">
+        <div class="co-select-list" id="rankSectorList" role="listbox" aria-multiselectable="true"></div>
+        <button type="button" class="co-select-opt revall-select-all" id="rankSegClear">Select all</button>
       </div>
-      <div class="rank-tools">
-        <div class="rank-range" id="rankRange">
-          <label>From <select id="rankFromYear"></select></label>
-          <label>To <select id="rankToYear"></select></label>
-        </div>
-        <div class="co-select rank-sector-select" id="rankSectorSelect">
-          <button type="button" class="co-select-btn" id="rankSectorBtn" aria-haspopup="listbox" aria-expanded="false">
-            <span id="rankSectorBtnText">Choose sectors</span><span class="co-caret">▼</span>
-          </button>
-          <div class="co-select-panel" id="rankSectorPanel">
-            <div class="co-select-list" id="rankSectorList" role="listbox" aria-multiselectable="true"></div>
-          </div>
-        </div>
-        <button type="button" class="rank-clear" id="rankSegClear">Select all</button>
-      </div>
-      <div class="seg-filter rank-seg-wrap" id="rankSegments"></div>
-      <div class="chartbox tall"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
+  <div class="rank-range" id="rankRange" hidden>
+    <span class="rank-range-lbl">From</span>
+    <div class="yr-row rank-yr-row" id="rankFromYears"></div>
+    <span class="rank-range-lbl">To</span>
+    <div class="yr-row rank-yr-row" id="rankToYears"></div>
+  </div>
+  <div class="seg-filter rank-seg-wrap" id="rankSegments"></div>
+  <div class="chartbox rank-chartbox" id="chTopBox"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
 
   <h2 class="section">Company deep-dive</h2>
   <div class="dd-wrap">
@@ -1955,46 +1955,40 @@ const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-v
 
 // ---------- Top-N ranking (follows the shared Companies year row + Full/Per-employee basis) ----------
 const rankSegHost = document.getElementById('rankSegments');
-const rankFromYearSel = document.getElementById('rankFromYear');
-const rankToYearSel = document.getElementById('rankToYear');
+const rankFromYearsHost = document.getElementById('rankFromYears');
+const rankToYearsHost = document.getElementById('rankToYears');
 const rankClearBtn = document.getElementById('rankSegClear');
 const rankSectorSelect = document.getElementById('rankSectorSelect');
 const rankSectorBtn = document.getElementById('rankSectorBtn');
 const rankSectorBtnText = document.getElementById('rankSectorBtnText');
 const rankSectorPanel = document.getElementById('rankSectorPanel');
 const rankSectorList = document.getElementById('rankSectorList');
+const rankMetricSeg = document.getElementById('rankMetric');
+let rankMetricVal = 'estimatedIncome';
+let rankFromYear = YEARS[0];
+let rankToYear = YEARS[YEARS.length-1];
 let rankSegments = new Set(SEGMENTS.slice(0,1));
-
-function drawTopLegacy(){
-  const metric = rankMetric.value, year = coYear, seg = rankSegment.value;
-  const moneyMetric = ['revenue','profit','estimatedIncome'].includes(metric);
-  const perEmp = coFlowMode==='emp' && moneyMetric;   // per-employee only divides absolute € metrics
-  // one metric reader (basis-aware) — used for the value AND the prior-year value (the YoY % badge)
-  const mv = d=>{ if(!d) return null;
-    let v = metric==='margin' ? (d.estimatedIncome>50000 && d.profit!=null ? d.profit/d.estimatedIncome*100 : null) : d[metric];
-    if(perEmp && v!=null) v = d.employees>0 ? v/d.employees : null;
-    return v; };
-  let rows = DATA.filter(d=>d.year===year && (!seg || d.activities.includes(seg)));
-  rows = rows.map(d=>{ const v=mv(d), p=mv(byBrand[d.brand][year-1]);
-      return {brand:d.brand, val:v, delta:(p!=null && p>0 && v!=null)? (v/p-1)*100 : null}; })
-    .filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
-  if(!rows.length){   // partial year + financial metric (2025 has headcount/pay only) → nothing to rank
-    chTop.innerHTML='<div class="ff-empty">No '+year+' '+metric+' data yet'+(year>LAST?' — '+year+' financials land ~mid-'+(year+1)+'.':'.')+'</div>';
-    const t0=document.getElementById('rankTitle'); if(t0) t0.textContent='Top 10 & bottom 10 ('+year+')';
-    return;
-  }
-  // top 10 + bottom 10, colour-coded green = leaders, red = laggards
-  const split = rows.length>20;
-  rows = split ? [...rows.slice(0,10).map(r=>({...r,grp:'top'})), ...rows.slice(-10).map(r=>({...r,grp:'bot'}))] : rows;
-  const isEur = moneyMetric;
-  const tfmt = v=> isEur ? (perEmp ? '€'+Math.round(v).toLocaleString() : '€'+v.toFixed(2)+'M')
-                  : metric==='margin' ? v.toFixed(1)+'%' : Math.round(v).toLocaleString();
-  drawBarsSvg(chTop, {
-    rows: rows.map(r=>({label:r.brand, value: (isEur && !perEmp)? r.val/1e6 : r.val, color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent')), delta:r.delta})),
-    xTitle: isEur?(perEmp?'€/employee':'€M'):metric==='margin'?'%':'', fmt:tfmt,
-    tip:r=>`<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}${r.delta!=null?` · ${r.delta>=0?'+':''}${Math.round(r.delta)}% vs ${year-1}`:''}`
-  });
-  const t=document.getElementById('rankTitle'); if(t) t.textContent='Top 10 & bottom 10 — value & YoY % ('+year+(coFlowMode==='emp'?' · per employee':'')+')';
+const RANK_ROW_H = 32, RANK_CHART_PAD = 44;
+function sizeRankChart(n){
+  const box=document.getElementById('chTopBox');
+  if(box) box.style.height = Math.max(RANK_CHART_PAD+RANK_ROW_H*2, RANK_CHART_PAD+n*RANK_ROW_H)+'px';
+}
+function syncRankYearRows(){
+  if(!rankFromYearsHost || !rankToYearsHost) return;
+  rankFromYearsHost.innerHTML = YEARS.map(y=>`<button type="button" data-y="${y}" class="${y===rankFromYear?'active':''}">${y}${y>LAST?'*':''}</button>`).join('');
+  rankToYearsHost.innerHTML = YEARS.map(y=>`<button type="button" data-y="${y}" class="${y===rankToYear?'active':''}">${y}${y>LAST?'*':''}</button>`).join('');
+  rankFromYearsHost.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    rankFromYear=+b.dataset.y;
+    if(rankFromYear>rankToYear) rankToYear=rankFromYear;
+    syncRankYearRows();
+    drawTop();
+  }));
+  rankToYearsHost.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    rankToYear=+b.dataset.y;
+    if(rankToYear<rankFromYear) rankFromYear=rankToYear;
+    syncRankYearRows();
+    drawTop();
+  }));
 }
 function renderRankSegments(){
   if(!rankSegHost) return;
@@ -2038,14 +2032,8 @@ if(rankSectorBtn && rankSectorSelect){
 function syncRankControls(){
   const isAll = coViewMode === 'all';
   const range = document.getElementById('rankRange');
-  if(range) range.style.display = isAll ? '' : 'none';
-  if(rankFromYearSel && rankToYearSel){
-    const opts = YEARS.map(y=>`<option value="${y}">${y}${y>LAST?'*':''}</option>`).join('');
-    if(!rankFromYearSel.options.length) rankFromYearSel.innerHTML = opts;
-    if(!rankToYearSel.options.length) rankToYearSel.innerHTML = opts;
-    if(!rankFromYearSel.value) rankFromYearSel.value = String(YEARS[0]);
-    if(!rankToYearSel.value) rankToYearSel.value = String(YEARS[YEARS.length-1]);
-  }
+  if(range) range.hidden = !isAll;
+  syncRankYearRows();
   renderRankSegments();
 }
 function rankMetricValue(d, metric, perEmp){
@@ -2055,15 +2043,13 @@ function rankMetricValue(d, metric, perEmp){
   return v;
 }
 function drawTop(){
-  const metric = rankMetric.value;
+  const metric = rankMetricVal;
   const moneyMetric = ['revenue','profit','estimatedIncome'].includes(metric);
   const perEmp = coFlowMode==='emp' && moneyMetric;
   const yearMode = coViewMode === 'all' ? 'all' : 'year';
-  const fromYear = rankFromYearSel ? (+rankFromYearSel.value || YEARS[0]) : YEARS[0];
-  const toYear = rankToYearSel ? (+rankToYearSel.value || YEARS[YEARS.length-1]) : YEARS[YEARS.length-1];
-  const startYear = Math.min(fromYear, toYear);
-  const endYear = Math.max(fromYear, toYear);
-  const yearLabel = yearMode==='all' ? (fromYear===toYear ? String(fromYear) : `${startYear}→${endYear}`) : String(coYear);
+  const startYear = Math.min(rankFromYear, rankToYear);
+  const endYear = Math.max(rankFromYear, rankToYear);
+  const yearLabel = yearMode==='all' ? (rankFromYear===rankToYear ? String(rankFromYear) : `${startYear}→${endYear}`) : String(coYear);
   const selectedSegs = rankSegments.size ? [...rankSegments] : SEGMENTS;
   const matchesSegs = brand => {
     const years = yearMode==='all' ? YEARS.filter(y=>y>=startYear && y<=endYear) : [coYear];
@@ -2089,8 +2075,7 @@ function drawTop(){
   if(yearMode==='year'){
     rows = DATA.filter(d=>d.year===coYear && matchesSegs(d.brand)).map(d=>{
       const v = rankMetricValue(d, metric, perEmp);
-      const p = rankMetricValue(byBrand[d.brand][coYear-1], metric, perEmp);
-      return {brand:d.brand, val:v, delta:(p!=null && p>0 && v!=null)? (v/p-1)*100 : null};
+      return {brand:d.brand, val:v};
     }).filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
   } else {
     rows = BRANDS.map(brand=>{
@@ -2100,12 +2085,12 @@ function drawTop(){
       const startVal = rankMetricValue(startRec, metric, perEmp);
       const endVal = rankMetricValue(endRec, metric, perEmp);
       const progress = progressOf(startVal, endVal);
-      return {brand, val:progress, startVal, endVal, delta:progress};
+      return {brand, val:progress, startVal, endVal};
     }).filter(Boolean).filter(r=>r.val!=null && r.val!==0).sort((a,b)=>b.val-a.val);
   }
   if(!rows.length){
+    sizeRankChart(2);
     chTop.innerHTML='<div class="ff-empty">No '+yearLabel+' '+metric+' data yet'+(yearMode==='year'&&coYear>LAST?' — '+coYear+' financials land ~mid-'+(coYear+1)+'.':'.')+'</div>';
-    const t0=document.getElementById('rankTitle'); if(t0) t0.textContent=yearMode==='all' ? 'Progress leaders & laggards ('+yearLabel+')' : 'Top 10 & bottom 10 ('+coYear+')';
     return;
   }
   const split = rows.length>20;
@@ -2115,25 +2100,25 @@ function drawTop(){
     ? pctFmt(v)
     : isEur ? (perEmp ? '€'+Math.round(v).toLocaleString() : '€'+v.toFixed(2)+'M')
             : metric==='margin' ? v.toFixed(1)+'%' : Math.round(v).toLocaleString();
+  sizeRankChart(rows.length);
   drawBarsSvg(chTop, {
-    rows: rows.map(r=>({label:r.brand, value: yearMode==='all' ? r.val : ((isEur && !perEmp)? r.val/1e6 : r.val), color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent')), delta:r.delta})),
-    xTitle: yearMode==='all' ? (metric==='margin' ? 'pp change' : '% change') : isEur?(perEmp?'€/employee':'€M'):metric==='margin'?'%':'',
+    rows: rows.map(r=>({label:r.brand, value: yearMode==='all' ? r.val : ((isEur && !perEmp)? r.val/1e6 : r.val), color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent'))})),
     fmt:tfmt,
     tip:r=>{
       if(yearMode==='all'){
-        return `<b>${esc(String(r.label))}</b>: ${pctFmt(r.value)} · ${valueFmt(r.startVal)} → ${valueFmt(r.endVal)}`;
+        const row=rows.find(x=>x.brand===r.label);
+        return `<b>${esc(String(r.label))}</b>: ${pctFmt(r.value)} · ${valueFmt(row&&row.startVal)} → ${valueFmt(row&&row.endVal)}`;
       }
-      return `<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}${r.delta!=null?` · ${r.delta>=0?'+':''}${Math.round(r.delta)}% vs ${coYear-1}`:''}`;
+      return `<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}`;
     }
   });
-  const t=document.getElementById('rankTitle');
-  if(t) t.textContent = yearMode==='all'
-    ? 'Progress leaders & laggards — '+yearLabel+(coFlowMode==='emp'?' · per employee':'')
-    : 'Top 10 & bottom 10 — value & YoY % ('+coYear+(coFlowMode==='emp'?' · per employee':'')+')';
 }
-if(rankFromYearSel) rankFromYearSel.addEventListener('change', ()=>{ if(+rankFromYearSel.value > +rankToYearSel.value) rankToYearSel.value = rankFromYearSel.value; drawTop(); });
-if(rankToYearSel) rankToYearSel.addEventListener('change', ()=>{ if(+rankToYearSel.value < +rankFromYearSel.value) rankFromYearSel.value = rankToYearSel.value; drawTop(); });
-rankMetric.addEventListener('change', drawTop);
+if(rankMetricSeg) rankMetricSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  rankMetricSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  rankMetricVal=b.dataset.m;
+  drawTop();
+}));
 syncRankControls();
 drawTop();
 
@@ -2396,6 +2381,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.51', date:'2026-07-10', sp:1.5, title:'Rankings UI cleanup',
+    desc:'Flattened rankings card, CSS metric toggles, dynamic chart height, simpler title.',
+    detail:'Removed the inner .card wrapper from Company rankings. Metric picker is now .seg pills inline with the sector dropdown (Select all moved inside the panel). Title stays “Top 10 versus bottom 10”; dropped the YoY % axis label and inline delta badges. Chart height scales to row count (~32px/bar) so small segments like BTL aren’t stretched. All-time year range uses yr-row buttons instead of native selects.'},
   {v:'v0.2.50', date:'2026-07-10', sp:2, title:'Version history layout',
     desc:'No emoji in the modal; Jun-27 era split, v0.1/v0.2 sub-sections, SP under title, date spans.',
     detail:'Renamed the overlay to “Version history” (dropped 📋). Top level splits at 27 Jun; within each era, v0.2 and v0.1 are separate folds. Collapsed group/sub summaries stack title → SP badge → version + date range so they read on mobile instead of one squished row.'},
