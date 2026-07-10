@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.41</title>
+<title>Markets — LT agencies · v0.2.42</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -591,7 +591,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.41</span>
+    <span class="nav-version" id="navVersion">v0.2.42</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -728,23 +728,23 @@
 
       <h3 class="sub-hd">Financial metrics, all years</h3>
       <div class="rank-tools revall-tools" style="margin-top:0">
-        <select id="revAllMetricSel" aria-label="Financial metric">
-          <option value="revenue">Revenue</option>
-          <option value="turnover">Turnover</option>
-          <option value="profit">Net profit</option>
-          <option value="employees">Employees</option>
-          <option value="wages">Wages</option>
-        </select>
+        <div class="seg seg-scroll" id="revAllMetric" role="group" aria-label="Financial metric">
+          <button type="button" data-m="revenue" class="active">Revenue</button>
+          <button type="button" data-m="turnover">Turnover</button>
+          <button type="button" data-m="profit">Net profit</button>
+          <button type="button" data-m="employees">Employees</button>
+          <button type="button" data-m="wages">Wages</button>
+        </div>
       </div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="revAllEmpty">Select a segment above to compare trends over time.</div></div>
       <div class="desc" id="revAllDesc" style="margin-top:8px"></div>
 
       <h3 class="sub-hd" id="peopleAllTitle">People by year</h3>
       <div class="rank-tools revall-tools" style="margin-top:0">
-        <select id="peopleAllMode" aria-label="People metric">
-          <option value="employees">Employees per company</option>
-          <option value="salary">Median monthly salary</option>
-        </select>
+        <div class="seg seg-scroll" id="peopleAllMode" role="group" aria-label="People metric">
+          <button type="button" data-m="employees" class="active">Employees / company</button>
+          <button type="button" data-m="salary">Median salary</button>
+        </div>
       </div>
       <div class="chartbox"><div class="svgwrap" id="chPeopleAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="peopleAllEmpty">Select a segment above to compare trends over time.</div></div>
       <div class="desc" id="peopleAllDesc" style="margin-top:8px"></div>
@@ -1782,7 +1782,7 @@ renderMoneyFlowAll();
 
 // ---------- People by year (employees / salary), filtered by shared segment selection ----------
 let peopleAllMode='employees';
-const peopleAllModeSel=document.getElementById('peopleAllMode');
+const peopleAllModeSeg=document.getElementById('peopleAllMode');
 
 function segMedianSalary(seg, year){
   const s=DATA.filter(d=>d.year===year && d.activities.includes(seg) && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
@@ -2227,7 +2227,7 @@ const revAllSectorBtn = document.getElementById('revAllSectorBtn');
 const revAllSectorBtnText = document.getElementById('revAllSectorBtnText');
 const revAllSectorList = document.getElementById('revAllSectorList');
 const revAllSelectAllBtn = document.getElementById('revAllSelectAll');
-const revAllMetricSel = document.getElementById('revAllMetricSel');
+const revAllMetricSeg = document.getElementById('revAllMetric');
 
 function renderRevSegAll(){
   const m=revAllMetric, b=basisFromMode(mktMode);
@@ -2290,8 +2290,18 @@ function renderRevAllSegUI(){
   renderPeopleAll();
 }
 
-if(revAllMetricSel) revAllMetricSel.addEventListener('change',()=>{ revAllMetric=revAllMetricSel.value; renderRevSegAll(); });
-if(peopleAllModeSel) peopleAllModeSel.addEventListener('change',()=>{ peopleAllMode=peopleAllModeSel.value; renderPeopleAll(); });
+if(revAllMetricSeg) revAllMetricSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  revAllMetricSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  revAllMetric=b.dataset.m;
+  renderRevSegAll();
+}));
+if(peopleAllModeSeg) peopleAllModeSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  peopleAllModeSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  peopleAllMode=b.dataset.m;
+  renderPeopleAll();
+}));
 if(revAllSelectAllBtn) revAllSelectAllBtn.addEventListener('click',e=>{ e.stopPropagation(); SEGMENTS.forEach(s=>revAllSegs.add(s)); renderRevAllSegUI(); });
 if(revAllSectorBtn && revAllSectorSelect){
   revAllSectorBtn.addEventListener('click',e=>{
@@ -2315,6 +2325,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.42', date:'2026-07-10', sp:0.5, title:'Segment metric pill toggles',
+    desc:'By-segment all-years revenue/people pickers use CSS seg buttons, not native selects.',
+    detail:'Replaced revAllMetricSel and peopleAllMode &lt;select&gt;s with the same .seg pill row used elsewhere (Revenue, Turnover, Net profit, Employees, Wages · Employees/company vs Median salary). Horizontally scrollable on narrow screens.'},
   {v:'v0.2.41', date:'2026-07-10', sp:1, title:'Dev mode easter egg',
     desc:'No mode toggle in Default; tap the version label 8× to unlock Dev. Settings has “→ Default view”.',
     detail:'Removed the confusing “Default” settings button from Default mode. Click the nav version 5× for a tiny “Click 3 more times” hint; 8× enables Dev mode (counter resets after ~3s idle). In Dev, settings shows “→ Default view” to switch back; changelog, graph pan and formulas stay Dev-only.'},
