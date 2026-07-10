@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.29</title>
+<title>Markets — LT agencies · v0.2.32</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -579,7 +579,7 @@
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
-  <span class="nav-version">v0.2.29</span>
+  <span class="nav-version">v0.2.32</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -593,7 +593,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.29</span></h1><p id="pageHeroSub"></p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.32</span></h1><p id="pageHeroSub"></p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -799,7 +799,7 @@
       <div class="cov-scroll"><div id="covGrid"></div></div>
     </div>
   </details>
-  <details class="chg-wrap" id="chgWrap">
+  <details class="chg-wrap" open id="chgWrap">
     <summary>📜 Data changes <span class="cov-sub" id="chgStat"></span></summary>
     <div class="chg-body">
       <div class="chg-tools">
@@ -2123,6 +2123,15 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.32', date:'2026-07-10', sp:3, title:'Data change log — full pipeline',
+    desc:'Rekvizitai + Initial imports now log field-level diffs; company view shows field provenance.',
+    detail:'Extended data_events.json logging to parse_company, reparse_all, autoscrape, estimate_2025 and import_rek_companies. Sodra files get _meta.scrapedAt; data.json rows get _provenance per field (sodra/rekvizitai/derived/estimated). Data exploration shows a 📜 Data changes timeline (open by default) with source filter and expandable diffs.'},
+  {v:'v0.2.31', date:'2026-07-10', sp:3, title:'Data change log + timeline',
+    desc:'See what data was added or changed, when, and from which source.',
+    detail:'New data/data_events.json append-only event log. Sodra scraper diffs on write; git backfill seeded 23 historical commits. Data exploration gets a 📜 Data changes fold below the coverage matrix — filter by Sodra/Rekvizitai/Initial, click an event for per-company detail.'},
+  {v:'v0.2.30', date:'2026-07-10', sp:1, title:'Hero subtitle + drop nav sub',
+    desc:'Brand count and year range are dynamic; removed stale “113 brands · 2019–2024” from nav.',
+    detail:'pageHeroSub is filled from BRANDS.length and YEARS range at load (now 132 · 2019–2025). Removed the nav-sub line; Companies tracked KPI already used the live count.'},
   {v:'v0.2.29', date:'2026-07-09', sp:2, title:'Sodra scraper drops Playwright',
     desc:'The refresh silently scraped nothing; now it uses plain HTTP and fails loudly.',
     detail:'The first real run of refresh-sodra.yml failed all 117 companies yet stayed green. Root cause: the scraper drove headless Chromium and read body.innerText, but Chromium renders an application/json response as an EMPTY body, so every parse died at "line 1 column 1". Sodra is a plain JSON API needing no browser — swapped to stdlib urllib (no 100 MB Chromium download, faster CI). A second bug went with it: the script exited 0 even when every company failed, so CI reported "nothing to commit" — indistinguishable from "data is current". It now exits non-zero when nothing is written.',
@@ -3939,7 +3948,7 @@ function renderProvenanceHint(){
   if(!prov||!Object.keys(prov).length){ el.style.display='none'; return; }
   el.style.display='';
   el.innerHTML='<b>Field sources ('+rec.year+'):</b> '+Object.entries(prov)
-    .map(([k,v])=>`<span class="mv ${esc(v)}">${esc(k)}</span>=${esc(v)}`).join(' · ');
+    .map(([k,v])=>esc(k)+'=<span class="prov-tag prov-'+esc(v)+'">'+esc(v)+'</span>').join(' · ');
 }
 
 function selectCompany(slug){
