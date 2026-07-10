@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.34</title>
+<title>Markets — LT agencies · v0.2.35</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -385,6 +385,10 @@
   .rank-seg-wrap .sf-pill{padding-right:8px}
   .rank-seg-remove{color:var(--muted);font-size:14px;line-height:1;margin-left:2px}
   .rank-seg-wrap .sf-pill:hover .rank-seg-remove{color:var(--red)}
+  .seg-filter .sf-pill.sf-clear{font-style:italic;color:var(--muted);border-style:dashed}
+  .seg-filter .sf-pill.sf-clear:hover{color:var(--text)}
+  .revall-tools select{min-width:148px;font:600 12px/1 inherit;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text)}
+  .revall-select-all{width:100%;justify-content:center;font-weight:600;border-top:1px solid var(--border);margin-top:4px;padding-top:10px}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
@@ -575,7 +579,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version">v0.2.34</span>
+    <span class="nav-version">v0.2.35</span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
@@ -1520,7 +1524,7 @@ function renderMarket(mode){
   document.getElementById('kpis').innerHTML = kpis.map(k=>kpiCardHtml(k, mktKpiMode, 'kpi-f')).join('');
 }
 try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderMarket: '+err.message, error:err})); }
-(function(){ const n=BRANDS.length, yr=YEARS[0]+'–'+YEARS[YEARS.length-1];
+(function(){ const n=BRANDS.length;
   const c=document.getElementById('topCoCount'); if(c) c.textContent=n;
   const s=document.getElementById('topCoSub'); if(s) s.textContent=SEGMENTS.length+' service segments';
   const h=document.getElementById('pageHeroSub'); if(h) h.textContent='Lithuanian marketing & communications agencies · '+YEARS[0]+' to '+YEARS[YEARS.length-1]; })();
