@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.62</title>
+<title>Markets — LT agencies · v0.2.63</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -638,7 +638,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.62</span>
+    <span class="nav-version" id="navVersion">v0.2.63</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1693,15 +1693,16 @@ function buildOvList(){
 (function(){
   const sel=document.getElementById('ovCompanySelect'); if(!sel) return;
   const btn=document.getElementById('ovCoBtn'), panel=document.getElementById('ovCoPanel'), search=document.getElementById('ovCoSearch');
-  btn.addEventListener('click',e=>{ e.stopPropagation(); const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false'); if(open){ closeOvNestedDropdowns(null); search.value=''; buildOvList(); search.focus(); } });
+  btn.addEventListener('click',e=>{ e.stopPropagation(); if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); panel.style.display='none'; } else { sel.classList.add('open'); btn.setAttribute('aria-expanded','true'); panel.style.display='block'; closeOvNestedDropdowns(null); search.value=''; buildOvList(); search.focus(); } });
   panel.addEventListener('click',e=>{
     e.stopPropagation();
-    const nested=e.target.closest('#ovCoPanel .co-select');
-    if(nested && nested!==sel) return;
+    if(e.target.closest('button, .co-select-search, .co-select-opt, .sf-pill')) return;
     closeOvNestedDropdowns(null);
+    sel.classList.remove('open'); btn.setAttribute('aria-expanded','false');
+    panel.style.display='none';
   });
   search.addEventListener('input', buildOvList);
-  document.addEventListener('click',e=>{ if(sel.contains(e.target)) return; if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } closeOvNestedDropdowns(null); });
+  document.addEventListener('click',e=>{ if(sel.contains(e.target)) return; if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); panel.style.display='none'; } closeOvNestedDropdowns(null); });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape') return;
     const nestedOpen=document.querySelector('#ovCoPanel .co-select.open');
@@ -1710,7 +1711,7 @@ function buildOvList(){
       e.preventDefault();
       return;
     }
-    if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+    if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); panel.style.display='none'; }
   });
   if(ovFilterClear) ovFilterClear.addEventListener('click',e=>{ e.stopPropagation(); clearOvFilters(); });
   Object.keys(ovMetricUi).forEach(key=>{
@@ -2418,6 +2419,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.63', date:'2026-07-10', sp:1, title:'Toggle close — JS display control',
+    desc:'Button now uses explicit if/else + inline style.display for bulletproof open/close.',
+    detail:'Bypassed CSS cascade entirely: button toggle sets panel.style.display directly (block/none) instead of relying on class toggling alone. Document handler, Escape key, and panel-background click all also set inline display=none. No more race conditions or CSS interference.'},
   {v:'v0.2.62', date:'2026-07-10', sp:0.5, title:'Fix toggle close — explicit outside check',
     desc:'Document click handler now checks if click is inside the select before closing.',
     detail:'Replaced reliance on stopPropagation with sel.contains(e.target) guard in the document click handler. Clicks on the button or panel no longer race with the document listener, so the toggle open/close works reliably every time. Standard dropdown pattern.'},
