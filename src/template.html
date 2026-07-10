@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.52</title>
+<title>Markets — LT agencies · v0.2.53</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -404,9 +404,16 @@
   .rank-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
   .rank-tools.revall-tools{align-items:center}
   .rank-tools .rank-sector-select{flex:0 1 auto;min-width:180px}
-  .rank-range{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:6px 0 2px}
-  .rank-range-lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .rank-range{margin:6px 0 2px}
   .rank-yr-row{margin:0}
+  .yr-row button.in-range{background:rgba(47,111,224,.10);color:var(--accent);border-color:rgba(47,111,224,.28)}
+  [data-theme="dark"] .yr-row button.in-range{background:rgba(79,142,247,.12);border-color:rgba(79,142,247,.35)}
+  .seg .seg-div{width:1px;align-self:stretch;min-height:22px;background:var(--border);margin:4px 6px;flex:0 0 1px}
+  .seg button.rank-seg{display:inline-flex;align-items:center;gap:5px}
+  .seg button.rank-seg .sf-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto;opacity:.35}
+  .seg button.rank-seg.on .sf-dot{opacity:1}
+  .seg button.rank-seg.on{background:var(--panel2);color:var(--text)!important;border-color:var(--accent)}
+  .seg button.rank-seg-all{font-style:italic;color:var(--muted)}
   .rank-clear{font:600 12px/1 inherit;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .rank-clear:hover{color:var(--text);border-color:var(--accent)}
   .rank-seg-wrap{margin:8px 0 2px}
@@ -618,7 +625,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.52</span>
+    <span class="nav-version" id="navVersion">v0.2.53</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -793,31 +800,11 @@
   <h2 class="section">Company rankings</h2>
   <h2 id="rankTitle" class="rank-hd">Top 10 versus bottom 10</h2>
   <div class="rank-tools revall-tools">
-    <div class="seg seg-scroll" id="rankMetric" role="group" aria-label="Ranking metric">
-      <button type="button" data-m="estimatedIncome" class="active">Revenue</button>
-      <button type="button" data-m="revenue">Turnover</button>
-      <button type="button" data-m="profit">Net profit</button>
-      <button type="button" data-m="employees">Employees</button>
-      <button type="button" data-m="avgSalary">Avg. salary</button>
-      <button type="button" data-m="margin">Profit margin</button>
-    </div>
-    <div class="co-select rank-sector-select" id="rankSectorSelect">
-      <button type="button" class="co-select-btn" id="rankSectorBtn" aria-haspopup="listbox" aria-expanded="false">
-        <span id="rankSectorBtnText">Choose sectors</span><span class="co-caret">▼</span>
-      </button>
-      <div class="co-select-panel" id="rankSectorPanel">
-        <div class="co-select-list" id="rankSectorList" role="listbox" aria-multiselectable="true"></div>
-        <button type="button" class="co-select-opt revall-select-all" id="rankSegClear">Select all</button>
-      </div>
-    </div>
+    <div class="seg seg-scroll" id="rankToolbar" role="group" aria-label="Ranking metric and segments"></div>
   </div>
   <div class="rank-range" id="rankRange" hidden>
-    <span class="rank-range-lbl">From</span>
-    <div class="yr-row rank-yr-row" id="rankFromYears"></div>
-    <span class="rank-range-lbl">To</span>
-    <div class="yr-row rank-yr-row" id="rankToYears"></div>
+    <div class="yr-row rank-yr-row" id="rankYearRow"></div>
   </div>
-  <div class="seg-filter rank-seg-wrap" id="rankSegments"></div>
   <div class="chartbox rank-chartbox" id="chTopBox"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
 
   <h2 class="section">Company deep-dive</h2>
@@ -1961,87 +1948,76 @@ document.addEventListener('click',e=>{ if(e.target.closest('.seg')) requestAnima
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-vs-profit scatter grouping
 
 // ---------- Top-N ranking (follows the shared Companies year row + Full/Per-employee basis) ----------
-const rankSegHost = document.getElementById('rankSegments');
-const rankFromYearsHost = document.getElementById('rankFromYears');
-const rankToYearsHost = document.getElementById('rankToYears');
-const rankClearBtn = document.getElementById('rankSegClear');
-const rankSectorSelect = document.getElementById('rankSectorSelect');
-const rankSectorBtn = document.getElementById('rankSectorBtn');
-const rankSectorBtnText = document.getElementById('rankSectorBtnText');
-const rankSectorPanel = document.getElementById('rankSectorPanel');
-const rankSectorList = document.getElementById('rankSectorList');
-const rankMetricSeg = document.getElementById('rankMetric');
+const rankToolbar = document.getElementById('rankToolbar');
+const rankYearRow = document.getElementById('rankYearRow');
 let rankMetricVal = 'estimatedIncome';
 let rankFromYear = YEARS[0];
 let rankToYear = YEARS[YEARS.length-1];
 let rankSegments = new Set(SEGMENTS.slice(0,1));
 const RANK_ROW_H = 32, RANK_CHART_PAD = 44;
+const RANK_METRICS = [['estimatedIncome','Revenue'],['revenue','Turnover'],['profit','Net profit'],['employees','Employees'],['avgSalary','Avg. salary'],['margin','Profit margin']];
 function sizeRankChart(n){
   const box=document.getElementById('chTopBox');
   if(box) box.style.height = Math.max(RANK_CHART_PAD+RANK_ROW_H*2, RANK_CHART_PAD+n*RANK_ROW_H)+'px';
 }
-function syncRankYearRows(){
-  if(!rankFromYearsHost || !rankToYearsHost) return;
-  rankFromYearsHost.innerHTML = YEARS.map(y=>`<button type="button" data-y="${y}" class="${y===rankFromYear?'active':''}">${y}${y>LAST?'*':''}</button>`).join('');
-  rankToYearsHost.innerHTML = YEARS.map(y=>`<button type="button" data-y="${y}" class="${y===rankToYear?'active':''}">${y}${y>LAST?'*':''}</button>`).join('');
-  rankFromYearsHost.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    rankFromYear=+b.dataset.y;
-    if(rankFromYear>rankToYear) rankToYear=rankFromYear;
-    syncRankYearRows();
-    drawTop();
-  }));
-  rankToYearsHost.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    rankToYear=+b.dataset.y;
-    if(rankToYear<rankFromYear) rankFromYear=rankToYear;
-    syncRankYearRows();
-    drawTop();
-  }));
+function onRankYearClick(y){
+  const lo=Math.min(rankFromYear,rankToYear), hi=Math.max(rankFromYear,rankToYear);
+  const isEnd=y===rankFromYear||y===rankToYear;
+  if(isEnd && lo!==hi){
+    if(y===rankFromYear) rankFromYear=rankToYear; else rankToYear=rankFromYear;
+  } else if(rankFromYear===rankToYear){
+    if(y<rankFromYear){ rankToYear=rankFromYear; rankFromYear=y; }
+    else if(y>rankFromYear) rankToYear=y;
+  } else {
+    const dF=Math.abs(y-rankFromYear), dT=Math.abs(y-rankToYear);
+    if(dF<=dT) rankFromYear=y; else rankToYear=y;
+    if(rankFromYear>rankToYear){ const t=rankFromYear; rankFromYear=rankToYear; rankToYear=t; }
+  }
+  syncRankYearRow();
+  drawTop();
 }
-function renderRankSegments(){
-  if(!rankSegHost) return;
-  rankSegHost.innerHTML = [...rankSegments].map(s=>`<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`).join('');
-  if(rankSectorList) rankSectorList.innerHTML = SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${rankSegments.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${rankSegments.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
-  if(rankSectorBtnText) rankSectorBtnText.textContent = rankSegments.size===1 ? segName([...rankSegments][0]) : `${rankSegments.size} sectors selected`;
-  syncSelectAllBtn(rankClearBtn, rankSegments);
-  const toggle = s => {
-    if(rankSegments.has(s) && rankSegments.size===1) return;
-    if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
-    renderRankSegments();
+function syncRankYearRow(){
+  if(!rankYearRow) return;
+  const lo=Math.min(rankFromYear,rankToYear), hi=Math.max(rankFromYear,rankToYear);
+  rankYearRow.innerHTML=YEARS.map(y=>{
+    let cls='';
+    if(y===rankFromYear||y===rankToYear) cls='active';
+    else if(y>lo&&y<hi) cls='in-range';
+    return `<button type="button" data-y="${y}" class="${cls}">${y}${y>LAST?'*':''}</button>`;
+  }).join('');
+  rankYearRow.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>onRankYearClick(+b.dataset.y)));
+}
+function renderRankToolbar(){
+  if(!rankToolbar) return;
+  const metrics=RANK_METRICS.map(([m,lbl])=>`<button type="button" class="rank-metric${m===rankMetricVal?' active':''}" data-m="${m}">${lbl}</button>`).join('');
+  const segs=SEGMENTS.map(s=>`<button type="button" class="rank-seg${rankSegments.has(s)?' on':''}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</button>`).join('');
+  const allLbl=allSegsSelected(rankSegments)?'Clear all':'Select all';
+  rankToolbar.innerHTML=metrics+'<span class="seg-div" aria-hidden="true"></span>'+segs+`<button type="button" class="rank-seg rank-seg-all" data-s="__all">${allLbl}</button>`;
+  rankToolbar.querySelectorAll('.rank-metric').forEach(b=>b.addEventListener('click',()=>{
+    rankMetricVal=b.dataset.m;
+    renderRankToolbar();
+    drawTop();
+  }));
+  const toggleSeg=s=>{
+    if(s==='__all'){
+      if(allSegsSelected(rankSegments)) rankSegments=new Set([[...rankSegments][0]||SEGMENTS[0]]);
+      else SEGMENTS.forEach(x=>rankSegments.add(x));
+    } else {
+      if(rankSegments.has(s)&&rankSegments.size===1) return;
+      if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
+    }
+    renderRankToolbar();
     drawTop();
   };
-  rankSegHost.querySelectorAll('.sf-pill').forEach(p=>{
-    p.addEventListener('click',()=>toggle(p.dataset.s));
-    p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(p.dataset.s); } });
-  });
-  if(rankSectorList) rankSectorList.querySelectorAll('.co-select-opt').forEach(o=>{
-    o.addEventListener('click',()=>toggle(o.dataset.s));
-    o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(o.dataset.s); } });
-  });
-  if(rankClearBtn && !rankClearBtn.__wired){
-    rankClearBtn.addEventListener('click',()=>{
-      if(allSegsSelected(rankSegments)) rankSegments=new Set([[...rankSegments][0]||SEGMENTS[0]]);
-      else SEGMENTS.forEach(s=>rankSegments.add(s));
-      renderRankSegments(); drawTop();
-    });
-    rankClearBtn.__wired = 1;
-  }
-}
-if(rankSectorBtn && rankSectorSelect){
-  rankSectorBtn.addEventListener('click',e=>{
-    e.stopPropagation();
-    const open=rankSectorSelect.classList.toggle('open');
-    rankSectorBtn.setAttribute('aria-expanded',open?'true':'false');
-  });
-  if(rankSectorPanel) rankSectorPanel.addEventListener('click',e=>e.stopPropagation());
-  document.addEventListener('click',()=>{ rankSectorSelect.classList.remove('open'); rankSectorBtn.setAttribute('aria-expanded','false'); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ rankSectorSelect.classList.remove('open'); rankSectorBtn.setAttribute('aria-expanded','false'); } });
+  rankToolbar.querySelectorAll('.rank-seg').forEach(b=>b.addEventListener('click',()=>toggleSeg(b.dataset.s)));
+  requestAnimationFrame(paintSegActive);
 }
 function syncRankControls(){
   const isAll = coViewMode === 'all';
   const range = document.getElementById('rankRange');
   if(range) range.hidden = !isAll;
-  syncRankYearRows();
-  renderRankSegments();
+  syncRankYearRow();
+  renderRankToolbar();
 }
 function rankMetricValue(d, metric, perEmp){
   if(!d) return null;
@@ -2120,12 +2096,6 @@ function drawTop(){
     }
   });
 }
-if(rankMetricSeg) rankMetricSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-  rankMetricSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  rankMetricVal=b.dataset.m;
-  drawTop();
-}));
 syncRankControls();
 drawTop();
 
@@ -2388,6 +2358,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.53', date:'2026-07-10', sp:1, title:'Rankings toolbar + year range',
+    desc:'One-line year range picker; segment pills inline with metric toggles.',
+    detail:'All-years rankings: single yr-row — tap two years to set the span (tap an endpoint again to collapse). Metrics + segment multi-select share one scrolling .seg row (dropdown + separate pill row removed). Select all / Clear all sits at the end of the segment pills.'},
   {v:'v0.2.52', date:'2026-07-10', sp:1.5, title:'Version history polish',
     desc:'Era titles describe the work; compact SP pills; short versions and clean dates.',
     detail:'Top sections renamed to five-word summaries (“2025 data and dashboard polish” / “Initial dashboard and chart foundation”). SP badge is a tight inline pill. Version spans drop the v0. prefix (2.13 → 2.51); date spans are day-only (Jun 29 → Jul 10). Removed the trailing version-count numbers.'},
