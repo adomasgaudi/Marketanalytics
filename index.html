@@ -638,7 +638,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.59</span>
+    <span class="nav-version" id="navVersion">v0.2.60</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2418,6 +2418,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.60', date:'2026-07-10', sp:0.5, title:'Hello, Markets',
+    desc:'Bump nav badge to v60; match git tag and title.',
+    detail:'Updated the nav version badge from v0.2.59 to v0.2.60 to sync with git tag v60 and the page <title>. First changelog entry at the new version.'},
   {v:'v0.2.59', date:'2026-07-10', sp:0.5, title:'Toggle compare chips',
     desc:'Company chips turn on/off without removing them; × still deletes.',
     detail:'Companies picker: ovBrands is the pre-selected pool (chips always visible when >1). Click a chip to show or hide that company in charts and the deep-dive compare — dashed = off, solid = on. × removes from the pool. Picker list adds to the pool or toggles on/off; at least one company stays active.'},
