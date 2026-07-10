@@ -555,12 +555,11 @@
       <button id="sodraRefresh">🔄 Refresh Sodra</button>
     </div>
   </div>
-  <div class="nav-sub">113 brands · 2019–2024</div>
 </nav>
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.29</span></h1><p>113 Lithuanian marketing &amp; communications agencies · 2019–2024</p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.29</span></h1><p id="pageHeroSub"></p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -1512,8 +1511,10 @@ function renderMarket(mode){
   document.getElementById('kpis').innerHTML = kpis.map(k=>kpiCardHtml(k, mktKpiMode, 'kpi-f')).join('');
 }
 try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderMarket: '+err.message, error:err})); }
-(function(){ const c=document.getElementById('topCoCount'); if(c) c.textContent=BRANDS.length;
-  const s=document.getElementById('topCoSub'); if(s) s.textContent=SEGMENTS.length+' service segments'; })();
+(function(){ const n=BRANDS.length, yr=YEARS[0]+'–'+YEARS[YEARS.length-1];
+  const c=document.getElementById('topCoCount'); if(c) c.textContent=n;
+  const s=document.getElementById('topCoSub'); if(s) s.textContent=SEGMENTS.length+' service segments';
+  const h=document.getElementById('pageHeroSub'); if(h) h.textContent=n+' Lithuanian marketing & communications agencies · '+yr; })();
 (function(){ const row=document.getElementById('mktYearRow'); if(!row) return;
   const paint=()=>row.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===mktYear));
   row.innerHTML=MKT_YEARS.map(y=>`<button data-y="${y}">${y}</button>`).join(''); paint();
