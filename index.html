@@ -1523,7 +1523,7 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
 (function(){ const n=BRANDS.length, yr=YEARS[0]+'–'+YEARS[YEARS.length-1];
   const c=document.getElementById('topCoCount'); if(c) c.textContent=n;
   const s=document.getElementById('topCoSub'); if(s) s.textContent=SEGMENTS.length+' service segments';
-  const h=document.getElementById('pageHeroSub'); if(h) h.textContent=n+' Lithuanian marketing & communications agencies · '+yr; })();
+  const h=document.getElementById('pageHeroSub'); if(h) h.textContent='Lithuanian marketing & communications agencies · '+YEARS[0]+' to '+YEARS[YEARS.length-1]; })();
 (function(){ const row=document.getElementById('mktYearRow'); if(!row) return;
   const paint=()=>row.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===mktYear));
   row.innerHTML=MKT_YEARS.map(y=>`<button data-y="${y}">${y}</button>`).join(''); paint();
