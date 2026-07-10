@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.53</title>
+<title>Markets — LT agencies · v0.2.54</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -107,29 +107,29 @@
   .ch-body{margin-top:6px}
   .ch-desc{font-size:12.5px;color:var(--text)}
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
-  /* Version history: era (Jun-27 split) → v0.1/v0.2 → ~100-SP group → ~30-SP sub → release leaf. */
-  details.ch-era,details.ch-series,details.ch-group,details.ch-sub{border-top:1px solid var(--border)}
+  /* Version history: era (Jun-27 split) → ~40-SP chunk → release leaf. */
+  details.ch-era,details.ch-group{border-top:1px solid var(--border)}
   details.ch-era{border-top-width:0;margin-top:10px}
   details.ch-era:first-child{margin-top:0}
   details.ch-era>summary{background:var(--panel2);border:1px solid var(--border);border-radius:8px}
   details.ch-era[open]>summary{border-radius:8px 8px 0 0;border-bottom-color:transparent}
-  details.ch-series:first-child,details.ch-group:first-child{border-top:none}
-  details.ch-era>summary,details.ch-series>summary,details.ch-group>summary,details.ch-sub>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:flex-start;gap:10px;padding:12px 6px}
+  details.ch-group:first-child{border-top:none}
+  details.ch-era>summary,details.ch-group>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:flex-start;gap:10px;padding:12px 6px}
   details.ch-era>summary{padding:14px 10px}
-  details.ch-era>summary::-webkit-details-marker,details.ch-series>summary::-webkit-details-marker,details.ch-group>summary::-webkit-details-marker,details.ch-sub>summary::-webkit-details-marker{display:none}
-  details.ch-era>summary::after,details.ch-series>summary::after,details.ch-group>summary::after,details.ch-sub>summary::after{content:'▸';font-size:10px;color:var(--muted);transition:transform .15s;flex:0 0 auto;margin-top:4px}
-  details.ch-era[open]>summary::after,details.ch-series[open]>summary::after,details.ch-group[open]>summary::after,details.ch-sub[open]>summary::after{transform:rotate(90deg)}
-  .chs-stack{display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex:1;min-width:0}
+  details.ch-era>summary::-webkit-details-marker,details.ch-group>summary::-webkit-details-marker{display:none}
+  details.ch-era>summary::after,details.ch-group>summary::after{content:'▸';font-size:10px;color:var(--muted);transition:transform .15s;flex:0 0 auto;margin-top:4px}
+  details.ch-era[open]>summary::after,details.ch-group[open]>summary::after{transform:rotate(90deg)}
+  .chs-stack{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:1;min-width:0}
   .chs-title-row{display:flex;align-items:flex-start;gap:8px;min-width:0;width:100%}
+  .chs-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   .chg-head{font-size:15px;font-weight:700;color:var(--text);line-height:1.35}
   .chs-head{font-size:13px;font-weight:600;color:var(--text);line-height:1.35}
   .chg-head,.chs-head{white-space:normal;overflow:visible;text-overflow:unset}
-  .chs-meta{display:flex;flex-direction:column;gap:2px}
-  .chs-ver,.chs-dates{font-size:11.5px;color:var(--muted);line-height:1.35;font-variant-numeric:tabular-nums}
+  .chs-inline-meta{font-size:11.5px;color:var(--muted);line-height:1.35;font-variant-numeric:tabular-nums}
   .ch-era-wrap{padding:8px 0 4px 12px;margin-left:6px;border-left:2px solid var(--border)}
-  .ch-series-wrap,.ch-sub-wrap{padding-left:11px;margin-left:3px;border-left:2px solid var(--border)}
-  details.ch-group{border-top-width:2px}
+  details.ch-group{border-top-width:1px}
   .ch-leaf-wrap{padding-left:10px}
+  .chs-leaf .ch-title{width:100%}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
   .top-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .src-list{display:flex;flex-direction:column;gap:6px;margin-top:7px;font-size:13px;color:var(--text)}
@@ -625,7 +625,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.53</span>
+    <span class="nav-version" id="navVersion">v0.2.54</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2358,6 +2358,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.54', date:'2026-07-10', sp:1, title:'Version history flatten',
+    desc:'Two-line headers; dropped v0.1/v0.2 tiers; era → ~40 SP chunks only.',
+    detail:'Section summaries are title + one inline row (SP pill · version · dates). Removed the meaningless 0.1/0.2 split; within each Jun-27 era, releases group into ~40-SP chunks titled by their biggest change.'},
   {v:'v0.2.53', date:'2026-07-10', sp:1, title:'Rankings toolbar + year range',
     desc:'One-line year range picker; segment pills inline with metric toggles.',
     detail:'All-years rankings: single yr-row — tap two years to set the span (tap an endpoint again to collapse). Metrics + segment multi-select share one scrolling .seg row (dropdown + separate pill row removed). Select all / Clear all sits at the end of the segment pills.'},
@@ -3204,19 +3207,17 @@ function histVerShort(v){
 }
 // One release leaf (collapsible card). VERSIONS entries are newest-first.
 function histLeaf(v){
-  const meta = `<div class="ch-meta"><span class="ch-ver">${esc(histVerShort(v.v))}</span>`
-    + `<span class="sp-badge">${esc(v.sp)} SP</span>`
-    + `<span class="ch-date">${fmtHistDay(v.date)}</span></div>`;
+  const row=`<div class="chs-row"><span class="sp-badge">${esc(v.sp)} SP</span>`
+    +`<span class="chs-inline-meta">${esc(histVerShort(v.v))} · ${fmtHistDay(v.date)}</span></div>`;
   if(v.title){
     const body = `<div class="ch-body"><div class="ch-desc">${esc(v.desc)}</div>`
       + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'') + `</div>`;
-    return `<details class="ch-card"><summary>${meta}<div class="ch-title">${esc(v.title)}</div></summary>${body}</details>`;
+    return `<details class="ch-card"><summary><div class="chs-stack chs-leaf"><div class="ch-title">${esc(v.title)}</div>${row}</div></summary>${body}</details>`;
   }
-  return `<div class="ch-card">${meta}<div class="ch-desc">${esc(v.desc)}</div></div>`;   // back-compat (old desc-only entries)
+  return `<div class="ch-card"><div class="chs-stack chs-leaf">${row}<div class="ch-desc">${esc(v.desc)}</div></div></div>`;   // back-compat (old desc-only entries)
 }
-// Grouped version history (mirrors the Data repo's buildChangelogTree): leaves are bucketed into
-// ~30-SP sub-groups, then those into ~100-SP groups. Greedy SP buckets over the chronological list.
-const HIST_SUB_SP=30, HIST_GROUP_SP=100;
+// Grouped version history: within each era, greedy ~40-SP buckets over the chronological list.
+const HIST_CHUNK_SP=40;
 const histSumSp=a=>a.reduce((s,x)=>s+(x.sp||0),0);
 function histBucketBySp(items, target){   // items oldest-first, each exposes .sp
   const buckets=[]; let cur=[], curSp=0;
@@ -3234,39 +3235,27 @@ const histHeadline=ns=>{ const top=ns.reduce((bst,r)=>(r.sp||0)>(bst.sp||0)?r:bs
 const HIST_ERA_SPLIT='2026-06-27';
 const HIST_ERA_LABELS={after:'2025 data and dashboard polish',before:'Initial dashboard and chart foundation'};
 const histEraOf=d=>String(d).slice(0,10)<HIST_ERA_SPLIT?'before':'after';
-const histSeriesOf=v=>/^v0\.2\./.test(v.v)?'v02':(/^v0\.1\./.test(v.v)?'v01':'other');
 function histSummaryHtml(leaves,sp,title,headCls){
   headCls=headCls||'chg-head';
   return `<div class="chs-stack"><div class="chs-title-row"><span class="${headCls}">${esc(title)}</span></div>`
-    +`<span class="sp-badge">${sp} SP</span>`
-    +`<div class="chs-meta"><span class="chs-ver">${esc(histSpan(leaves))}</span>`
-    +`<span class="chs-dates">${esc(histDateSpan(leaves))}</span></div></div>`;
+    +`<div class="chs-row"><span class="sp-badge">${sp} SP</span>`
+    +`<span class="chs-inline-meta">${esc(histSpan(leaves))} · ${esc(histDateSpan(leaves))}</span></div></div>`;
 }
-function renderHistSpGroups(chrono,openFirst){
-  const subs=histBucketBySp(chrono, HIST_SUB_SP).map(leaves=>({ leaves, sp:histSumSp(leaves) }));
-  const groups=histBucketBySp(subs, HIST_GROUP_SP).map(gsubs=>({ subs:gsubs, sp:histSumSp(gsubs) }));
+function renderHistChunks(chrono,openFirst){
+  const chunks=histBucketBySp(chrono, HIST_CHUNK_SP).map(leaves=>({ leaves, sp:histSumSp(leaves) }));
   let html='', opened=!!openFirst;
-  [...groups].reverse().forEach(g=>{
-    const gsubs=[...g.subs].reverse();
-    const gLeaves=gsubs.flatMap(s=>[...s.leaves].reverse());
-    const openGroup=opened; if(openGroup) opened=false;
-    html+=`<details class="ch-group"${openGroup?' open':''}><summary>`
-      +histSummaryHtml(gLeaves, g.sp, histHeadline(gLeaves), 'chg-head')
-      +`</summary><div class="ch-sub-wrap">`;
-    gsubs.forEach((s,si)=>{
-      const leaves=[...s.leaves].reverse();
-      html+=`<details class="ch-sub"${openGroup&&si===0?' open':''}><summary>`
-        +histSummaryHtml(leaves, s.sp, histHeadline(leaves), 'chs-head')
-        +`</summary><div class="ch-leaf-wrap">`+leaves.map(histLeaf).join('')+`</div></details>`;
-    });
-    html+=`</div></details>`;
+  [...chunks].reverse().forEach(ch=>{
+    const leaves=[...ch.leaves].reverse();
+    const openChunk=opened; if(openChunk) opened=false;
+    html+=`<details class="ch-group"${openChunk?' open':''}><summary>`
+      +histSummaryHtml(leaves, ch.sp, histHeadline(leaves), 'chs-head')
+      +`</summary><div class="ch-leaf-wrap">`+leaves.map(histLeaf).join('')+`</div></details>`;
   });
   return html;
 }
 function renderHistTree(){
   const chrono=[...VERSIONS].reverse();                         // oldest-first
   const eraDefs=[{key:'after',label:HIST_ERA_LABELS.after},{key:'before',label:HIST_ERA_LABELS.before}];
-  const seriesDefs=[{key:'v02',label:'0.2'},{key:'v01',label:'0.1'},{key:'other',label:'Other'}];
   let html='', openEra=true;
   eraDefs.forEach(era=>{
     const eraItems=chrono.filter(v=>histEraOf(v.date)===era.key);
@@ -3276,18 +3265,7 @@ function renderHistTree(){
     html+=`<details class="ch-era"${openThis?' open':''}><summary>`
       +histSummaryHtml(eraNF, histSumSp(eraItems), era.label, 'chg-head')
       +`</summary><div class="ch-era-wrap">`;
-    let openSeries=openThis;
-    seriesDefs.forEach(ser=>{
-      const serItems=eraItems.filter(v=>histSeriesOf(v)===ser.key);
-      if(!serItems.length) return;
-      const serNF=[...serItems].reverse();
-      const openSer=openSeries; if(openSer) openSeries=false;
-      html+=`<details class="ch-series"${openSer?' open':''}><summary>`
-        +histSummaryHtml(serNF, histSumSp(serItems), ser.label, 'chs-head')
-        +`</summary><div class="ch-series-wrap">`;
-      html+=renderHistSpGroups(serItems, openSer);
-      html+=`</div></details>`;
-    });
+    html+=renderHistChunks(eraItems, openThis);
     html+=`</div></details>`;
   });
   document.getElementById('histBody').innerHTML=html;
