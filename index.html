@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.45</title>
+<title>Markets — LT agencies · v0.2.47</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -21,33 +21,45 @@
   // Apply saved theme + view mode before first paint to avoid a flash.
   // Theme default = dark; view default = Default (Dev mode adds the version / changelog popup).
   // data-mode is set unconditionally (even if localStorage is unavailable) so the CSS always applies.
-  (function(){ var theme='dark', mode='default';
-    try{ if(localStorage.getItem('theme')==='light') theme='light'; if(localStorage.getItem('viewMode')==='dev') mode='dev'; }catch(e){}
+  (function(){ var theme='dark', mode='default', palette='classic';
+    try{
+      if(localStorage.getItem('theme')==='light') theme='light';
+      if(localStorage.getItem('viewMode')==='dev') mode='dev';
+      if(localStorage.getItem('palette')==='ocean') palette='ocean';
+    }catch(e){}
     if(theme==='dark') document.documentElement.setAttribute('data-theme','dark');
+    if(palette!=='classic') document.documentElement.setAttribute('data-palette', palette);
     document.documentElement.setAttribute('data-mode', mode);
   })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
-  /* Light theme = default (:root). Dark theme via [data-theme="dark"].
-     Brand/data colours (accent/green/red/amber/purple/gold) stay constant
-     across themes so charts read consistently; only surfaces flip. */
-  :root{
-    color-scheme:light;   /* native controls (option lists, scrollbars, date pickers) follow the theme — prevents black-on-dark option text */
+  /* Light + Classic palette (:root default). Dark via [data-theme="dark"].
+     Ocean palette via [data-palette="ocean"] — overrides accent/series tokens only. */
+  :root,[data-palette="classic"]{
+    color-scheme:light;
     --bg:#f5f6f8; --panel:#ffffff; --panel2:#eef0f4; --border:#d8dce4; --cost:#aab2c2;
     --text:#1a1f2b; --muted:#5e6678; --accent:#2f6fe0; --green:#1faa72;
-    --red:#dc4d4d; --amber:#d08a1f; --purple:#7c5cf0; --gold:#c79410;
+    --red:#dc4d4d; --amber:#d08a1f; --purple:#7c5cf0; --gold:#c79410; --gold-bar:#a67c08;
     --hover:rgba(47,111,224,.07); --grid:#e6e9ef; --chart-bg:#ffffff; --zebra:rgba(0,0,0,.022);
-    --mf-rev:#5e6678; --mf-turn:#c2c8d2;   /* money-flow bars: Revenue = dark gray, Turnover = light gray (both kept visible on each theme's bg) */
-    --app-w:840px;   /* desktop width limiter — caps the app to ~iPad width so wide screens render the single-column tablet layout */
+    --mf-rev:#5e6678; --mf-turn:#c2c8d2;
+    --app-w:840px;
   }
-  [data-theme="dark"]{
+  [data-theme="dark"],[data-theme="dark"][data-palette="classic"]{
     color-scheme:dark;
     --bg:#0e1117; --panel:#161b25; --panel2:#1c2230; --border:#2a3245; --cost:#566179;
     --text:#e6e9f0; --muted:#8b93a7; --accent:#4f8ef7; --green:#34c98e;
-    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542;
+    --red:#f06a6a; --amber:#f0b04f; --purple:#a78bfa; --gold:#f4c542; --gold-bar:#c9a020;
     --hover:rgba(79,142,247,.07); --grid:#222a3a; --chart-bg:#0e1117; --zebra:rgba(255,255,255,.015);
-    --mf-rev:#7d8696; --mf-turn:#c2c8d2;   /* dark theme: Revenue still the darker gray, Turnover the lighter — both lift off the dark bg */
+    --mf-rev:#7d8696; --mf-turn:#c2c8d2;
+  }
+  [data-palette="ocean"]{
+    --accent:#1a9e8f; --green:#2a9a72; --red:#d4564f; --amber:#c98a28; --purple:#6b7fd4;
+    --gold:#b8860b; --gold-bar:#946f00; --hover:rgba(26,158,143,.08);
+  }
+  [data-theme="dark"][data-palette="ocean"]{
+    --accent:#3dd6c6; --green:#4dd4a8; --red:#f07a72; --amber:#e8b04f; --purple:#9aa8f0;
+    --gold:#d9b84a; --gold-bar:#b8942e; --hover:rgba(61,214,198,.08);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
@@ -591,11 +603,12 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.45</span>
+    <span class="nav-version" id="navVersion">v0.2.47</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
+      <button id="paletteToggle">🎨 Classic</button>
       <button id="viewToggle">→ Default view</button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
       <button id="sodraRefresh">🔄 Refresh Sodra</button>
@@ -960,6 +973,31 @@ function syncThemeButton(){
   const btn = document.getElementById('themeToggle');
   if(btn) btn.textContent = currentTheme()==='dark' ? '☀️ Light' : '🌙 Dark';
 }
+function currentPalette(){ return document.documentElement.getAttribute('data-palette')==='ocean' ? 'ocean' : 'classic'; }
+function syncPaletteButton(){
+  const btn=document.getElementById('paletteToggle');
+  if(btn) btn.textContent = currentPalette()==='ocean' ? '🎨 Ocean' : '🎨 Classic';
+}
+function refreshThemedCharts(){
+  GRID = cssVar('--grid');
+  applyChartDefaults();
+  retintCharts();
+  try{ redrawDashSvg(); }catch(e){}
+  try{ const sc=document.getElementById('scrubChart'); if(sc&&sc.__scrub) sc.__scrub.render(); }catch(e){}
+  try{ if(typeof renderSegView==='function') renderSegView(); }catch(e){}
+  try{ if(typeof renderScatterYear==='function') renderScatterYear(); }catch(e){}
+  try{ if(typeof renderRevAllSegUI==='function') renderRevAllSegUI(); }catch(e){}
+  try{ if(typeof renderCompany==='function' && typeof ovBrand!=='undefined') renderCompany(ovBrand); }catch(e){}
+  try{ drawSDD(); }catch(e){}
+}
+function applyPalette(palette){
+  if(palette==='ocean') document.documentElement.setAttribute('data-palette','ocean');
+  else document.documentElement.removeAttribute('data-palette');
+  try{ localStorage.setItem('palette', palette); }catch(e){}
+  SEGCOLORS = {...SEG_PALETTES[palette]||SEG_PALETTES.classic};
+  syncPaletteButton();
+  refreshThemedCharts();
+}
 function retintCharts(){
   // Repaint every live Chart instance's grid/tick/legend colours from the
   // new theme. Series colours are intentionally left untouched (brand consts).
@@ -986,19 +1024,17 @@ function applyTheme(theme){
   if(theme==='dark') document.documentElement.setAttribute('data-theme','dark');
   else document.documentElement.removeAttribute('data-theme');
   try{ localStorage.setItem('theme', theme); }catch(e){}
-  GRID = cssVar('--grid');
-  applyChartDefaults();
   syncThemeButton();
-  retintCharts();
-  try{ redrawDashSvg(); }catch(e){}     // SVG dashboard charts repaint grid/labels (series colours kept)
-  try{ const sc=document.getElementById('scrubChart'); if(sc&&sc.__scrub) sc.__scrub.render(); }catch(e){}   // scatter scrubber re-tint
-  try{ if(typeof renderSegView==='function') renderSegView(); }catch(e){}   // market doughnut/bars — full rebuild so legend/axis pick up --text (PB-4)
-  try{ if(typeof renderScatterYear==='function') renderScatterYear(); }catch(e){}   // market bubble scatter — axis/legend colours baked at create
-  try{ drawSDD(); }catch(e){}           // deep-dive SVG charts rebuild fresh
+  refreshThemedCharts();
 }
 syncThemeButton();
+syncPaletteButton();
 document.getElementById('themeToggle').addEventListener('click', ()=>{
   applyTheme(currentTheme()==='dark' ? 'light' : 'dark');
+  document.getElementById('settingsMenu').classList.remove('open');
+});
+document.getElementById('paletteToggle').addEventListener('click', ()=>{
+  applyPalette(currentPalette()==='ocean' ? 'classic' : 'ocean');
   document.getElementById('settingsMenu').classList.remove('open');
 });
 // Graph pan/zoom OFF by default (charts static, page scrolls over them). Dev-mode Settings toggle turns it on.
@@ -1124,7 +1160,12 @@ DATA.forEach(d=>{ (byBrand[d.brand] = byBrand[d.brand]||{}); byBrand[d.brand][d.
 const BRANDS = Object.keys(byBrand);
 
 const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
-const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
+const SEG_PALETTES = {
+  classic: {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'},
+  ocean:   {'Media':'#1a7a8c','Digital media':'#2ea88a','Kūryba':'#d4923a','PR':'#5b7ec8','Production house':'#c75c5c','BTL':'#38a4b8','PA':'#b868a0','Konsultantai':'#6d9470','Renginiai':'#a88b5c'}
+};
+let SEGCOLORS = {...SEG_PALETTES.classic};
+(function(){ const p=currentPalette(); SEGCOLORS={...SEG_PALETTES[p]||SEG_PALETTES.classic}; })();
 const SEGLABEL = {'Kūryba':'Creative','Konsultantai':'Consulting','Renginiai':'Events'}; // English display names; data keys stay LT
 const segName = s => SEGLABEL[s] || s;
 function allSegsSelected(set){ return SEGMENTS.length>0 && SEGMENTS.every(s=>set.has(s)); }
@@ -1439,7 +1480,7 @@ function renderCompany(brand){
     {label:'Profit margin', r:mMargin}, {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
   ].filter(x=>x.r);
   if(rankData.length) drawBarsSvg(chMineRank, {
-    rows: rankData.map(x=>({label:x.label, value:x.r.pct, color: x.r.pct>=50?cssVar('--gold'):cssVar('--muted'), pos:x.r.pos, total:x.r.total})),
+    rows: rankData.map(x=>({label:x.label, value:x.r.pct, color: x.r.pct>=50?cssVar('--gold-bar'):cssVar('--muted'), pos:x.r.pos, total:x.r.total})),
     xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
     tip:r=>`<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}th percentile · #${r.pos} of ${r.total}`
   });
@@ -2352,6 +2393,12 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.47', date:'2026-07-10', sp:1, title:'Gold-bar contrast + color palettes',
+    desc:'Darker gold bars and bolder labels on the vs-market chart; Classic and Ocean palettes in Dev settings.',
+    detail:'vs-market bars use --gold-bar (darker than --gold). drawBarsSvg picks dark text + a slightly stronger shadow on light bars. New palette toggle: Classic (default) vs Ocean — swaps accent tokens and segment chart colours; persists in localStorage alongside light/dark theme.'},
+  {v:'v0.2.46', date:'2026-07-10', sp:0.5, title:'Hotfix: blank page',
+    desc:'v0.2.44 broke the whole page — a missing ) in the company money-flow Object.assign call.',
+    detail:'drawFinSvg(el, Object.assign(…, { series:[…] })) was closed with ]}); instead of ]})); — a syntax error that halted the entire inline script on load. Fixed and re-built.'},
   {v:'v0.2.45', date:'2026-07-10', sp:0.5, title:'Select all ↔ Clear all',
     desc:'Segment “Select all” becomes “Clear all” once every segment is selected.',
     detail:'Shared toggle on market By-segment, company-picker segment filter, and rankings sector picker (in-dropdown + toolbar button). When all segments are already selected, the button clears instead of doing nothing. Rankings clear resets to one sector (≥1 required); market/company filters may clear to none.'},
@@ -3670,6 +3717,12 @@ function drawFinSvg(container, spec, opts){
 }
 
 // Static horizontal-bar SVG (rank lists). cfg = {rows:[{label,value,color}], xTitle, fmt(v), tip(row)}.
+function barLuma(hex){
+  const h=(hex||'').replace('#','');
+  if(h.length!==6) return 0.5;
+  const r=parseInt(h.slice(0,2),16)/255, g=parseInt(h.slice(2,4),16)/255, b=parseInt(h.slice(4,6),16)/255;
+  return 0.299*r+0.587*g+0.114*b;
+}
 function drawBarsSvg(container, cfg){
   if(!container) return;
   const st = container.__bar || (container.__bar = { cid:'bcl'+Math.random().toString(36).slice(2,8) });
@@ -3702,11 +3755,13 @@ function drawBarsSvg(container, cfg){
     let plot='';
     rows.forEach((r,i)=>{ const cy=rowY(i); if(cy<m.t-bandH||cy>m.t+ph+bandH) return;
       const x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
-      plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${r.color||cssVar('--accent')}" rx="2"/>`;
+      const barCol=r.color||cssVar('--accent');
+      plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${barCol}" rx="2"/>`;
       // company name INSIDE the graph, at the bar's start (moves with the bar). A soft drop-shadow keeps
       // it legible whether it sits on a coloured bar or on the dark plot beyond a short bar.
+      const onLight=barLuma(barCol)>0.55;
       const nameX=(x1>=base?base:x1)+4, nm=esc(String(r.label));
-      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${text}" font-size="10" text-anchor="start" filter="url(#${st.cid}sh)">${nm}</text>`;
+      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${onLight?'#1a1f2b':text}" font-size="10" font-weight="${onLight?'600':'500'}" text-anchor="start" filter="url(#${st.cid}${onLight?'shs':'sh'})">${nm}</text>`;
       // value + YoY% after the bar end, never overlapping the name
       const dStr = r.delta!=null ? (r.delta>=0?'+':'')+Math.round(r.delta)+'%' : '';
       const dCol = r.delta>=0 ? (cssVar('--green')||'#3bd16f') : (cssVar('--red')||'#e2575b');
@@ -3716,7 +3771,7 @@ function drawBarsSvg(container, cfg){
     });
     s+=`<clipPath id="${st.cid}p"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath>`;
     s+=`<g clip-path="url(#${st.cid}p)">${plot}</g>`;
-    const defs=`<defs><filter id="${st.cid}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.4" stdDeviation="0.6" flood-color="#000" flood-opacity="0.35"/></filter></defs>`;
+    const defs=`<defs><filter id="${st.cid}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.4" stdDeviation="0.6" flood-color="#000" flood-opacity="0.35"/></filter><filter id="${st.cid}shs" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0.5" stdDeviation="1" flood-color="#000" flood-opacity="0.5"/></filter></defs>`;
     container.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="overflow:visible;touch-action:none">${defs}${s}</svg>`;
     st.geo={W,H,ml:m.l,mt:m.t,pw,ph};
     const tag=document.createElement('span'); tag.className='eng-tag'; tag.textContent='SVG'; container.appendChild(tag);
