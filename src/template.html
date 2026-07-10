@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.54</title>
+<title>Markets — LT agencies · v0.2.55</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -625,7 +625,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.54</span>
+    <span class="nav-version" id="navVersion">v0.2.55</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -774,16 +774,6 @@
       </div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="revAllEmpty">Select a segment above to compare trends over time.</div></div>
       <div class="desc" id="revAllDesc" style="margin-top:8px"></div>
-
-      <h3 class="sub-hd" id="peopleAllTitle">People by year</h3>
-      <div class="rank-tools revall-tools" style="margin-top:0">
-        <div class="seg seg-scroll" id="peopleAllMode" role="group" aria-label="People metric">
-          <button type="button" data-m="employees" class="active">Employees / company</button>
-          <button type="button" data-m="salary">Median salary</button>
-        </div>
-      </div>
-      <div class="chartbox"><div class="svgwrap" id="chPeopleAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="peopleAllEmpty">Select a segment above to compare trends over time.</div></div>
-      <div class="desc" id="peopleAllDesc" style="margin-top:8px"></div>
     </div>
     <div class="card full">
       <h2>Size vs profitability by year</h2>
@@ -1755,7 +1745,6 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
     if(typeof renderSegView==='function') renderSegView();
     if(typeof renderRevSegAll==='function') renderRevSegAll();
     if(typeof renderMoneyFlowAll==='function') renderMoneyFlowAll();
-    if(typeof renderPeopleAll==='function') renderPeopleAll();
     if(typeof buildScatterScrub==='function'){ DBG('  calling buildScatterScrub()'); buildScatterScrub(); }
     else DBG('  buildScatterScrub NOT a function!');
   };
@@ -1833,54 +1822,6 @@ function renderMoneyFlowAll(){
   ]});
 }
 renderMoneyFlowAll();
-
-// ---------- People by year (employees / salary), filtered by shared segment selection ----------
-let peopleAllMode='employees';
-const peopleAllModeSeg=document.getElementById('peopleAllMode');
-
-function segMedianSalary(seg, year){
-  const s=DATA.filter(d=>d.year===year && d.activities.includes(seg) && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
-  return s.length?s[Math.floor(s.length/2)]:null;
-}
-
-function renderPeopleAll(){
-  const el=document.getElementById('chPeopleAll');
-  const empty=document.getElementById('peopleAllEmpty');
-  const desc=document.getElementById('peopleAllDesc');
-  const title=document.getElementById('peopleAllTitle');
-  const segs=SEGMENTS.filter(s=>revAllSegs.has(s));
-  const isSal=peopleAllMode==='salary';
-  if(title) title.textContent=isSal?'Median monthly salary by year':'Employees by year';
-  if(!segs.length){
-    if(el){ el.innerHTML=''; delete el.__fin; }
-    if(empty){ empty.textContent='Select a segment above to compare trends over time.'; empty.classList.add('show'); }
-    if(desc) desc.textContent='Uses the same segment filter as the financial chart above.';
-    return;
-  }
-  if(isSal){
-    if(empty) empty.classList.remove('show');
-    const ranked=segs.map(s=>({s, v:segMedianSalary(s,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
-    const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
-      data:FIN_YEARS.map(y=>({x:y, y:segMedianSalary(s,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-    if(el) drawFinSvg(el, Object.assign({ yTitle:'€/mo' }, CHART_PAD, { series }));
-    if(desc) desc.textContent='Median monthly salary per company in each selected segment (companies with salary &gt; €500/mo).';
-    return;
-  }
-  if(mktMode==='emp'){
-    if(el){ el.innerHTML=''; delete el.__fin; }
-    if(empty){ empty.textContent='Headcount per employee isn’t meaningful — pick “Average / company” or “Whole market”.'; empty.classList.add('show'); }
-    if(desc) desc.textContent='Employees view follows the basis toggle at the top of Market all time.';
-    return;
-  }
-  if(empty) empty.classList.remove('show');
-  const b=basisFromMode(mktMode);
-  const ranked=segs.map(s=>({s, v:segMetricVal(s,'employees',b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
-  const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
-    data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,'employees',b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-  const yTitle=b==='total'?'people (total)':b==='emp'?'people / employee':'people / company';
-  if(el) drawFinSvg(el, Object.assign({ yTitle }, CHART_PAD, { series }));
-  if(desc) desc.textContent='Employees in each selected segment · '+basisWord(b)+'. Follows the basis toggle at the top of Market all time.';
-}
 
 // ---------- By segment, single year: ONE card, Doughnut OR Bars (shared metric × basis, follows the year) ----------
 function segTotals(y){   // kept for topSegs / segSorted (revenue, whole-market)
@@ -2243,8 +2184,6 @@ window.__scatterReady=true;   // now renderMarket (on year change) may drive the
 renderScatterYear();
 buildScatterScrub();
 
-// Salary quartiles helper kept for any future whole-market view; people chart uses segMedianSalary per segment.
-
 // ---------- By segment: all years (multi-line, metric × basis) ----------
 let revAllMetric='revenue';
 const revAllSegs = new Set(['BTL']);   // start with one segment; add/remove via dropdown + pills
@@ -2315,7 +2254,6 @@ function renderRevAllSegUI(){
   syncRevAllSectorBtn();
   syncSelectAllBtn(revAllSelectAllBtn, revAllSegs);
   renderRevSegAll();
-  renderPeopleAll();
 }
 
 if(revAllMetricSeg) revAllMetricSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
@@ -2323,12 +2261,6 @@ if(revAllMetricSeg) revAllMetricSeg.querySelectorAll('button').forEach(b=>b.addE
   b.classList.add('active');
   revAllMetric=b.dataset.m;
   renderRevSegAll();
-}));
-if(peopleAllModeSeg) peopleAllModeSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-  peopleAllModeSeg.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  peopleAllMode=b.dataset.m;
-  renderPeopleAll();
 }));
 if(revAllSelectAllBtn) revAllSelectAllBtn.addEventListener('click',e=>{
   e.stopPropagation();
@@ -2350,7 +2282,7 @@ if(revAllSectorBtn && revAllSectorSelect){
 renderRevAllSegUI();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
-const SVG_DASH_IDS=['chMineRank','chTop','chRevPerEmp','chRevSegAll','chPeopleAll','mfaAll','chCoFlowAll'];
+const SVG_DASH_IDS=['chMineRank','chTop','chRevPerEmp','chRevSegAll','mfaAll','chCoFlowAll'];
 function redrawDashSvg(){ SVG_DASH_IDS.forEach(id=>{ const el=document.getElementById(id); if(!el) return;
   if(el.__fin) el.__fin.render(); else if(el.__bar) el.__bar.render(); }); }
 let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dashRT=setTimeout(redrawDashSvg,160); });
@@ -2358,6 +2290,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.55', date:'2026-07-10', sp:0.5, title:'Drop redundant people chart',
+    desc:'Removed the By-segment “People by year” block; Employees and Wages already live in the financial chart.',
+    detail:'Median salary and Employees/company duplicated the financial-metrics picker (Employees + Wages with basis toggle). Dropped the whole People subsection — pick Employees or Wages in “Financial metrics, all years” instead.'},
   {v:'v0.2.54', date:'2026-07-10', sp:1, title:'Version history flatten',
     desc:'Two-line headers; dropped v0.1/v0.2 tiers; era → ~40 SP chunks only.',
     detail:'Section summaries are title + one inline row (SP pill · version · dates). Removed the meaningless 0.1/0.2 split; within each Jun-27 era, releases group into ~40-SP chunks titled by their biggest change.'},
