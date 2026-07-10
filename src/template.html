@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.35</title>
+<title>Markets — LT agencies · v0.2.37</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -389,6 +389,8 @@
   .seg-filter .sf-pill.sf-clear:hover{color:var(--text)}
   .revall-tools select{min-width:148px;font:600 12px/1 inherit;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text)}
   .revall-select-all{width:100%;justify-content:center;font-weight:600;border-top:1px solid var(--border);margin-top:4px;padding-top:10px}
+  .sub-hd{font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--text)}
+  .sub-hd:first-of-type{margin-top:10px}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
@@ -579,7 +581,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version">v0.2.35</span>
+    <span class="nav-version">v0.2.37</span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
@@ -683,19 +685,43 @@
       <h2>Total market money-flow by year (2019–2024)</h2>
       <div class="chartbox"><div class="svgwrap" id="mfaAll" style="position:absolute;inset:0"></div></div>
     </div>
-    <div class="card">
-      <h2>By segment, all years</h2>      <div class="seg-row">
-        <div class="seg" id="revAllMetric"><button data-m="revenue" class="active">Revenue</button><button data-m="turnover">Turnover</button><button data-m="profit">Profit</button><button data-m="employees">Employees</button><button data-m="wages">Wages</button></div>
+    <div class="card full">
+      <h2>By segment</h2>
+      <div class="rank-tools revall-tools">
+        <div class="co-select rank-sector-select" id="revAllSectorSelect">
+          <button type="button" class="co-select-btn" id="revAllSectorBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="revAllSectorBtnText">Add segment</span><span class="co-caret">▼</span>
+          </button>
+          <div class="co-select-panel" id="revAllSectorPanel">
+            <div class="co-select-list" id="revAllSectorList" role="listbox" aria-multiselectable="true"></div>
+            <button type="button" class="co-select-opt revall-select-all" id="revAllSelectAll">Select all</button>
+          </div>
+        </div>
       </div>
-      <div class="seg-filter" id="revAllSegs"></div>
-      <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div></div>
+      <div class="seg-filter rank-seg-wrap" id="revAllSegs"></div>
+
+      <h3 class="sub-hd">Financial metrics, all years</h3>
+      <div class="rank-tools revall-tools" style="margin-top:0">
+        <select id="revAllMetricSel" aria-label="Financial metric">
+          <option value="revenue">Revenue</option>
+          <option value="turnover">Turnover</option>
+          <option value="profit">Net profit</option>
+          <option value="employees">Employees</option>
+          <option value="wages">Wages</option>
+        </select>
+      </div>
+      <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="revAllEmpty">Select a segment above to compare trends over time.</div></div>
       <div class="desc" id="revAllDesc" style="margin-top:8px"></div>
-    </div>
-    <div class="card">
-      <h2>Median monthly salary by year</h2>      <div class="chartbox"><div class="svgwrap" id="chSalary" style="position:absolute;inset:0"></div></div>
-    </div>
-    <div class="card">
-      <h2 id="empAllTitle">Employees by year</h2>      <div class="chartbox"><div class="svgwrap" id="chEmpAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="empAllEmpty"></div></div>
+
+      <h3 class="sub-hd" id="peopleAllTitle">People by year</h3>
+      <div class="rank-tools revall-tools" style="margin-top:0">
+        <select id="peopleAllMode" aria-label="People metric">
+          <option value="employees">Employees per company</option>
+          <option value="salary">Median monthly salary</option>
+        </select>
+      </div>
+      <div class="chartbox"><div class="svgwrap" id="chPeopleAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="peopleAllEmpty">Select a segment above to compare trends over time.</div></div>
+      <div class="desc" id="peopleAllDesc" style="margin-top:8px"></div>
     </div>
     <div class="card full">
       <h2>Size vs profitability by year</h2>
@@ -1548,7 +1574,7 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
     if(typeof renderSegView==='function') renderSegView();
     if(typeof renderRevSegAll==='function') renderRevSegAll();
     if(typeof renderMoneyFlowAll==='function') renderMoneyFlowAll();
-    if(typeof renderEmpAll==='function') renderEmpAll();
+    if(typeof renderPeopleAll==='function') renderPeopleAll();
     if(typeof buildScatterScrub==='function'){ DBG('  calling buildScatterScrub()'); buildScatterScrub(); }
     else DBG('  buildScatterScrub NOT a function!');
   };
@@ -1626,22 +1652,54 @@ function renderMoneyFlowAll(){
   ]});
 }
 renderMoneyFlowAll();
-// ---------- Employees by year (all years; follows the basis: total or per company) ----------
-function renderEmpAll(){
-  const empty=document.getElementById('empAllEmpty');
-  if(mktMode==='emp'){   // headcount ÷ headcount = 1 — meaningless, so show nothing
-    if(chEmpAll) chEmpAll.innerHTML=''; if(chEmpAll&&chEmpAll.__fin) chEmpAll.__fin.sig=null;
-    const t=document.getElementById('empAllTitle'); if(t) t.textContent='Employees by year';
+
+// ---------- People by year (employees / salary), filtered by shared segment selection ----------
+let peopleAllMode='employees';
+const peopleAllModeSel=document.getElementById('peopleAllMode');
+
+function segMedianSalary(seg, year){
+  const s=DATA.filter(d=>d.year===year && d.activities.includes(seg) && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
+  return s.length?s[Math.floor(s.length/2)]:null;
+}
+
+function renderPeopleAll(){
+  const el=document.getElementById('chPeopleAll');
+  const empty=document.getElementById('peopleAllEmpty');
+  const desc=document.getElementById('peopleAllDesc');
+  const title=document.getElementById('peopleAllTitle');
+  const segs=SEGMENTS.filter(s=>revAllSegs.has(s));
+  const isSal=peopleAllMode==='salary';
+  if(title) title.textContent=isSal?'Median monthly salary by year':'Employees by year';
+  if(!segs.length){
+    if(el){ el.innerHTML=''; delete el.__fin; }
+    if(empty){ empty.textContent='Select a segment above to compare trends over time.'; empty.classList.add('show'); }
+    if(desc) desc.textContent='Uses the same segment filter as the financial chart above.';
+    return;
+  }
+  if(isSal){
+    if(empty) empty.classList.remove('show');
+    const ranked=segs.map(s=>({s, v:segMedianSalary(s,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
+    const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
+      data:FIN_YEARS.map(y=>({x:y, y:segMedianSalary(s,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
+    if(el) drawFinSvg(el, { yTitle:'€/mo', series });
+    if(desc) desc.textContent='Median monthly salary per company in each selected segment (companies with salary &gt; €500/mo).';
+    return;
+  }
+  if(mktMode==='emp'){
+    if(el){ el.innerHTML=''; delete el.__fin; }
     if(empty){ empty.textContent='Headcount per employee isn’t meaningful — pick “Average / company” or “Whole market”.'; empty.classList.add('show'); }
+    if(desc) desc.textContent='Employees view follows the basis toggle at the top of Market all time.';
     return;
   }
   if(empty) empty.classList.remove('show');
-  const perCo = mktMode==='avg';
-  const t=document.getElementById('empAllTitle'); if(t) t.textContent = perCo?'Employees per company by year':'Total employees by year';
-  drawFinSvg(chEmpAll, { yTitle:'people', series:[{label:perCo?'Avg employees / company':'Total employees', color:cssVar('--amber'),
-    data:FIN_YEARS.map(y=>{ const a=marketAgg(y); return {x:y, y: perCo&&a.n? a.emp/a.n : a.emp}; })}] });
+  const b=basisFromMode(mktMode);
+  const ranked=segs.map(s=>({s, v:segMetricVal(s,'employees',b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
+  const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
+    data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,'employees',b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
+  const yTitle=b==='total'?'people (total)':b==='emp'?'people / employee':'people / company';
+  if(el) drawFinSvg(el, { yTitle, series });
+  if(desc) desc.textContent='Employees in each selected segment · '+basisWord(b)+'. Follows the basis toggle at the top of Market all time.';
 }
-renderEmpAll();
 
 // ---------- By segment, single year: ONE card, Doughnut OR Bars (shared metric × basis, follows the year) ----------
 function segTotals(y){   // kept for topSegs / segSorted (revenue, whole-market)
@@ -2031,52 +2089,98 @@ window.__scatterReady=true;   // now renderMarket (on year change) may drive the
 renderScatterYear();
 buildScatterScrub();
 
-// ---------- Salary trend ----------
-function salaryQuartiles(y){
-  const s = DATA.filter(d=>d.year===y && d.avgSalary>500).map(d=>d.avgSalary).sort((a,b)=>a-b);
-  const q = p => s[Math.floor(s.length*p)];
-  return {q05:q(.05), q1:q(.25), med:q(.5), q3:q(.75), q95:q(.95)};
-}
-const sq = FIN_YEARS.map(salaryQuartiles);
-const A=cssVar('--accent');
-drawFinSvg(chSalary, { yTitle:'€/mo', series:[
-  {label:'95th pct', color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q95}))},
-  {label:'75th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q3}))},
-  {label:'Median',   color:cssVar('--amber'), width:2,             data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].med}))},
-  {label:'25th pct', color:A, dash:[5,4], width:1.5, opacity:0.8,  mr:2.5,         data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q1}))},
-  {label:'5th pct',  color:A, dash:[2,3], width:1,   opacity:0.45, noMarkers:true, data:FIN_YEARS.map((y,k)=>({x:y, y:sq[k].q05}))},
-]});
+// Salary quartiles helper kept for any future whole-market view; people chart uses segMedianSalary per segment.
 
 // ---------- By segment: all years (multi-line, metric × basis) ----------
 let revAllMetric='revenue';
-const revAllSegs = new Set(SEGMENTS);   // "filter by segment": which segments to plot (all on by default)
+const revAllSegs = new Set(['BTL']);   // start with one segment; add/remove via dropdown + pills
+const revAllSegHost = document.getElementById('revAllSegs');
+const revAllSectorSelect = document.getElementById('revAllSectorSelect');
+const revAllSectorBtn = document.getElementById('revAllSectorBtn');
+const revAllSectorBtnText = document.getElementById('revAllSectorBtnText');
+const revAllSectorList = document.getElementById('revAllSectorList');
+const revAllSelectAllBtn = document.getElementById('revAllSelectAll');
+const revAllMetricSel = document.getElementById('revAllMetricSel');
+
 function renderRevSegAll(){
   const m=revAllMetric, b=basisFromMode(mktMode);
-  const segs = SEGMENTS.filter(s=>revAllSegs.has(s));
-  const ranked = segs.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
-  const series = ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
+  const el=document.getElementById('chRevSegAll');
+  const empty=document.getElementById('revAllEmpty');
+  const segs=SEGMENTS.filter(s=>revAllSegs.has(s));
+  if(!segs.length){
+    if(el){ el.innerHTML=''; delete el.__fin; }
+    if(empty) empty.classList.add('show');
+    const d=document.getElementById('revAllDesc'); if(d) d.textContent='Pick one or more segments from the dropdown to compare over time.';
+    return;
+  }
+  if(empty) empty.classList.remove('show');
+  const ranked=segs.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
+  const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
     data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-  drawFinSvg(chRevSegAll, { yTitle: METRICS[m].unit==='€'?'€':'people', series });
+  if(el) drawFinSvg(el, { yTitle: METRICS[m].unit==='€'?'€':'people', series });
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
 }
-// "Filter by segment" pills (multi-select toggles, #toggle) — one scrolling row, colour-keyed to the lines.
-function buildRevAllSegFilter(){
-  const host=document.getElementById('revAllSegs'); if(!host) return;
-  host.innerHTML = SEGMENTS.map(s=>`<span class="sf-pill${revAllSegs.has(s)?' on':''}" role="button" tabindex="0" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</span>`).join('')
-    + `<span class="sf-pill sf-all" role="button" tabindex="0" data-all="1">All</span>`;
-  host.querySelectorAll('.sf-pill').forEach(p=>p.addEventListener('click',()=>{
-    if(p.dataset.all){ SEGMENTS.forEach(s=>revAllSegs.add(s)); }
-    else { const s=p.dataset.s; if(revAllSegs.has(s)){ if(revAllSegs.size>1) revAllSegs.delete(s); } else revAllSegs.add(s); }   // keep at least one
-    buildRevAllSegFilter(); renderRevSegAll();
-  }));
+
+function syncRevAllSectorBtn(){
+  if(!revAllSectorBtnText) return;
+  if(!revAllSegs.size) revAllSectorBtnText.textContent='Add segment';
+  else if(revAllSegs.size===1) revAllSectorBtnText.textContent=segName([...revAllSegs][0]);
+  else revAllSectorBtnText.textContent=`${revAllSegs.size} segments`;
 }
-(function(){ const seg=document.getElementById('revAllMetric'); if(seg) seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    seg.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); revAllMetric=b.dataset.m; renderRevSegAll(); })); })();
-buildRevAllSegFilter();
-renderRevSegAll();
+
+function buildRevAllSegFilter(){
+  if(!revAllSegHost) return;
+  if(!revAllSegs.size){ revAllSegHost.innerHTML=''; return; }
+  const pills=[`<span class="sf-pill sf-clear" role="button" tabindex="0" id="revAllClearAll">Clear all</span>`];
+  [...revAllSegs].sort((a,b)=>segName(a).localeCompare(segName(b),'en')).forEach(s=>{
+    pills.push(`<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`);
+  });
+  revAllSegHost.innerHTML=pills.join('');
+  const clearBtn=document.getElementById('revAllClearAll');
+  if(clearBtn) clearBtn.addEventListener('click',()=>{ revAllSegs.clear(); renderRevAllSegUI(); });
+  revAllSegHost.querySelectorAll('.sf-pill[data-s]').forEach(p=>{
+    const rm=()=>{ revAllSegs.delete(p.dataset.s); renderRevAllSegUI(); };
+    p.addEventListener('click',rm);
+    p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); rm(); } });
+  });
+}
+
+function renderRevAllSectorList(){
+  if(!revAllSectorList) return;
+  revAllSectorList.innerHTML=SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${revAllSegs.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${revAllSegs.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
+  revAllSectorList.querySelectorAll('.co-select-opt').forEach(o=>{
+    const toggle=()=>{ const s=o.dataset.s; if(revAllSegs.has(s)) revAllSegs.delete(s); else revAllSegs.add(s); renderRevAllSegUI(); };
+    o.addEventListener('click',toggle);
+    o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+  });
+}
+
+function renderRevAllSegUI(){
+  buildRevAllSegFilter();
+  renderRevAllSectorList();
+  syncRevAllSectorBtn();
+  renderRevSegAll();
+  renderPeopleAll();
+}
+
+if(revAllMetricSel) revAllMetricSel.addEventListener('change',()=>{ revAllMetric=revAllMetricSel.value; renderRevSegAll(); });
+if(peopleAllModeSel) peopleAllModeSel.addEventListener('change',()=>{ peopleAllMode=peopleAllModeSel.value; renderPeopleAll(); });
+if(revAllSelectAllBtn) revAllSelectAllBtn.addEventListener('click',e=>{ e.stopPropagation(); SEGMENTS.forEach(s=>revAllSegs.add(s)); renderRevAllSegUI(); });
+if(revAllSectorBtn && revAllSectorSelect){
+  revAllSectorBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=revAllSectorSelect.classList.toggle('open');
+    revAllSectorBtn.setAttribute('aria-expanded',open?'true':'false');
+  });
+  const panel=document.getElementById('revAllSectorPanel');
+  if(panel) panel.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>{ revAllSectorSelect.classList.remove('open'); revAllSectorBtn.setAttribute('aria-expanded','false'); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ revAllSectorSelect.classList.remove('open'); revAllSectorBtn.setAttribute('aria-expanded','false'); } });
+}
+renderRevAllSegUI();
 
 // Re-render the static SVG dashboard charts at the new size on window resize.
-const SVG_DASH_IDS=['chMineRank','chTop','chSalary','chRevPerEmp','chRevSegAll','chEmpAll','mfaAll','chCoFlowAll'];
+const SVG_DASH_IDS=['chMineRank','chTop','chRevPerEmp','chRevSegAll','chPeopleAll','mfaAll','chCoFlowAll'];
 function redrawDashSvg(){ SVG_DASH_IDS.forEach(id=>{ const el=document.getElementById(id); if(!el) return;
   if(el.__fin) el.__fin.render(); else if(el.__bar) el.__bar.render(); }); }
 let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dashRT=setTimeout(redrawDashSvg,160); });
@@ -2084,7 +2188,13 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-  {v:'v0.2.34', date:'2026-07-10', sp:0.5, title:'One version badge in nav',
+  {v:'v0.2.37', date:'2026-07-10', sp:2, title:'People chart + shared segments',
+    desc:'Employees and median salary merged into one segment-filtered chart; one segment picker drives both.',
+    detail:'Removed the separate whole-market salary quartile and employees cards. “People by year” toggles employees vs median salary, one line per selected segment (shared picker with financial metrics). Employees follows the Market all-time basis toggle; salary is median €/mo per company in each segment.'},
+  {v:'v0.2.36', date:'2026-07-10', sp:2, title:'Segment all-years picker',
+    desc:'By-segment all-years starts with BTL only; metric dropdown + segment selector with clear/select all.',
+    detail:'Replaced the all-segments-on pill row and five metric buttons with a metric &lt;select&gt; and a rankings-style sector dropdown (Select all inside). Selected segments show as removable pills with Clear all first; empty chart prompts you to pick a segment. Default: BTL only.'},
+  {v:'v0.2.35', date:'2026-07-10', sp:0.5, title:'Single nav version badge',
     desc:'Version only beside the settings cog — visible in Default and Dev; removed from page title.',
     detail:'Dropped the dev-version pill from the Markets h1. nav-version moved into settings-wrap and is no longer hidden in Default mode, so both modes show a single version label next to ⚙️. Dev-only changelog FAB still reads the same .nav-version text.'},
   {v:'v0.2.33', date:'2026-07-10', sp:0.5, title:'Changelog button restyle',
