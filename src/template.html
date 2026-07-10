@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.56</title>
+<title>Markets — LT agencies · v0.2.57</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -625,11 +625,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-<<<<<<< HEAD
-    <span class="nav-version" id="navVersion">v0.2.55</span>
-=======
-    <span class="nav-version" id="navVersion">v0.2.54</span>
->>>>>>> 454539a (v0.2.54 | Compare financials line swatches | 0.5 sp)
+    <span class="nav-version" id="navVersion">v0.2.57</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1038,8 +1034,8 @@ applyGraphPan(false);
 (function(){ const b=document.getElementById('graphPanToggle'); if(b) b.addEventListener('click',()=>{ applyGraphPan(!graphPan); document.getElementById('settingsMenu').classList.remove('open'); }); })();
 
 // ---------- Refresh Sodra (dev-mode only) ----------
-// A static GitHub Pages page cannot scrape — there is no server. So the button fires the
-// refresh-sodra.yml workflow via workflow_dispatch; the Action scrapes atvira.sodra.lt,
+// A static GitHub Pages page cannot fetch data — there is no server. So the button fires the
+// refresh-sodra.yml workflow via workflow_dispatch; the Action fetches from atvira.sodra.lt,
 // rebuilds index.html and pushes. Pages then redeploys and we reload.
 //
 // The PAT is read from localStorage and NEVER written into this file: a token committed to
@@ -1067,7 +1063,7 @@ const GH_REPO='adomasgaudi/Marketanalytics', GH_FLOW='refresh-sodra.yml';
   // Poll the run we just created until it leaves 'in_progress'. GitHub gives no run id back
   // from a dispatch, so we grab the newest run of this workflow started after we fired.
   async function watch(since){
-    for(let i=0;i<120;i++){                       // ~10 min ceiling; a full 117-company scrape is ~4 min
+    for(let i=0;i<120;i++){                       // ~10 min ceiling; a full 117-company Sodra fetch is ~4 min
       await new Promise(r=>setTimeout(r,5000));
       const r=await api('/actions/workflows/'+GH_FLOW+'/runs?per_page=5');
       if(!r.ok) continue;
@@ -1205,7 +1201,7 @@ const MY_BRAND = MY_COMPANIES[0].brand;
 const E = v => v!=null ? '€'+Math.round(v).toLocaleString() : '–';
 
 // Per-brand profile bits for the Overview info box: founded date (Įmonės raw sheet)
-// and CEO (Vadovas, only from scraped Rekvizitai tabs).
+// and CEO (Vadovas, only from Rekvizitai tabs).
 const FOUNDED={}, WEBSITE={}; (function(){ const sh=SHEETS['Įmonės']; if(!sh) return;
   const bi=sh.columns.indexOf('Pagrindinis brandas'), fi=sh.columns.indexOf('Įregistruota'), wi=sh.columns.indexOf('Svetainė');
   sh.rows.forEach(r=>{ const b=r[bi]; if(!b) return;
@@ -1220,7 +1216,7 @@ const REK_CEO={}, REK_DESC={}, REK_WEB={}; ((REK_DATA&&REK_DATA.companies)||[]).
   const d=g('Įmonės aprašymas'); if(d) REK_DESC[c.brand]=d;
   const w=g('Tinklalapis'); if(w) REK_WEB[c.brand]=w;
 });
-// Which sources we have per brand (every brand has Initial; rekvizitai/sodra only if scraped).
+// Which sources we have per brand (every brand has Initial; rekvizitai/sodra only when available from those sources).
 const REK_HAS={}; ((REK_DATA&&REK_DATA.companies)||[]).forEach(c=>{ if(!c.brand) return;
   REK_HAS[c.brand]={ rekvizitai: !!(c.tabs&&Object.keys(c.tabs).length), sodra: !!c.sodra };
 });
@@ -1360,7 +1356,7 @@ function renderCompany(brand){
   const head=`<div class="co-info-head"><span class="co-name">${esc(brand)}</span>${fullName&&fullName!==brand?`<span class="co-full">${esc(fullName)}</span>`:''}</div>`;
   // company type = legal form parsed from the full name (UAB / MB / VšĮ / AB …)
   const lf=fullName.includes(',')?fullName.split(',').pop().trim():''; const ctype=(lf && lf.length<=6)?lf:'';
-  // website: prefer the scraped one, else the raw sheet
+  // website: prefer Rekvizitai, else the raw sheet
   const web=REK_WEB[brand]||WEBSITE[brand]||null;
   let webV=nd;
   if(web){ let u=String(web).trim(); if(!/^https?:\/\//.test(u)) u='https://'+u; const dom=u.replace(/^https?:\/\/(www\.)?/,'').replace(/\/+$/,''); webV=`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(dom)}</a>`; }
@@ -2300,18 +2296,18 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
-<<<<<<< HEAD
+  {v:'v0.2.57', date:'2026-07-10', sp:0.5, title:'Drop “scraped” wording',
+    desc:'UI and copy now say Rekvizitai / Sodra instead of “scraped”.',
+    detail:'Compare financials legend: “Rekvizitai / Sodra — solid”. Chart descriptions, data-event labels and changelog prose updated — no more “scraped” in user-facing text. Internal script names (scrape_sodra.py, scrapedAt) unchanged.'},
+  {v:'v0.2.56', date:'2026-07-10', sp:0.5, title:'Compare financials line swatches',
+    desc:'Chart tooltip and legend use mini line samples (solid/dash) instead of coloured dots.',
+    detail:'seriesLineSwatch() draws a tiny SVG segment matching each series’ colour, stroke-width and stroke-dasharray. Compare financials hover popup and the inline svg-legend now show the same solid / short-dash / long-dash cue as the chart — so Net profit Initial vs Rekvizitai vs pre-tax are identifiable without guessing from a dot.'},
   {v:'v0.2.55', date:'2026-07-10', sp:0.5, title:'Drop redundant people chart',
     desc:'Removed the By-segment “People by year” block; Employees and Wages already live in the financial chart.',
     detail:'Median salary and Employees/company duplicated the financial-metrics picker (Employees + Wages with basis toggle). Dropped the whole People subsection — pick Employees or Wages in “Financial metrics, all years” instead.'},
   {v:'v0.2.54', date:'2026-07-10', sp:1, title:'Version history flatten',
     desc:'Two-line headers; dropped v0.1/v0.2 tiers; era → ~40 SP chunks only.',
     detail:'Section summaries are title + one inline row (SP pill · version · dates). Removed the meaningless 0.1/0.2 split; within each Jun-27 era, releases group into ~40-SP chunks titled by their biggest change.'},
-=======
-  {v:'v0.2.54', date:'2026-07-10', sp:0.5, title:'Compare financials line swatches',
-    desc:'Chart tooltip and legend use mini line samples (solid/dash) instead of coloured dots.',
-    detail:'seriesLineSwatch() draws a tiny SVG segment matching each series’ colour, stroke-width and stroke-dasharray. Compare financials hover popup and the inline svg-legend now show the same solid / short-dash / long-dash cue as the chart — so Net profit Initial vs Rekvizitai vs pre-tax are identifiable without guessing from a dot.'},
->>>>>>> 454539a (v0.2.54 | Compare financials line swatches | 0.5 sp)
   {v:'v0.2.53', date:'2026-07-10', sp:1, title:'Rankings toolbar + year range',
     desc:'One-line year range picker; segment pills inline with metric toggles.',
     detail:'All-years rankings: single yr-row — tap two years to set the span (tap an endpoint again to collapse). Metrics + segment multi-select share one scrolling .seg row (dropdown + separate pill row removed). Select all / Clear all sits at the end of the segment pills.'},
@@ -2377,16 +2373,16 @@ const VERSIONS = [
     detail:'Extended data_events.json logging to parse_company, reparse_all, autoscrape, estimate_2025 and import_rek_companies. Sodra files get _meta.scrapedAt; data.json rows get _provenance per field (sodra/rekvizitai/derived/estimated). Data exploration shows a 📜 Data changes timeline (open by default) with source filter and expandable diffs.'},
   {v:'v0.2.31', date:'2026-07-10', sp:3, title:'Data change log + timeline',
     desc:'See what data was added or changed, when, and from which source.',
-    detail:'New data/data_events.json append-only event log. Sodra scraper diffs on write; git backfill seeded 23 historical commits. Data exploration gets a 📜 Data changes fold below the coverage matrix — filter by Sodra/Rekvizitai/Initial, click an event for per-company detail.'},
+    detail:'New data/data_events.json append-only event log. Sodra import diffs on write; git backfill seeded 23 historical commits. Data exploration gets a 📜 Data changes fold below the coverage matrix — filter by Sodra/Rekvizitai/Initial, click an event for per-company detail.'},
   {v:'v0.2.30', date:'2026-07-10', sp:1, title:'Hero subtitle + drop nav sub',
     desc:'Brand count and year range are dynamic; removed stale “113 brands · 2019–2024” from nav.',
     detail:'pageHeroSub is filled from BRANDS.length and YEARS range at load (now 132 · 2019–2025). Removed the nav-sub line; Companies tracked KPI already used the live count.'},
-  {v:'v0.2.29', date:'2026-07-09', sp:2, title:'Sodra scraper drops Playwright',
-    desc:'The refresh silently scraped nothing; now it uses plain HTTP and fails loudly.',
-    detail:'The first real run of refresh-sodra.yml failed all 117 companies yet stayed green. Root cause: the scraper drove headless Chromium and read body.innerText, but Chromium renders an application/json response as an EMPTY body, so every parse died at "line 1 column 1". Sodra is a plain JSON API needing no browser — swapped to stdlib urllib (no 100 MB Chromium download, faster CI). A second bug went with it: the script exited 0 even when every company failed, so CI reported "nothing to commit" — indistinguishable from "data is current". It now exits non-zero when nothing is written.',
+  {v:'v0.2.29', date:'2026-07-09', sp:2, title:'Sodra fetch drops Playwright',
+    desc:'The refresh silently fetched nothing; now it uses plain HTTP and fails loudly.',
+    detail:'The first real run of refresh-sodra.yml failed all 117 companies yet stayed green. Root cause: the fetch script drove headless Chromium and read body.innerText, but Chromium renders an application/json response as an EMPTY body, so every parse died at "line 1 column 1". Sodra is a plain JSON API needing no browser — swapped to stdlib urllib (no 100 MB Chromium download, faster CI). A second bug went with it: the script exited 0 even when every company failed, so CI reported "nothing to commit" — indistinguishable from "data is current". It now exits non-zero when nothing is written.',
     cat:'DATA'},
   {v:'v0.2.28', date:'2026-07-09', sp:3, title:'Refresh Sodra button',
-    desc:'Dev-mode Settings button re-scrapes Sodra via a GitHub Action, then reloads.',
+    desc:'Dev-mode Settings button refreshes Sodra data via a GitHub Action, then reloads.',
     detail:'A static Pages site has no server, so the button POSTs workflow_dispatch to refresh-sodra.yml, which runs scrape_sodra.py --all (every Įmonės kodas in rek_tabs.json), rebuilds index.html and pushes; Pages redeploys and the page reloads. The PAT lives in localStorage, never in the committed HTML — GitHub secret scanning auto-revokes tokens pushed to a public repo, so an in-page token would kill the feature. The button polls run status with live elapsed time (DATA-46) and clears a rejected token so the next click re-prompts. Hidden in Default mode.',
     cat:'META'},
   {v:'v0.2.24', date:'2026-07-04', sp:0.5, title:'Version badge nav placement',
@@ -2415,7 +2411,7 @@ const VERSIONS = [
     cat:'DATA'},
   {v:'v0.2.15', date:'2026-06-30', sp:3, title:'2025 Sodra employees + wages',
     desc:'Every agency now has a 2025 row — average insured headcount and monthly wage from Sodra open data (financials pending 2025 annual filings).',
-    detail:'data.json grew from 12 partial to 113 full 2025 rows. rekvizitai.vz.lt is now Cloudflare-gated (old Playwright scraper blocked), so 2025 employees/avgSalary come from atvira.sodra.lt open data: solr/page resolves each company code (Įmonės-sheet Kodas, else rek_tabs) to an internal id, values/monthly/page gives monthly numInsured + avgWage, and the 2025 figure = mean of the available 2025 months (rounded) — the exact method that produced the pre-existing 12 rows (verified to the unit). Financial fields (revenue/profit/salaryCosts/…) stay null until 2025 statements are filed; risk/city/activities carry forward from 2024. 10 MBs/dormant firms with no Sodra-insured persons sit at 0 employees (consistent with their full history); 3 firms have a partial 2025 (6–11 months).',
+    detail:'data.json grew from 12 partial to 113 full 2025 rows. rekvizitai.vz.lt is now Cloudflare-gated (old Playwright fetch blocked), so 2025 employees/avgSalary come from atvira.sodra.lt open data: solr/page resolves each company code (Įmonės-sheet Kodas, else rek_tabs) to an internal id, values/monthly/page gives monthly numInsured + avgWage, and the 2025 figure = mean of the available 2025 months (rounded) — the exact method that produced the pre-existing 12 rows (verified to the unit). Financial fields (revenue/profit/salaryCosts/…) stay null until 2025 statements are filed; risk/city/activities carry forward from 2024. 10 MBs/dormant firms with no Sodra-insured persons sit at 0 employees (consistent with their full history); 3 firms have a partial 2025 (6–11 months).',
     cat:'DATA'},
   {v:'v0.2.14', date:'2026-06-29', sp:0.5, title:'Drop experimental donut',
     desc:'Removed the duplicate “(new)” segment doughnut card — it was only a text-colour experiment.',
@@ -2613,7 +2609,7 @@ const VERSIONS = [
     detail:'drawTop tags the top-10 slice grp:top → --green and the bottom-10 slice grp:bot → --red; unsplit small lists keep accent/red-by-sign.',
     cat:'CHART'},
   {v:'v0.1.178', date:'2026-06-23 12:45', sp:0.5, title:'Colour deep-dive lines by company',
-    desc:'In the multi-company deep-dive each line is now coloured by company (matching its chip dot) so you can tell which is which — the source is shown by line style (scraped solid, Initial dashed) instead of grey.',
+    desc:'In the multi-company deep-dive each line is now coloured by company (matching its chip dot) so you can tell which is which — the source is shown by line style (Rekvizitai/Sodra solid, Initial dashed) instead of grey.',
     detail:'srcStyle now keeps the company colour for the Initial source (was forced grey, which made same-source metrics like Revenue all-grey); legend updated to solid/dashed.',
     cat:'CHART'},
   {v:'v0.1.177', date:'2026-06-23 12:30', sp:0.5, title:'Hide years in All-time',
@@ -2642,10 +2638,10 @@ const VERSIONS = [
     cat:'CHART'},
   {v:'v0.1.171', date:'2026-06-23 11:20', sp:1.5, title:'Deep-dive uses top picker',
     desc:'The deep-dive no longer has its own company picker or source dropdown — it follows the top page company selection and always overlays all available sources (Combined).',
-    detail:'Removed the .dd-bar (company select, source select, chips). syncSddFromTop maps ovBrands → scraped company objects (brands without scraped data still get the Initial series); wired into ovChanged. sddSrc fixed at combined.',
+    detail:'Removed the .dd-bar (company select, source select, chips). syncSddFromTop maps ovBrands → sourced company objects (brands without Rekvizitai/Sodra data still get the Initial series); wired into ovChanged. sddSrc fixed at combined.',
     cat:'CHART'},
   {v:'v0.1.170', date:'2026-06-23 11:05', sp:1, title:'Deep-dive into all-time tab',
-    desc:'The scraped-sources deep-dive (a multi-year time series) now lives inside the “Company all time” tab where the other over-time graphs are, instead of a separate section at the bottom.',
+    desc:'The Rekvizitai/Sodra deep-dive (a multi-year time series) now lives inside the “Company all time” tab where the other over-time graphs are, instead of a separate section at the bottom.',
     detail:'makeSectionsCollapsible folds the Company deep-dive section’s nodes into the “Company all time” tab under a sub-heading and drops the standalone collapsible deep-dive card.',
     cat:'CHART'},
   {v:'v0.1.169', date:'2026-06-23 10:55', sp:1.5, title:'Deep-dive metric toggle',
@@ -2862,13 +2858,13 @@ const VERSIONS = [
     detail:'Removed the Company explorer card (search + segment/city filters + sortable table) and its renderTable/tblRows logic and segment/city select wiring. The Company Data explorer on the Data exploration view still covers raw per-company browsing.'},
   {v:'v0.1.112', date:'2026-06-22 17:35', sp:0.5, title:'Source cubes in deep-dive picker',
     desc:'The Company deep-dive “Select companies” dropdown now shows the green/blue/amber source cubes (Initial / Rekvizitai / Sodra) beside each company, dimmed when a source is missing.',
-    detail:'Reused the existing srcCubes() helper (REK_HAS) in buildSDDCompanies so the deep-dive picker matches the Company Data picker — you can see at a glance which scraped sources each company has before selecting it.'},
+    detail:'Reused the existing srcCubes() helper (REK_HAS) in buildSDDCompanies so the deep-dive picker matches the Company Data picker — you can see at a glance which Rekvizitai/Sodra sources each company has before selecting it.'},
   {v:'v0.1.111', date:'2026-06-22 17:20', sp:2, title:'Clearer time axis + shared legend',
     desc:'Comparison-chart x-axis now shows clean year labels (or short months when zoomed in) instead of cramped YYYY-MM that ran together; the per-chart legend moved out to one shared key under the dropdown.',
-    detail:'Borrowed the Data repo timeBands idea: the SVG x-axis collapses to a single YEAR label per year-change (short Mon labels when a single year is in view), with a pixel-gap guard so labels never collide. The overlaid legend that sat on top of every deep-dive chart is suppressed; instead one compact legend under the company/source dropdown explains the source styling (solid scraped vs thin-grey Initial average), with company colour read from the chips.'},
+    detail:'Borrowed the Data repo timeBands idea: the SVG x-axis collapses to a single YEAR label per year-change (short Mon labels when a single year is in view), with a pixel-gap guard so labels never collide. The overlaid legend that sat on top of every deep-dive chart is suppressed; instead one compact legend under the company/source dropdown explains the source styling (solid Rekvizitai/Sodra vs thin-grey Initial average), with company colour read from the chips.'},
   {v:'v0.1.110', date:'2026-06-22 17:00', sp:1, title:'Detailed source solid, average grey',
-    desc:'In overlaid (Combined) charts the detailed scraped sources draw solid and full-colour; Initial — the coarse yearly average — now draws thin and grey as a background reference.',
-    detail:'Per-source emphasis on the SVG comparison charts: the monthly/scraped sources (Sodra, Rekvizitai) render as bold solid coloured lines, while Initial (the dashboard yearly average) renders thin, grey and semi-transparent so it sits behind as context. drawFinSvg now honours per-series width / opacity / marker-size; applied in both single-company and multi-company Combined overlays.'},
+    desc:'In overlaid (Combined) charts the Rekvizitai/Sodra sources draw solid and full-colour; Initial — the coarse yearly average — now draws thin and grey as a background reference.',
+    detail:'Per-source emphasis on the SVG comparison charts: the monthly Rekvizitai/Sodra sources (Sodra, Rekvizitai) render as bold solid coloured lines, while Initial (the dashboard yearly average) renders thin, grey and semi-transparent so it sits behind as context. drawFinSvg now honours per-series width / opacity / marker-size; applied in both single-company and multi-company Combined overlays.'},
   {v:'v0.1.109', date:'2026-06-22 16:40', sp:2, title:'Per-employee money-flow toggle',
     desc:'Company overview gains a Total / Per-employee toggle on its money-flow; market summary adds a Per-employee mode alongside Average and Whole-market.',
     detail:'Both money-flow diagrams (company Overview and Market summary) can now be normalised. Company: Total ↔ Per employee (divides turnover/revenue/profit/costs by headcount). Market: Average per company · Per employee · Whole market — CAGR endpoints and the employees card follow the chosen mode, and the bar carries a small scope tag (e.g. "per employee · 1,579 staff").'},
@@ -2880,7 +2876,7 @@ const VERSIONS = [
     detail:'Market summary: replaced the three financial KPI cards (turnover/revenue/profit) with the company-style money-flow bar (Turnover → Revenue bracket → Net profit + Costs + Pass-through). Added an Average-per-company / Whole-market toggle, defaulting to average (more comparable across years); employees card switches between avg and total to match. Key insights moved into a collapsible card nested inside the Market summary section, with a count badge. Converted charts now show a swatch legend instead of an end-of-line label.'},
   {v:'v0.1.106', date:'2026-06-22 15:40', sp:1, title:'Website, type, description',
     desc:'Profile card now also shows company type, website link and the description.',
-    detail:'Added to the Overview profile card: company type (legal form parsed from the full name — UAB/MB/…), website (clickable, from the Rekvizitai scrape or the Įmonės sheet) and the company description (from Rekvizitai). Each reads “no data” when missing.'},
+    detail:'Added to the Overview profile card: company type (legal form parsed from the full name — UAB/MB/…), website (clickable, from Rekvizitai or the Įmonės sheet) and the company description (from Rekvizitai). Each reads “no data” when missing.'},
   {v:'v0.1.105', date:'2026-06-22 15:20', sp:1.5, title:'Single money-flow bar',
     desc:'Turnover, revenue and net profit now share one bar with a Revenue bracket.',
     detail:'Merged the two money-flow bars into ONE: a single Turnover column split into Net profit (green) + Costs + Pass-through, with a gold “Revenue” bracket spanning the profit+costs part (revenue = the non-pass-through fee income). Each segment’s explanation stays aligned to its right; net margin in the note below.'},
@@ -2913,10 +2909,10 @@ const VERSIONS = [
     detail:'Reworked the Merged pivot: a metric with any dated points (e.g. headcount, avg wage) is now ONE time series instead of separate per-source tables — Initial yearly, Rekvizitai dated and Sodra monthly fold onto a single time column (dated points aligned by month, parenthetical qualifiers like "(grafikas)" canonicalised so they count as the same metric). When sources disagree for a period the cell is marked (amber edge) and shows every source\'s value colour-keyed (green/blue/amber), with a hover tooltip naming each. Purely-yearly metrics keep the clean metric×year matrix.'},
   {v:'v0.1.95', date:'2026-06-22 11:45', sp:1, title:'Source cubes in company picker',
     desc:'Each company in the dropdown now shows which sources we have for it.',
-    detail:'Added the source cubes (green = Initial, blue = Rekvizitai, amber = Sodra) beside every company name in the Company Data picker, dimmed when that source has no data — so you can see at a glance which companies have scraped Rekvizitai/Sodra info vs Initial-only.'},
+    detail:'Added the source cubes (green = Initial, blue = Rekvizitai, amber = Sodra) beside every company name in the Company Data picker, dimmed when that source has no data — so you can see at a glance which companies have Rekvizitai/Sodra info vs Initial-only.'},
   {v:'v0.1.94', date:'2026-06-22 11:30', sp:3, title:'One Company Data tab, all brands',
     desc:'Removed the Initial Data tab; the company picker now covers all 113 brands.',
-    detail:'Dropped the separate Initial Data nav tab — its raw-sheet explorer now lives (collapsed by default) under a “Initial data — raw Excel sheets” drop-down inside the renamed “Company Data” tab. The per-company picker now lists every dashboard brand (113): scraped companies show full Initial+Rekvizitai+Sodra, every other brand shows Initial-only data pulled from the dashboard dataset on select. Re-scoped the explorer table CSS to .sheet-explorer and the per-company table to #rekTableWrap so the two don\'t collide. Defaults to Fabula.'},
+    detail:'Dropped the separate Initial Data nav tab — its raw-sheet explorer now lives (collapsed by default) under a “Initial data — raw Excel sheets” drop-down inside the renamed “Company Data” tab. The per-company picker now lists every dashboard brand (113): companies with Rekvizitai/Sodra show full Initial+Rekvizitai+Sodra, every other brand shows Initial-only data pulled from the dashboard dataset on select. Re-scoped the explorer table CSS to .sheet-explorer and the per-company table to #rekTableWrap so the two don\'t collide. Defaults to Fabula.'},
   {v:'v0.1.93', date:'2026-06-22 11:05', sp:3, title:'Sourced Data embeds raw sheets',
     desc:'Sourced Data now includes the full Initial Data explorer (all 7 raw sheets) below the company view.',
     detail:'Refactored the single-instance Data Explorer into a reusable mountSheetExplorer(root, order) factory (own DOM + closure state, no global IDs). Mounted twice: the Initial Data tab unchanged (5 sheets), and a new “Initial data — raw sheets” section under the Sourced Data company view showing all 7 raw sheets — so Sourced Data is now a superset of Initial Data. Same structure (tabs, search, sort, pager, CSV). Initial Data tab kept until confirmed redundant, then it (and the duplicate mount) can be removed in one step.'},
@@ -2934,7 +2930,7 @@ const VERSIONS = [
     detail:'Extended the SVG engine with grouped bar series (kind:\'bar\') and an {interactive:false} static mode, plus a new static horizontal-bar renderer (drawBarsSvg) for rank lists. Converted chMine, chMarket (mixed bar+line), chSegTrend, chSalary (line), and chMineRank, chTop, chGrowth, chRevPerEmp (horizontal bars) to SVG — static so they never trap page-scroll on mobile. A ResizeObserver repaints each on size/collapse/tab/theme change. The segment doughnut and the size-vs-profit bubble stay on Chart.js (don\'t fit a bar/line engine).'},
   {v:'v0.1.88', date:'2026-06-22 09:00', sp:1.5, title:'Drop Chart.js deep-dive copy',
     desc:'Removed the duplicate Chart.js deep-dive; the SVG one is now the only deep-dive.',
-    detail:'Deleted the older canvas/Chart.js "Company deep-dive · scraped sources" section (its 4 charts, single-company picker, source toggle and drawDD/initDD code) now that the SVG deep-dive supersedes it with pan/zoom + multi-company compare. Shared spec helpers (DD_SPECS, ddSpecFor, initSeries/rekYearSeries/sodraSeries) stay — the SVG view uses them. Merged the two headings into one "Company deep-dive".'},
+    detail:'Deleted the older canvas/Chart.js "Company deep-dive · Rekvizitai/Sodra" section (its 4 charts, single-company picker, source toggle and drawDD/initDD code) now that the SVG deep-dive supersedes it with pan/zoom + multi-company compare. Shared spec helpers (DD_SPECS, ddSpecFor, initSeries/rekYearSeries/sodraSeries) stay — the SVG view uses them. Merged the two headings into one "Company deep-dive".'},
   {v:'v0.1.87', date:'2026-06-22 08:27', sp:2, title:'Wire Simplified view mode',
     desc:'The Advanced/Simplified toggle now actually filters the page.',
     detail:'Wired the v75 toggle: Simplified hides the two advanced Company deep-dive sections and the raw-data tabs (Initial Data, Sourced Data), leaving the polished dashboard + explorer; Advanced shows everything. Driven by [data-mode] on <html>, persisted, applied pre-paint; switching to Simplified while on a hidden tab falls back to Dashboard and re-fits charts. Easy to adjust what Simplified strips.'},
@@ -2974,21 +2970,21 @@ const VERSIONS = [
   {v:'v0.1.75', date:'2026-06-21 19:15', sp:1.5, title:'Advanced/Simplified view toggle',
     desc:'Settings cog now has an Advanced/Simplified view toggle.',
     detail:'Added a pressable view-mode toggle in the ⚙️ settings menu, persisted to localStorage and exposed as <html data-mode="advanced|simplified"> (applied pre-paint, advanced default; uses data-mode to avoid the nav data-view attribute). Filtering of data sources, tabs and other UI off this attribute is wired in incrementally — this lands the mechanism.'},
-  {v:'v0.1.74', date:'2026-06-21 20:30', sp:3,   title:'Scrape 10 more companies',
+  {v:'v0.1.74', date:'2026-06-21 20:30', sp:3,   title:'Rekvizitai: 10 more companies',
     desc:'Rekvizitai + Sodra data for 10 more companies; 15 now in Sourced Data.',
-    detail:'Added rekvizitai + Sodra for 7 sprendimai, APG Media, Arena Media, Astos dizainas, Ave Media, Bemedija, BPN LT, Bosanova, Caption and Ciklopas (2 of the originally-listed names — Be reklamos negerai, Berta&Agency — are not on rekvizitai, so Caption + Ciklopas were substituted). Multi-employee firms return full monthly wage history; 1-employee firms show headcount only (Sodra wage privacy). Hardened the scraper to wait for the company <h1> before capturing, fixing empty 39-byte captures under concurrency.'},
+    detail:'Added rekvizitai + Sodra for 7 sprendimai, APG Media, Arena Media, Astos dizainas, Ave Media, Bemedija, BPN LT, Bosanova, Caption and Ciklopas (2 of the originally-listed names — Be reklamos negerai, Berta&Agency — are not on rekvizitai, so Caption + Ciklopas were substituted). Multi-employee firms return full monthly wage history; 1-employee firms show headcount only (Sodra wage privacy). Hardened the import script to wait for the company <h1> before capturing, fixing empty 39-byte captures under concurrency.'},
   {v:'v0.1.73', date:'2026-06-21 19:40', sp:1.5, title:'Fix mobile chart overflow',
     desc:'Charts no longer break out of bounds on narrow phones.',
     detail:'Tightened mobile padding (wrap/card) and added a hard max-width:100% on cards, chartboxes and canvases so nothing forces the page wider than the screen at 320px. Deep-dive chart legends use compact point-style markers with shorter labels (Turnover/Revenue) so they stop clipping at the right edge. A pre-existing issue that affected the original dashboard charts too.'},
   {v:'v0.1.72', date:'2026-06-21 19:10', sp:4,   title:'Deep-dive charts by source',
     desc:'New dashboard section: per-company charts with an Initial/Rekvizitai/Sodra source toggle.',
-    detail:'Added a "Company deep-dive" section for the scraped companies — a company picker + source toggle drives four charts (revenue/sales, profit & margin, headcount, average wage). Each re-plots from the chosen source (Initial=yearly dataset, Rekvizitai=scraped financials, Sodra=monthly headcount+wage); a source that cannot supply a metric shows a clear note instead of a blank chart. The existing dashboard is unchanged.'},
+    detail:'Added a "Company deep-dive" section for companies with Rekvizitai/Sodra data — a company picker + source toggle drives four charts (revenue/sales, profit & margin, headcount, average wage). Each re-plots from the chosen source (Initial=yearly dataset, Rekvizitai=financials from rekvizitai.vz.lt, Sodra=monthly headcount+wage); a source that cannot supply a metric shows a clear note instead of a blank chart. The existing dashboard is unchanged.'},
   {v:'v0.1.71', date:'2026-06-21 18:30', sp:4,   title:'Sourced Data: 3 sources + cubes',
     desc:'Renamed tabs; added Sodra as a third source with per-source colour cubes.',
-    detail:'Data Explorer → "Initial Data", Rekvizitai → "Sourced Data". Modes are now Merged / Initial / Rekvizitai / Sodra (was Merge/Scrape/Original). Sodra monthly headcount+wage joins per company by code. Each row carries small 10px rounded source cubes (initial=green, rekvizitai=blue, sodra=amber); Merged shows all three, dimming sources with no value, and stacks differing values colour-keyed.'},
-  {v:'v0.1.70', date:'2026-06-21 17:05', sp:3,   title:'Scale scrape: batch + 3 companies',
+    detail:'Data Explorer → "Initial Data", Rekvizitai → "Sourced Data". Modes are now Merged / Initial / Rekvizitai / Sodra (was Merge/Rekvizitai/Original). Sodra monthly headcount+wage joins per company by code. Each row carries small 10px rounded source cubes (initial=green, rekvizitai=blue, sodra=amber); Merged shows all three, dimming sources with no value, and stacks differing values colour-keyed.'},
+  {v:'v0.1.70', date:'2026-06-21 17:05', sp:3,   title:'Batch Rekvizitai import: 3 companies',
     desc:'Batch pipeline; added Adface, Adverum and All Caps to Rekvizitai.',
-    detail:'Built for 100+ companies: scrape_batch.py resolves names to slugs via the rekvizitai search API then scrapes+parses+upserts in one run; the scraper reuses one browser, loads tabs concurrently and drops the networkidle wait (same 3 companies went 95s → 5.6s, ~3 min for 100). Added Adface, Adverum and All Caps — 5 companies now in the picker.'},
+    detail:'Built for 100+ companies: scrape_batch.py resolves names to slugs via the rekvizitai search API then imports+parses+upserts in one run; the import script reuses one browser, loads tabs concurrently and drops the networkidle wait (same 3 companies went 95s → 5.6s, ~3 min for 100). Added Adface, Adverum and All Caps — 5 companies now in the picker.'},
   {v:'v0.1.69', date:'2026-06-21 16:46', sp:1.5, title:'Changelog shows time',
     desc:'Changelog dates now read "day, h:min" since versions ship by the minute.',
     detail:'Versions were shipping many times an hour, so a YYYY-MM-DD date was identical on every row. Each entry now carries the real commit-landing time and renders as "21, 16:23" (day + h:min); older day-only entries fall back to "Jun 21". Times were backfilled from git, so a couple from the parallel multi-company session may be skewed by their clock.'},
@@ -2997,7 +2993,7 @@ const VERSIONS = [
     detail:'Turned every changelog entry into a closed <details> disclosure — the summary keeps the version · SP · date meta line and the 2–5-word title, and the desc (5–15w) and detail (15–50w) only appear on click. Lets you scan all versions by title and drill in on demand instead of one long wall of text.'},
   {v:'v0.1.67', date:'2026-06-21 19:19', sp:4,   title:'Multi-company Rekvizitai',
     desc:'Rekvizitai page now holds multiple companies, picked by a pill row.',
-    detail:'Generalised the scraper/parser into scripts/scrape_company.py + parse_company.py (take a <slug>, auto-detect the data.json brand). Added Adell reklama (brand Ogilvy, 310 fields) alongside 6 vijos; rek_tabs.json now stores a list of company blocks. A company pill row sits above the sub-tabs, and Original/Merge use each company\'s own brand record.'},
+    detail:'Generalised the import/parser into scripts/scrape_company.py + parse_company.py (take a <slug>, auto-detect the data.json brand). Added Adell reklama (brand Ogilvy, 310 fields) alongside 6 vijos; rek_tabs.json now stores a list of company blocks. A company pill row sits above the sub-tabs, and Original/Merge use each company\'s own brand record.'},
   {v:'v0.1.66', date:'2026-06-21 15:56', sp:1.5, title:'Collapse KPI formulas, dark default',
     desc:'KPI formula text now sits in a closed dropdown; dark theme is the default.',
     detail:'Each Fabula KPI card now tucks its YoY/Rank formula into a native <details> disclosure that is closed by default — the cards read as value + YoY/rank at a glance, formula one tap away (DATA-16 cram, joy-of-less). Also flipped the default theme to dark: only an explicit saved "light" stays light, so first-time and unset visitors get dark.'},
@@ -3029,17 +3025,17 @@ const VERSIONS = [
     desc:'Top nav scrolls and sheds the logo on small phones.',
     detail:'Parallel session fix merged in: the top nav now scrolls horizontally at ≤600px and hides the logo and version badge on mobile to make room for the Dashboard / Data Explorer / Rekvizitai tabs.'},
   {v:'v0.1.56', date:'2026-06-21 16:26', sp:3,   title:'Rekvizitai merge toggle',
-    desc:'Original / Scrape / Merge switch on each Rekvizitai sub-tab.',
-    detail:'Per-sub-tab segmented toggle. Original = the dashboard\'s own "6 Loops" record reshaped to match scrape field names. Merge unions both sources by field and colour-codes each row by origin (original green, scrape blue, both purple); values that differ are shown side by side.'},
+    desc:'Original / Rekvizitai / Merge switch on each Rekvizitai sub-tab.',
+    detail:'Per-sub-tab segmented toggle. Original = the dashboard\'s own "6 Loops" record reshaped to match Rekvizitai field names. Merge unions both sources by field and colour-codes each row by origin (original green, Rekvizitai blue, both purple); values that differ are shown side by side.'},
   {v:'v0.1.55', date:'2026-06-21 16:14', sp:2,   title:'Rekvizitai own page',
-    desc:'Scrape moved to its own page with a sub-tab per source page.',
+    desc:'Rekvizitai data moved to its own page with a sub-tab per source page.',
     detail:'New top-level Rekvizitai page next to Data Explorer, one sub-tab each for Įmonė, Finansai, Darbuotojai, Skolos. Removed the combined Rek sheet and tab column from Data Explorer; the parser now writes rek_tabs.json (one field/value sheet per tab), injected into the page at build time.'},
-  {v:'v0.1.54', date:'2026-06-21 16:02', sp:2,   title:'Scrape chart series',
+  {v:'v0.1.54', date:'2026-06-21 16:02', sp:2,   title:'Rekvizitai chart series',
     desc:'Pull the time-series behind the diagrams, not just tables.',
     detail:'Decoded the Highcharts data embedded as JSON blobs: financials back to 2017, the full dated VMI/Sodra debt history and headcount over time. 151 fields, up from 64. Debt and headcount points use a full YYYY-MM-DD label so same-month snapshots no longer collide.'},
-  {v:'v0.1.53', date:'2026-06-21 15:54', sp:3,   title:'Scrape all tabs',
+  {v:'v0.1.53', date:'2026-06-21 15:54', sp:3,   title:'Rekvizitai all tabs',
     desc:'Cover every company tab, not just Įmonė.',
-    detail:'Scraper now visits all four company tabs (Įmonė, Finansai, Darbuotojai, Skolos) — 64 fields including a 2021-2025 financial statement (sales, profit, margins, equity, assets, liabilities). Added a tab column at the time; the parser auto-synced the result into the Data Explorer sheet.'},
+    detail:'Import script now visits all four company tabs (Įmonė, Finansai, Darbuotojai, Skolos) — 64 fields including a 2021-2025 financial statement (sales, profit, margins, equity, assets, liabilities). Added a tab column at the time; the parser auto-synced the result into the Data Explorer sheet.'},
   {v:'v0.1.52', date:'2026-06-21 15:44', sp:0.5, title:'Version in title',
     desc:'Version added to <title>; bump rule sharpened.',
     detail:'The version now also lives in the page <title> tag. Sharpened BULD-02: bump the patch digit on every commit or deploy and keep all four spots in sync (title, nav badge, h1 badge, top VERSIONS entry) plus the git vN.'},
@@ -3047,8 +3043,8 @@ const VERSIONS = [
     desc:'Light theme is now default with a dark toggle.',
     detail:'Light theme by default; a ☀️/🌙 pill in the top nav flips to dark and persists to localStorage with no flash on load. Surfaces are CSS-token driven and charts re-tint live (grid, ticks, legend) while brand series colours stay constant across themes.'},
   {v:'v0.1.51', date:'2026-06-21 13:05', sp:1,   title:'Rek tab in explorer',
-    desc:'First Rekvizitai scrape shown in the Data Explorer.',
-    detail:'Added a Rekvizitai scrape tab to the Data Explorer: a full 6 vijos, MB company profile pulled from rekvizitai.vz.lt — contacts, address, LinkedIn, Sodra debt, export share and credit risk. Later superseded by the standalone Rekvizitai page in v55.'},
+    desc:'First Rekvizitai data shown in the Data Explorer.',
+    detail:'Added a Rekvizitai data tab to the Data Explorer: a full 6 vijos, MB company profile pulled from rekvizitai.vz.lt — contacts, address, LinkedIn, Sodra debt, export share and credit risk. Later superseded by the standalone Rekvizitai page in v55.'},
   {v:'v0.1.50', date:'2026-06-21 11:42', sp:1,   title:'Fix explorer crash',
     desc:'Root cause of the persistent blank Data Explorer.',
     detail:'Fixed the long-standing Data Explorer crash: buildDataTabs() referenced an undefined SHEET_META; the correct name is SHEET_DESC. This was the root cause of every "Data Explorer blank" report since v42.'},
@@ -3325,7 +3321,7 @@ function mountSheetExplorer(root, order){
   buildTabs(); renderSheet();
 }
 
-// ---------- Company deep-dive (per-company charts across scraped sources) ----------
+// ---------- Company deep-dive (per-company charts across Rekvizitai/Sodra sources) ----------
 const DD_COMPANIES = (REK_DATA && REK_DATA.companies) || [];
 // DD_SPECS + ddSpecFor below are the shared spec source; rendered by the SVG engine (drawSDD).
 
@@ -3808,11 +3804,11 @@ const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
 const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
 // One chart spec for the current selection. 1 company → full multi-metric spec (unchanged);
 // 2+ companies → "compare mode": one PRIMARY metric line per company PER SOURCE.
-// colour = company; the detailed scraped sources (Rekvizitai/Sodra) draw SOLID & full-colour,
+// colour = company; the Rekvizitai/Sodra sources draw SOLID & full-colour,
 // while Initial (the coarse yearly *average*) draws thin & grey so it reads as a background reference.
 function srcStyle(s, coColor){
   // Colour = COMPANY (so the lines are distinguishable — matches the chip dots). The source is shown
-  // by line STYLE instead: Initial (yearly avg) = thin dashed, scraped (rekvizitai/sodra) = solid bold.
+  // by line STYLE instead: Initial (yearly avg) = thin dashed, from Rekvizitai/Sodra = solid bold.
   if(s==='initial') return {color:coColor, dash:[5,4], width:1.6, opacity:0.7, mr:2.4};
   return {color:coColor, dash:[], width:2.4, opacity:0.95, mr:3};
 }
@@ -3836,14 +3832,14 @@ function sddSpec(id, src, cos){
   return series.length ? {series, yTitle} : {empty:'No data for the selected companies from '+src+'.'};
 }
 // Shared legend under the dropdown (replaces the per-chart overlay). Company colour lives in the
-// chips above; this explains the source styling in Combined mode (solid scraped vs thin-grey average).
+// chips above; this explains the source styling in Combined mode (solid Rekvizitai/Sodra vs thin-grey average).
 function buildSDDLegend(){
   const el=document.getElementById('sddLegend'); if(!el) return;
   const cos=sddCos.filter(Boolean);
   if(sddSrc!=='combined' || !cos.length){ el.innerHTML=''; el.style.display='none'; return; }
   el.style.display='';
   const sample=(dash)=>`<svg width="22" height="10" style="vertical-align:middle;flex:0 0 auto"><line x1="1" y1="5" x2="21" y2="5" stroke="${cssVar('--text')}" stroke-width="2.2" ${dash?'stroke-dasharray="4 3" stroke-opacity="0.7"':''}/></svg>`;
-  el.innerHTML = `<span class="sdd-leg-it">${sample(false)} Scraped — solid</span>`
+  el.innerHTML = `<span class="sdd-leg-it">${sample(false)} Rekvizitai / Sodra — solid</span>`
     + `<span class="sdd-leg-it">${sample(true)} Initial — dashed (yearly avg)</span>`
     + `<span class="sdd-leg-note">colour = company (chips above)</span>`;
 }
@@ -3861,14 +3857,14 @@ function drawSDD(){
   if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
   if(emptyEl) emptyEl.classList.remove('show');
   const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
-  if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+  if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; Rekvizitai & Sodra solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
   const allX=(spec.series||[]).flatMap(s=>s.data.map(p=>String(p.x)));
   const yearlyOnly=allX.length && allX.every(x=>/^\d{4}$/.test(x));
   const plotSpec=yearlyOnly ? Object.assign({}, CHART_PAD, spec) : Object.assign({ yHeadroom:0.05, zoomOut:0.1 }, spec);
   drawFinSvg(cont, plotSpec, {noLegend:true});
 }
 // Companies come from the TOP page picker (ovBrands) — one selector for the whole Companies page.
-// Map each brand → its scraped company object (for rekvizitai/sodra series); brands without scraped
+// Map each brand → its sourced company object (for rekvizitai/sodra series); brands without Rekvizitai/Sodra
 // data still get the Initial yearly series. Source is ALWAYS combined (overlay everything available).
 function syncSddFromTop(){
   if(typeof ovBrands==='undefined') return;
@@ -3888,9 +3884,9 @@ function initSDD(){
 }
 
 // ---------- Company Data page (picker over ALL brands → sub-tabs → source toggle) ----------
-const REK_SCRAPED = (REK_DATA && REK_DATA.companies) || [];
-const REK_BY_BRAND = {}; REK_SCRAPED.forEach(c=>{ if(c.brand) REK_BY_BRAND[c.brand]=c; });
-// One picker entry per dashboard brand: scraped companies carry full Rekvizitai+Sodra
+const REK_SOURCED = (REK_DATA && REK_DATA.companies) || [];
+const REK_BY_BRAND = {}; REK_SOURCED.forEach(c=>{ if(c.brand) REK_BY_BRAND[c.brand]=c; });
+// One picker entry per dashboard brand: sourced companies carry full Rekvizitai+Sodra
 // tabs; every other brand is Initial-only (built from the dashboard dataset on select).
 const REK_COMPANIES = (()=>{
   const brands=[...new Set(DATA.map(d=>d.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'lt'));
@@ -3899,7 +3895,7 @@ const REK_COMPANIES = (()=>{
     const rec=DATA.filter(d=>d.brand===brand).sort((a,b)=>b.year-a.year)[0]||{};
     return { brand, name:rec.company||brand, slug:'init-'+i, order:['Įmonė','Finansai','Darbuotojai','Skolos'], tabs:{}, sodra:null, initialOnly:true };
   });
-  REK_SCRAPED.forEach(c=>{ if(!c.brand || !brands.includes(c.brand)) out.push(c); }); // any scrape not in the dataset
+  REK_SOURCED.forEach(c=>{ if(!c.brand || !brands.includes(c.brand)) out.push(c); }); // any sourced company not in the dataset
   return out;
 })();
 let rekCo = REK_COMPANIES.find(c=>c.brand===MY_BRAND) || REK_COMPANIES[0] || null;   // current company block (default: Fabula)
@@ -3912,7 +3908,7 @@ const SOURCES = ['initial','rekvizitai','sodra'];
 const SRC_LABEL = {initial:'Initial', rekvizitai:'Rekvizitai', sodra:'Sodra'};
 
 // Build the "original" rows per sub-tab from the dashboard record for `brand`,
-// using field names that line up with the scrape so merge can detect overlaps.
+// using field names that line up with Rekvizitai data so merge can detect overlaps.
 function buildOrigTabs(brand){
   const T = {'Įmonė':[], 'Finansai':[], 'Darbuotojai':[], 'Skolos':[]};
   if(!brand) return T;
@@ -4127,7 +4123,7 @@ function chgDetailRows(ch){
     return rows;
   }
   if(ch.slug!=null || ch.fieldsAdded!=null || ch.fieldsChanged!=null){
-    if(ch.kind==='added'){ rows.push(['New scrape', `${ch.fieldCount||0} fields`]); return rows; }
+    if(ch.kind==='added'){ rows.push(['New Rekvizitai import', `${ch.fieldCount||0} fields`]); return rows; }
     if(ch.kind==='removed'){ rows.push(['Removed', ch.slug||ch.name||'?']); return rows; }
     if(ch.fieldsAdded) rows.push(['Fields added', String(ch.fieldsAdded)]);
     if(ch.fieldsRemoved) rows.push(['Fields removed', String(ch.fieldsRemoved)]);
