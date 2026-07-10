@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.58</title>
+<title>Markets — LT agencies · v0.2.59</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -462,8 +462,12 @@
   .co-stickybar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0}
   /* multi-company compare chips under the picker (DATA-16: one scrolling row) */
   .ov-chips{display:flex;gap:5px;margin-top:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
-  .ov-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 12px/1 inherit;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text);white-space:nowrap}
+  .ov-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 12px/1 inherit;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text);white-space:nowrap;cursor:pointer;transition:.12s;-webkit-tap-highlight-color:transparent}
+  .ov-chip.on{color:var(--text)}
+  .ov-chip:not(.on){opacity:.55;color:var(--muted);border-style:dashed}
+  .ov-chip:not(.on) .ov-dot{opacity:.35}
   .ov-chip.primary{border-color:var(--accent);color:var(--accent)}
+  .ov-chip.primary:not(.on){border-color:var(--muted);color:var(--muted)}
   .ov-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
   /* clickable per-year / all-years word inside the page title (coloured = tappable) */
   .view-word{color:var(--accent);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:5px;white-space:nowrap}
@@ -492,6 +496,7 @@
   .co-select-opt{padding:7px 10px;font-size:13px;border-radius:6px;cursor:pointer;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .co-select-opt:hover{background:var(--panel2)}
   .co-select-opt.active{background:var(--accent);color:#fff;font-weight:600}
+  .co-select-opt.in-pool:not(.active){background:var(--panel2);color:var(--muted);font-weight:600;border:1px dashed var(--border)}
   .co-select-empty{padding:8px 10px;font-size:12px;color:var(--muted)}
   .dd-bar{position:sticky;top:44px;z-index:90;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bg);padding:10px 0;margin-bottom:6px}
   @media(max-width:600px){.dd-bar{top:40px}}
@@ -629,7 +634,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.58</span>
+    <span class="nav-version" id="navVersion">v0.2.59</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1465,7 +1470,7 @@ function renderCompany(brand){
 
   // (The revenue/profit/headcount trajectory was removed — it duplicated the money-flow below + the
   //  multi-company deep-dive; the money-flow note still flags when a compare set is selected.)
-  const multi = (typeof ovBrands!=='undefined') && ovBrands.length>1;
+  const multi = (typeof ovActiveList==='function') && ovActiveList().length>1;
 
   // All-years for this company — Turnover + Revenue only (profit/costs/pass-through breakdown removed), basis-aware.
   (function(){ const el=document.getElementById('chCoFlowAll'), empty=document.getElementById('chCoFlowEmpty'); if(!el) return;
@@ -1508,10 +1513,12 @@ const OV_BRANDS = BRANDS.slice().sort((a,b)=>a.localeCompare(b,'lt'));
 // Compare palette — SHARED with the deep-dive (sddColor) so a chip's colour dot = that company's lines.
 const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];
 const cmpColor=i=>cssVar(CMP_PAL[i%CMP_PAL.length]);
-// Multi-select: ovBrands = the chosen set; ovBrand = the PRIMARY (first) — drives every single-company
-// widget (profile, money-flow, KPIs, vs-market, rankings). Extra companies overlay ONLY the all-time
-// trajectory graph (the “all year view”), like the deep-dive. Picking toggles + keeps the panel open.
+// Multi-select: ovBrands = pre-selected pool (chips); ovActive = currently on for charts/compare.
+// ovBrand = primary (first active) — drives single-company widgets. × removes from pool; chip click toggles on/off.
 let ovBrands = [MY_BRAND], ovBrand = MY_BRAND;
+const ovActive = new Set([MY_BRAND]);
+function ovActiveList(){ return ovBrands.filter(b=>ovActive.has(b)); }
+function ovPrimaryBrand(){ const a=ovActiveList(); return a[0]||ovBrands[0]||MY_BRAND; }
 const ovSegs = new Set();
 let ovMinTurnover=0, ovMinRevenue=0, ovMinEmployees=0, ovMinSalary=0;
 const ovSegPills=document.getElementById('ovSegPills');
@@ -1619,15 +1626,38 @@ function clearOvFilters(){
   buildOvList();
 }
 function syncOvLabel(){ const l=document.getElementById('ovCoLabel');
-  if(l) l.textContent = ovBrands.length<=1 ? (ovBrands[0]||'Select company') : (ovBrands[0]+' +'+(ovBrands.length-1)); }
+  const active=ovActiveList();
+  if(!l) return;
+  if(active.length<=1) l.textContent=active[0]||ovBrands[0]||'Select company';
+  else l.textContent=active[0]+' +'+(active.length-1); }
 function renderOvChips(){ const w=document.getElementById('ovCoChips'); if(!w) return;
   if(ovBrands.length<=1){ w.innerHTML=''; w.style.display='none'; return; }
   w.style.display='';
-  w.innerHTML=ovBrands.map((b,i)=>`<span class="ov-chip${i===0?' primary':''}" title="${i===0?'primary company':'compare'}"><i class="ov-dot" style="background:${cmpColor(i)}"></i>${esc(b)}<span class="ov-chip-x" data-rm="${esc(b)}">×</span></span>`).join('');
+  const primary=ovPrimaryBrand();
+  w.innerHTML=ovBrands.map((b,i)=>{
+    const on=ovActive.has(b), prim=b===primary&&on;
+    return `<span class="ov-chip${on?' on':''}${prim?' primary':''}" role="button" tabindex="0" data-brand="${esc(b)}" title="${on?(prim?'Primary · click to hide':'Shown · click to hide'):'Hidden · click to show'}"><i class="ov-dot" style="background:${cmpColor(i)}"></i>${esc(b)}<span class="ov-chip-x" data-rm="${esc(b)}" title="Remove from list">×</span></span>`;
+  }).join('');
+  w.querySelectorAll('.ov-chip').forEach(chip=>{
+    const toggle=()=>{
+      const b=chip.dataset.brand;
+      if(ovActive.has(b)){ if(ovActiveList().length<=1) return; ovActive.delete(b); }
+      else ovActive.add(b);
+      ovChanged();
+    };
+    chip.addEventListener('click',e=>{ if(e.target.closest('.ov-chip-x')) return; toggle(); });
+    chip.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(!e.target.closest('.ov-chip-x')) toggle(); } });
+  });
   w.querySelectorAll('.ov-chip-x').forEach(x=>x.addEventListener('click',e=>{ e.stopPropagation();
-    if(ovBrands.length>1){ ovBrands=ovBrands.filter(z=>z!==x.dataset.rm); ovChanged(); } }));
+    const b=x.dataset.rm;
+    ovBrands=ovBrands.filter(z=>z!==b);
+    ovActive.delete(b);
+    if(!ovBrands.length){ ovBrands=[MY_BRAND]; ovActive.add(MY_BRAND); }
+    else if(!ovActive.size) ovActive.add(ovBrands[0]);
+    ovChanged();
+  }));
 }
-function ovChanged(){ ovBrand=ovBrands[0]; syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); if(typeof syncSddFromTop==='function') syncSddFromTop(); }
+function ovChanged(){ ovBrand=ovPrimaryBrand(); syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); if(typeof syncSddFromTop==='function') syncSddFromTop(); }
 function buildOvList(){
   const list=document.getElementById('ovCoList'); if(!list) return;
   const q=(document.getElementById('ovCoSearch')?.value||'').trim().toLowerCase();
@@ -1642,13 +1672,18 @@ function buildOvList(){
       : '';
   }
   list.innerHTML = opts.length
-    ? opts.map(b=>`<div class="co-select-opt${ovBrands.includes(b)?' active':''}" role="option" data-brand="${esc(b)}">${srcCubes(b)}${esc(b)}</div>`).join('')
+    ? opts.map(b=>{
+        const inPool=ovBrands.includes(b), on=ovActive.has(b);
+        const cls='co-select-opt'+(on?' active':'')+(inPool&&!on?' in-pool':'');
+        return `<div class="${cls}" role="option" data-brand="${esc(b)}">${srcCubes(b)}${esc(b)}</div>`;
+      }).join('')
     : `<div class="co-select-empty">${q?'No company matches “'+esc(q)+'” with the current filters.':'No companies match your filters.'}</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
     const b=o.dataset.brand;
-    if(ovBrands.includes(b)){ if(ovBrands.length>1) ovBrands=ovBrands.filter(z=>z!==b); }   // toggle off (keep ≥1)
-    else ovBrands=[...ovBrands, b];                                                          // add to compare set
-    ovChanged();   // panel stays open so you can add several
+    if(!ovBrands.includes(b)){ ovBrands=[...ovBrands,b]; ovActive.add(b); }
+    else if(!ovActive.has(b)) ovActive.add(b);
+    else if(ovActiveList().length>1) ovActive.delete(b);
+    ovChanged();
   }));
 }
 (function(){
@@ -2379,6 +2414,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.59', date:'2026-07-10', sp:0.5, title:'Toggle compare chips',
+    desc:'Company chips turn on/off without removing them; × still deletes.',
+    detail:'Companies picker: ovBrands is the pre-selected pool (chips always visible when >1). Click a chip to show or hide that company in charts and the deep-dive compare — dashed = off, solid = on. × removes from the pool. Picker list adds to the pool or toggles on/off; at least one company stays active.'},
   {v:'v0.2.58', date:'2026-07-10', sp:0.5, title:'Company picker filters',
     desc:'Segment panel closes properly; metric filters use custom dropdowns.',
     detail:'Companies view: nested segment filter now dismisses when you click elsewhere in the picker, press Escape, or tap Done. Turnover, revenue, employees and salary thresholds are custom co-select dropdowns — no native <select>.'},
@@ -3904,6 +3942,8 @@ function sddSpec(id, src, cos){
   const def=DD_SPECS[id], srcs = src==='combined' ? ['initial','rekvizitai','sodra'] : [src];
   const series=[]; let yTitle='';
   cos.forEach((co,ci)=>{
+    const poolIdx=typeof ovBrands!=='undefined'?ovBrands.indexOf(co.brand):-1;
+    const colorIdx=poolIdx>=0?poolIdx:ci;
     srcs.forEach(s=>{
       if(!def[s]) return;
       let r; try{ r=def[s](co); }catch(e){ r=null; }
@@ -3911,7 +3951,7 @@ function sddSpec(id, src, cos){
       const prim=r.series.find(x=>x.data && x.data.length && x.yAxisID!=='y2'); // this source's primary metric
       if(!prim) return;
       if(!yTitle) yTitle=r.yTitle||'';
-      const st = src==='combined' ? srcStyle(s, sddColor(ci)) : {color:sddColor(ci), dash:[], width:2.4, opacity:0.95, mr:3};
+      const st = src==='combined' ? srcStyle(s, sddColor(colorIdx)) : {color:sddColor(colorIdx), dash:[], width:2.4, opacity:0.95, mr:3};
       series.push(Object.assign({ label: coShort(co)+(src==='combined'?' · '+DD_SRC_TAG[s]:''), data:prim.data }, st));
     });
   });
@@ -3954,7 +3994,7 @@ function drawSDD(){
 // data still get the Initial yearly series. Source is ALWAYS combined (overlay everything available).
 function syncSddFromTop(){
   if(typeof ovBrands==='undefined') return;
-  sddCos = ovBrands.map(b=> DD_COMPANIES.find(c=>c.brand===b) || {brand:b, name:b, slug:b});
+  sddCos = ovActiveList().map(b=> DD_COMPANIES.find(c=>c.brand===b) || {brand:b, name:b, slug:b});
   if(document.getElementById('sddChart')) drawSDD();
 }
 function initSDD(){
