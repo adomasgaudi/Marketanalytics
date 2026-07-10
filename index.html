@@ -64,10 +64,6 @@
   header h1{font-size:26px;font-weight:700}
   header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
   .hist-fab{position:fixed;right:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  .dbg-fab{position:fixed;left:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:var(--purple);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  .dbg-audit{position:fixed;left:0;right:0;bottom:0;z-index:99999;max-height:55vh;overflow:auto;background:rgba(10,12,18,.97);color:#e8e8e8;font:11px/1.45 monospace;padding:8px 10px;border-top:2px solid var(--purple)}
-  .dbg-audit .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:bold;color:#fff;margin-bottom:5px;position:sticky;top:0}
-  .dbg-audit b{color:#ff7ae0} .dbg-audit button{background:var(--purple);color:#fff;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font:inherit;flex:0 0 auto}
   .hist-fab:hover{border-color:var(--accent);color:var(--text)}
   .hist-pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .hist-pager button{font-family:inherit;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer}
@@ -228,7 +224,7 @@
   .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .grp-panel[hidden]{display:none}
   /* Default view hides the dev-only version + changelog popup; Dev mode shows everything. */
-  html[data-mode="default"] .nav-version,html[data-mode="default"] .hist-fab,html[data-mode="default"] .dbg-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] .dev-version{display:none}
+  html[data-mode="default"] .nav-version,html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] .dev-version{display:none}
   /* Formula disclosures under KPI cards are Dev-only (hidden in the clean Default view). */
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
@@ -847,7 +843,6 @@
 </div>
 
 <button class="hist-fab" id="histBtn">📋 Changelog</button>
-<button class="dbg-fab" id="contrastAuditBtn">🔍 contrast</button>
 
 <div class="modal-overlay" id="histModal">
   <div class="modal">
@@ -1045,43 +1040,6 @@ document.getElementById('viewToggle').addEventListener('click', ()=>{
   applyMode(currentMode()==='dev' ? 'default' : 'dev');
   document.getElementById('settingsMenu').classList.remove('open');
 });
-
-// ---- Dev-mode CONTRAST AUDITOR (#debug): scans EVERY visible text node, computes WCAG contrast vs its
-// effective background, and outlines + lists ALL low-contrast offenders at once — the whole class, not one
-// instance. Dev-mode only (button hidden in Default). Run it in dark mode to surface black-on-black. ----
-let _auditFlagged=[];
-function auditContrast(){
-  if(currentMode()!=='dev') return;
-  const parse=s=>{const m=s&&s.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/);return m?[+m[1],+m[2],+m[3],m[4]==null?1:+m[4]]:null;};
-  const lum=c=>{const a=c.slice(0,3).map(v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];};
-  const ratio=(a,b)=>{const hi=Math.max(lum(a),lum(b)),lo=Math.min(lum(a),lum(b));return (hi+0.05)/(lo+0.05);};
-  const bgOf=el=>{let n=el;while(n&&n.nodeType===1){const c=parse(getComputedStyle(n).backgroundColor);if(c&&c[3]>0.5)return c;n=n.parentElement;}return parse(getComputedStyle(document.body).backgroundColor)||[14,17,23];};
-  _auditFlagged.forEach(el=>{el.style.outline='';el.style.outlineOffset='';}); _auditFlagged=[];
-  const ver=(document.querySelector('.nav-version')||{}).textContent||'';
-  const out=[];
-  document.querySelectorAll('body *').forEach(el=>{
-    if(el.closest('#dbgAudit')||el.classList.contains('dbg-fab')||el.classList.contains('hist-fab')) return;
-    const cs=getComputedStyle(el); if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity<0.15) return;
-    const rc=el.getBoundingClientRect(); if(rc.width<3||rc.height<3) return;
-    const isSvgText=el.tagName.toLowerCase()==='text';
-    const hasText=isSvgText || [...el.childNodes].some(n=>n.nodeType===3 && n.textContent.trim());
-    if(!hasText) return;
-    const fg=parse(isSvgText?cs.fill:cs.color); if(!fg||fg[3]<0.25) return;
-    const bg=bgOf(el), cr=ratio(fg,bg);
-    if(cr<2.6){ out.push({cr:+cr.toFixed(2), txt:(el.textContent||'').replace(/\s+/g,' ').trim().slice(0,46)||'·',
-        tag:el.tagName.toLowerCase()+(typeof el.className==='string'&&el.className?'.'+el.className.split(' ')[0]:''),
-        fg:isSvgText?cs.fill:cs.color, bg:'rgb('+bg.slice(0,3).map(Math.round).join(',')+')'});
-      el.style.outline='2px solid #ff00ff'; el.style.outlineOffset='1px'; _auditFlagged.push(el); }
-  });
-  out.sort((a,b)=>a.cr-b.cr);
-  const old=document.getElementById('dbgAudit'); if(old) old.remove();
-  const p=document.createElement('div'); p.id='dbgAudit'; p.className='dbg-audit dbg-overlay';
-  p.innerHTML='<div class="hd"><span>CONTRAST AUDIT '+ver+' — '+out.length+' text nodes &lt;2.6:1 (magenta-outlined)</span><button id="dbgAuditX">clear</button></div>'
-    +(out.length?out.map(o=>'<div><b>'+o.cr+':1</b> &lt;'+o.tag+'&gt; "'+o.txt.replace(/</g,'&lt;')+'" — '+o.fg+' on '+o.bg+'</div>').join(''):'<div>none found 🎉 (this theme)</div>');
-  document.body.appendChild(p);
-  document.getElementById('dbgAuditX').addEventListener('click',()=>{ p.remove(); _auditFlagged.forEach(el=>{el.style.outline='';el.style.outlineOffset='';}); _auditFlagged=[]; });
-}
-(function(){ const b=document.getElementById('contrastAuditBtn'); if(b) b.addEventListener('click',auditContrast); })();
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();           // every year with ANY data (incl. partial 2025: Sodra headcount/pay only)
 const LAST = Math.max(...DATA.filter(d=>d.revenue!=null).map(d=>d.year)); // latest COMPLETE financial year (2024) — every market default/aggregate pins here so a partial 2025 can't hijack the headline views
