@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.40</title>
+<title>Markets — LT agencies · v0.2.41</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -223,8 +223,8 @@
   .grp-tab:hover{color:var(--text)}
   .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .grp-panel[hidden]{display:none}
-  /* Default view hides the dev-only version + changelog popup; Dev mode shows everything. */
-  html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh{display:none}
+  /* Default view hides dev-only settings + changelog; Dev mode shows them. */
+  html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] #viewToggle{display:none}
   /* Formula disclosures under KPI cards are Dev-only (hidden in the clean Default view). */
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
@@ -326,6 +326,8 @@
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
   .nav-version{font-size:11px;font-weight:600;color:var(--muted);margin-right:6px;white-space:nowrap}
   .settings-wrap{position:relative;margin-right:8px;display:flex;align-items:center;justify-content:center;gap:2px}
+  .ver-hint{position:absolute;right:0;top:calc(100% + 5px);font-size:10px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:3px 8px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);z-index:210;pointer-events:none;opacity:0;transform:translateY(-2px);transition:opacity .15s,transform .15s}
+  .ver-hint.show{opacity:1;transform:translateY(0)}
   .settings-cog{line-height:0;color:var(--muted);background:none;border:none;padding:4px 8px;cursor:pointer;font-family:inherit;transition:.15s}
   .settings-cog svg{display:block}
   .settings-cog:hover{color:var(--accent)}
@@ -589,11 +591,12 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version">v0.2.40</span>
+    <span class="nav-version" id="navVersion">v0.2.41</span>
+    <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
-      <button id="viewToggle"></button>
+      <button id="viewToggle">→ Default view</button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
       <button id="sodraRefresh">🔄 Refresh Sodra</button>
     </div>
@@ -1074,22 +1077,33 @@ document.getElementById('settingsCog').addEventListener('click', e=>{
 });
 document.addEventListener('click', ()=>document.getElementById('settingsMenu').classList.remove('open'));
 
-// ---------- View mode toggle (Default = clean; Dev mode adds the version + changelog popup).
+// ---------- View mode (Default = clean; Dev mode adds version changelog, formulas, graph pan…).
+// Default → Dev: click the version label 8× (hint at 5×). Dev → Default: settings button only.
 // Persisted like theme; keyed off the <html data-mode> attribute. ----------
 function currentMode(){ return document.documentElement.getAttribute('data-mode')==='dev' ? 'dev' : 'default'; }
-function syncViewButton(){
-  const btn=document.getElementById('viewToggle');
-  if(btn) btn.textContent = currentMode()==='dev' ? '🧑‍💻 Dev mode' : '📊 Default';
-}
 function applyMode(mode){
   document.documentElement.setAttribute('data-mode', mode);
   try{ localStorage.setItem('viewMode', mode); }catch(e){}
-  syncViewButton();
+  if(mode==='default') hideVerHint();
   requestAnimationFrame(()=>{ try{ Object.values(Chart.instances).forEach(c=>c.resize()); }catch(e){} });
 }
-syncViewButton();
+const VER_DEV_CLICKS=8, VER_HINT_CLICKS=5, VER_HINT_MS=3200;
+let verClickN=0, verHintTimer=null;
+const navVersion=document.getElementById('navVersion');
+const verHint=document.getElementById('verHint');
+function hideVerHint(){ if(verHint){ verHint.textContent=''; verHint.classList.remove('show'); } }
+function showVerHint(msg){ if(!verHint) return; verHint.textContent=msg; verHint.classList.add('show'); clearTimeout(verHintTimer); verHintTimer=setTimeout(hideVerHint, VER_HINT_MS); }
+if(navVersion) navVersion.addEventListener('click',e=>{
+  if(currentMode()==='dev') return;
+  e.stopPropagation();
+  verClickN++;
+  clearTimeout(verHintTimer);
+  verHintTimer=setTimeout(()=>{ verClickN=0; hideVerHint(); }, VER_HINT_MS);
+  if(verClickN===VER_HINT_CLICKS) showVerHint('Click 3 more times');
+  if(verClickN>=VER_DEV_CLICKS){ verClickN=0; hideVerHint(); applyMode('dev'); }
+});
 document.getElementById('viewToggle').addEventListener('click', ()=>{
-  applyMode(currentMode()==='dev' ? 'default' : 'dev');
+  applyMode('default');
   document.getElementById('settingsMenu').classList.remove('open');
 });
 
@@ -2301,6 +2315,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.41', date:'2026-07-10', sp:1, title:'Dev mode easter egg',
+    desc:'No mode toggle in Default; tap the version label 8× to unlock Dev. Settings has “→ Default view”.',
+    detail:'Removed the confusing “Default” settings button from Default mode. Click the nav version 5× for a tiny “Click 3 more times” hint; 8× enables Dev mode (counter resets after ~3s idle). In Dev, settings shows “→ Default view” to switch back; changelog, graph pan and formulas stay Dev-only.'},
   {v:'v0.2.40', date:'2026-07-10', sp:1.5, title:'All-years chart padding',
     desc:'Company all-years charts breathe: 2018/2026 x-axis bookends, 10% y headroom; metric pills scroll on narrow screens.',
     detail:'drawFinSvg accepts xPad (empty year slots) and yHeadroom. Money-flow-by-year and yearly deep-dive charts pad to 2018→2026 with ~10% space above the peak — important in Default mode where graph pan is off. Revenue/Turnover/Profit/Headcount/Wage toggle uses a horizontal scroll row on small screens instead of spilling out.'},
