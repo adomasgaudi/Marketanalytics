@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.55</title>
+<title>Markets — LT agencies · v0.2.56</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -625,7 +625,11 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
+<<<<<<< HEAD
     <span class="nav-version" id="navVersion">v0.2.55</span>
+=======
+    <span class="nav-version" id="navVersion">v0.2.54</span>
+>>>>>>> 454539a (v0.2.54 | Compare financials line swatches | 0.5 sp)
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1164,6 +1168,12 @@ const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(
 const chartInk = () => cssVar('--text');   // chart label/legend colour — light in dark mode; read at render, never hardcode (PB-4)
 function DBG(){}   // debug console removed (per-employee root confirmed v197); no-op keeps existing call-sites harmless
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); // declared early — SVG dashboard charts (above) escape labels at render time (TDZ fix)
+// Tiny inline SVG line matching a chart series' colour, weight and dash — used in tooltips/legends.
+function seriesLineSwatch(ser, w=22, h=10){
+  const col=ser.color||cssVar('--text'), sw=ser.width!=null?ser.width:2, op=ser.opacity!=null?ser.opacity:0.9;
+  const dash=ser.dash&&ser.dash.length?` stroke-dasharray="${ser.dash.join(',')}"`:'';
+  return `<svg width="${w}" height="${h}" aria-hidden="true" style="vertical-align:middle;display:inline-block;flex:0 0 auto"><line x1="1" y1="${h/2}" x2="${w-1}" y2="${h/2}" stroke="${col}" stroke-width="${sw}" stroke-opacity="${op}"${dash}/></svg>`;
+}
 // GRID/CHART_BG are re-read on theme switch (see applyTheme); the per-chart
 // options reference GRID so a re-render picks up the new value.
 let GRID = cssVar('--grid');
@@ -2290,12 +2300,18 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+<<<<<<< HEAD
   {v:'v0.2.55', date:'2026-07-10', sp:0.5, title:'Drop redundant people chart',
     desc:'Removed the By-segment “People by year” block; Employees and Wages already live in the financial chart.',
     detail:'Median salary and Employees/company duplicated the financial-metrics picker (Employees + Wages with basis toggle). Dropped the whole People subsection — pick Employees or Wages in “Financial metrics, all years” instead.'},
   {v:'v0.2.54', date:'2026-07-10', sp:1, title:'Version history flatten',
     desc:'Two-line headers; dropped v0.1/v0.2 tiers; era → ~40 SP chunks only.',
     detail:'Section summaries are title + one inline row (SP pill · version · dates). Removed the meaningless 0.1/0.2 split; within each Jun-27 era, releases group into ~40-SP chunks titled by their biggest change.'},
+=======
+  {v:'v0.2.54', date:'2026-07-10', sp:0.5, title:'Compare financials line swatches',
+    desc:'Chart tooltip and legend use mini line samples (solid/dash) instead of coloured dots.',
+    detail:'seriesLineSwatch() draws a tiny SVG segment matching each series’ colour, stroke-width and stroke-dasharray. Compare financials hover popup and the inline svg-legend now show the same solid / short-dash / long-dash cue as the chart — so Net profit Initial vs Rekvizitai vs pre-tax are identifiable without guessing from a dot.'},
+>>>>>>> 454539a (v0.2.54 | Compare financials line swatches | 0.5 sp)
   {v:'v0.2.53', date:'2026-07-10', sp:1, title:'Rankings toolbar + year range',
     desc:'One-line year range picker; segment pills inline with metric toggles.',
     detail:'All-years rankings: single yr-row — tap two years to set the span (tap an endpoint again to collapse). Metrics + segment multi-select share one scrolling .seg row (dropdown + separate pill row removed). Select all / Clear all sits at the end of the segment pills.'},
@@ -3573,7 +3589,9 @@ function drawFinSvg(container, spec, opts){
     container.appendChild(guide); container.appendChild(tip);
     if(showLegend && (spec.series.length>1 || spec.series.some(s=>s.kind==='bar'))){
       const lg=document.createElement('div'); lg.className='svg-legend';
-      lg.innerHTML=spec.series.map(s=>`<span><i class="lgsw${s.kind==='bar'?'':' line'}" style="background:${s.color}"></i>${s.label}</span>`).join('');
+      lg.innerHTML=spec.series.map(s=>s.kind==='bar'
+        ? `<span><i class="lgsw" style="background:${s.color}"></i>${esc(s.label)}</span>`
+        : `<span style="display:inline-flex;align-items:center;gap:3px">${seriesLineSwatch(s,18,9)}${esc(s.label)}</span>`).join('');
       container.appendChild(lg);
     }
     const engTag=document.createElement('span'); engTag.className='eng-tag'; engTag.textContent='SVG'; container.appendChild(engTag);
@@ -3588,8 +3606,8 @@ function drawFinSvg(container, spec, opts){
       i=Math.max(0,Math.min(n-1,i)); const X=xAt(i);
       if(X<m.l-2||X>W-m.r+2){ guide.style.display='none'; tip.style.display='none'; return; }
       const c=cats[i], gx=X*rect.width/W;
-      guide.style.left=gx+'px'; guide.style.display='block'; let rows='<b>'+c+'</b>';
-      spec.series.forEach(ser=>{ const p=ser.data.find(d=>String(d.x)===c); if(p) rows+=`<br><span style="color:${ser.color}">●</span> ${ser.label}: ${p.y.toLocaleString('lt-LT')}`; });
+      guide.style.left=gx+'px'; guide.style.display='block'; let rows='<b>'+esc(c)+'</b>';
+      spec.series.forEach(ser=>{ const p=ser.data.find(d=>String(d.x)===c); if(p) rows+=`<br><span style="display:inline-flex;align-items:center;gap:5px">${seriesLineSwatch(ser)}<span>${esc(ser.label)}: ${p.y.toLocaleString('lt-LT')}</span></span>`; });
       tip.innerHTML=rows; tip.style.display='block';
       tip.style.left=Math.max(2,Math.min(rect.width-tip.offsetWidth-4, gx+8))+'px';
       tip.style.top=Math.min(rect.height-tip.offsetHeight-2, e.clientY-rect.top+8)+'px';
