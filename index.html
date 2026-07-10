@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.51</title>
+<title>Markets — LT agencies · v0.2.52</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -100,7 +100,7 @@
   .ch-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
   .ch-ver{font-weight:700;color:var(--text);font-size:13px;white-space:nowrap}
   .ch-date{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
-  .sp-badge{background:rgba(244,197,66,.15);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:1px 8px;font-weight:700;font-size:11px;white-space:nowrap}
+  .sp-badge{background:rgba(244,197,66,.12);border:1px solid var(--gold);color:var(--gold);border-radius:4px;padding:2px 8px;font-weight:700;font-size:11px;white-space:nowrap;display:inline-flex;align-items:center;width:auto}
   .ch-title{font-weight:700;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:8px}
   .ch-title::after{content:'▸';font-size:10px;color:var(--muted);margin-left:auto;transition:transform .15s}
   details.ch-card[open] .ch-title::after{transform:rotate(90deg)}
@@ -109,18 +109,25 @@
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
   /* Version history: era (Jun-27 split) → v0.1/v0.2 → ~100-SP group → ~30-SP sub → release leaf. */
   details.ch-era,details.ch-series,details.ch-group,details.ch-sub{border-top:1px solid var(--border)}
-  details.ch-era{border-top-width:3px} details.ch-era:first-child,details.ch-series:first-child,details.ch-group:first-child{border-top:none}
-  details.ch-era>summary,details.ch-series>summary,details.ch-group>summary,details.ch-sub>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:flex-start;gap:10px;padding:12px 4px}
+  details.ch-era{border-top-width:0;margin-top:10px}
+  details.ch-era:first-child{margin-top:0}
+  details.ch-era>summary{background:var(--panel2);border:1px solid var(--border);border-radius:8px}
+  details.ch-era[open]>summary{border-radius:8px 8px 0 0;border-bottom-color:transparent}
+  details.ch-series:first-child,details.ch-group:first-child{border-top:none}
+  details.ch-era>summary,details.ch-series>summary,details.ch-group>summary,details.ch-sub>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:flex-start;gap:10px;padding:12px 6px}
+  details.ch-era>summary{padding:14px 10px}
   details.ch-era>summary::-webkit-details-marker,details.ch-series>summary::-webkit-details-marker,details.ch-group>summary::-webkit-details-marker,details.ch-sub>summary::-webkit-details-marker{display:none}
-  details.ch-era>summary::after,details.ch-series>summary::after,details.ch-group>summary::after,details.ch-sub>summary::after{content:'▸';font-size:10px;color:var(--muted);transition:transform .15s;flex:0 0 auto;margin-top:3px}
+  details.ch-era>summary::after,details.ch-series>summary::after,details.ch-group>summary::after,details.ch-sub>summary::after{content:'▸';font-size:10px;color:var(--muted);transition:transform .15s;flex:0 0 auto;margin-top:4px}
   details.ch-era[open]>summary::after,details.ch-series[open]>summary::after,details.ch-group[open]>summary::after,details.ch-sub[open]>summary::after{transform:rotate(90deg)}
-  .chs-stack{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
-  .chs-title-row{display:flex;align-items:flex-start;gap:8px;min-width:0}
-  .chg-head{font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
-  .chs-head{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
+  .chs-stack{display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex:1;min-width:0}
+  .chs-title-row{display:flex;align-items:flex-start;gap:8px;min-width:0;width:100%}
+  .chg-head{font-size:15px;font-weight:700;color:var(--text);line-height:1.35}
+  .chs-head{font-size:13px;font-weight:600;color:var(--text);line-height:1.35}
   .chg-head,.chs-head{white-space:normal;overflow:visible;text-overflow:unset}
-  .chs-meta{color:var(--muted);font-size:11px;line-height:1.4}
-  .ch-era-wrap,.ch-series-wrap,.ch-sub-wrap{padding-left:11px;margin-left:3px;border-left:2px solid var(--border)}
+  .chs-meta{display:flex;flex-direction:column;gap:2px}
+  .chs-ver,.chs-dates{font-size:11.5px;color:var(--muted);line-height:1.35;font-variant-numeric:tabular-nums}
+  .ch-era-wrap{padding:8px 0 4px 12px;margin-left:6px;border-left:2px solid var(--border)}
+  .ch-series-wrap,.ch-sub-wrap{padding-left:11px;margin-left:3px;border-left:2px solid var(--border)}
   details.ch-group{border-top-width:2px}
   .ch-leaf-wrap{padding-left:10px}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
@@ -611,7 +618,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.51</span>
+    <span class="nav-version" id="navVersion">v0.2.52</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2381,6 +2388,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.52', date:'2026-07-10', sp:1.5, title:'Version history polish',
+    desc:'Era titles describe the work; compact SP pills; short versions and clean dates.',
+    detail:'Top sections renamed to five-word summaries (“2025 data and dashboard polish” / “Initial dashboard and chart foundation”). SP badge is a tight inline pill. Version spans drop the v0. prefix (2.13 → 2.51); date spans are day-only (Jun 29 → Jul 10). Removed the trailing version-count numbers.'},
   {v:'v0.2.51', date:'2026-07-10', sp:1.5, title:'Rankings UI cleanup',
     desc:'Flattened rankings card, CSS metric toggles, dynamic chart height, simpler title.',
     detail:'Removed the inner .card wrapper from Company rankings. Metric picker is now .seg pills inline with the sector dropdown (Select all moved inside the panel). Title stays “Top 10 versus bottom 10”; dropped the YoY % axis label and inline delta badges. Chart height scales to row count (~32px/bar) so small segments like BTL aren’t stretched. All-time year range uses yr-row buttons instead of native selects.'},
@@ -3210,11 +3220,20 @@ function fmtChDate(d){
   const day=+m[3];
   return m[4] ? `${day}, ${m[4]}:${m[5]}` : `${CH_MONTHS[+m[2]-1]} ${day}`;
 }
+function fmtHistDay(d){
+  const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return String(d);
+  return `${CH_MONTHS[+m[2]-1]} ${+m[3]}`;
+}
+function histVerShort(v){
+  const m=String(v).match(/^v0\.(\d+)\.(\d+)$/);
+  return m?`${m[1]}.${m[2]}`:String(v).replace(/^v0\./,'').replace(/^v/,'');
+}
 // One release leaf (collapsible card). VERSIONS entries are newest-first.
 function histLeaf(v){
-  const meta = `<div class="ch-meta"><span class="ch-ver">${esc(v.v)}</span>`
+  const meta = `<div class="ch-meta"><span class="ch-ver">${esc(histVerShort(v.v))}</span>`
     + `<span class="sp-badge">${esc(v.sp)} SP</span>`
-    + `<span class="ch-date">${fmtChDate(v.date)}</span></div>`;
+    + `<span class="ch-date">${fmtHistDay(v.date)}</span></div>`;
   if(v.title){
     const body = `<div class="ch-body"><div class="ch-desc">${esc(v.desc)}</div>`
       + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'') + `</div>`;
@@ -3236,17 +3255,19 @@ function histBucketBySp(items, target){   // items oldest-first, each exposes .s
   if(cur.length){ if(buckets.length && curSp<target*0.5) buckets[buckets.length-1].push(...cur); else buckets.push(cur); }   // fold a tiny tail back
   return buckets;
 }
-const histSpan=nf=>{ const a=nf[nf.length-1].v, b=nf[0].v; return a===b?a:`${a} → ${b}`; };   // nf = newest-first
-const histDateSpan=nf=>{ const a=fmtChDate(nf[nf.length-1].date), b=fmtChDate(nf[0].date); return a===b?a:`${a} → ${b}`; };
-const histHeadline=ns=>{ const top=ns.reduce((bst,r)=>(r.sp||0)>(bst.sp||0)?r:bst, ns[0]); return top.title||top.desc||top.v; };
+const histSpan=nf=>{ const a=histVerShort(nf[nf.length-1].v), b=histVerShort(nf[0].v); return a===b?a:`${a} → ${b}`; };   // nf = newest-first
+const histDateSpan=nf=>{ const a=fmtHistDay(nf[nf.length-1].date), b=fmtHistDay(nf[0].date); return a===b?a:`${a} → ${b}`; };
+const histHeadline=ns=>{ const top=ns.reduce((bst,r)=>(r.sp||0)>(bst.sp||0)?r:bst, ns[0]); return top.title||top.desc||histVerShort(top.v); };
 const HIST_ERA_SPLIT='2026-06-27';
+const HIST_ERA_LABELS={after:'2025 data and dashboard polish',before:'Initial dashboard and chart foundation'};
 const histEraOf=d=>String(d).slice(0,10)<HIST_ERA_SPLIT?'before':'after';
 const histSeriesOf=v=>/^v0\.2\./.test(v.v)?'v02':(/^v0\.1\./.test(v.v)?'v01':'other');
 function histSummaryHtml(leaves,sp,title,headCls){
   headCls=headCls||'chg-head';
   return `<div class="chs-stack"><div class="chs-title-row"><span class="${headCls}">${esc(title)}</span></div>`
     +`<span class="sp-badge">${sp} SP</span>`
-    +`<div class="chs-meta">${esc(histSpan(leaves))} · ${esc(histDateSpan(leaves))} · ${leaves.length}</div></div>`;
+    +`<div class="chs-meta"><span class="chs-ver">${esc(histSpan(leaves))}</span>`
+    +`<span class="chs-dates">${esc(histDateSpan(leaves))}</span></div></div>`;
 }
 function renderHistSpGroups(chrono,openFirst){
   const subs=histBucketBySp(chrono, HIST_SUB_SP).map(leaves=>({ leaves, sp:histSumSp(leaves) }));
@@ -3271,8 +3292,8 @@ function renderHistSpGroups(chrono,openFirst){
 }
 function renderHistTree(){
   const chrono=[...VERSIONS].reverse();                         // oldest-first
-  const eraDefs=[{key:'after',label:'From 27 Jun'},{key:'before',label:'Before 27 Jun'}];
-  const seriesDefs=[{key:'v02',label:'v0.2'},{key:'v01',label:'v0.1'},{key:'other',label:'Other'}];
+  const eraDefs=[{key:'after',label:HIST_ERA_LABELS.after},{key:'before',label:HIST_ERA_LABELS.before}];
+  const seriesDefs=[{key:'v02',label:'0.2'},{key:'v01',label:'0.1'},{key:'other',label:'Other'}];
   let html='', openEra=true;
   eraDefs.forEach(era=>{
     const eraItems=chrono.filter(v=>histEraOf(v.date)===era.key);
