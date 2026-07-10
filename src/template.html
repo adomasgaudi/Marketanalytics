@@ -63,8 +63,8 @@
   header{margin-bottom:24px}
   header h1{font-size:26px;font-weight:700}
   header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
-  .hist-fab{position:fixed;right:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;cursor:pointer;font-family:inherit;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  .hist-fab:hover{border-color:var(--accent);color:var(--text)}
+  .hist-fab{position:fixed;right:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:#111;background:#fff;border:1px solid #d4d4d4;border-radius:4px;padding:7px 12px;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .hist-fab:hover{border-color:#aaa;color:#000;background:#fafafa}
   .hist-pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .hist-pager button{font-family:inherit;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer}
   .hist-pager button:disabled{opacity:.4;cursor:default}
@@ -224,7 +224,7 @@
   .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .grp-panel[hidden]{display:none}
   /* Default view hides the dev-only version + changelog popup; Dev mode shows everything. */
-  html[data-mode="default"] .nav-version,html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] .dev-version{display:none}
+  html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh{display:none}
   /* Formula disclosures under KPI cards are Dev-only (hidden in the clean Default view). */
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
@@ -575,7 +575,7 @@
   <div class="nav-scroll">
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
-  <span class="nav-version">v0.2.32</span>
+  <span class="nav-version">v0.2.33</span>
   <div class="settings-wrap">
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -589,7 +589,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.32</span></h1><p id="pageHeroSub"></p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span> <span class="dev-version">v0.2.33</span></h1><p id="pageHeroSub"></p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -842,7 +842,7 @@
 </div>
 </div>
 
-<button class="hist-fab" id="histBtn">📋 Changelog</button>
+<button class="hist-fab" id="histBtn" title="Version history &amp; changelog"></button>
 
 <div class="modal-overlay" id="histModal">
   <div class="modal">
@@ -2081,6 +2081,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.33', date:'2026-07-10', sp:0.5, title:'Changelog button restyle',
+    desc:'Bottom-right version chip: 4px corners, soft shadow, black on white, shows version number.',
+    detail:'Replaced the blue pill “📋 Changelog” FAB with a compact white badge labelled from .nav-version (e.g. v0.2.33). border-radius 20px→4px, box-shadow softened, fixed #111 on #fff so it reads neutral in Dev mode.'},
   {v:'v0.2.32', date:'2026-07-10', sp:3, title:'Data change log — full pipeline',
     desc:'Rekvizitai + Initial imports now log field-level diffs; company view shows field provenance.',
     detail:'Extended data_events.json logging to parse_company, reparse_all, autoscrape, estimate_2025 and import_rek_companies. Sodra files get _meta.scrapedAt; data.json rows get _provenance per field (sodra/rekvizitai/derived/estimated). Data exploration shows a 📜 Data changes timeline (open by default) with source filter and expandable diffs.'},
@@ -2911,6 +2914,7 @@ function renderHistTree(){
 }
 renderHistTree();
 const histModal = document.getElementById('histModal');
+(function(){ const btn=document.getElementById('histBtn'); const ver=(document.querySelector('.nav-version')||{}).textContent||''; if(btn) btn.textContent=ver.trim(); })();
 document.getElementById('histBtn').addEventListener('click', ()=>histModal.classList.add('open'));
 document.getElementById('histClose').addEventListener('click', ()=>histModal.classList.remove('open'));
 histModal.addEventListener('click', e=>{ if(e.target===histModal) histModal.classList.remove('open'); });
