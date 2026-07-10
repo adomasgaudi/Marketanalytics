@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.61</title>
+<title>Markets — LT agencies · v0.2.62</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -638,7 +638,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.61</span>
+    <span class="nav-version" id="navVersion">v0.2.62</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1701,7 +1701,7 @@ function buildOvList(){
     closeOvNestedDropdowns(null);
   });
   search.addEventListener('input', buildOvList);
-  document.addEventListener('click',()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } closeOvNestedDropdowns(null); });
+  document.addEventListener('click',e=>{ if(sel.contains(e.target)) return; if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } closeOvNestedDropdowns(null); });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape') return;
     const nestedOpen=document.querySelector('#ovCoPanel .co-select.open');
@@ -2418,6 +2418,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.62', date:'2026-07-10', sp:0.5, title:'Fix toggle close — explicit outside check',
+    desc:'Document click handler now checks if click is inside the select before closing.',
+    detail:'Replaced reliance on stopPropagation with sel.contains(e.target) guard in the document click handler. Clicks on the button or panel no longer race with the document listener, so the toggle open/close works reliably every time. Standard dropdown pattern.'},
   {v:'v0.2.61', date:'2026-07-10', sp:0.5, title:'Fix nested dropdown bleed',
     desc:'Use > selector so only the direct panel opens, not all nested panels.',
     detail:'Company selector panels (Turnover, Revenue, Segments, etc.) were all visible when the outer dropdown opened because .co-select.open .co-select-panel used a descendant selector. Changed to > direct child selector so nested panels stay hidden until their own button is clicked.'},
