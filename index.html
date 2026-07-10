@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.44</title>
+<title>Markets — LT agencies · v0.2.45</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -591,7 +591,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.44</span>
+    <span class="nav-version" id="navVersion">v0.2.45</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -626,6 +626,7 @@
           <button type="button" class="co-select-btn" id="ovSegBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovSegBtnText">Segment</span><span class="co-caret">▼</span></button>
           <div class="co-select-panel" id="ovSegPanel">
             <div class="co-select-list" id="ovSegList" role="listbox" aria-multiselectable="true"></div>
+            <button type="button" class="co-select-opt revall-select-all" id="ovSegSelectAll">Select all</button>
           </div>
         </div>
         <select id="ovFilterTurnover" aria-label="Filter by turnover"><option value="">Turnover: any</option><option value="100000">≥ €100k</option><option value="250000">≥ €250k</option><option value="500000">≥ €500k</option><option value="1000000">≥ €1M</option><option value="2000000">≥ €2M</option><option value="5000000">≥ €5M</option></select>
@@ -788,7 +789,7 @@
             <div class="co-select-list" id="rankSectorList" role="listbox" aria-multiselectable="true"></div>
           </div>
         </div>
-        <button type="button" class="rank-clear" id="rankSegClear">Clear all</button>
+        <button type="button" class="rank-clear" id="rankSegClear">Select all</button>
       </div>
       <div class="seg-filter rank-seg-wrap" id="rankSegments"></div>
       <div class="chartbox tall"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
@@ -1126,6 +1127,8 @@ const SEGMENTS = [...new Set(DATA.flatMap(d=>d.activities))].sort();
 const SEGCOLORS = {'Media':'#4f8ef7','Digital media':'#34c98e','Kūryba':'#f0b04f','PR':'#a78bfa','Production house':'#f06a6a','BTL':'#5dd0d6','PA':'#e58fc5','Konsultantai':'#9aa56b','Renginiai':'#c9a26b'};
 const SEGLABEL = {'Kūryba':'Creative','Konsultantai':'Consulting','Renginiai':'Events'}; // English display names; data keys stay LT
 const segName = s => SEGLABEL[s] || s;
+function allSegsSelected(set){ return SEGMENTS.length>0 && SEGMENTS.every(s=>set.has(s)); }
+function syncSelectAllBtn(btn, set){ if(btn) btn.textContent = allSegsSelected(set) ? 'Clear all' : 'Select all'; }
 const SVG_SHAPES = ['circle','diamond','square','triangle']; // SVG chart-engine marker shapes — declared here (early) because dashboard charts render above the engine block (TDZ fix)
 
 // Read a CSS custom property off <html> so charts track the active theme.
@@ -1465,6 +1468,7 @@ const ovSegBtn=document.getElementById('ovSegBtn');
 const ovSegBtnText=document.getElementById('ovSegBtnText');
 const ovSegList=document.getElementById('ovSegList');
 const ovSegSelect=document.getElementById('ovSegSelect');
+const ovSegSelectAll=document.getElementById('ovSegSelectAll');
 const ovFilterTurnover=document.getElementById('ovFilterTurnover');
 const ovFilterRevenue=document.getElementById('ovFilterRevenue');
 const ovFilterEmployees=document.getElementById('ovFilterEmployees');
@@ -1490,6 +1494,7 @@ function syncOvSegBtn(){
 }
 function renderOvSegUI(){
   syncOvSegBtn();
+  syncSelectAllBtn(ovSegSelectAll, ovSegs);
   if(ovSegPills){
     if(!ovSegs.size){ ovSegPills.innerHTML=''; ovSegPills.style.display='none'; }
     else{
@@ -1576,6 +1581,12 @@ function buildOvList(){
     const segPanel=document.getElementById('ovSegPanel');
     if(segPanel) segPanel.addEventListener('click',e=>e.stopPropagation());
   }
+  if(ovSegSelectAll) ovSegSelectAll.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(allSegsSelected(ovSegs)) ovSegs.clear();
+    else SEGMENTS.forEach(s=>ovSegs.add(s));
+    renderOvSegUI(); buildOvList();
+  });
 })();
 renderOvSegUI();
 syncOvLabel(); renderOvChips(); buildOvList();
@@ -1946,6 +1957,7 @@ function renderRankSegments(){
   rankSegHost.innerHTML = [...rankSegments].map(s=>`<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`).join('');
   if(rankSectorList) rankSectorList.innerHTML = SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${rankSegments.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${rankSegments.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
   if(rankSectorBtnText) rankSectorBtnText.textContent = rankSegments.size===1 ? segName([...rankSegments][0]) : `${rankSegments.size} sectors selected`;
+  syncSelectAllBtn(rankClearBtn, rankSegments);
   const toggle = s => {
     if(rankSegments.has(s) && rankSegments.size===1) return;
     if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
@@ -1961,7 +1973,11 @@ function renderRankSegments(){
     o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(o.dataset.s); } });
   });
   if(rankClearBtn && !rankClearBtn.__wired){
-    rankClearBtn.addEventListener('click',()=>{ rankSegments = new Set([[...rankSegments][0] || SEGMENTS[0]]); renderRankSegments(); drawTop(); });
+    rankClearBtn.addEventListener('click',()=>{
+      if(allSegsSelected(rankSegments)) rankSegments=new Set([[...rankSegments][0]||SEGMENTS[0]]);
+      else SEGMENTS.forEach(s=>rankSegments.add(s));
+      renderRankSegments(); drawTop();
+    });
     rankClearBtn.__wired = 1;
   }
 }
@@ -2291,6 +2307,7 @@ function renderRevAllSegUI(){
   buildRevAllSegFilter();
   renderRevAllSectorList();
   syncRevAllSectorBtn();
+  syncSelectAllBtn(revAllSelectAllBtn, revAllSegs);
   renderRevSegAll();
   renderPeopleAll();
 }
@@ -2307,7 +2324,12 @@ if(peopleAllModeSeg) peopleAllModeSeg.querySelectorAll('button').forEach(b=>b.ad
   peopleAllMode=b.dataset.m;
   renderPeopleAll();
 }));
-if(revAllSelectAllBtn) revAllSelectAllBtn.addEventListener('click',e=>{ e.stopPropagation(); SEGMENTS.forEach(s=>revAllSegs.add(s)); renderRevAllSegUI(); });
+if(revAllSelectAllBtn) revAllSelectAllBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  if(allSegsSelected(revAllSegs)) revAllSegs.clear();
+  else SEGMENTS.forEach(s=>revAllSegs.add(s));
+  renderRevAllSegUI();
+});
 if(revAllSectorBtn && revAllSectorSelect){
   revAllSectorBtn.addEventListener('click',e=>{
     e.stopPropagation();
@@ -2330,6 +2352,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.45', date:'2026-07-10', sp:0.5, title:'Select all ↔ Clear all',
+    desc:'Segment “Select all” becomes “Clear all” once every segment is selected.',
+    detail:'Shared toggle on market By-segment, company-picker segment filter, and rankings sector picker (in-dropdown + toolbar button). When all segments are already selected, the button clears instead of doing nothing. Rankings clear resets to one sector (≥1 required); market/company filters may clear to none.'},
   {v:'v0.2.44', date:'2026-07-10', sp:0.5, title:'Chart padding 5%',
     desc:'All-years line/bar padding toned to 5% headroom; market By-segment charts get the same treatment.',
     detail:'CHART_PAD = 5% y-headroom + 10% zoom-out + 2018/2026 x bookends. Applied to company money-flow, compare financials, and market By-segment financial + people charts. Market all-years money-flow unchanged.'},
