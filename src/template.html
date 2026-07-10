@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.39</title>
+<title>Markets — LT agencies · v0.2.40</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -358,10 +358,13 @@
   .co-pill:hover{color:var(--text);border-color:var(--muted)}
   .co-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
   .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .seg.seg-scroll{display:flex;flex-wrap:nowrap;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .seg.seg-scroll button{flex:0 0 auto}
   .seg-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
   .seg-row .seg button{padding:6px 11px}
   .seg button{font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 14px;background:var(--panel2);color:var(--muted);border:none;border-right:1px solid var(--border);cursor:pointer;transition:.12s;-webkit-appearance:none;appearance:none}
   .seg button:last-child{border-right:none}
+  @media (max-width:520px){ .seg.seg-scroll button{padding:6px 9px;font-size:11.5px} }
   .seg button:hover{color:var(--text)}
   .seg button.active{background:var(--accent);color:#fff !important}   /* PB-5: some Android browsers (Brave) imposed system text colour on the active <button> despite this rule — appearance:none above is the root, !important guarantees white */
   /* "Filter by segment" pills — multi-select toggles in one horizontally-scrolling row */
@@ -586,7 +589,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version">v0.2.39</span>
+    <span class="nav-version">v0.2.40</span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
@@ -794,7 +797,7 @@
     <div id="sddLegend" class="sdd-legend"></div>
     <div class="grid">
       <div class="card full">
-        <div class="seg" id="sddMetric" style="margin-bottom:8px;overflow-x:auto">
+        <div class="seg seg-scroll" id="sddMetric" style="margin-bottom:8px">
           <button data-m="ddRev" class="active">Revenue</button>
           <button data-m="ddTurnover">Turnover</button>
           <button data-m="ddProfit">Net profit</button>
@@ -1091,6 +1094,7 @@ document.getElementById('viewToggle').addEventListener('click', ()=>{
 });
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();           // every year with ANY data (incl. partial 2025: Sodra headcount/pay only)
+const CHART_YEAR_PAD = { before: String(YEARS[0]-1), after: String(Math.max(...YEARS)+1) }; // empty x-axis bookends for all-years company charts (2018…2026)
 const LAST = Math.max(...DATA.filter(d=>d.revenue!=null).map(d=>d.year)); // latest COMPLETE financial year (2024) — every market default/aggregate pins here so a partial 2025 can't hijack the headline views
 const FIN_YEARS = YEARS.filter(y=>y<=LAST);                       // full-coverage financial years → Market section + all every-year charts
 
@@ -1401,7 +1405,7 @@ function renderCompany(brand){
     if(empty) empty.classList.remove('show');
     // ONE stacked bar per year = Turnover (total label). Bottom→top: Net profit, rest-of-Revenue (dark gray),
     // rest-of-Turnover (light gray) — profit at the base, each colour's top marks its metric.
-    drawFinSvg(el, { stacked:true, totalLabels:true, zoomOut:0.2, yTitle:'€', series:[
+    drawFinSvg(el, { stacked:true, totalLabels:true, zoomOut:0.2, xPad:CHART_YEAR_PAD, yHeadroom:0.1, yTitle:'€', series:[
       {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
       {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
       {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), noVal:true, data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
@@ -2297,6 +2301,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.40', date:'2026-07-10', sp:1.5, title:'All-years chart padding',
+    desc:'Company all-years charts breathe: 2018/2026 x-axis bookends, 10% y headroom; metric pills scroll on narrow screens.',
+    detail:'drawFinSvg accepts xPad (empty year slots) and yHeadroom. Money-flow-by-year and yearly deep-dive charts pad to 2018→2026 with ~10% space above the peak — important in Default mode where graph pan is off. Revenue/Turnover/Profit/Headcount/Wage toggle uses a horizontal scroll row on small screens instead of spilling out.'},
   {v:'v0.2.39', date:'2026-07-10', sp:2, title:'Company picker filters',
     desc:'Filter the company list by segment, turnover, revenue, headcount or salary — not just search.',
     detail:'The Companies page picker panel now has a segment multi-select plus minimum thresholds for turnover, revenue, employees and median salary, scoped to the selected year (or latest financial year in all-time). Selected compare companies stay visible even when filtered out; Clear filters resets everything.'},
@@ -3366,7 +3373,13 @@ function drawFinSvg(container, spec, opts){
   const interactive = !(opts && opts.interactive===false); // dashboard overview charts pass {interactive:false} → static, page still scrolls
   const showLegend = !(opts && opts.noLegend); // comparison charts use a shared legend under the dropdown instead
   const stacked = !!spec.stacked;   // stacked bars (first series at the bottom)
-  const cats = [...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))].sort();
+  const sortCats=arr=>arr.sort((a,b)=>{ const na=+a, nb=+b; if(!isNaN(na)&&!isNaN(nb)&&/^\d{4}$/.test(String(a))&&/^\d{4}$/.test(String(b))) return na-nb; return String(a).localeCompare(String(b)); });
+  let cats=sortCats([...new Set(spec.series.flatMap(s=>s.data.map(p=>String(p.x))))]);
+  if(spec.xPad){
+    if(spec.xPad.before!=null){ const b=String(spec.xPad.before); if(!cats.includes(b)) cats.push(b); }
+    if(spec.xPad.after!=null){ const a=String(spec.xPad.after); if(!cats.includes(a)) cats.push(a); }
+    cats=sortCats(cats);
+  }
   const n = cats.length;
   const st = container.__fin || (container.__fin = { cid:'fcl'+Math.random().toString(36).slice(2,8) });
   const left=spec.series.filter(s=>s.yAxisID!=='y2'), right=spec.series.filter(s=>s.yAxisID==='y2');
@@ -3378,6 +3391,7 @@ function drawFinSvg(container, spec, opts){
     } else ss.forEach(s=>s.data.forEach(p=>{if(p.y<lo)lo=p.y; if(p.y>hi)hi=p.y;}));
     if(lo===Infinity){lo=0;hi=1;} if(lo===hi){lo-=1;hi+=1;} if(lo>0)lo=0;
     if(stacked && hi>lo) hi += (hi-lo)*0.22;   // headroom above the tallest bar so the total/% labels aren't clipped (pan is off by default, so they must fit on first render)
+    if(spec.yHeadroom>0 && hi>lo) hi += (hi-lo)*spec.yHeadroom;   // extra breathing room above the peak (default view has no pan/zoom)
     return [lo,hi]; };
   // Full fit = x over the category index + y over each axis' data extent — all pannable/zoomable.
   const fitState=()=>{ const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
@@ -3387,7 +3401,7 @@ function drawFinSvg(container, spec, opts){
     return { view:{ xMin, xMax, yMin, yMax }, ry:{ yMin:rLo, yMax:rHi } }; };
   const f0=fitState();
   // sig now includes the fit EXTENT, so a value change (basis/metric) — not just new categories — triggers a refit.
-  const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|')+'#'+[f0.view.yMin,f0.view.yMax,f0.ry.yMin,f0.ry.yMax].map(v=>Math.round(v*1e3)).join(',');
+  const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|')+'#'+[f0.view.yMin,f0.view.yMax,f0.ry.yMin,f0.ry.yMax].map(v=>Math.round(v*1e3)).join(',')+(spec.xPad?('#'+spec.xPad.before+'-'+spec.xPad.after):'');
   const lerp=(a,b,k)=>a+(b-a)*k;
   function animateTo(tg){ if(st._raf) cancelAnimationFrame(st._raf);
     const fv={...st.view}, fr={...st.ry}, tv=tg.view, tr=tg.ry, t0=performance.now(), D=340;   // animated re-fit (easeOutCubic)
@@ -3759,7 +3773,10 @@ function drawSDD(){
   if(emptyEl) emptyEl.classList.remove('show');
   const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
   if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
-  drawFinSvg(cont, spec, {noLegend:true});
+  const allX=(spec.series||[]).flatMap(s=>s.data.map(p=>String(p.x)));
+  const yearlyOnly=allX.length && allX.every(x=>/^\d{4}$/.test(x));
+  const plotSpec=yearlyOnly ? Object.assign({xPad:CHART_YEAR_PAD, yHeadroom:0.1, zoomOut:0.2}, spec) : Object.assign({yHeadroom:0.1, zoomOut:0.15}, spec);
+  drawFinSvg(cont, plotSpec, {noLegend:true});
 }
 // Companies come from the TOP page picker (ovBrands) — one selector for the whole Companies page.
 // Map each brand → its scraped company object (for rekvizitai/sodra series); brands without scraped
