@@ -1431,7 +1431,7 @@ function renderCompany(brand){
       {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
       {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
       {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), noVal:true, data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
-    ]});
+    ]}));
   })();
 
   const rankData = [
