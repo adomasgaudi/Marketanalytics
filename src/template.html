@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.59</title>
+<title>Markets — LT agencies · v0.2.60</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -104,6 +104,11 @@
   .ch-title{font-weight:700;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:8px}
   .ch-title::after{content:'▸';font-size:10px;color:var(--muted);margin-left:auto;transition:transform .15s}
   details.ch-card[open] .ch-title::after{transform:rotate(90deg)}
+  .ch-leaf-title{font-weight:700;font-size:14px;color:var(--text);display:flex;align-items:flex-start;gap:8px;width:100%;line-height:1.35}
+  .ch-leaf-ver{white-space:nowrap;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .ch-leaf-name{flex:1;min-width:0}
+  details.ch-card>summary .ch-leaf-title::after{content:'▸';font-size:10px;color:var(--muted);margin-left:auto;flex:0 0 auto;margin-top:3px;transition:transform .15s}
+  details.ch-card[open]>summary .ch-leaf-title::after{transform:rotate(90deg)}
   .ch-body{margin-top:6px}
   .ch-desc{font-size:12.5px;color:var(--text)}
   .ch-detail{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
@@ -129,7 +134,6 @@
   .ch-era-wrap{padding:8px 0 4px 12px;margin-left:6px;border-left:2px solid var(--border)}
   details.ch-group{border-top-width:1px}
   .ch-leaf-wrap{padding-left:10px}
-  .chs-leaf .ch-title{width:100%}
   header p{color:var(--muted);font-size:14px;margin-top:4px}
   .top-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .src-list{display:flex;flex-direction:column;gap:6px;margin-top:7px;font-size:13px;color:var(--text)}
@@ -3278,14 +3282,17 @@ function histVerShort(v){
 }
 // One release leaf (collapsible card). VERSIONS entries are newest-first.
 function histLeaf(v){
+  const ver=histVerShort(v.v);
+  const label=v.title||v.desc;
+  const titleRow=`<div class="ch-leaf-title"><span class="ch-leaf-ver">${esc(ver)}</span><span class="ch-leaf-name">${esc(label)}</span></div>`;
   const row=`<div class="chs-row"><span class="sp-badge">${esc(v.sp)} SP</span>`
-    +`<span class="chs-inline-meta">${esc(histVerShort(v.v))} · ${fmtHistDay(v.date)}</span></div>`;
+    +`<span class="chs-inline-meta">${fmtHistDay(v.date)}</span></div>`;
   if(v.title){
     const body = `<div class="ch-body"><div class="ch-desc">${esc(v.desc)}</div>`
       + (v.detail?`<div class="ch-detail">${esc(v.detail)}</div>`:'') + `</div>`;
-    return `<details class="ch-card"><summary><div class="chs-stack chs-leaf"><div class="ch-title">${esc(v.title)}</div>${row}</div></summary>${body}</details>`;
+    return `<details class="ch-card"><summary><div class="chs-stack chs-leaf">${titleRow}${row}</div></summary>${body}</details>`;
   }
-  return `<div class="ch-card"><div class="chs-stack chs-leaf">${row}<div class="ch-desc">${esc(v.desc)}</div></div></div>`;   // back-compat (old desc-only entries)
+  return `<div class="ch-card"><div class="chs-stack chs-leaf">${titleRow}${row}</div></div>`;   // back-compat (old desc-only entries)
 }
 // Grouped version history: within each era, greedy ~40-SP buckets over the chronological list.
 const HIST_CHUNK_SP=40;
