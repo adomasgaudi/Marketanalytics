@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.57</title>
+<title>Markets — LT agencies · v0.2.58</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -474,7 +474,11 @@
   .co-sticky .co-select-btn{max-width:340px}
   #ovCompanySelect .co-select-panel{width:min(380px,92vw)}
   .ov-filter-tools{margin-bottom:6px}
-  .ov-filter-tools select{min-width:118px;font:600 11.5px/1 inherit;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text)}
+  .ov-metric-select{min-width:118px;flex:0 1 auto}
+  .ov-metric-select .co-select-btn{font-size:11.5px;padding:6px 10px}
+  .ov-metric-select .co-select-panel{width:min(210px,76vw);z-index:130}
+  #ovSegSelect .co-select-panel{z-index:130}
+  .ov-seg-done{width:100%;justify-content:center;font-weight:600;border-top:1px solid var(--border);margin-top:4px;padding-top:10px;color:var(--accent)}
   .ov-filter-hint{font-size:11px;color:var(--muted);margin:0 0 6px;min-height:14px}
   .ov-seg-wrap{margin:0 0 6px}
   .co-select-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 14px;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
@@ -625,7 +629,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.57</span>
+    <span class="nav-version" id="navVersion">v0.2.58</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -662,12 +666,25 @@
           <div class="co-select-panel" id="ovSegPanel">
             <div class="co-select-list" id="ovSegList" role="listbox" aria-multiselectable="true"></div>
             <button type="button" class="co-select-opt revall-select-all" id="ovSegSelectAll">Select all</button>
+            <button type="button" class="co-select-opt ov-seg-done" id="ovSegDone">Done</button>
           </div>
         </div>
-        <select id="ovFilterTurnover" aria-label="Filter by turnover"><option value="">Turnover: any</option><option value="100000">≥ €100k</option><option value="250000">≥ €250k</option><option value="500000">≥ €500k</option><option value="1000000">≥ €1M</option><option value="2000000">≥ €2M</option><option value="5000000">≥ €5M</option></select>
-        <select id="ovFilterRevenue" aria-label="Filter by revenue"><option value="">Revenue: any</option><option value="50000">≥ €50k</option><option value="100000">≥ €100k</option><option value="250000">≥ €250k</option><option value="500000">≥ €500k</option><option value="1000000">≥ €1M</option><option value="2000000">≥ €2M</option></select>
-        <select id="ovFilterEmployees" aria-label="Filter by employees"><option value="">Employees: any</option><option value="1">≥ 1</option><option value="3">≥ 3</option><option value="5">≥ 5</option><option value="10">≥ 10</option><option value="25">≥ 25</option><option value="50">≥ 50</option><option value="100">≥ 100</option></select>
-        <select id="ovFilterSalary" aria-label="Filter by salary"><option value="">Salary: any</option><option value="800">≥ €800/mo</option><option value="1000">≥ €1k/mo</option><option value="1200">≥ €1.2k/mo</option><option value="1500">≥ €1.5k/mo</option><option value="2000">≥ €2k/mo</option><option value="2500">≥ €2.5k/mo</option><option value="3000">≥ €3k/mo</option></select>
+        <div class="co-select ov-metric-select" id="ovTurnoverSelect">
+          <button type="button" class="co-select-btn" id="ovTurnoverBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovTurnoverBtnText">Turnover: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="ovTurnoverPanel"><div class="co-select-list" id="ovTurnoverList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="ovRevenueSelect">
+          <button type="button" class="co-select-btn" id="ovRevenueBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovRevenueBtnText">Revenue: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="ovRevenuePanel"><div class="co-select-list" id="ovRevenueList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="ovEmployeesSelect">
+          <button type="button" class="co-select-btn" id="ovEmployeesBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovEmployeesBtnText">Employees: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="ovEmployeesPanel"><div class="co-select-list" id="ovEmployeesList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="ovSalarySelect">
+          <button type="button" class="co-select-btn" id="ovSalaryBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovSalaryBtnText">Salary: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="ovSalaryPanel"><div class="co-select-list" id="ovSalaryList" role="listbox"></div></div>
+        </div>
         <button type="button" class="rank-clear" id="ovFilterClear">Clear filters</button>
       </div>
       <div class="seg-filter rank-seg-wrap ov-seg-wrap" id="ovSegPills"></div>
@@ -1498,17 +1515,59 @@ let ovBrands = [MY_BRAND], ovBrand = MY_BRAND;
 const ovSegs = new Set();
 let ovMinTurnover=0, ovMinRevenue=0, ovMinEmployees=0, ovMinSalary=0;
 const ovSegPills=document.getElementById('ovSegPills');
+const OV_THRESHOLDS={
+  turnover:[['','Turnover: any'],['100000','≥ €100k'],['250000','≥ €250k'],['500000','≥ €500k'],['1000000','≥ €1M'],['2000000','≥ €2M'],['5000000','≥ €5M']],
+  revenue:[['','Revenue: any'],['50000','≥ €50k'],['100000','≥ €100k'],['250000','≥ €250k'],['500000','≥ €500k'],['1000000','≥ €1M'],['2000000','≥ €2M']],
+  employees:[['','Employees: any'],['1','≥ 1'],['3','≥ 3'],['5','≥ 5'],['10','≥ 10'],['25','≥ 25'],['50','≥ 50'],['100','≥ 100']],
+  salary:[['','Salary: any'],['800','≥ €800/mo'],['1000','≥ €1k/mo'],['1200','≥ €1.2k/mo'],['1500','≥ €1.5k/mo'],['2000','≥ €2k/mo'],['2500','≥ €2.5k/mo'],['3000','≥ €3k/mo']]
+};
+const ovMetricUi={
+  turnover:{btnText:document.getElementById('ovTurnoverBtnText'),list:document.getElementById('ovTurnoverList'),select:document.getElementById('ovTurnoverSelect'),btn:document.getElementById('ovTurnoverBtn'),get:()=>ovMinTurnover,set:v=>{ovMinTurnover=v;}},
+  revenue:{btnText:document.getElementById('ovRevenueBtnText'),list:document.getElementById('ovRevenueList'),select:document.getElementById('ovRevenueSelect'),btn:document.getElementById('ovRevenueBtn'),get:()=>ovMinRevenue,set:v=>{ovMinRevenue=v;}},
+  employees:{btnText:document.getElementById('ovEmployeesBtnText'),list:document.getElementById('ovEmployeesList'),select:document.getElementById('ovEmployeesSelect'),btn:document.getElementById('ovEmployeesBtn'),get:()=>ovMinEmployees,set:v=>{ovMinEmployees=v;}},
+  salary:{btnText:document.getElementById('ovSalaryBtnText'),list:document.getElementById('ovSalaryList'),select:document.getElementById('ovSalarySelect'),btn:document.getElementById('ovSalaryBtn'),get:()=>ovMinSalary,set:v=>{ovMinSalary=v;}}
+};
 const ovSegBtn=document.getElementById('ovSegBtn');
 const ovSegBtnText=document.getElementById('ovSegBtnText');
 const ovSegList=document.getElementById('ovSegList');
 const ovSegSelect=document.getElementById('ovSegSelect');
 const ovSegSelectAll=document.getElementById('ovSegSelectAll');
-const ovFilterTurnover=document.getElementById('ovFilterTurnover');
-const ovFilterRevenue=document.getElementById('ovFilterRevenue');
-const ovFilterEmployees=document.getElementById('ovFilterEmployees');
-const ovFilterSalary=document.getElementById('ovFilterSalary');
+const ovSegDone=document.getElementById('ovSegDone');
 const ovFilterClear=document.getElementById('ovFilterClear');
 const ovFilterHint=document.getElementById('ovFilterHint');
+function closeOvNestedDropdowns(except){
+  document.querySelectorAll('#ovCoPanel .co-select.open').forEach(el=>{
+    if(except && (el===except || el.contains(except))) return;
+    el.classList.remove('open');
+    const b=el.querySelector('.co-select-btn');
+    if(b) b.setAttribute('aria-expanded','false');
+  });
+}
+function syncOvMetricBtn(key){
+  const ui=ovMetricUi[key]; if(!ui||!ui.btnText) return;
+  const cur=ui.get(), opts=OV_THRESHOLDS[key]||[];
+  const hit=opts.find(([v])=>+v===+cur);
+  ui.btnText.textContent=hit?hit[1]:(opts[0]?opts[0][1]:'Any');
+}
+function renderOvMetricLists(){
+  Object.keys(ovMetricUi).forEach(key=>{
+    const ui=ovMetricUi[key], opts=OV_THRESHOLDS[key]||[];
+    if(!ui.list) return;
+    const cur=ui.get();
+    ui.list.innerHTML=opts.map(([v,lbl])=>`<div class="co-select-opt${+v===+cur?' active':''}" role="option" data-v="${esc(v)}">${esc(lbl)}</div>`).join('');
+    ui.list.querySelectorAll('.co-select-opt').forEach(o=>{
+      o.addEventListener('click',e=>{
+        e.stopPropagation();
+        ui.set(+(o.dataset.v)||0);
+        syncOvMetricBtn(key);
+        renderOvMetricLists();
+        closeOvNestedDropdowns(null);
+        buildOvList();
+      });
+    });
+    syncOvMetricBtn(key);
+  });
+}
 function ovFilterYear(){ return coViewMode==='all' ? LAST : coYear; }
 function ovHasActiveFilters(){ return ovSegs.size>0 || ovMinTurnover>0 || ovMinRevenue>0 || ovMinEmployees>0 || ovMinSalary>0; }
 function ovPassesFilter(brand){
@@ -1555,11 +1614,9 @@ function renderOvSegUI(){
 function clearOvFilters(){
   ovSegs.clear();
   ovMinTurnover=ovMinRevenue=ovMinEmployees=ovMinSalary=0;
-  if(ovFilterTurnover) ovFilterTurnover.value='';
-  if(ovFilterRevenue) ovFilterRevenue.value='';
-  if(ovFilterEmployees) ovFilterEmployees.value='';
-  if(ovFilterSalary) ovFilterSalary.value='';
-  renderOvSegUI(); buildOvList();
+  renderOvSegUI();
+  renderOvMetricLists();
+  buildOvList();
 }
 function syncOvLabel(){ const l=document.getElementById('ovCoLabel');
   if(l) l.textContent = ovBrands.length<=1 ? (ovBrands[0]||'Select company') : (ovBrands[0]+' +'+(ovBrands.length-1)); }
@@ -1597,30 +1654,56 @@ function buildOvList(){
 (function(){
   const sel=document.getElementById('ovCompanySelect'); if(!sel) return;
   const btn=document.getElementById('ovCoBtn'), panel=document.getElementById('ovCoPanel'), search=document.getElementById('ovCoSearch');
-  btn.addEventListener('click',e=>{ e.stopPropagation(); const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false'); if(open){ search.value=''; buildOvList(); search.focus(); } });
-  panel.addEventListener('click',e=>e.stopPropagation());
+  btn.addEventListener('click',e=>{ e.stopPropagation(); const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false'); if(open){ closeOvNestedDropdowns(null); search.value=''; buildOvList(); search.focus(); } });
+  panel.addEventListener('click',e=>{
+    e.stopPropagation();
+    const nested=e.target.closest('#ovCoPanel .co-select');
+    if(nested && nested!==sel) return;
+    closeOvNestedDropdowns(null);
+  });
   search.addEventListener('input', buildOvList);
-  document.addEventListener('click',()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } if(ovSegSelect) ovSegSelect.classList.remove('open'); if(ovSegBtn) ovSegBtn.setAttribute('aria-expanded','false'); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); if(ovSegSelect) ovSegSelect.classList.remove('open'); if(ovSegBtn) ovSegBtn.setAttribute('aria-expanded','false'); } });
-  const readMin=el=>+(el&&el.value)||0;
-  const onMetricFilter=()=>{ ovMinTurnover=readMin(ovFilterTurnover); ovMinRevenue=readMin(ovFilterRevenue); ovMinEmployees=readMin(ovFilterEmployees); ovMinSalary=readMin(ovFilterSalary); buildOvList(); };
-  [ovFilterTurnover,ovFilterRevenue,ovFilterEmployees,ovFilterSalary].forEach(el=>{ if(el) el.addEventListener('change',onMetricFilter); });
+  document.addEventListener('click',()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } closeOvNestedDropdowns(null); });
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    const nestedOpen=document.querySelector('#ovCoPanel .co-select.open');
+    if(nestedOpen && nestedOpen!==sel){
+      closeOvNestedDropdowns(null);
+      e.preventDefault();
+      return;
+    }
+    if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+  });
   if(ovFilterClear) ovFilterClear.addEventListener('click',e=>{ e.stopPropagation(); clearOvFilters(); });
+  Object.keys(ovMetricUi).forEach(key=>{
+    const ui=ovMetricUi[key];
+    if(!ui.select||!ui.btn) return;
+    ui.btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const wasOpen=ui.select.classList.contains('open');
+      closeOvNestedDropdowns(ui.select);
+      if(!wasOpen){ ui.select.classList.add('open'); ui.btn.setAttribute('aria-expanded','true'); }
+    });
+    const p=ui.select.querySelector('.co-select-panel');
+    if(p) p.addEventListener('click',e=>e.stopPropagation());
+  });
   if(ovSegBtn && ovSegSelect){
     ovSegBtn.addEventListener('click',e=>{
       e.stopPropagation();
-      const open=ovSegSelect.classList.toggle('open');
-      ovSegBtn.setAttribute('aria-expanded',open?'true':'false');
+      const wasOpen=ovSegSelect.classList.contains('open');
+      closeOvNestedDropdowns(ovSegSelect);
+      if(!wasOpen){ ovSegSelect.classList.add('open'); ovSegBtn.setAttribute('aria-expanded','true'); }
     });
     const segPanel=document.getElementById('ovSegPanel');
     if(segPanel) segPanel.addEventListener('click',e=>e.stopPropagation());
   }
+  if(ovSegDone) ovSegDone.addEventListener('click',e=>{ e.stopPropagation(); closeOvNestedDropdowns(null); });
   if(ovSegSelectAll) ovSegSelectAll.addEventListener('click',e=>{
     e.stopPropagation();
     if(allSegsSelected(ovSegs)) ovSegs.clear();
     else SEGMENTS.forEach(s=>ovSegs.add(s));
     renderOvSegUI(); buildOvList();
   });
+  renderOvMetricLists();
 })();
 renderOvSegUI();
 syncOvLabel(); renderOvChips(); buildOvList();
@@ -2296,6 +2379,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.58', date:'2026-07-10', sp:0.5, title:'Company picker filters',
+    desc:'Segment panel closes properly; metric filters use custom dropdowns.',
+    detail:'Companies view: nested segment filter now dismisses when you click elsewhere in the picker, press Escape, or tap Done. Turnover, revenue, employees and salary thresholds are custom co-select dropdowns — no native <select>.'},
   {v:'v0.2.57', date:'2026-07-10', sp:0.5, title:'Drop “scraped” wording',
     desc:'UI and copy now say Rekvizitai / Sodra instead of “scraped”.',
     detail:'Compare financials legend: “Rekvizitai / Sodra — solid”. Chart descriptions, data-event labels and changelog prose updated — no more “scraped” in user-facing text. Internal script names (scrape_sodra.py, scrapedAt) unchanged.'},
