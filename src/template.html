@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.60</title>
+<title>Markets — LT agencies · v0.2.61</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -638,7 +638,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.60</span>
+    <span class="nav-version" id="navVersion">v0.2.61</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2418,6 +2418,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.61', date:'2026-07-10', sp:0.5, title:'Fix nested dropdown bleed',
+    desc:'Use > selector so only the direct panel opens, not all nested panels.',
+    detail:'Company selector panels (Turnover, Revenue, Segments, etc.) were all visible when the outer dropdown opened because .co-select.open .co-select-panel used a descendant selector. Changed to > direct child selector so nested panels stay hidden until their own button is clicked.'},
   {v:'v0.2.60', date:'2026-07-10', sp:0.5, title:'Hello, Markets',
     desc:'Bump nav badge to v60; match git tag and title.',
     detail:'Updated the nav version badge from v0.2.59 to v0.2.60 to sync with git tag v60 and the page <title>. First changelog entry at the new version.'},
