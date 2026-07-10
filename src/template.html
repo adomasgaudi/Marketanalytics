@@ -494,7 +494,7 @@
   .co-caret{color:var(--muted);font-size:11px;transition:transform .15s}
   .co-select.open .co-caret{transform:rotate(180deg)}
   .co-select-panel{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:120;width:min(320px,82vw);background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.45);padding:6px}
-  .co-select.open .co-select-panel{display:block}
+  .co-select.open > .co-select-panel{display:block}
   .co-select-search{width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:6px;background:var(--panel2);color:var(--text);margin-bottom:6px}
   .co-select-list{max-height:46vh;overflow:auto}
   .co-select-opt{padding:7px 10px;font-size:13px;border-radius:6px;cursor:pointer;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
