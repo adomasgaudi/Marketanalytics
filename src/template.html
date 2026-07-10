@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.47</title>
+<title>Markets — LT agencies · v0.2.48</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -603,7 +603,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.47</span>
+    <span class="nav-version" id="navVersion">v0.2.48</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1145,8 +1145,7 @@ document.getElementById('viewToggle').addEventListener('click', ()=>{
 });
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();           // every year with ANY data (incl. partial 2025: Sodra headcount/pay only)
-const CHART_YEAR_PAD = { before: String(YEARS[0]-1), after: String(Math.max(...YEARS)+1) }; // empty x-axis bookends for all-years charts (2018…2026)
-const CHART_PAD = { xPad: CHART_YEAR_PAD, yHeadroom: 0.05, zoomOut: 0.1 }; // 5% headroom + modest zoom-out (default view has no pan)
+const CHART_PAD = { xMargin: 0.5, yHeadroom: 0.05, zoomOutX: 0.05, zoomOutY: 0.1 }; // half-slot x margin + 5% x / 10% y zoom-out (default view has no pan)
 const LAST = Math.max(...DATA.filter(d=>d.revenue!=null).map(d=>d.year)); // latest COMPLETE financial year (2024) — every market default/aggregate pins here so a partial 2025 can't hijack the headline views
 const FIN_YEARS = YEARS.filter(y=>y<=LAST);                       // full-coverage financial years → Market section + all every-year charts
 
@@ -2393,6 +2392,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.48', date:'2026-07-10', sp:0.5, title:'Tighter horizontal chart padding',
+    desc:'All-years money-flow, compare financials, and market By-segment charts use half the horizontal breathing room; vertical unchanged.',
+    detail:'CHART_PAD now uses xMargin (0.5 category slot each side) + zoomOutX 5% instead of full 2018/2026 bookends + 10% zoom on both axes. zoomOutY stays 10% + 5% yHeadroom so stacked-bar labels still clear. Applies to company money-flow-by-year, Compare financials deep-dive, and market By-segment financial + people charts.'},
   {v:'v0.2.47', date:'2026-07-10', sp:1, title:'Gold-bar contrast + color palettes',
     desc:'Darker gold bars and bolder labels on the vs-market chart; Classic and Ocean palettes in Dev settings.',
     detail:'vs-market bars use --gold-bar (darker than --gold). drawBarsSvg picks dark text + a slightly stronger shadow on light bars. New palette toggle: Classic (default) vs Ocean — swaps accent tokens and segment chart colours; persists in localStorage alongside light/dark theme.'},
@@ -3509,12 +3511,15 @@ function drawFinSvg(container, spec, opts){
   // Full fit = x over the category index + y over each axis' data extent — all pannable/zoomable.
   const fitState=()=>{ const [lLo,lHi]=ext(left), [rLo,rHi]= right.length?ext(right):[0,1];
     let xMin=n<=1?-0.5:0, xMax=n<=1?0.5:n-1, yMin=lLo, yMax=lHi;
-    const z=spec.zoomOut||0;   // default "zoom out" margin: view is (1+z)× the data box, content centred (e.g. 0.2 = 20% out)
-    if(z>0){ const xs=(xMax-xMin)||1, ys=(yMax-yMin)||1; xMin-=xs*z/2; xMax+=xs*z/2; yMin-=ys*z/2; yMax+=ys*z/2; }
+    if(spec.xMargin>0){ xMin-=spec.xMargin; xMax+=spec.xMargin; }   // fractional category margin (replaces full empty-year bookends)
+    const zX=spec.zoomOutX!=null?spec.zoomOutX:(spec.zoomOut||0);
+    const zY=spec.zoomOutY!=null?spec.zoomOutY:(spec.zoomOut||0);
+    if(zX>0){ const xs=(xMax-xMin)||1; xMin-=xs*zX/2; xMax+=xs*zX/2; }
+    if(zY>0){ const ys=(yMax-yMin)||1; yMin-=ys*zY/2; yMax+=ys*zY/2; }
     return { view:{ xMin, xMax, yMin, yMax }, ry:{ yMin:rLo, yMax:rHi } }; };
   const f0=fitState();
   // sig now includes the fit EXTENT, so a value change (basis/metric) — not just new categories — triggers a refit.
-  const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|')+'#'+[f0.view.yMin,f0.view.yMax,f0.ry.yMin,f0.ry.yMax].map(v=>Math.round(v*1e3)).join(',')+(spec.xPad?('#'+spec.xPad.before+'-'+spec.xPad.after):'');
+  const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|')+'#'+[f0.view.yMin,f0.view.yMax,f0.ry.yMin,f0.ry.yMax].map(v=>Math.round(v*1e3)).join(',')+(spec.xMargin?('#xm'+spec.xMargin):'')+(spec.xPad?('#'+spec.xPad.before+'-'+spec.xPad.after):'');
   const lerp=(a,b,k)=>a+(b-a)*k;
   function animateTo(tg){ if(st._raf) cancelAnimationFrame(st._raf);
     const fv={...st.view}, fr={...st.ry}, tv=tg.view, tr=tg.ry, t0=performance.now(), D=340;   // animated re-fit (easeOutCubic)
