@@ -10,12 +10,14 @@ The output rows follow the dashboard's data.json schema. `estimatedIncome` is
 left null because Rekvizitai does not expose fee-income / pass-through split.
 """
 
-from __future__ import annotations
-
 import json
 import os
 import re
+import sys
 from statistics import mean
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from data_events import load_data, set_provenance, write_data_json, write_rek_payload
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -151,12 +153,11 @@ def annual_sodra(months, year):
 
 
 def upsert_data_rows(new_rows):
-    data = load_json(DATA_JSON)
+    data = load_data()
     brands = {row["brand"] for row in new_rows}
     data = [row for row in data if row.get("brand") not in brands]
     data.extend(new_rows)
     data.sort(key=lambda row: (row["brand"].lower(), row["year"]))
-    save_json(DATA_JSON, data)
     return data
 
 
@@ -168,7 +169,7 @@ def update_rek_brands(rek_payload):
     rek_payload["companies"] = sorted(
         blocks.values(), key=lambda block: (block.get("name") or block.get("slug") or "").lower()
     )
-    save_json(REK_JSON, rek_payload)
+    return rek_payload
 
 
 def main():
@@ -201,8 +202,7 @@ def main():
                 else None
             )
 
-            new_rows.append(
-                {
+            row = {
                     "company": company,
                     "brand": brand,
                     "year": year,
@@ -217,12 +217,33 @@ def main():
                     "nonSalaryCosts": non_salary_costs,
                     "estimatedIncome": None,
                 }
-            )
+            if city:
+                set_provenance(row, "city", "rekvizitai")
+            if risk:
+                set_provenance(row, "risk", "rekvizitai")
+            if revenue_value is not None:
+                set_provenance(row, "revenue", "rekvizitai")
+            if profit_value is not None:
+                set_provenance(row, "profit", "rekvizitai")
+            if employees or avg_salary:
+                set_provenance(row, "employees", "sodra")
+                set_provenance(row, "avgSalary", "sodra")
+            if salary_costs:
+                set_provenance(row, "salaryCosts", "derived")
+            if non_salary_costs is not None:
+                set_provenance(row, "nonSalaryCosts", "derived")
+            new_rows.append(row)
 
         print(f"{slug:34} -> {brand:24} code={code} rows=7")
 
-    update_rek_brands(rek)
+    old_rek = load_json(REK_JSON)
+    rek = update_rek_brands(old_rek)
+    write_rek_payload(rek, trigger="import_rek_companies.py", old_payload=old_rek)
+
+    old_data = load_data()
     payload = upsert_data_rows(new_rows)
+    write_data_json(payload, trigger="import_rek_companies.py", old_rows=old_data,
+                    summary_label="Initial")
     print(f"Updated {len(new_rows)} rows; data.json now has {len(payload)} records")
 
 

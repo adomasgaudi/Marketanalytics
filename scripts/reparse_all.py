@@ -38,7 +38,10 @@ def main():
         print(f"[{i}/{len(slugs)}] {s}: {fields(blk) if blk else 0}", flush=True)
 
     blocks.sort(key=lambda b: (b.get("name") or b.get("slug") or "").lower())
-    json.dump({"companies": blocks}, open(REK, "w", encoding="utf-8"), ensure_ascii=False)
+    old_payload = json.load(open(REK, encoding="utf-8"))
+    payload = {"companies": blocks}
+    from data_events import write_rek_payload
+    write_rek_payload(payload, trigger="reparse_all.py", old_payload=old_payload)
 
     after_map = {b["slug"]: fields(b) for b in blocks}
     after_tot = sum(after_map.values())

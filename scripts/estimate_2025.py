@@ -25,7 +25,10 @@ inputs exist (e.g. no revenue -> no nonSalaryCosts/estimatedIncome).
 Run AFTER the Sodra (employees/avgSalary) and rekvizitai (revenue/profit) passes:
     python3 scripts/estimate_2025.py    # rebuild the site afterwards
 """
-import json, os, statistics
+import json, os, statistics, sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
+from data_events import load_data, set_provenance, write_data_json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data", "data.json")
@@ -46,7 +49,8 @@ def fee_ratio_by_brand(data):
 
 
 def main():
-    data = json.load(open(DATA, encoding="utf-8"))
+    data = load_data()
+    old_data = json.loads(json.dumps(data))  # snapshot before edits
     fee = fee_ratio_by_brand(data)
     sc_n = nsc_n = ei_n = 0
     for r in data:
@@ -55,16 +59,19 @@ def main():
         emp, sal = r.get("employees"), r.get("avgSalary")
         if emp is not None and sal is not None:
             r["salaryCosts"] = round(sal * emp * 12, 2)
+            set_provenance(r, "salaryCosts", "derived")
             sc_n += 1
         rev, prof = r.get("revenue"), r.get("profit")
         if rev is not None and prof is not None and r.get("salaryCosts") is not None:
             r["nonSalaryCosts"] = round(rev - prof - r["salaryCosts"], 2)
+            set_provenance(r, "nonSalaryCosts", "derived")
             nsc_n += 1
         if rev is not None:
             r["estimatedIncome"] = round(rev * fee.get(r["brand"], FALLBACK_FEE_RATIO), 1)
+            set_provenance(r, "estimatedIncome", "estimated")
             ei_n += 1
 
-    json.dump(data, open(DATA, "w", encoding="utf-8"), ensure_ascii=False)
+    write_data_json(data, trigger="estimate_2025.py", old_rows=old_data, summary_label="Initial")
     print(f"2025 estimates written: salaryCosts={sc_n}, nonSalaryCosts={nsc_n}, estimatedIncome={ei_n}")
 
 

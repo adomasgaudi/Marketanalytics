@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Append-only data change log — shared by scrapers and the backfill script.
 
-Events live in data/data_events.json. Each Sodra scrape diffs files on write
-and appends one batch event. Git backfill seeds historical commits without
-field-level detail.
+Events live in data/data_events.json. Scrapers diff on write and append one
+batch event per run. Git backfill seeds historical commits without field detail.
 """
 import json
 import os
@@ -14,12 +13,24 @@ from datetime import datetime, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENTS_PATH = os.path.join(ROOT, "data", "data_events.json")
 REK_PATH = os.path.join(ROOT, "data", "rek_tabs.json")
+DATA_PATH = os.path.join(ROOT, "data", "data.json")
 
 _brand_by_jar = None
+
+DATA_METRICS = (
+    "employees", "avgSalary", "salaryCosts", "revenue", "profit",
+    "nonSalaryCosts", "estimatedIncome", "city", "risk",
+)
 
 
 def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _strip_meta(rec):
+    if not rec:
+        return rec
+    return {k: v for k, v in rec.items() if k != "_meta"}
 
 
 def load_events():
@@ -61,8 +72,14 @@ def brand_for_jar(jar):
     return _brand_by_jar.get(str(jar))
 
 
+def sodra_meta():
+    return {"scrapedAt": _now_iso(), "source": "atvira.sodra.lt (open data)"}
+
+
 def diff_sodra(old, new):
-    """Field-level diff for one Sodra company file. None if old is missing (new file)."""
+    """Field-level diff for one Sodra company file."""
+    new = _strip_meta(new)
+    old = _strip_meta(old)
     jar = str(new.get("jarCode", ""))
     brand = brand_for_jar(jar)
     base = {"jarCode": jar, "brand": brand, "name": new.get("name")}
@@ -109,8 +126,102 @@ def diff_sodra(old, new):
     return ch
 
 
+def flatten_rek(block):
+    if not block:
+        return {}
+    out = {}
+    for tab_name, tab in (block.get("tabs") or {}).items():
+        for field, value in tab.get("rows", []):
+            out[f"{tab_name}:{field}"] = value
+    return out
+
+
+def diff_rek_company(old, new):
+    slug = new.get("slug")
+    brand = new.get("brand")
+    name = new.get("name")
+    base = {"slug": slug, "brand": brand, "name": name}
+
+    if old is None:
+        flat = flatten_rek(new)
+        return {**base, "kind": "added", "fieldCount": len(flat)}
+
+    old_f, new_f = flatten_rek(old), flatten_rek(new)
+    added_n = len([k for k in new_f if k not in old_f])
+    removed_n = len([k for k in old_f if k not in new_f])
+    changed = []
+    for key in sorted(set(old_f) & set(new_f)):
+        if old_f[key] != new_f[key]:
+            field = key.split(":", 1)[-1]
+            changed.append({
+                "field": field,
+                "from": str(old_f[key])[:120],
+                "to": str(new_f[key])[:120],
+            })
+        if len(changed) >= 12:
+            break
+
+    if not added_n and not removed_n and not changed:
+        return None
+
+    ch = {**base, "kind": "changed"}
+    if added_n:
+        ch["fieldsAdded"] = added_n
+    if removed_n:
+        ch["fieldsRemoved"] = removed_n
+    if changed:
+        ch["fieldsChanged"] = changed
+    return ch
+
+
+def diff_rek_payload(old_payload, new_payload):
+    old_map = {c["slug"]: c for c in (old_payload or {}).get("companies", [])}
+    new_map = {c["slug"]: c for c in (new_payload or {}).get("companies", [])}
+    changes = []
+    for slug in sorted(set(old_map) | set(new_map)):
+        if slug not in new_map:
+            o = old_map[slug]
+            changes.append({
+                "slug": slug,
+                "brand": o.get("brand"),
+                "name": o.get("name"),
+                "kind": "removed",
+            })
+            continue
+        ch = diff_rek_company(old_map.get(slug), new_map[slug])
+        if ch:
+            changes.append(ch)
+    return changes
+
+
+def _row_key(row):
+    return (row.get("brand"), row.get("year"))
+
+
+def diff_data_payload(old_rows, new_rows):
+    old_map = {_row_key(r): r for r in (old_rows or [])}
+    new_map = {_row_key(r): r for r in (new_rows or [])}
+    changes = []
+    for key in sorted(set(old_map) | set(new_map), key=lambda k: (str(k[0]), k[1] or 0)):
+        brand, year = key
+        if key not in new_map:
+            changes.append({"brand": brand, "year": year, "kind": "removed"})
+            continue
+        if key not in old_map:
+            fields = {f: new_map[key].get(f) for f in DATA_METRICS if new_map[key].get(f) is not None}
+            changes.append({"brand": brand, "year": year, "kind": "added", "fields": fields})
+            continue
+        field_changes = {}
+        for f in DATA_METRICS:
+            ov, nv = old_map[key].get(f), new_map[key].get(f)
+            if ov != nv:
+                field_changes[f] = {"from": ov, "to": nv}
+        if field_changes:
+            changes.append({"brand": brand, "year": year, "kind": "changed", "fields": field_changes})
+    return changes
+
+
 def append_event(source, trigger, summary, changes=None, stats=None, at=None, commit=None):
-    """Append one event. Returns the new event dict."""
     doc = load_events()
     ev = {
         "id": "evt-" + uuid.uuid4().hex[:12],
@@ -129,22 +240,80 @@ def append_event(source, trigger, summary, changes=None, stats=None, at=None, co
     return ev
 
 
-def append_sodra_batch(changes, trigger="scrape_sodra.py", written=0, scanned=0):
-    """Log one Sodra scrape run."""
-    if not changes:
-        return None
+def _batch_summary(source, changes, extra=""):
     n_added = sum(1 for c in changes if c.get("kind") == "added")
     n_changed = sum(1 for c in changes if c.get("kind") == "changed")
+    n_removed = sum(1 for c in changes if c.get("kind") == "removed")
     parts = []
     if n_added:
         parts.append(f"{n_added} new")
     if n_changed:
         parts.append(f"{n_changed} updated")
-    summary = f"Sodra: {', '.join(parts) or str(len(changes)) + ' changed'} ({written}/{scanned} written)"
-    return append_event(
-        source="sodra",
-        trigger=trigger,
-        summary=summary,
-        stats={"written": written, "scanned": scanned, "added": n_added, "changed": n_changed},
-        changes=changes,
-    )
+    if n_removed:
+        parts.append(f"{n_removed} removed")
+    label = source.capitalize()
+    summary = f"{label}: {', '.join(parts) or str(len(changes)) + ' changed'}"
+    if extra:
+        summary += f" ({extra})"
+    return summary, {"added": n_added, "changed": n_changed, "removed": n_removed}
+
+
+def append_sodra_batch(changes, trigger="scrape_sodra.py", written=0, scanned=0):
+    if not changes:
+        return None
+    summary, stats = _batch_summary("sodra", changes, f"{written}/{scanned} written")
+    stats.update({"written": written, "scanned": scanned})
+    return append_event(source="sodra", trigger=trigger, summary=summary, stats=stats, changes=changes)
+
+
+def append_rek_batch(changes, trigger="parse_company.py"):
+    if not changes:
+        return None
+    summary, stats = _batch_summary("rekvizitai", changes)
+    return append_event(source="rekvizitai", trigger=trigger, summary=summary, stats=stats, changes=changes)
+
+
+def append_initial_batch(changes, trigger="estimate_2025.py", label="Initial"):
+    if not changes:
+        return None
+    summary, stats = _batch_summary(label.lower(), changes)
+    return append_event(source="initial", trigger=trigger, summary=summary, stats=stats, changes=changes)
+
+
+def load_rek():
+    if not os.path.exists(REK_PATH):
+        return {"companies": []}
+    return json.load(open(REK_PATH, encoding="utf-8"))
+
+
+def write_rek_payload(payload, trigger, old_payload=None):
+    if old_payload is None:
+        old_payload = load_rek()
+    changes = diff_rek_payload(old_payload, payload)
+    with open(REK_PATH, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
+    if changes:
+        append_rek_batch(changes, trigger=trigger)
+    return changes
+
+
+def load_data():
+    if not os.path.exists(DATA_PATH):
+        return []
+    return json.load(open(DATA_PATH, encoding="utf-8"))
+
+
+def write_data_json(rows, trigger, old_rows=None, summary_label="Initial"):
+    if old_rows is None:
+        old_rows = load_data()
+    changes = diff_data_payload(old_rows, rows)
+    with open(DATA_PATH, "w", encoding="utf-8") as f:
+        json.dump(rows, f, ensure_ascii=False)
+    if changes:
+        append_initial_batch(changes, trigger=trigger, label=summary_label)
+    return changes
+
+
+def set_provenance(row, field, source):
+    prov = row.setdefault("_provenance", {})
+    prov[field] = source

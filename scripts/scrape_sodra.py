@@ -31,7 +31,7 @@ property of the source, not a bug — multi-employee firms return wages.
 import json, os, sys, time, urllib.error, urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from data_events import append_sodra_batch, diff_sodra
+from data_events import append_sodra_batch, diff_sodra, sodra_meta
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -103,6 +103,8 @@ def fetch_company(jar):
         "months": months,
         "source": "atvira.sodra.lt (open data)",
     }
+    rec["_meta"] = sodra_meta()
+    return rec
 
 
 def main(jars):

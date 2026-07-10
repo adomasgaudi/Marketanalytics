@@ -25,6 +25,9 @@ import json
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from data_events import diff_rek_company, load_rek, write_rek_payload
 from datetime import datetime, timezone
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -319,25 +322,17 @@ def detect_brand(name):
     return None
 
 
-def upsert_company(block):
+def upsert_company(block, trigger="parse_company.py"):
     """Insert or replace this company's block in rek_tabs.json (keyed by slug)."""
-    payload = {"companies": []}
-    if os.path.exists(REK_TABS_JSON):
-        try:
-            existing = json.load(open(REK_TABS_JSON, encoding="utf-8"))
-            if isinstance(existing, dict) and "companies" in existing:
-                payload = existing
-        except Exception:
-            pass
+    old_payload = load_rek()
+    old_block = next((c for c in old_payload["companies"] if c.get("slug") == block["slug"]), None)
     clean_block = {k: v for k, v in block.items() if not k.startswith("_")}
-    companies = [c for c in payload["companies"] if c.get("slug") != block["slug"]]
+    companies = [c for c in old_payload["companies"] if c.get("slug") != block["slug"]]
     companies.append(clean_block)
-    # keep companies sorted by name for a stable, predictable picker order
     companies.sort(key=lambda c: (c.get("name") or c.get("slug") or "").lower())
-    payload["companies"] = companies
-    with open(REK_TABS_JSON, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False)
-    return payload
+    payload = {"companies": companies}
+    write_rek_payload(payload, trigger=trigger, old_payload=old_payload)
+    return payload, diff_rek_company(old_block, clean_block)
 
 
 def parse_one(slug, brand_override=None, quiet=False):

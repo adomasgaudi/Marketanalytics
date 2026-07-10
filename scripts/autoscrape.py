@@ -108,7 +108,10 @@ def parse_and_write(pairs):
         print(f"  {block['name']:34} brand={brand:16} {count} fields", flush=True)
 
     out = sorted(blocks.values(), key=lambda b: (b.get("name") or b["slug"]).lower())
-    json.dump({"companies": out}, open(REK, "w", encoding="utf-8"), ensure_ascii=False)
+    old_payload = json.load(open(REK, encoding="utf-8"))
+    payload = {"companies": out}
+    from data_events import write_rek_payload
+    write_rek_payload(payload, trigger="autoscrape.py", old_payload=old_payload)
     return added, len(out)
 
 
