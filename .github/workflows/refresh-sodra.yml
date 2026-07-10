@@ -42,13 +42,13 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- data/sodra index.html; then
+          if git diff --quiet -- data/sodra index.html data/data_events.json; then
             echo "Sodra data unchanged — nothing to commit."
             exit 0
           fi
           # v0 = data-only refresh, no site version bump (BULD-02 counts human changes).
           # Subject still satisfies the GIT-01 regex enforced by .githooks/commit-msg.
           n=$(git diff --name-only -- data/sodra | wc -l)
-          git add data/sodra index.html
+          git add data/sodra data/data_events.json index.html
           git commit -m "v0 DATA-46 | refresh Sodra data ($n companies changed) | 0 sp"
           git push

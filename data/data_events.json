@@ -1,0 +1,326 @@
+{
+  "events": [
+    {
+      "id": "evt-ba05bac03f1a",
+      "at": "2026-07-09T18:57:52+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "03d1d0a",
+      "summary": "v29 PROC-05 | Sodra scraper drops Playwright, fails loudly | 2 sp",
+      "stats": {
+        "sodraFiles": 2,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 2
+      }
+    },
+    {
+      "id": "evt-d984e444a082",
+      "at": "2026-07-09T17:30:57+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "2aadd5a",
+      "summary": "v27 REPO-01 | Add autoscrape suite to sync rek_tabs.json | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-f5c972916304",
+      "at": "2026-07-03T14:28:26+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "d845fb4",
+      "summary": "v24 REPO-01 | add 19 companies to marketanalytics | 6 sp",
+      "stats": {
+        "sodraFiles": 19,
+        "rekTabs": 1,
+        "dataJson": 1,
+        "fileCount": 21
+      }
+    },
+    {
+      "id": "evt-2029c79edf7a",
+      "at": "2026-06-30T22:07:33+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "481272d",
+      "summary": "v17 REPO-01 | estimate 2025 salaryCosts/nonSalaryCosts/estimatedIncome | 2 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-dc71674b888a",
+      "at": "2026-06-30T21:35:29+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "def29d5",
+      "summary": "v16 REPO-01 | 2025 turnover+net profit from rekvizitai for 99 agencies | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-8709782e1744",
+      "at": "2026-06-30T16:31:47+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "5a18eed",
+      "summary": "v15 REPO-01 | 2025 Sodra employees+wages for 113 agencies | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-41112ee6c033",
+      "at": "2026-06-25T12:26:02+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "91af293",
+      "summary": "v203 DATA-30 | record found slugs for 7 missing companies (rekvizitai 403-blocked) | 0.5 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-8c8ed6ca26a6",
+      "at": "2026-06-25T12:16:37+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "1a38e1c",
+      "summary": "v201 DATA-30 | Sodra data for 81 more companies (96/98 now have Sodra) | 3 sp",
+      "stats": {
+        "sodraFiles": 81,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 81
+      }
+    },
+    {
+      "id": "evt-46453310f3dc",
+      "at": "2026-06-25T11:52:59+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "3ec5c4b",
+      "summary": "v200 DATA-30 | Sodra data for 3 more + harden fetcher against throttling; 98 companies | 2 sp",
+      "stats": {
+        "sodraFiles": 3,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 5
+      }
+    },
+    {
+      "id": "evt-322c8cc03254",
+      "at": "2026-06-25T11:46:02+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "be8ec7c",
+      "summary": "v199 DATA-30 | scrape 74 more companies from rekvizitai (92 total) | 4 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-c999fe093095",
+      "at": "2026-06-24T13:58:38Z",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "ab79eb3",
+      "summary": "v189 DATA | partial 2025: Sodra headcount/pay for 12 cos, 2024 stays default | 5 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-c8d321f13f6b",
+      "at": "2026-06-21T21:59:03+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "9fcafba",
+      "summary": "v74 DATA-30 | scrape 10 more companies (rekvizitai + Sodra) | 3 sp",
+      "stats": {
+        "sodraFiles": 10,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 11
+      }
+    },
+    {
+      "id": "evt-2ba3fe67b721",
+      "at": "2026-06-21T21:45:23+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "264fb38",
+      "summary": "v73 DATA-06 | harden batch scraper: retry navigation race, lower concurrency | 0.5 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-c6e25203ee82",
+      "at": "2026-06-21T21:06:55+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "72d53f1",
+      "summary": "v71 DATA-30 | add Sodra data for Adell reklama (39 employees, real wages) | 0.5 sp",
+      "stats": {
+        "sodraFiles": 1,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-b9d50ce3be47",
+      "at": "2026-06-21T20:28:02+03:00",
+      "source": "sodra",
+      "trigger": "git-backfill",
+      "commit": "2b99730",
+      "summary": "v70 DATA-30 | Sodra open-API fetcher + 6 vijos monthly data (sodra branch spike) | 2 sp",
+      "stats": {
+        "sodraFiles": 1,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-e3f555141e11",
+      "at": "2026-06-21T19:45:46+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "d73afe8",
+      "summary": "v69 REPO-01 | scale rekvizitai pipeline: batch driver + 3 new companies | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-0889ac503e06",
+      "at": "2026-06-21T19:19:09+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "372dce5",
+      "summary": "v67 DATA-10 | retire single-company scraper; docs point to generic pipeline | 1 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-220081583a85",
+      "at": "2026-06-21T19:13:38+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "d719747",
+      "summary": "v61 REPO-01 | multi-company rekvizitai pipeline + Adell reklama scrape (WIP) | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 1,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-3cc6aed66e23",
+      "at": "2026-06-21T16:14:39+03:00",
+      "source": "rekvizitai",
+      "trigger": "git-backfill",
+      "commit": "adc8fc1",
+      "summary": "v55 DATA-27 | move Rekvizitai scrape to its own page with per-tab sub-tabs | 2 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 1,
+        "dataJson": 1,
+        "fileCount": 3
+      }
+    },
+    {
+      "id": "evt-b1ff82104d88",
+      "at": "2026-06-21T13:05:26Z",
+      "source": "mixed",
+      "trigger": "git-backfill",
+      "commit": "ec3cf1f",
+      "summary": "v51 REPO-01 | add source Excel to repo — data lineage complete | 0.5 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 0,
+        "fileCount": 1
+      }
+    },
+    {
+      "id": "evt-28cf5948c25f",
+      "at": "2026-06-21T16:02:44+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "a3be74c",
+      "summary": "v54 REPO-01 | scrape the chart/diagram time-series, not just tables | 2 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 2
+      }
+    },
+    {
+      "id": "evt-a8e986cb730f",
+      "at": "2026-06-21T15:54:19+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "a6c444c",
+      "summary": "v53 REPO-01 | scrape all 6_vijos rekvizitai tabs, not just Įmonė | 3 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 2
+      }
+    },
+    {
+      "id": "evt-b5b4ded8ca6f",
+      "at": "2026-06-21T15:37:06+03:00",
+      "source": "initial",
+      "trigger": "git-backfill",
+      "commit": "f70500f",
+      "summary": "v51 DATA-27 | white theme + light/dark toggle; reorganise repo into src/data/scripts/docs | 5 sp",
+      "stats": {
+        "sodraFiles": 0,
+        "rekTabs": 0,
+        "dataJson": 1,
+        "fileCount": 3
+      }
+    }
+  ]
+}

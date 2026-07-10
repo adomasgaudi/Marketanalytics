@@ -30,6 +30,9 @@ property of the source, not a bug — multi-employee firms return wages.
 """
 import json, os, sys, time, urllib.error, urllib.request
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from data_events import append_sodra_batch, diff_sodra
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -109,7 +112,9 @@ def main(jars):
     (every request erroring) printed 117 ERROR lines and still exited 0 — the CI job
     went green and reported "nothing to commit", which reads as "data is current"."""
     os.makedirs(OUT_DIR, exist_ok=True)
-    ok = 0
+    fetched = 0
+    written = 0
+    changes = []
     for jar in jars:
         try:
             rec = fetch_company(jar)
@@ -119,16 +124,31 @@ def main(jars):
         if not rec:
             print(f"{jar}: not found on Sodra", flush=True)
             continue
+        fetched += 1
         out = os.path.join(OUT_DIR, f"{jar}.json")
+        old = None
+        if os.path.exists(out):
+            with open(out, encoding="utf-8") as f:
+                old = json.load(f)
+        ch = diff_sodra(old, rec)
+        if ch is None and old is not None:
+            print(f"{jar}: unchanged", flush=True)
+            continue
         with open(out, "w", encoding="utf-8") as f:
             json.dump(rec, f, ensure_ascii=False, indent=1)
-        ok += 1
+        written += 1
+        if ch:
+            changes.append(ch)
         wages = sum(1 for m in rec["months"] if m["avgWage"] is not None)
         print(f"{jar}: {rec['name']} — {len(rec['months'])} months "
               f"({wages} with wage, latest insured={rec['latest']['numInsured']}) -> {os.path.relpath(out)}",
               flush=True)
         time.sleep(0.6)   # pace requests so Sodra doesn't throttle
-    return ok
+    if changes:
+        append_sodra_batch(changes, written=written, scanned=len(jars))
+    if jars and fetched == 0:
+        sys.exit("FATAL: every company failed — endpoint down, blocked, or shape changed")
+    return written
 
 
 if __name__ == "__main__":
@@ -140,7 +160,5 @@ if __name__ == "__main__":
         print(f"--all: {len(args)} company codes from rek_tabs.json")
     ok = main(args)
     print(f"\n{ok}/{len(args)} companies written")
-    # Fail loudly when nothing came back at all — that is a broken endpoint or a
-    # blocked IP, never a legitimate "no changes". A half-failure still exits 0.
-    if args and ok == 0:
-        sys.exit("FATAL: every company failed — endpoint down, blocked, or shape changed")
+    # Fail loudly when nothing could be fetched at all — broken endpoint or blocked IP.
+    # All-fetched-but-unchanged is fine (ok=0, no FATAL).

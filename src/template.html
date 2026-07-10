@@ -479,6 +479,35 @@
   .csq.cov-h{background:var(--green);opacity:.5}
   .csq.cov-p{background:var(--amber)}
   .csq.cov-0{background:transparent;border:1px dashed var(--border);opacity:.7}
+  /* ── Data-change timeline ── */
+  .chg-wrap{margin-bottom:16px;border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden}
+  .chg-wrap>summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14px;color:var(--text);list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .chg-wrap>summary::-webkit-details-marker{display:none}
+  .chg-wrap>summary::before{content:'▸';color:var(--muted);transition:.15s;display:inline-block}
+  .chg-wrap[open]>summary::before{transform:rotate(90deg)}
+  .chg-body{padding:2px 14px 14px}
+  .chg-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 12px}
+  .chg-tools input,.chg-tools select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:inherit}
+  .chg-tools input{min-width:170px}
+  .chg-list{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow:auto}
+  .chg-ev{border:1px solid var(--border);border-radius:8px;background:var(--panel2);overflow:hidden}
+  .chg-ev-hd{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;cursor:pointer;flex-wrap:wrap}
+  .chg-ev-hd:hover{background:var(--hover)}
+  .chg-date{font-size:11px;color:var(--muted);white-space:nowrap;min-width:88px}
+  .chg-src{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:10px;white-space:nowrap}
+  .chg-src.sodra{background:rgba(240,176,79,.2);color:var(--amber)}
+  .chg-src.rekvizitai{background:rgba(79,142,247,.2);color:var(--accent)}
+  .chg-src.initial{background:rgba(52,201,142,.2);color:var(--green)}
+  .chg-src.mixed{background:var(--panel);color:var(--muted);border:1px solid var(--border)}
+  .chg-sum{flex:1;font-size:13px;color:var(--text);min-width:120px}
+  .chg-meta{font-size:11px;color:var(--muted)}
+  .chg-ev-bd{display:none;border-top:1px solid var(--border);padding:8px 12px 12px;font-size:12px}
+  .chg-ev.open .chg-ev-bd{display:block}
+  .chg-table{width:100%;border-collapse:collapse;font-size:12px}
+  .chg-table th,.chg-table td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+  .chg-table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+  .chg-kind{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted)}
+  .chg-kind.added{color:var(--green)} .chg-kind.changed{color:var(--amber)}
   /* a row's source-tag cell: small cubes showing which source(s) the row came from */
   .cube-cell{display:flex;gap:3px;align-items:center;flex-wrap:nowrap}
   /* Sourced-data tables: wrap long text, fixed layout */
@@ -765,6 +794,22 @@
       <div class="cov-scroll"><div id="covGrid"></div></div>
     </div>
   </details>
+  <details class="chg-wrap" id="chgWrap">
+    <summary>📜 Data changes <span class="cov-sub" id="chgStat"></span></summary>
+    <div class="chg-body">
+      <div class="chg-tools">
+        <select id="chgSource" aria-label="Filter by source">
+          <option value="">All sources</option>
+          <option value="sodra">Sodra</option>
+          <option value="rekvizitai">Rekvizitai</option>
+          <option value="initial">Initial</option>
+          <option value="mixed">Mixed</option>
+        </select>
+        <input type="text" id="chgSearch" placeholder="Filter company or summary…" autocomplete="off">
+      </div>
+      <div class="chg-list" id="chgList"></div>
+    </div>
+  </details>
   <div class="data-tabs" id="rekTabs"></div>
   <div class="data-controls">
     <div class="seg" id="rekMode">
@@ -830,6 +875,7 @@ window.addEventListener('error', e => {
 const DATA = __DATA__;
 const SHEETS = __SHEETS_DATA__;
 const REK_DATA = __REK_DATA__;
+const DATA_EVENTS = __DATA_EVENTS__;
 
 // ---------- View switching ----------
 // Re-fit every interactive SVG chart inside `root` (recompute axis extent + redraw). Charts drawn
@@ -3743,6 +3789,94 @@ function renderCoverage(){
     document.getElementById('rekTableWrap')?.scrollIntoView({behavior:'smooth',block:'start'});
   }));
 }
+
+// ── Data-change timeline: when each source added or changed data ──
+function fmtChgDate(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  if(isNaN(d)) return iso.slice(0,10);
+  return d.toISOString().slice(0,10)+' '+d.toISOString().slice(11,16)+'Z';
+}
+function chgDetailRows(ch){
+  const rows=[];
+  if(ch.kind==='added'){
+    rows.push(['New company', `${ch.monthCount||0} months`+(ch.latestMonth?`, latest ${ch.latestMonth}`:'')]);
+    return rows;
+  }
+  if(ch.monthsAdded?.length) rows.push(['Months added', ch.monthsAdded.join(', ')]);
+  (ch.monthsUpdated||[]).forEach(mu=>{
+    const bits=Object.keys(mu).filter(k=>k!=='month').map(k=>{
+      const v=mu[k]; return `${k}: ${v.from??'—'} → ${v.to??'—'}`;
+    });
+    if(bits.length) rows.push([`Month ${mu.month}`, bits.join('; ')]);
+  });
+  if(ch.latest){
+    const bits=Object.keys(ch.latest).map(k=>{
+      const v=ch.latest[k]; return `${k}: ${v.from??'—'} → ${v.to??'—'}`;
+    });
+    if(bits.length) rows.push(['Latest', bits.join('; ')]);
+  }
+  return rows;
+}
+function renderDataChanges(){
+  const list=document.getElementById('chgList'); if(!list) return;
+  const events=(DATA_EVENTS.events||[]).slice().sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+  const srcF=(document.getElementById('chgSource')?.value||'').trim();
+  const q=(document.getElementById('chgSearch')?.value||'').trim().toLowerCase();
+  const filtered=events.filter(ev=>{
+    if(srcF && ev.source!==srcF) return false;
+    if(!q) return true;
+    if((ev.summary||'').toLowerCase().includes(q)) return true;
+    if((ev.commit||'').toLowerCase().includes(q)) return true;
+    return (ev.changes||[]).some(c=>
+      (c.brand||'').toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q) ||
+      String(c.jarCode||'').includes(q));
+  });
+  const stat=document.getElementById('chgStat');
+  if(stat) stat.textContent=`· ${filtered.length} of ${events.length} events`;
+  if(!filtered.length){
+    list.innerHTML='<div class="cov-sub" style="padding:8px 4px">No matching events.</div>';
+    return;
+  }
+  list.innerHTML=filtered.map(ev=>{
+    const stats=ev.stats||{};
+    const meta=[ev.commit, stats.fileCount?`${stats.fileCount} files`:null,
+      stats.sodraFiles?`${stats.sodraFiles} Sodra`:null, stats.added!=null?`${stats.added} new / ${stats.changed} updated`:null]
+      .filter(Boolean).join(' · ');
+    const chRows=(ev.changes||[]);
+    const detail=chRows.length
+      ? `<table class="chg-table"><thead><tr><th>Company</th><th>Change</th><th>Detail</th></tr></thead><tbody>`
+        +chRows.map(ch=>{
+          const label=esc(ch.brand||ch.name||ch.jarCode||'?');
+          const det=chgDetailRows(ch).map(r=>`<div>${esc(r[0])}: ${esc(r[1])}</div>`).join('') || '—';
+          return `<tr><td>${label}</td><td><span class="chg-kind ${esc(ch.kind||'changed')}">${esc(ch.kind||'changed')}</span></td><td>${det}</td></tr>`;
+        }).join('')+'</tbody></table>'
+      : (ev.trigger==='git-backfill'
+        ? '<div class="cov-sub">Historical commit — file counts only (no field-level diff saved).</div>'
+        : '<div class="cov-sub">No per-company detail recorded.</div>');
+    return `<div class="chg-ev" data-id="${esc(ev.id)}">
+      <div class="chg-ev-hd" role="button" tabindex="0">
+        <span class="chg-date">${fmtChgDate(ev.at)}</span>
+        <span class="chg-src ${esc(ev.source||'mixed')}">${esc(ev.source||'mixed')}</span>
+        <span class="chg-sum">${esc(ev.summary||'')}</span>
+        <span class="chg-meta">${esc(meta)}</span>
+      </div>
+      <div class="chg-ev-bd">${detail}</div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.chg-ev-hd').forEach(hd=>{
+    const toggle=()=>hd.parentElement.classList.toggle('open');
+    hd.addEventListener('click',toggle);
+    hd.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
+  });
+}
+(function(){
+  const src=document.getElementById('chgSource'), q=document.getElementById('chgSearch');
+  if(src) src.addEventListener('change',renderDataChanges);
+  if(q) q.addEventListener('input',renderDataChanges);
+  renderDataChanges();
+})();
+
 function buildRekCompanies(){
   const sel=document.getElementById('rekCompanySelect'); if(!sel) return;
   if(REK_COMPANIES.length<2){ sel.style.display='none'; return; }   // single company: no picker
