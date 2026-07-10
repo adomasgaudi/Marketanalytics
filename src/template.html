@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.65</title>
+<title>Markets — LT agencies · v0.2.66</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -638,7 +638,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.65</span>
+    <span class="nav-version" id="navVersion">v0.2.66</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2419,6 +2419,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.66', date:'2026-07-10', sp:0.5, title:'Drop deep-dive legend + caption',
+    desc:'Removed the source-style legend and the “Comparing N companies…” caption under the compare chart.',
+    detail:'The multi-company deep-dive chart carried two redundant explainers: a solid/dashed source legend and a “Comparing N companies — colour = company … · All sources overlaid” caption. Company colour is already shown by the chips above and the line styling is self-evident, so both were dropped. Single-company mode keeps its source/right-axis hint.'},
   {v:'v0.2.65', date:'2026-07-10', sp:1, title:'Filter dropdowns re-press to close',
     desc:'Segment/Turnover/Revenue/Employees/Salary pickers now collapse when you press them again.',
     detail:'Nested filter dropdowns inside the company selector only closed on an outside click — re-pressing the open button did nothing. Root cause: the toggle passed the clicked dropdown as the "except" to closeOvNestedDropdowns even when it was already open, so it was skipped and stayed open. Now passes null when already open, so a second press collapses it. Fixed in both the metric pickers and the Segment picker.'},
@@ -3986,14 +3989,10 @@ function sddSpec(id, src, cos){
 // Shared legend under the dropdown (replaces the per-chart overlay). Company colour lives in the
 // chips above; this explains the source styling in Combined mode (solid Rekvizitai/Sodra vs thin-grey average).
 function buildSDDLegend(){
+  // Legend removed per owner: colour = company is already shown by the chips above,
+  // and the solid/dashed source styling is self-evident on the lines.
   const el=document.getElementById('sddLegend'); if(!el) return;
-  const cos=sddCos.filter(Boolean);
-  if(sddSrc!=='combined' || !cos.length){ el.innerHTML=''; el.style.display='none'; return; }
-  el.style.display='';
-  const sample=(dash)=>`<svg width="22" height="10" style="vertical-align:middle;flex:0 0 auto"><line x1="1" y1="5" x2="21" y2="5" stroke="${cssVar('--text')}" stroke-width="2.2" ${dash?'stroke-dasharray="4 3" stroke-opacity="0.7"':''}/></svg>`;
-  el.innerHTML = `<span class="sdd-leg-it">${sample(false)} Rekvizitai / Sodra — solid</span>`
-    + `<span class="sdd-leg-it">${sample(true)} Initial — dashed (yearly avg)</span>`
-    + `<span class="sdd-leg-note">colour = company (chips above)</span>`;
+  el.innerHTML=''; el.style.display='none';
 }
 // One chart, metric chosen by the #sddMetric toggle (Revenue / Profit / Headcount / Wage).
 function drawSDD(){
@@ -4009,7 +4008,8 @@ function drawSDD(){
   if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
   if(emptyEl) emptyEl.classList.remove('show');
   const srcTxt=(sddSrc==='combined'?'All sources overlaid':'Source: '+sddSrc);
-  if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; Rekvizitai & Sodra solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
+  // Multi-company caption removed per owner; single-company keeps the source/axis hint.
+  if(descEl) descEl.textContent = cos.length>1 ? '' : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
   const allX=(spec.series||[]).flatMap(s=>s.data.map(p=>String(p.x)));
   const yearlyOnly=allX.length && allX.every(x=>/^\d{4}$/.test(x));
   const plotSpec=yearlyOnly ? Object.assign({}, CHART_PAD, spec) : Object.assign({ yHeadroom:0.05, zoomOut:0.1 }, spec);
