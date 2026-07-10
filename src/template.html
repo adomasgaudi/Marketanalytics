@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.43</title>
+<title>Markets — LT agencies · v0.2.44</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -591,7 +591,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.43</span>
+    <span class="nav-version" id="navVersion">v0.2.44</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1108,7 +1108,8 @@ document.getElementById('viewToggle').addEventListener('click', ()=>{
 });
 
 const YEARS = [...new Set(DATA.map(d=>d.year))].sort();           // every year with ANY data (incl. partial 2025: Sodra headcount/pay only)
-const CHART_YEAR_PAD = { before: String(YEARS[0]-1), after: String(Math.max(...YEARS)+1) }; // empty x-axis bookends for all-years company charts (2018…2026)
+const CHART_YEAR_PAD = { before: String(YEARS[0]-1), after: String(Math.max(...YEARS)+1) }; // empty x-axis bookends for all-years charts (2018…2026)
+const CHART_PAD = { xPad: CHART_YEAR_PAD, yHeadroom: 0.05, zoomOut: 0.1 }; // 5% headroom + modest zoom-out (default view has no pan)
 const LAST = Math.max(...DATA.filter(d=>d.revenue!=null).map(d=>d.year)); // latest COMPLETE financial year (2024) — every market default/aggregate pins here so a partial 2025 can't hijack the headline views
 const FIN_YEARS = YEARS.filter(y=>y<=LAST);                       // full-coverage financial years → Market section + all every-year charts
 
@@ -1423,7 +1424,7 @@ function renderCompany(brand){
     if(empty) empty.classList.remove('show');
     // ONE stacked bar per year = Turnover (total label). Bottom→top: Net profit, rest-of-Revenue (dark gray),
     // rest-of-Turnover (light gray) — profit at the base, each colour's top marks its metric.
-    drawFinSvg(el, { stacked:true, totalLabels:true, zoomOut:0.2, xPad:CHART_YEAR_PAD, yHeadroom:0.1, yTitle:'€', series:[
+    drawFinSvg(el, Object.assign({ stacked:true, totalLabels:true, yTitle:'€' }, CHART_PAD, { series:[
       {label:'Net profit', kind:'bar', color:cssVar('--green'),   data:rows.map(d=>({x:d.x,y:Math.max(0,d.profit)}))},
       {label:'Revenue',    kind:'bar', color:cssVar('--mf-rev'),  data:rows.map(d=>({x:d.x,y:Math.max(0,d.revenue-Math.max(0,d.profit))}))},
       {label:'Turnover',   kind:'bar', color:cssVar('--mf-turn'), noVal:true, data:rows.map(d=>({x:d.x,y:Math.max(0,d.turnover-d.revenue)}))},
@@ -1812,7 +1813,7 @@ function renderPeopleAll(){
     const ranked=segs.map(s=>({s, v:segMedianSalary(s,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
     const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
       data:FIN_YEARS.map(y=>({x:y, y:segMedianSalary(s,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-    if(el) drawFinSvg(el, { yTitle:'€/mo', series });
+    if(el) drawFinSvg(el, Object.assign({ yTitle:'€/mo' }, CHART_PAD, { series }));
     if(desc) desc.textContent='Median monthly salary per company in each selected segment (companies with salary &gt; €500/mo).';
     return;
   }
@@ -1828,7 +1829,7 @@ function renderPeopleAll(){
   const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
     data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,'employees',b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
   const yTitle=b==='total'?'people (total)':b==='emp'?'people / employee':'people / company';
-  if(el) drawFinSvg(el, { yTitle, series });
+  if(el) drawFinSvg(el, Object.assign({ yTitle }, CHART_PAD, { series }));
   if(desc) desc.textContent='Employees in each selected segment · '+basisWord(b)+'. Follows the basis toggle at the top of Market all time.';
 }
 
@@ -2248,7 +2249,7 @@ function renderRevSegAll(){
   const ranked=segs.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
   const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
     data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-  if(el) drawFinSvg(el, { yTitle: METRICS[m].unit==='€'?'€':'people', series });
+  if(el) drawFinSvg(el, Object.assign({ yTitle: METRICS[m].unit==='€'?'€':'people' }, CHART_PAD, { series }));
   const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown 2019→'+String(LAST).slice(2)+', same segment colours as the single-year card.';
 }
 
@@ -2329,6 +2330,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.44', date:'2026-07-10', sp:0.5, title:'Chart padding 5%',
+    desc:'All-years line/bar padding toned to 5% headroom; market By-segment charts get the same treatment.',
+    detail:'CHART_PAD = 5% y-headroom + 10% zoom-out + 2018/2026 x bookends. Applied to company money-flow, compare financials, and market By-segment financial + people charts. Market all-years money-flow unchanged.'},
   {v:'v0.2.43', date:'2026-07-10', sp:0.5, title:'Company profile segment',
     desc:'The company info card now shows which market segment(s) the agency belongs to.',
     detail:'Added a Segment row to the profile box on the Companies page (coloured dot + English label per activity). Uses the selected year’s activities, falling back to the latest year with segment data when missing.'},
@@ -3812,7 +3816,7 @@ function drawSDD(){
   if(descEl) descEl.textContent = cos.length>1 ? `Comparing ${cos.length} companies — colour = company${sddSrc==='combined'?'; scraped sources solid, Initial (yearly avg) thin grey':''} · ${srcTxt}` : srcTxt+(spec.y2Title?' · right axis = '+spec.y2Title:'');
   const allX=(spec.series||[]).flatMap(s=>s.data.map(p=>String(p.x)));
   const yearlyOnly=allX.length && allX.every(x=>/^\d{4}$/.test(x));
-  const plotSpec=yearlyOnly ? Object.assign({xPad:CHART_YEAR_PAD, yHeadroom:0.1, zoomOut:0.2}, spec) : Object.assign({yHeadroom:0.1, zoomOut:0.15}, spec);
+  const plotSpec=yearlyOnly ? Object.assign({}, CHART_PAD, spec) : Object.assign({ yHeadroom:0.05, zoomOut:0.1 }, spec);
   drawFinSvg(cont, plotSpec, {noLegend:true});
 }
 // Companies come from the TOP page picker (ovBrands) — one selector for the whole Companies page.
