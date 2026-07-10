@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.66</title>
+<title>Markets — LT agencies · v0.2.67</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -435,7 +435,11 @@
   .sub-hd{font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--text)}
   .sub-hd:first-of-type{margin-top:10px}
   .mkt-sticky{position:sticky;top:46px;z-index:8;background:var(--bg);padding:8px 0 6px;margin-bottom:8px}
-  .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}
+  .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  /* barely-there horizontal scrollbar for the year row + company pills (very thin, faint) */
+  .yr-row::-webkit-scrollbar,.ov-chips::-webkit-scrollbar{height:3px}
+  .yr-row::-webkit-scrollbar-thumb,.ov-chips::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .yr-row::-webkit-scrollbar-track,.ov-chips::-webkit-scrollbar-track{background:transparent}
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .yr-row button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   /* Size-vs-profit small multiples: one horizontally scrollable row of mini scatters (DATA-16). */
@@ -459,13 +463,13 @@
   /* Custom (non-native, DATA-20) company dropdown + sticky deep-dive bar */
   .co-select{position:relative;display:inline-block;min-width:210px}
   /* sticky company picker: stays under the nav while the long profile/charts scroll */
-  .co-sticky{position:sticky;top:44px;z-index:80;display:block;background:var(--panel);padding:8px 0;margin:0 0 12px}
+  .co-sticky{position:static;display:block;background:transparent;padding:0;margin:0 0 12px}
   /* page-level sticky control bar (picker + year row + Full/Per-employee) — stays pinned across the WHOLE Companies page */
   .co-stickybar{position:sticky;top:44px;z-index:80;background:var(--bg);padding:8px 0 6px;margin-bottom:10px;border-bottom:1px solid var(--border)}
   .co-stickybar .co-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0 0 6px}
   .co-stickybar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0}
   /* multi-company compare chips under the picker (DATA-16: one scrolling row) */
-  .ov-chips{display:flex;gap:5px;margin-top:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .ov-chips{display:flex;gap:5px;margin-top:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   .ov-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 12px/1 inherit;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text);white-space:nowrap;cursor:pointer;transition:.12s;-webkit-tap-highlight-color:transparent}
   .ov-chip.on{color:var(--text)}
   .ov-chip:not(.on){opacity:.55;color:var(--muted);border-style:dashed}
@@ -638,7 +642,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.66</span>
+    <span class="nav-version" id="navVersion">v0.2.67</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2419,6 +2423,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.67', date:'2026-07-10', sp:1, title:'Unpin picker, thin scrollbar',
+    desc:'Company picker scrolls away (year row + toggle stay pinned); year-row scrollbar now barely visible.',
+    detail:'The company selector is no longer sticky — once you pick companies the chips give you control, so the picker scrolls off while the year row and Full/Per-employee toggle stay pinned in the sticky bar. The thick native horizontal scrollbar under the year row (and company pills) is now a very thin, faint 3px bar (scrollbar-width:thin + slim ::-webkit-scrollbar).'},
   {v:'v0.2.66', date:'2026-07-10', sp:0.5, title:'Drop deep-dive legend + caption',
     desc:'Removed the source-style legend and the “Comparing N companies…” caption under the compare chart.',
     detail:'The multi-company deep-dive chart carried two redundant explainers: a solid/dashed source legend and a “Comparing N companies — colour = company … · All sources overlaid” caption. Company colour is already shown by the chips above and the line styling is self-evident, so both were dropped. Single-company mode keeps its source/right-axis hint.'},
@@ -4706,10 +4713,10 @@ try{ (function(){
   const ctrl=document.getElementById('coYearRow') && document.getElementById('coYearRow').closest('.mkt-sticky');
   if(!picker && !ctrl) return;
   const bar=document.createElement('div'); bar.className='co-stickybar';
-  if(picker) bar.appendChild(picker);
-  if(ctrl) bar.appendChild(ctrl);
+  if(ctrl) bar.appendChild(ctrl);   // year row + Full/Per-employee stay pinned
   const firstCard=wrap.querySelector('.group-card');
   const before=firstCard || wrap.querySelector('.explore-btn') || wrap.querySelector('.mini-foot');
+  if(picker) wrap.insertBefore(picker, before);   // picker scrolls away — once pills exist you don't need it pinned
   wrap.insertBefore(bar, before);
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'liftCompanyControls: '+err.message, error:err})); }
 
