@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.38</title>
+<title>Markets — LT agencies · v0.2.39</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -433,6 +433,11 @@
   .ov-chip-x:hover{color:var(--red)}
   #companiesView .mkt-sticky{top:98px;z-index:79}   /* sit just below the sticky company picker */
   .co-sticky .co-select-btn{max-width:340px}
+  #ovCompanySelect .co-select-panel{width:min(380px,92vw)}
+  .ov-filter-tools{margin-bottom:6px}
+  .ov-filter-tools select{min-width:118px;font:600 11.5px/1 inherit;padding:6px 10px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text)}
+  .ov-filter-hint{font-size:11px;color:var(--muted);margin:0 0 6px;min-height:14px}
+  .ov-seg-wrap{margin:0 0 6px}
   .co-select-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 14px;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-family:inherit;transition:.15s}
   .co-select-btn:hover{border-color:var(--muted)}
   .co-caret{color:var(--muted);font-size:11px;transition:transform .15s}
@@ -581,7 +586,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version">v0.2.38</span>
+    <span class="nav-version">v0.2.39</span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
       <button id="themeToggle">🌙 Dark</button>
@@ -610,6 +615,21 @@
     <button class="co-select-btn" id="ovCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovCoLabel">Fabula</span><span class="co-caret">▾</span></button>
     <div class="ov-chips" id="ovCoChips" style="display:none"></div>
     <div class="co-select-panel" id="ovCoPanel">
+      <div class="ov-filter-tools rank-tools">
+        <div class="co-select rank-sector-select" id="ovSegSelect">
+          <button type="button" class="co-select-btn" id="ovSegBtn" aria-haspopup="listbox" aria-expanded="false"><span id="ovSegBtnText">Segment</span><span class="co-caret">▼</span></button>
+          <div class="co-select-panel" id="ovSegPanel">
+            <div class="co-select-list" id="ovSegList" role="listbox" aria-multiselectable="true"></div>
+          </div>
+        </div>
+        <select id="ovFilterTurnover" aria-label="Filter by turnover"><option value="">Turnover: any</option><option value="100000">≥ €100k</option><option value="250000">≥ €250k</option><option value="500000">≥ €500k</option><option value="1000000">≥ €1M</option><option value="2000000">≥ €2M</option><option value="5000000">≥ €5M</option></select>
+        <select id="ovFilterRevenue" aria-label="Filter by revenue"><option value="">Revenue: any</option><option value="50000">≥ €50k</option><option value="100000">≥ €100k</option><option value="250000">≥ €250k</option><option value="500000">≥ €500k</option><option value="1000000">≥ €1M</option><option value="2000000">≥ €2M</option></select>
+        <select id="ovFilterEmployees" aria-label="Filter by employees"><option value="">Employees: any</option><option value="1">≥ 1</option><option value="3">≥ 3</option><option value="5">≥ 5</option><option value="10">≥ 10</option><option value="25">≥ 25</option><option value="50">≥ 50</option><option value="100">≥ 100</option></select>
+        <select id="ovFilterSalary" aria-label="Filter by salary"><option value="">Salary: any</option><option value="800">≥ €800/mo</option><option value="1000">≥ €1k/mo</option><option value="1200">≥ €1.2k/mo</option><option value="1500">≥ €1.5k/mo</option><option value="2000">≥ €2k/mo</option><option value="2500">≥ €2.5k/mo</option><option value="3000">≥ €3k/mo</option></select>
+        <button type="button" class="rank-clear" id="ovFilterClear">Clear filters</button>
+      </div>
+      <div class="seg-filter rank-seg-wrap ov-seg-wrap" id="ovSegPills"></div>
+      <div class="ov-filter-hint" id="ovFilterHint"></div>
       <input class="co-select-search" id="ovCoSearch" placeholder="Search company…" autocomplete="off">
       <div class="co-select-list" id="ovCoList" role="listbox"></div>
     </div>
@@ -1415,6 +1435,70 @@ const cmpColor=i=>cssVar(CMP_PAL[i%CMP_PAL.length]);
 // widget (profile, money-flow, KPIs, vs-market, rankings). Extra companies overlay ONLY the all-time
 // trajectory graph (the “all year view”), like the deep-dive. Picking toggles + keeps the panel open.
 let ovBrands = [MY_BRAND], ovBrand = MY_BRAND;
+const ovSegs = new Set();
+let ovMinTurnover=0, ovMinRevenue=0, ovMinEmployees=0, ovMinSalary=0;
+const ovSegPills=document.getElementById('ovSegPills');
+const ovSegBtn=document.getElementById('ovSegBtn');
+const ovSegBtnText=document.getElementById('ovSegBtnText');
+const ovSegList=document.getElementById('ovSegList');
+const ovSegSelect=document.getElementById('ovSegSelect');
+const ovFilterTurnover=document.getElementById('ovFilterTurnover');
+const ovFilterRevenue=document.getElementById('ovFilterRevenue');
+const ovFilterEmployees=document.getElementById('ovFilterEmployees');
+const ovFilterSalary=document.getElementById('ovFilterSalary');
+const ovFilterClear=document.getElementById('ovFilterClear');
+const ovFilterHint=document.getElementById('ovFilterHint');
+function ovFilterYear(){ return coViewMode==='all' ? LAST : coYear; }
+function ovHasActiveFilters(){ return ovSegs.size>0 || ovMinTurnover>0 || ovMinRevenue>0 || ovMinEmployees>0 || ovMinSalary>0; }
+function ovPassesFilter(brand){
+  const y=ovFilterYear(), d=byBrand[brand]&&byBrand[brand][y];
+  if(ovSegs.size && (!d || !d.activities.some(a=>ovSegs.has(a)))) return false;
+  if(ovMinTurnover>0 && (!d || (d.revenue||0)<ovMinTurnover)) return false;
+  if(ovMinRevenue>0 && (!d || (d.estimatedIncome||0)<ovMinRevenue)) return false;
+  if(ovMinEmployees>0 && (!d || (d.employees||0)<ovMinEmployees)) return false;
+  if(ovMinSalary>0 && (!d || (d.avgSalary||0)<ovMinSalary)) return false;
+  return true;
+}
+function syncOvSegBtn(){
+  if(!ovSegBtnText) return;
+  if(!ovSegs.size) ovSegBtnText.textContent='Segment';
+  else if(ovSegs.size===1) ovSegBtnText.textContent=segName([...ovSegs][0]);
+  else ovSegBtnText.textContent=`${ovSegs.size} segments`;
+}
+function renderOvSegUI(){
+  syncOvSegBtn();
+  if(ovSegPills){
+    if(!ovSegs.size){ ovSegPills.innerHTML=''; ovSegPills.style.display='none'; }
+    else{
+      ovSegPills.style.display='';
+      ovSegPills.innerHTML=[...ovSegs].sort((a,b)=>segName(a).localeCompare(segName(b),'en')).map(s=>
+        `<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`
+      ).join('');
+      ovSegPills.querySelectorAll('.sf-pill').forEach(p=>{
+        const rm=()=>{ ovSegs.delete(p.dataset.s); renderOvSegUI(); buildOvList(); };
+        p.addEventListener('click',rm);
+        p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); rm(); } });
+      });
+    }
+  }
+  if(ovSegList){
+    ovSegList.innerHTML=SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${ovSegs.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${ovSegs.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
+    ovSegList.querySelectorAll('.co-select-opt').forEach(o=>{
+      const toggle=()=>{ const s=o.dataset.s; if(ovSegs.has(s)) ovSegs.delete(s); else ovSegs.add(s); renderOvSegUI(); buildOvList(); };
+      o.addEventListener('click',toggle);
+      o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+    });
+  }
+}
+function clearOvFilters(){
+  ovSegs.clear();
+  ovMinTurnover=ovMinRevenue=ovMinEmployees=ovMinSalary=0;
+  if(ovFilterTurnover) ovFilterTurnover.value='';
+  if(ovFilterRevenue) ovFilterRevenue.value='';
+  if(ovFilterEmployees) ovFilterEmployees.value='';
+  if(ovFilterSalary) ovFilterSalary.value='';
+  renderOvSegUI(); buildOvList();
+}
 function syncOvLabel(){ const l=document.getElementById('ovCoLabel');
   if(l) l.textContent = ovBrands.length<=1 ? (ovBrands[0]||'Select company') : (ovBrands[0]+' +'+(ovBrands.length-1)); }
 function renderOvChips(){ const w=document.getElementById('ovCoChips'); if(!w) return;
@@ -1428,10 +1512,19 @@ function ovChanged(){ ovBrand=ovBrands[0]; syncOvLabel(); renderOvChips(); build
 function buildOvList(){
   const list=document.getElementById('ovCoList'); if(!list) return;
   const q=(document.getElementById('ovCoSearch')?.value||'').trim().toLowerCase();
-  const opts=OV_BRANDS.filter(b=>!q||b.toLowerCase().includes(q));
+  const y=ovFilterYear();
+  const afterSearch=OV_BRANDS.filter(b=>!q||b.toLowerCase().includes(q));
+  const afterFilter=afterSearch.filter(b=>ovPassesFilter(b));
+  let opts=[...new Set([...afterFilter, ...afterSearch.filter(b=>ovBrands.includes(b)&&!ovPassesFilter(b))])];
+  if(ovFilterHint){
+    const active=ovHasActiveFilters()||q;
+    ovFilterHint.textContent=active
+      ? `Showing ${opts.length} of ${OV_BRANDS.length} · ${y}${coViewMode==='all'?' (latest financial year)':''}`
+      : '';
+  }
   list.innerHTML = opts.length
     ? opts.map(b=>`<div class="co-select-opt${ovBrands.includes(b)?' active':''}" role="option" data-brand="${esc(b)}">${srcCubes(b)}${esc(b)}</div>`).join('')
-    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
+    : `<div class="co-select-empty">${q?'No company matches “'+esc(q)+'” with the current filters.':'No companies match your filters.'}</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
     const b=o.dataset.brand;
     if(ovBrands.includes(b)){ if(ovBrands.length>1) ovBrands=ovBrands.filter(z=>z!==b); }   // toggle off (keep ≥1)
@@ -1445,9 +1538,23 @@ function buildOvList(){
   btn.addEventListener('click',e=>{ e.stopPropagation(); const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false'); if(open){ search.value=''; buildOvList(); search.focus(); } });
   panel.addEventListener('click',e=>e.stopPropagation());
   search.addEventListener('input', buildOvList);
-  document.addEventListener('click',()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+  document.addEventListener('click',()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } if(ovSegSelect) ovSegSelect.classList.remove('open'); if(ovSegBtn) ovSegBtn.setAttribute('aria-expanded','false'); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); if(ovSegSelect) ovSegSelect.classList.remove('open'); if(ovSegBtn) ovSegBtn.setAttribute('aria-expanded','false'); } });
+  const readMin=el=>+(el&&el.value)||0;
+  const onMetricFilter=()=>{ ovMinTurnover=readMin(ovFilterTurnover); ovMinRevenue=readMin(ovFilterRevenue); ovMinEmployees=readMin(ovFilterEmployees); ovMinSalary=readMin(ovFilterSalary); buildOvList(); };
+  [ovFilterTurnover,ovFilterRevenue,ovFilterEmployees,ovFilterSalary].forEach(el=>{ if(el) el.addEventListener('change',onMetricFilter); });
+  if(ovFilterClear) ovFilterClear.addEventListener('click',e=>{ e.stopPropagation(); clearOvFilters(); });
+  if(ovSegBtn && ovSegSelect){
+    ovSegBtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const open=ovSegSelect.classList.toggle('open');
+      ovSegBtn.setAttribute('aria-expanded',open?'true':'false');
+    });
+    const segPanel=document.getElementById('ovSegPanel');
+    if(segPanel) segPanel.addEventListener('click',e=>e.stopPropagation());
+  }
 })();
+renderOvSegUI();
 syncOvLabel(); renderOvChips(); buildOvList();
 renderCompany(ovBrand);
 
@@ -1564,6 +1671,7 @@ try { renderMarket('avg'); } catch(err){ window.dispatchEvent(new ErrorEvent('er
 (function(){ const row=document.getElementById('coYearRow'); if(!row) return;
   row.innerHTML=YEARS.map(y=>`<button data-y="${y}"${y===coYear?' class="active"':''}>${y}${y>LAST?'*':''}</button>`).join(''); // company row offers partial 2025 (marked *)
   row.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; coYear=+b.dataset.y; renderCompany(ovBrand);
+    if(typeof buildOvList==='function') buildOvList();
     if(typeof drawTop==='function') drawTop(); }); })();
 (function(){ const seg=document.getElementById('marketMode'); if(!seg) return;
   // one global basis: both sticky toggles (#marketMode in Market <year>, #marketMode2 in Market all time) drive EVERY graph and stay in sync
@@ -2189,6 +2297,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.39', date:'2026-07-10', sp:2, title:'Company picker filters',
+    desc:'Filter the company list by segment, turnover, revenue, headcount or salary — not just search.',
+    detail:'The Companies page picker panel now has a segment multi-select plus minimum thresholds for turnover, revenue, employees and median salary, scoped to the selected year (or latest financial year in all-time). Selected compare companies stay visible even when filtered out; Clear filters resets everything.'},
   {v:'v0.2.38', date:'2026-07-10', sp:0.5, title:'Companies hero count',
     desc:'Companies page subtitle now uses the live tracked-agency count, not hardcoded 113.',
     detail:'coHeroSub is filled from BRANDS.length at load (same source as the Markets “Companies tracked” KPI), so the Companies per-year / all-time hero stays accurate as agencies are added or removed.'},
@@ -4371,6 +4482,7 @@ try{ (function(){
   const apply=()=>{ coViewMode = v===1 ? 'all' : 'year'; word.textContent = v===1?'all years':'per year';
     if(yearRow) yearRow.style.display = v===1?'none':'';
     if(typeof syncRankControls==='function') syncRankControls();
+    if(typeof buildOvList==='function') buildOvList();
     const t=tabBtns[v]; if(t) t.click();
     if(typeof drawTop==='function') drawTop(); };
   const toggle=()=>{ v=v?0:1; apply(); };
