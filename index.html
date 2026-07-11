@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.71</title>
+<title>Markets — LT agencies · v0.2.72</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -75,7 +75,9 @@
   header{margin-bottom:24px}
   header h1{font-size:26px;font-weight:700}
   header h1 .version{font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 10px;vertical-align:middle;margin-left:8px}
-  .hist-fab{position:fixed;right:16px;bottom:60px;z-index:500;font-size:12px;font-weight:600;color:#111;background:#fff;border:1px solid #d4d4d4;border-radius:4px;padding:7px 12px;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .hist-fab{position:fixed;right:16px;bottom:16px;z-index:500;font-size:12px;font-weight:600;color:#111;background:#fff;border:1px solid #d4d4d4;border-radius:4px;padding:7px 12px;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  /* When a fixed bottom bar is present, lift the version box above it (its real, wrap-aware height is measured in JS). */
+  html.has-bottom-bar .hist-fab{bottom:calc(var(--bottom-bar-h, 52px) + 12px)}
   .hist-fab:hover{border-color:#aaa;color:#000;background:#fafafa}
   .hist-pager{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
   .hist-pager button{font-family:inherit;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text);cursor:pointer}
@@ -441,7 +443,8 @@
   /* Fixed bottom control bar: year row + basis toggle pinned to the viewport bottom, always reachable while scrolling. One per view (hidden with its inactive view). */
   .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:400;background:var(--panel);border-top:1px solid var(--border);box-shadow:0 -1px 6px rgba(0,0,0,.14);padding:7px max(24px, calc((100% - var(--app-w)) / 2))}
   .bottom-bar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
-  .bottom-bar .yr-row{flex:1 1 200px;min-width:0;margin-bottom:0;padding-bottom:0}
+  .bottom-bar .yr-row{flex:1 1 200px;min-width:0;margin-bottom:0;padding-bottom:0;overflow-x:visible;flex-wrap:wrap}
+  .bottom-bar .yr-row::-webkit-scrollbar{display:none}
   .bottom-bar .seg{flex:0 0 auto}
   #dashView.view.active,#companiesView.view.active{padding-bottom:60px}   /* clear the fixed bottom bar so the footer isn't hidden behind it */
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -652,7 +655,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.71</span>
+    <span class="nav-version" id="navVersion">v0.2.72</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -986,6 +989,7 @@ function switchView(viewId){
   document.documentElement.classList.toggle('not-home', viewId!=='dashView'); // ‹ back-bracket only off the dashboard
   refitSvg(document.getElementById(viewId)); // re-fit SVG charts now that the view is visible
   window.scrollTo(0,0);
+  if(typeof syncBottomBarH==='function') syncBottomBarH(); // active view's bottom bar may differ in height
 }
 document.querySelectorAll('.nav-btn,.explore-btn').forEach(btn=>btn.addEventListener('click',()=>switchView(btn.dataset.view)));
 // Title = home: click (or Enter) returns to the dashboard.
@@ -2433,6 +2437,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.72', date:'2026-07-11', sp:1.5, title:'Year row unscrolls; version box clears bar',
+    desc:'Year buttons now wrap instead of scrolling, and the version box lifts above the bottom bar so years stay tappable.',
+    detail:'Bottom-bar .yr-row switched from overflow-x scroll to flex-wrap (no scrollbar). A wrap-aware syncBottomBarH() measures the active bottom bar\'s real height into --bottom-bar-h, lifting the .hist-fab version box above it and padding the body so content clears the bar. Re-measured on view switch, resize, and load.'},
   {v:'v0.2.71', date:'2026-07-11', sp:0.5, title:'Dev-only hello banner',
     desc:'Yellow “hello, repository” banner at the top of the page, visible only in Dev mode.',
     detail:'Re-added a #tempHello div just inside <body>, above the topnav, styled as a yellow bar and hidden by html[data-mode="default"] so it appears only in Dev mode. Throwaway handshake marker; no functional change.'},
@@ -4733,6 +4740,18 @@ function ensureBottomBar(view){
   if(!bar){ bar=document.createElement('div'); bar.className='bottom-bar'; view.appendChild(bar); }
   return bar;
 }
+// Measure the ACTIVE view's bottom bar (height varies as year buttons wrap) and expose it as
+// --bottom-bar-h so the version box lifts above it and page content clears it. Wrap-aware.
+function syncBottomBarH(){
+  const bars=document.querySelectorAll('.bottom-bar');
+  let h=0;
+  bars.forEach(b=>{ if(b.offsetParent!==null) h=Math.max(h, b.offsetHeight); });
+  document.documentElement.classList.toggle('has-bottom-bar', h>0);
+  document.documentElement.style.setProperty('--bottom-bar-h', h+'px');
+  document.body.style.paddingBottom = h ? (h+'px') : '';
+}
+window.addEventListener('resize', ()=>{ clearTimeout(window.__bbRT); window.__bbRT=setTimeout(syncBottomBarH,120); });
+window.addEventListener('load', ()=>setTimeout(syncBottomBarH,60));
 
 // Company controls: the PILLS stay pinned in the top .co-stickybar; the year row + Full/Per-employee
 // toggle move to the fixed BOTTOM bar, so only the pills sit sticky at the top of the Companies page.
@@ -4758,6 +4777,7 @@ try{ (function(){
   const m2=document.getElementById('marketMode2'); const m2bar=m2 && m2.closest('.mkt-sticky');
   if(m2bar) m2bar.remove();
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'marketBottomBar: '+err.message, error:err})); }
+syncBottomBarH(); // initial measure once both bottom bars are built
 
 // PB-6 ROOT FIX: charts render during init, then makeSectionsCollapsible() + the controls-lift above
 // REPARENT them into cards, changing each container's width — so they kept the pre-card pixel scale and
