@@ -71,11 +71,12 @@ jobs:
           p.write_text(s, encoding='utf-8')
           Path('.github/workflows/zz-chart-label-cleanup.yml').unlink(missing_ok=True)
           Path('.github/workflows/patch-company-vs-market-labels.yml').unlink(missing_ok=True)
+          Path('.chart-label-cleanup-trigger').unlink(missing_ok=True)
           PY
           python3 src/build_site.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/template.html index.html .github/workflows/zz-chart-label-cleanup.yml .github/workflows/patch-company-vs-market-labels.yml
+          git add src/template.html index.html .github/workflows/zz-chart-label-cleanup.yml .github/workflows/patch-company-vs-market-labels.yml .chart-label-cleanup-trigger
           git diff --cached --quiet && exit 0
-          git commit -m "Clean up company vs market chart labels"
+          git commit -m "v83 UI-01 | Clean company vs market chart labels | 1 sp"
           git push
