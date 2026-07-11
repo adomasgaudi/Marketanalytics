@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.81</title>
+<title>Markets — LT agencies · v0.2.82</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -350,6 +350,9 @@
   .nav-btn{padding:0 18px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;box-shadow:inset 0 -2px 0 transparent;transition:.15s;white-space:nowrap;font-family:inherit;line-height:50px;height:50px}
   .nav-btn:hover{color:var(--text)}
   .nav-btn.active{color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
+  /* Two-line nav button: page name + a small gray mode sub-label (per year / all years) */
+  .nav-btn-2l{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;gap:1px}
+  .nav-btn-2l .nav-btn-sub{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.01em}
   .nav-scroll{display:flex}
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
@@ -657,10 +660,10 @@
 <nav class="topnav">
   <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
   <div class="nav-scroll">
-    <button class="nav-btn" data-view="companiesView">Companies</button>
+    <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.81</span>
+    <span class="nav-version" id="navVersion">v0.2.82</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1361,6 +1364,7 @@ function setCoBasis(mode){ coFlowMode=mode;   // Full company / Per-employee —
   document.querySelectorAll('#coFlowMode button, #coFlowMode2 button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   if(typeof renderCompany==='function') renderCompany(ovBrand);
   if(typeof drawTop==='function') drawTop();
+  if(typeof drawSDD==='function') drawSDD();   // Compare financials is basis-aware too
 }
 function setCoKpiDisplay(mode, reset=true){
   coKpiMode=mode;
@@ -2443,6 +2447,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.82', date:'2026-07-11', sp:2.5, title:'Compare financials basis-aware; nav mode label; slower chart anim',
+    desc:'Compare financials now responds to Full-company / Per-employee, the top-nav Companies button shows the current mode, and the scale animation is 3× slower.',
+    detail:'Three fixes: (1) setCoBasis never re-rendered the Compare-financials deep-dive, so the toggle did nothing there — it now calls drawSDD, and ddPerEmpAdjust divides the € money metrics (Revenue/Turnover/Net profit) by each company\'s yearly headcount, axis → "€ / employee" (ratio/count/margin metrics and Sodra monthly points stay raw). (2) The top-nav "Companies" button now carries a small gray sub-label (per year / all years) mirroring the title toggle, updated on every mode switch. (3) The eased scale/re-fit animation in drawFinSvg slowed from 340ms to 1020ms (3×).'},
   {v:'v0.2.81', date:'2026-07-11', sp:1.5, title:'Split ranking metric/segment rows + all-time company tabs',
     desc:'The top-10/bottom-10 toolbar now stacks the metric pills on top of the segment pills; the all-time money-flow gets the same multi-company tab row.',
     detail:'Split #rankToolbar into two stacked rows — #rankMetricRow (Revenue/Turnover/Net profit/…) above #rankSegRow (segment multi-select + Select/Clear all) — via flex-direction:column, instead of one combined scrolling row. Added a second company tab strip (#coCompanyTabsAll) under the "Company all time" heading so switching the focused company drives the all-years money-flow too; renderCompanyTabs now fills both the per-year and all-time tab rows.'},
@@ -3616,6 +3623,17 @@ const DD_SPECS = {
   },
 };
 
+// Per-employee basis for "Compare financials": divides the € money metrics (Revenue/Turnover/Net profit)
+// by the company's headcount for that YEAR. Ratio/count metrics (wage, headcount, margin %) stay raw, and
+// non-yearly points (Sodra monthly) are left alone. Driven by the shared Full-company / Per-employee toggle.
+const DD_MONEY_METRICS = new Set(['ddRev','ddTurnover','ddProfit']);
+function ddPerEmpAdjust(id, co, series){
+  if(coFlowMode!=='emp' || !DD_MONEY_METRICS.has(id) || !co || !co.brand) return series;
+  const emp = y=>{ const r=byBrand[co.brand] && byBrand[co.brand][+y]; return (r && r.employees>0)? r.employees : null; };
+  return series.map(ser=> ser.yAxisID==='y2' ? ser : Object.assign({}, ser, {   // leave the margin-% axis raw
+    data:(ser.data||[]).map(p=>{ const e=/^\d{4}$/.test(String(p.x))? emp(p.x): null; return e? {x:p.x, y:p.y/e} : null; }).filter(Boolean)
+  }));
+}
 // Source colour + line-style for the Combined view: colour by source, dash by
 // the series' position within its source so overlapping lines stay readable.
 const DD_SRC_COLOR = {initial:()=>cssVar('--green'), rekvizitai:()=>cssVar('--accent'), sodra:()=>cssVar('--amber')};
@@ -3635,7 +3653,7 @@ function ddSpecFor(id, src, co){
     if(r.y2Title) y2Title=r.y2Title;
     let within=0;
     const isAvg = (s==='initial'); // Initial = coarse yearly average → thin grey reference
-    r.series.forEach(ser=>{
+    ddPerEmpAdjust(id, co, r.series).forEach(ser=>{
       if(!ser.data || !ser.data.length) return;
       series.push({label:`${ser.label} · ${DD_SRC_TAG[s]}`, data:ser.data,
         color: isAvg ? cssVar('--muted') : DD_SRC_COLOR[s](), yAxisID:ser.yAxisID,
@@ -3697,7 +3715,7 @@ function drawFinSvg(container, spec, opts){
   const sig = cats.join('|')+'#'+spec.series.map(s=>s.label).join('|')+'#'+[f0.view.yMin,f0.view.yMax,f0.ry.yMin,f0.ry.yMax].map(v=>Math.round(v*1e3)).join(',')+(spec.xMargin?('#xm'+spec.xMargin):'')+(spec.xPad?('#'+spec.xPad.before+'-'+spec.xPad.after):'');
   const lerp=(a,b,k)=>a+(b-a)*k;
   function animateTo(tg){ if(st._raf) cancelAnimationFrame(st._raf);
-    const fv={...st.view}, fr={...st.ry}, tv=tg.view, tr=tg.ry, t0=performance.now(), D=340;   // animated re-fit (easeOutCubic)
+    const fv={...st.view}, fr={...st.ry}, tv=tg.view, tr=tg.ry, t0=performance.now(), D=1020;   // animated re-fit (easeOutCubic), 3× slower per owner
     const step=now=>{ const k=Math.min(1,(now-t0)/D), e=1-Math.pow(1-k,3);
       st.view={ xMin:lerp(fv.xMin,tv.xMin,e), xMax:lerp(fv.xMax,tv.xMax,e), yMin:lerp(fv.yMin,tv.yMin,e), yMax:lerp(fv.yMax,tv.yMax,e) };
       st.ry={ yMin:lerp(fr.yMin,tr.yMin,e), yMax:lerp(fr.yMax,tr.yMax,e) };
@@ -4048,7 +4066,8 @@ function sddSpec(id, src, cos){
       if(!def[s]) return;
       let r; try{ r=def[s](co); }catch(e){ r=null; }
       if(!r||!r.series) return;
-      const prim=r.series.find(x=>x.data && x.data.length && x.yAxisID!=='y2'); // this source's primary metric
+      const adj=ddPerEmpAdjust(id, co, r.series);
+      const prim=adj.find(x=>x.data && x.data.length && x.yAxisID!=='y2'); // this source's primary metric
       if(!prim) return;
       if(!yTitle) yTitle=r.yTitle||'';
       const st = src==='combined' ? srcStyle(s, sddColor(colorIdx)) : {color:sddColor(colorIdx), dash:[], width:2.4, opacity:0.95, mr:3};
@@ -4071,9 +4090,11 @@ function drawSDD(){
   buildSDDLegend();
   const id = DD_SPECS[sddMetric] ? sddMetric : 'ddRev';
   const spec=sddSpec(id, sddSrc, cos);
+  const perEmp = coFlowMode==='emp' && DD_MONEY_METRICS.has(id);
+  if(perEmp && spec.yTitle) spec.yTitle='€ / employee';
   const cont=document.getElementById('sddChart'), emptyEl=document.getElementById('sddChartEmpty'),
         descEl=document.getElementById('sddChartDesc'), titleEl=document.getElementById('sddChartTitle');
-  if(titleEl) titleEl.textContent=DD_SPECS[id].title+' over time';
+  if(titleEl) titleEl.textContent=DD_SPECS[id].title+' over time'+(perEmp?' · per employee':'');
   if(!cont) return;
   const hasData=spec.series && spec.series.some(s=>s.data && s.data.length);
   if(!hasData){ cont.innerHTML=''; if(emptyEl){emptyEl.textContent=spec.empty||`No ${DD_SPECS[id].title.toLowerCase()} data from ${sddSrc}.`; emptyEl.classList.add('show');} if(descEl) descEl.textContent=''; return; }
@@ -4834,7 +4855,8 @@ try{ (function(){
   if(grpTabs) grpTabs.style.display='none';
   const yearRow=document.getElementById('coYearRow');   // year picker is only meaningful in "per year"
   let v=0;                                               // 0 = per year, 1 = all time
-  const apply=()=>{ coViewMode = v===1 ? 'all' : 'year'; word.textContent = v===1?'all years':'per year';
+  const apply=()=>{ coViewMode = v===1 ? 'all' : 'year'; const modeLbl=v===1?'all years':'per year'; word.textContent=modeLbl;
+    const nav=document.getElementById('coNavMode'); if(nav) nav.textContent=modeLbl;   // mirror mode under the top-nav Companies button
     if(yearRow) yearRow.style.display = v===1?'none':'';
     if(typeof syncRankControls==='function') syncRankControls();
     if(typeof buildOvList==='function') buildOvList();
