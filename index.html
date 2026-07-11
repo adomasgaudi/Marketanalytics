@@ -258,9 +258,6 @@
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
   html[data-mode="default"] .dbg-overlay{display:none!important}
-  /* Temp hello banner: Dev-only marker at the very top of the page. */
-  #tempHello{background:#fde047;color:#111;text-align:center;padding:6px 12px;font-size:13px;font-weight:600}
-  html[data-mode="default"] #tempHello{display:none}
   /* Graph pan OFF (default): let the page scroll over charts by overriding the engines' inline touch-action:none. */
   html:not(.graph-pan) .svgwrap,html:not(.graph-pan) .svgwrap svg,html:not(.graph-pan) .chartbox canvas{touch-action:auto !important}
   .mine-note{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
@@ -656,7 +653,6 @@
 </head>
 <body>
 
-<div id="tempHello">👋 Hello, repository! — dev-mode banner (temporary)</div>
 <nav class="topnav">
   <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
   <div class="nav-scroll">
