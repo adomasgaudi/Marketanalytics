@@ -1,0 +1,43 @@
+name: Remove temp hello banner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-temp-hello-banner.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove temporary hello banner
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css = """  /* Temp hello banner: Dev-only marker at the very top of the page. */\n  #tempHello{background:#fde047;color:#111;text-align:center;padding:6px 12px;font-size:13px;font-weight:600}\n  html[data-mode=\"default\"] #tempHello{display:none}\n"""
+          banner = "\n<div id=\"tempHello\">👋 Hello, repository! — dev-mode banner (temporary)</div>\n"
+
+          for file_name in ("src/template.html", "index.html"):
+              path = Path(file_name)
+              text = path.read_text(encoding="utf-8")
+              text = text.replace(css, "")
+              text = text.replace(banner, "\n")
+              path.write_text(text, encoding="utf-8")
+
+          Path('.github/workflows/remove-temp-hello-banner.yml').unlink()
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/template.html index.html .github/workflows/remove-temp-hello-banner.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Remove dev hello banner"
+          git push
