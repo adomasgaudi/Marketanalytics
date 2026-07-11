@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.82</title>
+<title>Markets — LT agencies · v0.2.83</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -327,7 +327,7 @@
     .nav-sub{display:none}
     .nav-spacer{display:none}
     .nav-version{font-size:11px}
-    #dashView .wrap,#rekView .wrap{padding:16px 10px}
+    #dashView .wrap,#rekView .wrap,#companiesView .wrap{padding:16px 10px}   /* Companies matches Markets padding on mobile */
     .card{padding:12px}
     .chartbox{height:300px}
     .kpi-strip{gap:10px}
@@ -663,7 +663,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.82</span>
+    <span class="nav-version" id="navVersion">v0.2.83</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2447,6 +2447,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.83', date:'2026-07-11', sp:1, title:'Finer y-axis labels + Companies padding matches Markets',
+    desc:'Vertical-axis labels no longer over-round (1500 → "1.5k" not "2k"), and the Companies page now uses the same page padding as Markets on mobile.',
+    detail:'Two fixes: (1) drawFinSvg\'s y-axis formatter rounded the k-range to a whole thousand (Math.round), so a 500-step axis rendered 5k,5k,4k,4k,3k,3k… (duplicate labels) — now the k branch keeps one decimal and the M branch two, dropping any trailing ".0" (2000→"2k", 1500→"1.5k", 4.5M→"4.5M"). (2) The mobile padding rule #dashView .wrap,#rekView .wrap{padding:16px 10px} omitted #companiesView, so Companies kept the wider default 24px — added it so both pages match.'},
   {v:'v0.2.82', date:'2026-07-11', sp:2.5, title:'Compare financials basis-aware; nav mode label; slower chart anim',
     desc:'Compare financials now responds to Full-company / Per-employee, the top-nav Companies button shows the current mode, and the scale animation is 3× slower.',
     detail:'Three fixes: (1) setCoBasis never re-rendered the Compare-financials deep-dive, so the toggle did nothing there — it now calls drawSDD, and ddPerEmpAdjust divides the € money metrics (Revenue/Turnover/Net profit) by each company\'s yearly headcount, axis → "€ / employee" (ratio/count/margin metrics and Sodra monthly points stay raw). (2) The top-nav "Companies" button now carries a small gray sub-label (per year / all years) mirroring the title toggle, updated on every mode switch. (3) The eased scale/re-fit animation in drawFinSvg slowed from 340ms to 1020ms (3×).'},
@@ -3735,8 +3738,13 @@ function drawFinSvg(container, spec, opts){
     const xAt=i=> m.l + ((i-view.xMin)/span)*pw;
     const yL=v=> m.t+ph - ph*(v-view.yMin)/ySpan;
     const yR=v=> m.t+ph - ph*(v-ry.yMin)/rySpan;
-    const fmt=v=>{ const a=Math.abs(v); if(a>=1e6){ const n=v/1e6; return (Number.isInteger(n)?n:+n.toFixed(1))+'M'; }
-      if(a>=1e3){ const n=v/1e3; return (Number.isInteger(n)?n:Math.round(n))+'k'; } return String(Math.round(v*10)/10); };
+    // Axis ticks keep ~2 significant figures so 1500 reads "1.5k" (not "2k") and 4500 "4.5k" (not "5k") —
+    // rounding to a whole k made adjacent 500-step ticks collapse to the same label. +v.toFixed drops any
+    // trailing ".0" (2000 → "2k", 1500 → "1.5k").
+    const fmt=v=>{ const a=Math.abs(v);
+      if(a>=1e6){ const n=v/1e6; return +n.toFixed(2)+'M'; }
+      if(a>=1e3){ const n=v/1e3; return +n.toFixed(1)+'k'; }
+      return String(Math.round(v*10)/10); };
     let s=''; const TICKS=8;   // ~2× horizontal gridlines (was 4) — denser grid
     // "nice" round tick values inside [min,max] (1/2/5 × 10ⁿ) so the axis shows round numbers that
     // SCROLL when you pan, instead of arbitrary yMin+k·span values that change every frame.
