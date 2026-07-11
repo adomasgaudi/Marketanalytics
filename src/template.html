@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.77</title>
+<title>Markets — LT agencies · v0.2.78</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -67,7 +67,6 @@
   .page-hero{margin:6px 0 22px}
   .page-hero h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin:0;line-height:1.05}
   .page-hero p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
-  .page-hero .hero-mode{margin-top:3px;font-size:15px;font-weight:600}
   .vs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
   .vs-col{border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:14px 16px}
   .vs-h{margin:0 0 10px;font-size:14px;font-weight:700}
@@ -660,7 +659,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.77</span>
+    <span class="nav-version" id="navVersion">v0.2.78</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -675,7 +674,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets</h1><p class="hero-mode"><span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></p><p id="pageHeroSub"></p></header>
+  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></h1><p id="pageHeroSub"></p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -867,7 +866,7 @@
 
 <div class="view" id="companiesView">
 <div class="wrap">
-  <header class="page-hero"><h1>Companies</h1><p class="hero-mode"><span id="coViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></p><p id="coHeroSub"></p></header>
+  <header class="page-hero"><h1>Companies <span id="coViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></h1><p id="coHeroSub"></p></header>
   <button class="explore-btn" data-view="rekView">Explore the raw data &amp; sources →</button>
   <footer class="mini-foot">by adomasgaudi.github on behalf of Fabula, copyright.</footer>
 </div>
@@ -2376,6 +2375,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.78', date:'2026-07-11', sp:0.5, title:'Restore inline title toggle; keep nav toggle',
+    desc:'The per-year / all-years word is back in the title at full size and clickable, exactly as before; the new nav-button toggle stays.',
+    detail:'Reverted the v0.2.75 hero split — #coViewWord / #mktViewWord are once again the clickable coloured word IN the H1 ("Companies per year"), not a smaller gray subtitle line; removed the .hero-mode style. The only kept change from v0.2.75 is that re-tapping the already-active Companies/Markets nav button also flips the mode (window.toggleCoView / toggleMktView).'},
   {v:'v0.2.77', date:'2026-07-11', sp:1, title:'Fix dark-on-dark bar labels in dark mode',
     desc:'Company names on the ranking (and vs-market) bars now stay readable in dark mode when the name overflows a short bar.',
     detail:'drawBarsSvg picked the in-bar name colour purely from the BAR luma: the dark-mode green (#34c98e, luma 0.59) tripped the "light bar → dark ink" branch, so #1a1f2b names went dark-on-dark wherever they spilled past a short bar onto the dark plot. Fixed the whole class: in dark mode always use light ink + the strong drop-shadow (reads on both the bar and the dark plot); in light mode keep dark ink, flipping to light only on a genuinely dark bar. Applies to every drawBarsSvg chart (rankings, vs-market, segment bars).'},
