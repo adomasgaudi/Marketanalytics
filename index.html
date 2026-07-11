@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.78</title>
+<title>Markets — LT agencies · v0.2.79</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -659,7 +659,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.78</span>
+    <span class="nav-version" id="navVersion">v0.2.79</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1687,7 +1687,7 @@ function renderOvChips(){ const w=document.getElementById('ovCoChips'); if(!w) r
     ovChanged();
   }));
 }
-function ovChanged(){ ovBrand=ovPrimaryBrand(); syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); if(typeof syncSddFromTop==='function') syncSddFromTop(); }
+function ovChanged(){ ovBrand=ovPrimaryBrand(); syncOvLabel(); renderOvChips(); buildOvList(); renderCompany(ovBrand); if(typeof syncSddFromTop==='function') syncSddFromTop(); if(typeof drawTop==='function') drawTop(); /* re-gold the selected bars in the rankings */ }
 function buildOvList(){
   const list=document.getElementById('ovCoList'); if(!list) return;
   const q=(document.getElementById('ovCoSearch')?.value||'').trim().toLowerCase();
@@ -2112,14 +2112,32 @@ function drawTop(){
     chTop.innerHTML='<div class="ff-empty">No '+coYear+' '+metric+' data yet'+(coYear>LAST?' — '+coYear+' financials land ~mid-'+(coYear+1)+'.':'.')+'</div>';
     return;
   }
-  const split = rows.length>20;
-  if(rankTitle) rankTitle.textContent = split ? 'Top 10 versus bottom 10' : rows.length+' compan'+(rows.length===1?'y':'ies')+' ranked';
-  rows = split ? [...rows.slice(0,10).map(r=>({...r,grp:'top'})), ...rows.slice(-10).map(r=>({...r,grp:'bot'}))] : rows;
+  const total = rows.length;
+  rows.forEach((r,i)=>{ r.rank=i+1; });                       // 1-based position in the full ranked list
+  const selected = new Set((typeof ovActiveList==='function' ? ovActiveList() : [MY_BRAND]));
+  const split = total>20;
+  if(rankTitle) rankTitle.textContent = split ? 'Top 10 versus bottom 10' : total+' compan'+(total===1?'y':'ies')+' ranked';
+  if(split){
+    const top=rows.slice(0,10).map(r=>({...r,grp:'top'}));
+    const bot=rows.slice(-10).map(r=>({...r,grp:'bot'}));
+    const shownRanks=new Set([...top,...bot].map(r=>r.rank));
+    // Any SELECTED company that fell in the untruncated middle is pulled back in (grp:'mid') so you can
+    // always see where your company sits and its value, sorted into place between the two slices.
+    const mid=rows.filter(r=>selected.has(r.brand) && !shownRanks.has(r.rank)).map(r=>({...r,grp:'mid'}));
+    rows=[...top, ...mid, ...bot];
+  }
   sizeRankChart(rows.length);
+  const barColor=r=>{
+    if(selected.has(r.brand)) return cssVar('--gold-rank')||cssVar('--gold');   // your selected company → gold, easy to spot
+    if(r.grp==='top') return cssVar('--green');
+    if(r.grp==='bot') return cssVar('--red');
+    return r.val<0?cssVar('--red'):cssVar('--accent');
+  };
   drawBarsSvg(chTop, {
-    rows: rows.map(r=>({label:r.brand, value: (isEur && !perEmp)? r.val/1e6 : r.val, color: r.grp==='top'?cssVar('--green'): r.grp==='bot'?cssVar('--red'): (r.val<0?cssVar('--red'):cssVar('--accent'))})),
+    rows: rows.map(r=>({label:r.brand, value: (isEur && !perEmp)? r.val/1e6 : r.val, color: barColor(r)})),
     fmt:tfmt,
-    tip:r=>`<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}`
+    tip:r=>{ const row=rows.find(x=>x.brand===r.label);
+      return `<b>${esc(String(r.label))}</b>: ${tfmt(r.value)}${row?` · #${row.rank} of ${total}`:''}`; }
   });
 }
 syncRankControls();
@@ -2375,6 +2393,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.79', date:'2026-07-11', sp:2, title:'Selected company gold in rankings + always shown',
+    desc:'Your selected companies are gold in the top-10/bottom-10 ranking, and if one falls in the middle it is pulled in so you always see its rank and value.',
+    detail:'drawTop now numbers every company by its full-list rank, then colours any selected brand (ovActiveList) gold (--gold-rank) so it stands out among the green leaders / red laggards. When the list splits into top-10 + bottom-10, a selected company that landed in the hidden middle is re-inserted (grp:mid, sorted into place) instead of vanishing; its tooltip shows "#rank of N". drawTop now also re-runs on selection change (ovChanged) so the gold updates live.'},
   {v:'v0.2.78', date:'2026-07-11', sp:0.5, title:'Restore inline title toggle; keep nav toggle',
     desc:'The per-year / all-years word is back in the title at full size and clickable, exactly as before; the new nav-button toggle stays.',
     detail:'Reverted the v0.2.75 hero split — #coViewWord / #mktViewWord are once again the clickable coloured word IN the H1 ("Companies per year"), not a smaller gray subtitle line; removed the .hero-mode style. The only kept change from v0.2.75 is that re-tapping the already-active Companies/Markets nav button also flips the mode (window.toggleCoView / toggleMktView).'},
