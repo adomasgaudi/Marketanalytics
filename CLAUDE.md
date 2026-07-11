@@ -171,7 +171,7 @@ Each rule = two rows: **description**, then *kind · type*. Sorted by theme, the
 
 Parked rules + specs/tasks (considered, not in force) moved to [notactiverules.md](docs/notactiverules.md).
 
-Planned-but-unbuilt features (state-registry sourcing, LT i18n, Supabase) → [future-features.md](docs/future-features.md).
+Planned-but-unbuilt features (state-registry sourcing, LT i18n, Supabase) → [future-features.md](docs/adr/future-features.md).
 
 
 ---
@@ -182,7 +182,7 @@ Planned-but-unbuilt features (state-registry sourcing, LT i18n, Supabase) → [f
 
 ## Project idea
 
-- Self-contained HTML competitor dashboard: **113 LT** communication/marketing/consulting agencies, financials **2019–2024**.
+- Self-contained HTML competitor dashboard: **132 LT** communication/marketing/consulting agencies, financials **2019–2025** (2025 estimated).
 - Built by **Adomas** working under (<g@cool.lt>) account for a company **Fabula**.
 - Source: rekvizitai.vz.lt export `Komunikacija-konsultacija-konkurentai.xlsx`.
 - **Fabula = Fabula ir partneriai, UAB** — formerly *Viešųjų ryšių partneriai (VRP)*, code **124099127**, founded 1997-07-03; same entity, rebranded. Its `brand` = `Fabula`.
@@ -196,12 +196,12 @@ auto-load / hook reads them), `README.md`, `.claude/`.
 
 - `src/template.html` — source of all HTML/CSS/JS; placeholders `__DATA__` + `__SHEETS_DATA__`. **Edit this.**
 - `src/build_site.py` — injects the JSONs (`__DATA__`, `__SHEETS_DATA__`, `__REK_DATA__`) into template → `index.html` at repo root. Paths are repo-root-relative, so run it from anywhere (`python3 src/build_site.py`).
-- `data/data.json` — 660 records (113 brands × 2019–2024).
+- `data/data.json` — 906 records (132 brands × 2019–2025; 2025 estimated).
 - `data/sheets_data.json` — 7 raw Excel sheets (Data Explorer source).
 - `data/rek_tabs.json` — scraped rekvizitai.vz.lt data, one block per company (`{companies:[{slug,name,brand,order,tabs}]}`); source for the Rekvizitai page.
 - `scripts/scrape_company.py <slug>` + `scripts/parse_company.py <slug>` — the generic rekvizitai pipeline (run locally; add a company = run both for its slug). See `docs/SCRAPE.md`. `scrape_discover.py` is the endpoint-discovery helper.
 - `index.html` — generated, self-contained (Chart.js CDN). **The deliverable; never hand-edit.** Stays at repo root for GitHub Pages.
-- `docs/` — `SCRAPE.md`, `VersionHistory.md`, `notactiverules.md`, `dataclaude.md`, `fabula.html` (standalone Fabula profile, off-dashboard one-off).
+- `docs/` — typed by Diátaxis: `ARCHITECTURE.md` (root, orientation) · `docs/reference/` (`code-map.md`, `data-dictionary.md`) · `docs/adr/` (decisions, `future-features.md`) · `docs/design/` (`companies-page.md`) · `docs/research/` (`doc-standards.md`) · plus `SCRAPE.md`, `VersionHistory.md`, `notactiverules.md`, `persistent-bugs.md`, `fabula.html`.
 - Workflow: edit `src/template.html` → `python3 src/build_site.py` → `node --check` the JS → commit + push `main` → send `index.html`.
 
 ## Data dictionary (data.json record)

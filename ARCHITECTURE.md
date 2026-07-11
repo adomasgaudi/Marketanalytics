@@ -61,4 +61,4 @@ Track data's exact past state.
 
 ---
 
-Full detail: [FUNCTIONAL\_MAP.md](FUNCTIONAL_MAP.md).
+Full detail: [code-map.md](docs/reference/code-map.md).

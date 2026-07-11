@@ -42,6 +42,6 @@ The authorities converge hard: **short brief + a structural map keyed to STABLE 
 **Line-number verdict (unanimous):** never put line numbers in a hand-maintained doc — the canonical volatile anchor, stale on the next edit. Use stable identifiers; if positional precision is truly needed, **generate it on demand**. A single fat blended map is the anti-pattern all five reject.
 
 ## Applied to this repo
-- **MAP_BRIEF.md** = the short reference map → anchor to stable names (`makeSectionsCollapsible`, `#ovCompanySelect`, `drawFinSvg`), **drop line numbers**.
-- **FUNCTIONAL_MAP.md** = fuller reference; still prefer symbol anchors over line numbers (they already rot — the v89 line refs are drifting).
+- **ARCHITECTURE.md** (was MAP_BRIEF) = the orientation doc (C4 context/container) → anchor to stable names (`makeSectionsCollapsible`, `#ovCompanySelect`, `drawFinSvg`), **drop line numbers**.
+- **docs/reference/code-map.md** (was FUNCTIONAL_MAP) = fuller reference; still prefer symbol anchors over line numbers (they already rot — the v89 line refs are drifting).
 - Migration **"why"** decisions (Next.js vs Vite, keep-SVG, DB temporal rows) → belong in **ADRs**, not the map.
