@@ -43,11 +43,18 @@ def count_rev(spec):
 
 try:
     dirty = bool(git("status", "--porcelain"))
+    branch = git("rev-parse", "--abbrev-ref", "HEAD")
     # Prefer the current branch's own upstream; fall back to origin/main only if
     # the branch has no upstream set (e.g. a fresh, never-pushed branch).
     upstream = git("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}")
     ref = upstream if upstream else "origin/main"
-    unpushed = count_rev(f"{ref}..HEAD")
+    # Local-only worktree branch: a non-main branch whose upstream is origin/main
+    # is intentionally NOT pushed (it tracks main only for diffing). Pushing its
+    # commits into main is forbidden by the worktree push policy, so demanding a
+    # push here loops forever. Only nag about unpushed commits when the branch
+    # tracks its OWN remote (upstream endswith the branch name).
+    local_only = branch not in ("main", "") and ref == "origin/main"
+    unpushed = 0 if local_only else count_rev(f"{ref}..HEAD")
 except Exception:
     sys.exit(0)
 
