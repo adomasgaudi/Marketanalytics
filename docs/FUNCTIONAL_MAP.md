@@ -1,6 +1,6 @@
 # Market Analytics — Complete Functional Map
 
-> Snapshot of `src/template.html` at **v0.2.89** (4,996 lines, 435 KB). Captured to inform a possible Next.js migration. A single self-contained HTML file: `<head>` pre-paint script + ~2,300 lines of CSS + HTML body + one ~4,000-line `<script>` block. Profiles \~140 Lithuanian marketing/PR/creative agencies
+> Snapshot of `src/template.html` at **v0.2.89** (4,996 lines, 435 KB). Captured to inform a Next.js migration. A single self-contained HTML file: `<head>` pre-paint script + ~2,300 lines of CSS + HTML body + one ~4,000-line `<script>` block. Profiles **132** Lithuanian marketing/PR/creative agencies across **2019–2025** (906 records; 2025 is estimated), with **Fabula** as the "my company" focus (gold-highlighted everywhere).
 
 ---
 
@@ -80,7 +80,18 @@ const DATA_EVENTS = __DATA_EVENTS__;  // data/data_events.json — data-change l
 ```
 A build pipeline (the Python scripts in `scripts/`: `parse_company.py`, `scrape_*`, `estimate_2025.py`, `data_events.py`) produces those JSONs and string-substitutes them into `template.html` to make the deployed page. **The template is not directly runnable** — the `__X__` tokens must be replaced first.
 
-**Row shape (`data.json`):** `{company, brand, year, activities[], city, risk, employees, avgSalary, salaryCosts, revenue, profit, nonSalaryCosts, estimatedIncome}`. `revenue` = turnover; `estimatedIncome` = fee-based revenue.
+**The five data sources (~3 MB, all baked into the HTML today):**
+| Source | Size | Contents |
+|---|---|---|
+| `data/data.json` | 264 KB | Core financials — **906 rows** (132 brands × 2019–2025) |
+| `data/sheets_data.json` | 584 KB | 7 raw Excel sheets (Įmonės, Kūryba, PR… — Data Explorer source) |
+| `data/rek_tabs.json` | 1.5 MB | Scraped Rekvizitai profiles per company (CEO, description, tabs) |
+| `data/data_events.json` | 9 KB | Data-change audit log |
+| `data/sodra/*.json` | — | **115 files**, monthly Sodra payroll/headcount per company |
+
+Note: the Sodra data is loaded per-company (not one of the four `__X__` placeholders); the deep-dive chart overlays its monthly series.
+
+**Row shape (`data.json`):** `{company, brand, year, activities[], city, risk, employees, avgSalary, salaryCosts, revenue, profit, nonSalaryCosts, estimatedIncome}`. `revenue` = turnover; `estimatedIncome` = fee-based revenue. **2025 is an estimated year** (`estimate_2025.py`).
 
 **Client-side computation (all in-browser, no backend):**
 - **Indexing:** `byBrand` (line 1214), `BRANDS`, `SEGMENTS`, `YEARS`, `LAST` (latest complete financial year = 2024), `FIN_YEARS`.
@@ -149,3 +160,16 @@ A build pipeline (the Python scripts in `scripts/`: `parse_company.py`, `scrape_
 3. **Global mutable state + `window.*` functions + DOM-stashed controllers (`el.__fin`)** must become React state/context.
 4. **Build-time `__DATA__` substitution** cleanly maps to Next.js data loading (import the JSON / server component / `getStaticProps`) — the easiest part to migrate.
 5. Chart.js is the only real dep and ports directly; the bespoke SVG engine is the largest single rewrite.
+
+---
+
+## Future features driving the migration
+
+The static file has **no server or database** — every planned feature below requires both, which is the real reason to move to Next.js (not just DX). Build in dependency order:
+
+1. **Sign-in** — Auth.js sessions + roles. Open question: Fabula team only, or clients too? Roles shape everything downstream.
+2. **Private data (raw not viewable)** — move the 5 sources into a DB (e.g. Postgres/Supabase); the browser only receives computed aggregates via API, never raw rows. Requires auth. **Kills the self-contained-file property** — now needs hosting.
+3. **In-UI automated scraping** — a button triggers a server job (the Python scrapers become API routes / a queue) that writes fresh data to the DB; needs background jobs + progress UI. Biggest infra jump.
+4. **Notifications / emails** — on new data, send emails (Resend/Postmark), scheduled digests. Depends on scraping + DB.
+
+**Order: auth → database → private API → scraping → emails.** Near-term vs someday priority is still to be decided by the owner.
