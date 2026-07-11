@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.88</title>
+<title>Markets — LT agencies · v0.2.89</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -668,7 +668,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.88</span>
+    <span class="nav-version" id="navVersion">v0.2.89</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -827,7 +827,7 @@
           <button type="button" data-m="profit">Net profit</button>
           <button type="button" data-m="employees">Employees</button>
           <button type="button" data-m="wages">Wages</button>
-          <button type="button" data-m="avgSalary">Avg salary /empl.</button>
+          <button type="button" data-m="avgSalary">Avg salary</button>
         </div>
       </div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="revAllEmpty">Select a segment above to compare trends over time.</div></div>
@@ -863,7 +863,8 @@
           <button data-m="ddTurnover">Turnover</button>
           <button data-m="ddProfit">Net profit</button>
           <button data-m="ddEmp">Headcount</button>
-          <button data-m="ddWage">Wage</button>
+          <button data-m="ddWage">Avg salary</button>
+          <button data-m="ddWages">Wages</button>
         </div>
         <h2 id="sddChartTitle">Revenue / sales over time</h2><div class="desc" id="sddChartDesc"></div>
         <div class="chartbox"><div class="svgwrap" id="sddChart" style="position:absolute;inset:0"></div><div class="chart-empty" id="sddChartEmpty"></div></div>
@@ -1569,22 +1570,30 @@ function renderCompany(brand){
     ...(partialYear ? [] : [{label:'Avg salary', fn: d=>d.avgSalary>500?d.avgSalary:null}]),
   ];
   const rows=[];
-  rankMetricSpecs.forEach(spec=>{
+  rankMetricSpecs.forEach((spec,gi)=>{
+    // Grouped: one metric HEADING per group (with a blank spacer above it for a gap), then a bar per company
+    // labelled with just the company name (its colour identifies it) — no repeated "Revenue —" on every bar.
+    const cells=[];
     (grouped?cmpList:[brand]).forEach(b=>{
       const r=rankOf(spec.fn, (byBrand[b]&&byBrand[b][coYear])||{});
       if(!r) return;
-      rows.push({ label: grouped ? spec.label+' — '+b : spec.label, value:r.pct,
+      cells.push({ label: grouped ? b : spec.label, value:r.pct,
         color: grouped ? coBrandColor(b) : (r.pct>=50?cssVar('--gold-rank'):cssVar('--muted')),
         pos:r.pos, total:r.total, metric:spec.label, brand:b });
     });
+    if(!cells.length) return;
+    if(grouped){
+      if(gi>0) rows.push({ spacer:true, value:0, label:'' });   // gap between metric groups
+      rows.push({ heading:spec.label, value:0, label:'' });
+    }
+    rows.push(...cells);
   });
   const rankBox=document.getElementById('chMineRankBox');
-  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?26:32))+'px';   // grow with grouped bars
+  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?24:32))+'px';   // grow with grouped bars
   if(rows.length) drawBarsSvg(chMineRank, {
     rows,
     xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
-    tip:r=>{ const row=rows.find(x=>x.label===r.label);
-      return `<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}th percentile${row?` · #${row.pos} of ${row.total}`:''}`; }
+    tip:r=>`<b>${esc((r.metric?r.metric+' — ':'')+String(r.label))}</b>: ${Math.round(r.value)}th percentile${r.pos?` · #${r.pos} of ${r.total}`:''}`
   });
   else clearChart(chMineRank);
 }
@@ -2014,7 +2023,7 @@ const METRICS = {
   wages:    {label:'Wages',      short:'wages',      f:d=>d.salaryCosts,     pos:true,  unit:'€'},
   // Avg monthly salary is ALREADY per-employee (a ratio), so it ignores the basis toggle: always the
   // median of companies' avgSalary in the segment. Supports 5/95 + 25/75 percentile bands (see renderRevSegAll).
-  avgSalary:{label:'Avg salary /empl.', short:'avg salary/empl.', f:d=>d.avgSalary>500?d.avgSalary:null, pos:true, unit:'€/mo', ratio:true, bands:true},
+  avgSalary:{label:'Avg salary', short:'avg salary', f:d=>d.avgSalary>500?d.avgSalary:null, pos:true, unit:'€/mo', ratio:true, bands:true},
 };
 const basisWord=b=> b==='emp'?'per employee':b==='company'?'per company':'whole-market total';
 const basisFromMode=m=> m==='avg'?'company': m;   // top toggle (avg/emp/total) → segment basis (company/emp/total)
@@ -2501,6 +2510,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.89', date:'2026-07-11', sp:2, title:'Grouped vs-market: metric headings + gaps; deep-dive Wages metric',
+    desc:'The grouped "vs the market" chart now shows one big metric heading per group with a gap between groups (bars just say the company name); Compare financials gains a Wages metric.',
+    detail:'drawBarsSvg learned two backward-compatible row kinds: {heading:"Revenue"} draws a bigger group title (no bar) and {spacer:true} leaves a gap. The grouped vs-market builder emits a heading + spacer per metric and labels each bar with just the company name (colour identifies it) instead of repeating "Revenue — Company"; tooltip still names the metric. Also renamed the deep-dive "Wage" toggle to "Avg salary" and added a "Wages" metric (total annual wage bill = salaryCosts, Initial source; per-employee basis divides it by headcount) plus dropped "/empl." from the segment "Avg salary" label.'},
   {v:'v0.2.88', date:'2026-07-11', sp:3, title:'Salary/empl. segment metric + bands, distinct compare colours, no scrollbars',
     desc:'Adds an avg-salary-per-employee segment metric (with 5/95 + 25/75 percentile bands for ≤2 segments), gives multi-company charts a high-contrast palette, and hides the remaining horizontal scrollbars.',
     detail:'Four things. (1) New "Avg salary /empl." metric in the by-segment all-years chart — median of companies\' avgSalary, basis-independent (it\'s already per-employee). (2) When ≤2 segments are selected for it, each segment\'s line gains dashed 25/75 + dotted 5/95 percentile bands (segMetricPct); crowded selections keep just the median to stay readable. (3) The compare palette (CMP_PAL / cmpColor / sddColor) switched from a few theme tokens (two of which read as green) to an explicit 10-hue high-contrast set, so selected companies are easy to tell apart in the chips, money-flow tabs, grouped vs-market and Compare-financials lines. (4) A shared rule hides the horizontal scrollbar (keeping scroll) on .seg-scroll (ranking metric/segment rows), .grp-tabs, .data-tabs, .scatter-strip, .ov-chips and every .yr-row, matching the bottom-nav year row.'},
@@ -3693,12 +3705,18 @@ const DD_SPECS = {
     rekvizitai: () => ({empty:'Rekvizitai page does not expose a wage series.'}),
     sodra: co => ({series:[{label:'Avg wage €/mo (monthly)', data:sodraSeries(co,'avgWage'), color:cssVar('--amber')}], yTitle:'€/mo'}),
   },
+  ddWages: {
+    title:'Wages',   // total annual wage bill (salaryCosts). Per-employee basis divides it by headcount → avg cost/employee.
+    initial: co => ({series:[{label:'Wages €/yr', data:initSeries(co,'salaryCosts'), color:cssVar('--accent')}], yTitle:'€'}),
+    rekvizitai: () => ({empty:'Rekvizitai page does not expose a total-wage series.'}),
+    sodra: () => ({empty:'Sodra reports the average wage, not the total wage bill — see Avg salary.'}),
+  },
 };
 
 // Per-employee basis for "Compare financials": divides the € money metrics (Revenue/Turnover/Net profit)
 // by the company's headcount for that YEAR. Ratio/count metrics (wage, headcount, margin %) stay raw, and
 // non-yearly points (Sodra monthly) are left alone. Driven by the shared Full-company / Per-employee toggle.
-const DD_MONEY_METRICS = new Set(['ddRev','ddTurnover','ddProfit']);
+const DD_MONEY_METRICS = new Set(['ddRev','ddTurnover','ddProfit','ddWages']);
 function ddPerEmpAdjust(id, co, series){
   if(coFlowMode!=='emp' || !DD_MONEY_METRICS.has(id) || !co || !co.brand) return series;
   const emp = y=>{ const r=byBrand[co.brand] && byBrand[co.brand][+y]; return (r && r.employees>0)? r.employees : null; };
@@ -4032,6 +4050,13 @@ function drawBarsSvg(container, cfg){
     const isDark=document.documentElement.getAttribute('data-theme')==='dark';
     let plot='';
     rows.forEach((r,i)=>{ const cy=rowY(i); if(cy<m.t-bandH||cy>m.t+ph+bandH) return;
+      if(r.spacer) return;   // empty gap row between metric groups
+      // A group-heading row: a bigger metric label spanning the group (no bar / value), so grouped charts
+      // show one "Revenue" above its company bars instead of repeating the metric on every bar.
+      if(r.heading){
+        plot+=`<text x="${(m.l+2).toFixed(1)}" y="${(cy+4).toFixed(1)}" fill="${muted}" font-size="12.5" font-weight="700" text-anchor="start" letter-spacing=".02em">${esc(String(r.heading))}</text>`;
+        return;
+      }
       const x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
       const barCol=r.color||cssVar('--accent');
       plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${barCol}" rx="2"/>`;
@@ -4068,7 +4093,8 @@ function drawBarsSvg(container, cfg){
     container.onmousemove=e=>{ if(st.dragging) return; const rect=container.getBoundingClientRect(); if(!rect.height||!R) return;
       const yv=(e.clientY-rect.top)*H/rect.height; if(yv<m.t||yv>m.t+ph){ tip.style.display='none'; return; }
       const i=Math.round(view.iMin+(yv-m.t)/ph*ispan); if(i<0||i>=R){ tip.style.display='none'; return; }
-      const r=rows[i]; tip.innerHTML=cfg.tip? cfg.tip(r) : `<b>${esc(String(r.label))}</b>: ${esc(fmt(r.value))}`;
+      const r=rows[i]; if(!r||r.heading||r.spacer){ tip.style.display='none'; return; }
+      tip.innerHTML=cfg.tip? cfg.tip(r) : `<b>${esc(String(r.label))}</b>: ${esc(fmt(r.value))}`;
       tip.style.display='block';
       tip.style.left=Math.min(rect.width-tip.offsetWidth-4,Math.max(2,(e.clientX-rect.left)+8))+'px';
       tip.style.top=Math.min(rect.height-tip.offsetHeight-2,(e.clientY-rect.top)+8)+'px';
