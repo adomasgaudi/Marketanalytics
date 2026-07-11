@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.86</title>
+<title>Markets — LT agencies · v0.2.87</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -668,7 +668,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.86</span>
+    <span class="nav-version" id="navVersion">v0.2.87</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1861,11 +1861,20 @@ function sodraYearAgg(y){
   });
   return {cos, emp, avgWage: wages.length? Math.round(wages.reduce((a,b)=>a+b,0)/wages.length) : null};
 }
+// Market-data tab title, data-driven: "Market data 2021→2022" (prev→selected; just the year at the 2019
+// baseline), plus the basis unless it's whole market (then the year alone already implies the whole market).
+function syncMarketTabTitle(){
+  const y=mktYear;
+  const yrLabel = YEARS.includes(y-1) ? (y-1)+'→'+y : String(y);
+  const basisSuffix = mktMode==='avg' ? ' · average / company' : mktMode==='emp' ? ' · per employee' : '';
+  const tab=[...document.querySelectorAll('.grp-tab')].find(t=>/^Market data /.test(t.textContent.trim())||/^Market \d{4}$/.test(t.textContent.trim()));
+  if(tab) tab.textContent='Market data '+yrLabel+basisSuffix;
+}
 function renderMarket(mode){
   mode = mktMode = mode || mktMode;                  // remember basis across year cycles
   const y=mktYear, aCur=marketAgg(y), aPrev=marketAgg(y-1), a0=marketAgg(YEARS[0]);
   const yr=document.getElementById('mktYearRow'); if(yr) yr.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===y));
-  const tab=[...document.querySelectorAll('.grp-tab')].find(t=>/^Market \d{4}$/.test(t.textContent.trim())); if(tab) tab.textContent='Market '+y;
+  syncMarketTabTitle();
   if(window.__scatterReady) renderScatterYear();   // size-vs-profit scatter follows the selected year (skipped until its module inits — avoids TDZ on first render)
   if(!aCur.n){                                        // no filed financials for this year (2025+)
     const sa=sodraYearAgg(y), total=BRANDS.length;
@@ -2458,6 +2467,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.87', date:'2026-07-11', sp:1, title:'Market-data tab title shows year range + basis',
+    desc:'The Market per-year tab now reads e.g. "Market data 2021→2022 · per employee", derived from the selected year and basis (whole market shows just the year range).',
+    detail:'New syncMarketTabTitle() sets the Market-data grp-tab to "Market data " + (prev→selected year, or just the year at the 2019 baseline) + the basis (" · average / company" / " · per employee"), omitting the basis for Whole market since the year range already implies the whole market. Called from renderMarket (every year/basis change) and once after makeSectionsCollapsible so the first paint is right; the "Market all time" tab is untouched.'},
   {v:'v0.2.86', date:'2026-07-11', sp:1, title:'Market all-time: data-driven titles, tidier segment card',
     desc:'The all-years money-flow title and segment caption now derive their year range from the data; the segment card is renamed and de-cluttered, and its filter scrollbar is hidden.',
     detail:'Four fixes on Market all time: (1) "Total market money-flow by year" now appends the year span computed from FIN_YEARS (first→last) instead of a hardcoded "(2019–2024)". (2) Merged the "By segment" h2 + "Financial metrics, all years" h3 into one heading "Financial metrics by segment". (3) The segment-filter pill row hides its scrollbar while still scrolling (scrollbar-width:none + ::-webkit-scrollbar hidden, like the bottom-nav year row). (4) The caption dropped the "same segment colours as the single-year card" note and now derives its "Shown YYYY→YY" range from the data.'},
@@ -4815,6 +4827,7 @@ function makeSectionsCollapsible(){
 try { makeSectionsCollapsible(); }
 catch (err) { window.dispatchEvent(new ErrorEvent('error', {message:'collapsibleSections: '+err.message, error:err})); }
 try { renderCompany(ovBrand); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'renderCompany: '+err.message, error:err})); }   // re-run so company tab labels show brand+year now the tabs exist (errors surfaced, never silent)
+try { syncMarketTabTitle(); } catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'syncMarketTabTitle: '+err.message, error:err})); }   // Market-data tab title now the tab exists
 
 // One fixed control bar per page-view, pinned to the viewport bottom so the year row + basis toggle
 // are always reachable while scrolling. Lives inside the view so it hides with its inactive view.
