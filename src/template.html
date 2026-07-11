@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.83</title>
+<title>Markets — LT agencies · v0.2.84</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -320,7 +320,8 @@
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
   @media(max-width:600px){
     .topnav{padding:0 8px;overflow:visible;flex-wrap:nowrap;min-height:46px}
-    .topnav .logo{display:block;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:normal;line-height:1.12;max-width:96px;flex-shrink:0;color:var(--text)}
+    .topnav .logo{display:inline-flex;align-items:center;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:nowrap;line-height:1.08;flex-shrink:0;color:var(--text)}
+    .topnav .logo .logo-sub{font-size:9px}
     .nav-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;flex:1;min-width:0}
     .nav-btn{padding:0 8px;font-size:13px;white-space:nowrap;flex-shrink:0;line-height:46px;height:46px}
     .settings-cog{padding:4px 6px}
@@ -342,8 +343,11 @@
   /* All nav items share font-size + line-height = the nav height, so centred text lines up by
      baseline (PB: "Data exploration misaligned" — was caused by size diff + the 2px underline border). */
   .topnav{display:flex;align-items:center;gap:0;background:var(--panel);border-bottom:1px solid var(--border);padding:0 max(24px, calc((100% - var(--app-w)) / 2));position:sticky;top:0;z-index:100;min-height:50px}   /* bar is full-width; padding centers the contents to the --app-w column */
-  .topnav .logo{font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:normal;line-height:1.15;cursor:pointer;color:var(--text);transition:color .15s}
+  .topnav .logo{display:inline-flex;align-items:center;font-size:15px;font-weight:800;padding:0;margin-right:24px;white-space:nowrap;line-height:1.1;cursor:pointer;color:var(--text);transition:color .15s;flex-shrink:0}
   .topnav .logo:hover,.topnav .logo:focus-visible{color:var(--accent);outline:none}
+  .logo-txt{display:inline-flex;flex-direction:column;line-height:1.08}
+  .logo-main{white-space:nowrap}
+  .logo-sub{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.01em}
   .home-ic{display:none;font-size:1.15em;font-weight:700;color:var(--muted);margin-right:5px;vertical-align:-1px;transition:color .15s}
   html.not-home .home-ic{display:inline}
   .topnav .logo:hover .home-ic{color:var(--accent)}
@@ -658,12 +662,12 @@
 <body>
 
 <nav class="topnav">
-  <div class="logo" id="navHome" role="button" tabindex="0" title="Back to dashboard"><span class="home-ic">‹</span>Market Analytics</div>
+  <div class="logo" id="navHome" role="button" tabindex="0" title="Dashboard · click to toggle per-year / all-years"><span class="home-ic">‹</span><span class="logo-txt"><span class="logo-main">Market Analytics</span><span class="logo-sub" id="mktNavMode">per year</span></span></div>
   <div class="nav-scroll">
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.83</span>
+    <span class="nav-version" id="navVersion">v0.2.84</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1007,11 +1011,14 @@ document.querySelectorAll('.nav-btn,.explore-btn').forEach(btn=>btn.addEventList
   if(btn.classList.contains('nav-btn') && btn.classList.contains('active') && typeof window[NAV_TOGGLE[view]]==='function'){ window[NAV_TOGGLE[view]](); return; }
   switchView(view);
 }));
-// Title = home: click (or Enter) returns to the dashboard.
+// Market Analytics logo = home; clicking it while ALREADY on the dashboard toggles per-year ⇄ all-years
+// (same as the Companies nav button), otherwise it returns to the dashboard.
 const navHome=document.getElementById('navHome');
 if(navHome){
-  navHome.addEventListener('click',()=>switchView('dashView'));
-  navHome.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); switchView('dashView'); } });
+  const homeAct=()=>{ const onDash=document.getElementById('dashView').classList.contains('active');
+    if(onDash && typeof window.toggleMktView==='function') window.toggleMktView(); else switchView('dashView'); };
+  navHome.addEventListener('click',homeAct);
+  navHome.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); homeAct(); } });
 }
 
 // ---------- Theme toggle (light default, dark persisted) ----------
@@ -2447,6 +2454,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.84', date:'2026-07-11', sp:1, title:'Market Analytics logo: mode sub-label + toggle, no wrap',
+    desc:'The Market Analytics top-nav logo now shows per year / all years under it and toggles the mode on click, matching the Companies button; "Market Analytics" no longer wraps.',
+    detail:'Restructured the #navHome logo into a no-wrap main line + a small gray #mktNavMode sub-label (mirrors #coNavMode on Companies). Clicking the logo while already on the dashboard calls toggleMktView (per-year ⇄ all-years); off-dashboard it still returns home. Removed white-space:normal + the 96px mobile max-width that forced "Market / Analytics" onto two lines; the logo is now an inline-flex column so the sub-label sits beneath the name.'},
   {v:'v0.2.83', date:'2026-07-11', sp:1, title:'Finer y-axis labels + Companies padding matches Markets',
     desc:'Vertical-axis labels no longer over-round (1500 → "1.5k" not "2k"), and the Companies page now uses the same page padding as Markets on mobile.',
     detail:'Two fixes: (1) drawFinSvg\'s y-axis formatter rounded the k-range to a whole thousand (Math.round), so a 500-step axis rendered 5k,5k,4k,4k,3k,3k… (duplicate labels) — now the k branch keeps one decimal and the M branch two, dropping any trailing ".0" (2000→"2k", 1500→"1.5k", 4.5M→"4.5M"). (2) The mobile padding rule #dashView .wrap,#rekView .wrap{padding:16px 10px} omitted #companiesView, so Companies kept the wider default 24px — added it so both pages match.'},
@@ -4886,7 +4896,8 @@ try{ (function(){
   if(grpTabs) grpTabs.style.display='none';
   const yearRow=document.getElementById('mktYearRow');   // year picker only meaningful in "per year"
   let v=0;
-  const apply=()=>{ word.textContent = v===1?'all years':'per year';
+  const apply=()=>{ const modeLbl=v===1?'all years':'per year'; word.textContent=modeLbl;
+    const nav=document.getElementById('mktNavMode'); if(nav) nav.textContent=modeLbl;   // mirror mode under the top-nav logo
     if(yearRow) yearRow.style.display = v===1?'none':'';
     const t=tabBtns[v]; if(t) t.click(); };
   const toggle=()=>{ v=v?0:1; apply(); };
