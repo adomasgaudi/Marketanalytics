@@ -1,0 +1,4252 @@
+{
+  "nodes": [
+    {
+      "id": "claude_hooks_commit_message_check",
+      "label": "commit_message_check.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_commit_message_check_extract_message",
+      "label": "extract_message()",
+      "file_type": "code",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L59",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_commit_message_check_rationale_60",
+      "label": "Pull the commit message that follows the FIRST -m/--message in `command`.",
+      "file_type": "rationale",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L60",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_debug_reminder",
+      "label": "debug_reminder.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/debug_reminder.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_guard_main_push",
+      "label": "guard_main_push.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_require_main_push",
+      "label": "require_main_push.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/require_main_push.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_rule_schema_reminder",
+      "label": "rule_schema_reminder.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/rule_schema_reminder.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_save_reminder",
+      "label": "save_reminder.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_save_reminder_git",
+      "label": "git()",
+      "file_type": "code",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L29",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_save_reminder_count_rev",
+      "label": "count_rev()",
+      "file_type": "code",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L38",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_ui_design_reminder",
+      "label": "ui_design_reminder.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/ui_design_reminder.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "claude_hooks_version_reminder",
+      "label": "version_reminder.py",
+      "file_type": "code",
+      "source_file": ".claude/hooks/version_reminder.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_check_commit_msg",
+      "label": "check_commit_msg.py",
+      "file_type": "code",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_check_commit_msg_first_subject",
+      "label": "first_subject()",
+      "file_type": "code",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L24",
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_check_commit_msg_problems_for",
+      "label": "problems_for()",
+      "file_type": "code",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L32",
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_check_commit_msg_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L42",
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_commit_msg",
+      "label": "commit-msg",
+      "file_type": "code",
+      "source_file": ".githooks/commit-msg",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "_origin": "ast"
+    },
+    {
+      "id": "githooks_commit_msg__entry",
+      "label": "commit-msg script",
+      "file_type": "code",
+      "source_file": ".githooks/commit-msg",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape",
+      "label": "autoscrape.py",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_load",
+      "label": "load()",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L43",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_missing_brands",
+      "label": "missing_brands()",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L49",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_run",
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L65",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_parse_and_write",
+      "label": "parse_and_write()",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L93",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L118",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_rationale_50",
+      "label": "[(brand, company_name)] for brands with no scraped block yet.      `company` (",
+      "file_type": "rationale",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L50",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_rationale_66",
+      "label": "targets: [(brand, company_name)] -> [(brand, slug)] actually scraped.",
+      "file_type": "rationale",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L66",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_autoscrape_rationale_94",
+      "label": "Parse each scraped slug and write rek_tabs.json once (an upsert per     company",
+      "file_type": "rationale",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L94",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_backfill_data_events",
+      "label": "backfill_data_events.py",
+      "file_type": "code",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_backfill_data_events_git_log",
+      "label": "git_log()",
+      "file_type": "code",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L26",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_backfill_data_events_files_in_commit",
+      "label": "files_in_commit()",
+      "file_type": "code",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L40",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_backfill_data_events_infer_source",
+      "label": "infer_source()",
+      "file_type": "code",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L48",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_backfill_data_events_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L72",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session",
+      "label": "browser_session.py",
+      "file_type": "code",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_is_challenge",
+      "label": "is_challenge()",
+      "file_type": "code",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L39",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_session",
+      "label": "session()",
+      "file_type": "code",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L51",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_ensure_clearance",
+      "label": "ensure_clearance()",
+      "file_type": "code",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L82",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_text_search",
+      "label": "text_search()",
+      "file_type": "code",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L111",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_rationale_40",
+      "label": "True when the HTML is Cloudflare's gate rather than a company page.      Size",
+      "file_type": "rationale",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L40",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_rationale_52",
+      "label": "A persistent Chrome context. Headful by default — that is what lets the     own",
+      "file_type": "rationale",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L52",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_rationale_83",
+      "label": "Open one tab on the site and wait until it serves real content.      Never rel",
+      "file_type": "rationale",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L83",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_browser_session_rationale_112",
+      "label": "company name -> {slug,name,registerNumber} via the site's search API.",
+      "file_type": "rationale",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L112",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events",
+      "label": "data_events.py",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_now_iso",
+      "label": "_now_iso()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L26",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_strip_meta",
+      "label": "_strip_meta()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L30",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_load_events",
+      "label": "load_events()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L36",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_save_events",
+      "label": "save_events()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L43",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_git_head",
+      "label": "git_head()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L50",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_brand_for_jar",
+      "label": "brand_for_jar()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L60",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_sodra_meta",
+      "label": "sodra_meta()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L75",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_diff_sodra",
+      "label": "diff_sodra()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L79",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_flatten_rek",
+      "label": "flatten_rek()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L129",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_diff_rek_company",
+      "label": "diff_rek_company()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L139",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_diff_rek_payload",
+      "label": "diff_rek_payload()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L177",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_row_key",
+      "label": "_row_key()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L197",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_diff_data_payload",
+      "label": "diff_data_payload()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L201",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_append_event",
+      "label": "append_event()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L224",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_batch_summary",
+      "label": "_batch_summary()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L243",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_append_sodra_batch",
+      "label": "append_sodra_batch()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L261",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_append_rek_batch",
+      "label": "append_rek_batch()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L269",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_append_initial_batch",
+      "label": "append_initial_batch()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L276",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_load_rek",
+      "label": "load_rek()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L283",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_write_rek_payload",
+      "label": "write_rek_payload()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L289",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_load_data",
+      "label": "load_data()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L300",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_write_data_json",
+      "label": "write_data_json()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L306",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_set_provenance",
+      "label": "set_provenance()",
+      "file_type": "code",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L317",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_data_events_rationale_80",
+      "label": "Field-level diff for one Sodra company file.",
+      "file_type": "rationale",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L80",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_estimate_2025",
+      "label": "estimate_2025.py",
+      "file_type": "code",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_estimate_2025_fee_ratio_by_brand",
+      "label": "fee_ratio_by_brand()",
+      "file_type": "code",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L39",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_estimate_2025_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L51",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies",
+      "label": "import_rek_companies.py",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_load_json",
+      "label": "load_json()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L56",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_save_json",
+      "label": "save_json()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L61",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_parse_money",
+      "label": "parse_money()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L66",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_rows_to_fields",
+      "label": "rows_to_fields()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L79",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_extract_company_code",
+      "label": "extract_company_code()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L87",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_extract_city",
+      "label": "extract_city()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L95",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_collect_financial_series",
+      "label": "collect_financial_series()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L109",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_load_sodra",
+      "label": "load_sodra()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L138",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_annual_sodra",
+      "label": "annual_sodra()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L145",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_upsert_data_rows",
+      "label": "upsert_data_rows()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L155",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_update_rek_brands",
+      "label": "update_rek_brands()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L164",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_import_rek_companies_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L175",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company",
+      "label": "parse_company.py",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_clean",
+      "label": "clean()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L55",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_is_junk",
+      "label": "is_junk()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L69",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_text_after",
+      "label": "text_after()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_overview_facts",
+      "label": "overview_facts()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L82",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_label_value_rows",
+      "label": "label_value_rows()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L95",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_finances_grid",
+      "label": "finances_grid()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L113",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_ts_to_label",
+      "label": "_ts_to_label()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L142",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_chart_series",
+      "label": "chart_series()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L150",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_prose_facts",
+      "label": "prose_facts()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L173",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_info_items",
+      "label": "info_items()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L200",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_esg_and_reviews",
+      "label": "esg_and_reviews()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L224",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_debt_panels",
+      "label": "debt_panels()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L235",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_skolos_widgets",
+      "label": "skolos_widgets()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L253",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_parse_tab",
+      "label": "parse_tab()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L266",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_company_name",
+      "label": "company_name()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L300",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_detect_brand",
+      "label": "detect_brand()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L311",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_upsert_company",
+      "label": "upsert_company()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L325",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_parse_one",
+      "label": "parse_one()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L338",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L382",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_70",
+      "label": "Reject values that are pure chrome / empty after cleaning.",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L70",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_201",
+      "label": "Overview headline widgets that live OUTSIDE tables (div.info-item):     e.g. 'G",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L201",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_225",
+      "label": "ESG sustainability score (p.certificate-esg__score) and the distinct     review",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L225",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_236",
+      "label": "Current debt cards on the Skolos tab (div.debts-panel-item): each has a     tit",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L236",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_254",
+      "label": "Non-table Skolos extras: PreScore creditworthiness class (encoded only in     t",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L254",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_301",
+      "label": "Display name = the scraped <h1> on the overview tab, else the slug.",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L301",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_312",
+      "label": "Find the data.json brand whose company string matches the scraped name.",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L312",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_326",
+      "label": "Insert or replace this company's block in rek_tabs.json (keyed by slug).",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L326",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_parse_company_rationale_339",
+      "label": "Parse one slug's scraped tabs into a company block dict (no file write).     Re",
+      "file_type": "rationale",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L339",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_reparse_all",
+      "label": "reparse_all.py",
+      "file_type": "code",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_reparse_all_fields",
+      "label": "fields()",
+      "file_type": "code",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L19",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_reparse_all_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L23",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch",
+      "label": "scrape_batch.py",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_resolve_all_in",
+      "label": "resolve_all_in()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L40",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_resolve_and_scrape",
+      "label": "resolve_and_scrape()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L56",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_read_file",
+      "label": "read_file()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L71",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_looks_like_slug",
+      "label": "looks_like_slug()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L81",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L86",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_rationale_41",
+      "label": "Resolve company names to slugs inside an already-cleared context.",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L41",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_batch_rationale_57",
+      "label": "One browser, one human check: resolve names, then scrape every slug.",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L57",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company",
+      "label": "scrape_company.py",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_route",
+      "label": "_route()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L42",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_fetch_tab",
+      "label": "_fetch_tab()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L49",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_scrape_slug",
+      "label": "scrape_slug()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L97",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_scrape_with_context",
+      "label": "scrape_with_context()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L107",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_scrape_many",
+      "label": "scrape_many()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L130",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_rationale_50",
+      "label": "Open a page, save one tab's HTML, close it. Returns (key, byte size).      Ret",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L50",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_rationale_98",
+      "label": "Fetch all of a company's tabs concurrently. Returns overview byte size.     One",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L98",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_rationale_108",
+      "label": "Scrape every slug in an already-cleared context. Tabs of a company load in",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L108",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_company_rationale_131",
+      "label": "Own the browser: persistent profile + one human check, then scrape.",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L131",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_discover",
+      "label": "scrape_discover.py",
+      "file_type": "code",
+      "source_file": "scripts/scrape_discover.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_discover_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_discover.py",
+      "source_location": "L8",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra",
+      "label": "scrape_sodra.py",
+      "file_type": "code",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_all_jar_codes",
+      "label": "all_jar_codes()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L47",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_json",
+      "label": "_json()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L65",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_fetch_company",
+      "label": "fetch_company()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L71",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L110",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_rationale_48",
+      "label": "Every \"Įmonės kodas\" in rek_tabs.json — the same key build_site.py joins on,",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L48",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_rationale_72",
+      "label": "Resolve a jarCode to Sodra's internal code, then pull its monthly history.",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L72",
+      "_origin": "ast"
+    },
+    {
+      "id": "scripts_scrape_sodra_rationale_111",
+      "label": "Returns the number of companies successfully written.      The caller turns 0-",
+      "file_type": "rationale",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L111",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_build_site",
+      "label": "build_site.py",
+      "file_type": "code",
+      "source_file": "src/build_site.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_build_site_load",
+      "label": "load()",
+      "file_type": "code",
+      "source_file": "src/build_site.py",
+      "source_location": "L17",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_build_site_company_code",
+      "label": "company_code()",
+      "file_type": "code",
+      "source_file": "src/build_site.py",
+      "source_location": "L46",
+      "_origin": "ast"
+    }
+  ],
+  "edges": [
+    {
+      "source": "claude_hooks_commit_message_check",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_commit_message_check",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_commit_message_check",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_commit_message_check",
+      "target": "claude_hooks_commit_message_check_extract_message",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_commit_message_check_rationale_60",
+      "target": "claude_hooks_commit_message_check_extract_message",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/commit_message_check.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_debug_reminder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/debug_reminder.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_debug_reminder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/debug_reminder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_guard_main_push",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_guard_main_push",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_guard_main_push",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_guard_main_push",
+      "target": "subprocess",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_guard_main_push",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/guard_main_push.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_require_main_push",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/require_main_push.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_require_main_push",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/require_main_push.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_require_main_push",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/require_main_push.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_require_main_push",
+      "target": "subprocess",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/require_main_push.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_rule_schema_reminder",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/rule_schema_reminder.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_rule_schema_reminder",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/rule_schema_reminder.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_rule_schema_reminder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/rule_schema_reminder.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_rule_schema_reminder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/rule_schema_reminder.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder",
+      "target": "subprocess",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder",
+      "target": "claude_hooks_save_reminder_git",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder",
+      "target": "claude_hooks_save_reminder_count_rev",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_save_reminder_count_rev",
+      "target": "claude_hooks_save_reminder_git",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/save_reminder.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_ui_design_reminder",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/ui_design_reminder.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_ui_design_reminder",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/ui_design_reminder.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_ui_design_reminder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/ui_design_reminder.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_ui_design_reminder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/ui_design_reminder.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_version_reminder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/version_reminder.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_version_reminder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/version_reminder.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_hooks_version_reminder",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/hooks/version_reminder.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg",
+      "target": "githooks_check_commit_msg_first_subject",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg",
+      "target": "githooks_check_commit_msg_problems_for",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg",
+      "target": "githooks_check_commit_msg_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg_main",
+      "target": "githooks_check_commit_msg_first_subject",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_check_commit_msg_main",
+      "target": "githooks_check_commit_msg_problems_for",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/check_commit_msg.py",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "githooks_commit_msg",
+      "target": "githooks_commit_msg__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".githooks/commit-msg",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "asyncio",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "browser_session",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "parse_company",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scrape_company",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scripts_autoscrape_load",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scripts_autoscrape_missing_brands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scripts_autoscrape_run",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scripts_autoscrape_parse_and_write",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape",
+      "target": "scripts_autoscrape_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_parse_and_write",
+      "target": "scripts_autoscrape_load",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_main",
+      "target": "scripts_autoscrape_load",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_main",
+      "target": "scripts_autoscrape_missing_brands",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_main",
+      "target": "scripts_autoscrape_run",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_main",
+      "target": "scripts_autoscrape_parse_and_write",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_rationale_50",
+      "target": "scripts_autoscrape_missing_brands",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_rationale_66",
+      "target": "scripts_autoscrape_run",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_rationale_94",
+      "target": "scripts_autoscrape_parse_and_write",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "subprocess",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "data_events",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "scripts_backfill_data_events_git_log",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "scripts_backfill_data_events_files_in_commit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "scripts_backfill_data_events_infer_source",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events",
+      "target": "scripts_backfill_data_events_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events_main",
+      "target": "scripts_backfill_data_events_git_log",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events_main",
+      "target": "scripts_backfill_data_events_files_in_commit",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events_main",
+      "target": "scripts_backfill_data_events_infer_source",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "asyncio",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "contextlib",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "playwright_async_api",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "scripts_browser_session_is_challenge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "scripts_browser_session_session",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "scripts_browser_session_ensure_clearance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session",
+      "target": "scripts_browser_session_text_search",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session_ensure_clearance",
+      "target": "scripts_browser_session_is_challenge",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session_rationale_40",
+      "target": "scripts_browser_session_is_challenge",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session_rationale_52",
+      "target": "scripts_browser_session_session",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session_rationale_83",
+      "target": "scripts_browser_session_ensure_clearance",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_browser_session_rationale_112",
+      "target": "scripts_browser_session_text_search",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/browser_session.py",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "subprocess",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "uuid",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_now_iso",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_strip_meta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_load_events",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_save_events",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_git_head",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_brand_for_jar",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_sodra_meta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_diff_sodra",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_flatten_rek",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_diff_rek_company",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_diff_rek_payload",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_row_key",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_diff_data_payload",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_append_event",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L224",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_batch_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_append_sodra_batch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_append_rek_batch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_append_initial_batch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_load_rek",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L283",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_write_rek_payload",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_load_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_write_data_json",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L306",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events",
+      "target": "scripts_data_events_set_provenance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_sodra_meta",
+      "target": "scripts_data_events_now_iso",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_diff_sodra",
+      "target": "scripts_data_events_strip_meta",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_diff_sodra",
+      "target": "scripts_data_events_brand_for_jar",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_diff_rek_company",
+      "target": "scripts_data_events_flatten_rek",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_diff_rek_payload",
+      "target": "scripts_data_events_diff_rek_company",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_diff_data_payload",
+      "target": "scripts_data_events_row_key",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_event",
+      "target": "scripts_data_events_load_events",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_event",
+      "target": "scripts_data_events_now_iso",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_event",
+      "target": "scripts_data_events_git_head",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_event",
+      "target": "scripts_data_events_save_events",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_sodra_batch",
+      "target": "scripts_data_events_batch_summary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_sodra_batch",
+      "target": "scripts_data_events_append_event",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_rek_batch",
+      "target": "scripts_data_events_batch_summary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L272",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_rek_batch",
+      "target": "scripts_data_events_append_event",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L273",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_initial_batch",
+      "target": "scripts_data_events_batch_summary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L279",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_append_initial_batch",
+      "target": "scripts_data_events_append_event",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L280",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_rek_payload",
+      "target": "scripts_data_events_load_rek",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L291",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_rek_payload",
+      "target": "scripts_data_events_diff_rek_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L292",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_rek_payload",
+      "target": "scripts_data_events_append_rek_batch",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L296",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_data_json",
+      "target": "scripts_data_events_load_data",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_data_json",
+      "target": "scripts_data_events_diff_data_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_write_data_json",
+      "target": "scripts_data_events_append_initial_batch",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L313",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_data_events_rationale_80",
+      "target": "scripts_data_events_diff_sodra",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/data_events.py",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "statistics",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "data_events",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "scripts_estimate_2025_fee_ratio_by_brand",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025",
+      "target": "scripts_estimate_2025_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025_main",
+      "target": "scripts_estimate_2025_fee_ratio_by_brand",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "statistics",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "data_events",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_load_json",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_save_json",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_parse_money",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_rows_to_fields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_extract_company_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_extract_city",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_collect_financial_series",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_load_sodra",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_annual_sodra",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_upsert_data_rows",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_update_rek_brands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies",
+      "target": "scripts_import_rek_companies_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_collect_financial_series",
+      "target": "scripts_import_rek_companies_rows_to_fields",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_collect_financial_series",
+      "target": "scripts_import_rek_companies_parse_money",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_load_sodra",
+      "target": "scripts_import_rek_companies_load_json",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_load_json",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_rows_to_fields",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_extract_company_code",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_collect_financial_series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_load_sodra",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_extract_city",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_annual_sodra",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_update_rek_brands",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_import_rek_companies_upsert_data_rows",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "csv",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "data_events",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "bs4",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_clean",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_is_junk",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_text_after",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_overview_facts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_label_value_rows",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_finances_grid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_ts_to_label",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_chart_series",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_prose_facts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_info_items",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_esg_and_reviews",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L224",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_debt_panels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_skolos_widgets",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L253",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_parse_tab",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_company_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_detect_brand",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L311",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_upsert_company",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L325",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_parse_one",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L338",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company",
+      "target": "scripts_parse_company_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L382",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_text_after",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_overview_facts",
+      "target": "scripts_parse_company_text_after",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_finances_grid",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_chart_series",
+      "target": "scripts_parse_company_ts_to_label",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_prose_facts",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_info_items",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_debt_panels",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L241",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_skolos_widgets",
+      "target": "scripts_parse_company_clean",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_overview_facts",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L282",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_label_value_rows",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L283",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_info_items",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L284",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_esg_and_reviews",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L285",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_finances_grid",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_chart_series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L288",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_prose_facts",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L291",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_debt_panels",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L295",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_tab",
+      "target": "scripts_parse_company_skolos_widgets",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L296",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_one",
+      "target": "scripts_parse_company_company_name",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L341",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_one",
+      "target": "scripts_parse_company_parse_tab",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L355",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_parse_one",
+      "target": "scripts_parse_company_detect_brand",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L377",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_main",
+      "target": "scripts_parse_company_parse_one",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L389",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_main",
+      "target": "scripts_parse_company_upsert_company",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L392",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_70",
+      "target": "scripts_parse_company_is_junk",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_201",
+      "target": "scripts_parse_company_info_items",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_225",
+      "target": "scripts_parse_company_esg_and_reviews",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_236",
+      "target": "scripts_parse_company_debt_panels",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L236",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_254",
+      "target": "scripts_parse_company_skolos_widgets",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_301",
+      "target": "scripts_parse_company_company_name",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L301",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_312",
+      "target": "scripts_parse_company_detect_brand",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_326",
+      "target": "scripts_parse_company_upsert_company",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L326",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_rationale_339",
+      "target": "scripts_parse_company_parse_one",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L339",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "glob",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "parse_company",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "scripts_reparse_all_fields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all",
+      "target": "scripts_reparse_all_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all_main",
+      "target": "scripts_reparse_all_fields",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "asyncio",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "browser_session",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scrape_company",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "parse_company",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scripts_scrape_batch_resolve_all_in",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scripts_scrape_batch_resolve_and_scrape",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scripts_scrape_batch_read_file",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scripts_scrape_batch_looks_like_slug",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch",
+      "target": "scripts_scrape_batch_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_resolve_and_scrape",
+      "target": "scripts_scrape_batch_resolve_all_in",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_main",
+      "target": "scripts_scrape_batch_read_file",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_main",
+      "target": "scripts_scrape_batch_looks_like_slug",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_main",
+      "target": "scripts_scrape_batch_resolve_and_scrape",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_rationale_41",
+      "target": "scripts_scrape_batch_resolve_all_in",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_batch_rationale_57",
+      "target": "scripts_scrape_batch_resolve_and_scrape",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_batch.py",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "asyncio",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "browser_session",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "scripts_scrape_company_route",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "scripts_scrape_company_fetch_tab",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "scripts_scrape_company_scrape_slug",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "scripts_scrape_company_scrape_with_context",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company",
+      "target": "scripts_scrape_company_scrape_many",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_fetch_tab",
+      "target": "scripts_scrape_company_route",
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_scrape_slug",
+      "target": "scripts_scrape_company_fetch_tab",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_scrape_many",
+      "target": "scripts_scrape_company_scrape_with_context",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_rationale_50",
+      "target": "scripts_scrape_company_fetch_tab",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_rationale_98",
+      "target": "scripts_scrape_company_scrape_slug",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_rationale_108",
+      "target": "scripts_scrape_company_scrape_with_context",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_company_rationale_131",
+      "target": "scripts_scrape_company_scrape_many",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_company.py",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_discover",
+      "target": "asyncio",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_discover.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_discover",
+      "target": "playwright_async_api",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_discover.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_discover",
+      "target": "scripts_scrape_discover_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_discover.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "time",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "urllib_error",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "urllib_request",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "data_events",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "scripts_scrape_sodra_all_jar_codes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "scripts_scrape_sodra_json",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "scripts_scrape_sodra_fetch_company",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra",
+      "target": "scripts_scrape_sodra_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_fetch_company",
+      "target": "scripts_scrape_sodra_json",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_main",
+      "target": "scripts_scrape_sodra_fetch_company",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_rationale_48",
+      "target": "scripts_scrape_sodra_all_jar_codes",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_rationale_72",
+      "target": "scripts_scrape_sodra_fetch_company",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_rationale_111",
+      "target": "scripts_scrape_sodra_main",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "src_build_site",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/build_site.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_build_site",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/build_site.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_build_site",
+      "target": "src_build_site_load",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/build_site.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_build_site",
+      "target": "src_build_site_company_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/build_site.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_autoscrape_parse_and_write",
+      "target": "scripts_data_events_write_rek_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/autoscrape.py",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events_main",
+      "target": "scripts_data_events_load_events",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_backfill_data_events_main",
+      "target": "scripts_data_events_append_event",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/backfill_data_events.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025_main",
+      "target": "scripts_data_events_load_data",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025_main",
+      "target": "scripts_data_events_set_provenance",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_estimate_2025_main",
+      "target": "scripts_data_events_write_data_json",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/estimate_2025.py",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_upsert_data_rows",
+      "target": "scripts_data_events_load_data",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_data_events_set_provenance",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L221",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_data_events_write_rek_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L241",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_data_events_load_data",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L243",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_import_rek_companies_main",
+      "target": "scripts_data_events_write_data_json",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/import_rek_companies.py",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_upsert_company",
+      "target": "scripts_data_events_load_rek",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_upsert_company",
+      "target": "scripts_data_events_write_rek_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L334",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_parse_company_upsert_company",
+      "target": "scripts_data_events_diff_rek_company",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/parse_company.py",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_reparse_all_main",
+      "target": "scripts_data_events_write_rek_payload",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/reparse_all.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_fetch_company",
+      "target": "scripts_data_events_sodra_meta",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_main",
+      "target": "scripts_data_events_diff_sodra",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_scrape_sodra_main",
+      "target": "scripts_data_events_append_sodra_batch",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/scrape_sodra.py",
+      "source_location": "L150",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
