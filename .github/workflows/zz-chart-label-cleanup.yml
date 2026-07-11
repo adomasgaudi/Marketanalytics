@@ -1,3 +1,4 @@
+# trigger existing workflow
 name: Chart label cleanup
 
 on:
@@ -65,7 +66,6 @@ jobs:
 
           p.write_text(s, encoding='utf-8')
           Path('.github/workflows/zz-chart-label-cleanup.yml').unlink()
-          # remove stale trigger workflow if present
           q = Path('.github/workflows/patch-company-vs-market-labels.yml')
           if q.exists(): q.unlink()
           PY
