@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.79</title>
+<title>Markets — LT agencies · v0.2.80</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -401,6 +401,10 @@
   @media (max-width:520px){ .seg.seg-scroll button{padding:6px 9px;font-size:11.5px} }
   .seg button:hover{color:var(--text)}
   .seg button.active{background:var(--accent);color:#fff !important}   /* PB-5: some Android browsers (Brave) imposed system text colour on the active <button> despite this rule — appearance:none above is the root, !important guarantees white */
+  /* Company tab row (Companies per-year, only when >1 selected): pick which company's profile/money-flow shows */
+  .co-co-tabs{margin:0 0 10px}
+  .co-co-tab{display:inline-flex;align-items:center;gap:6px}
+  .co-co-tab .ov-dot{opacity:1}
   /* "Filter by segment" pills — multi-select toggles in one horizontally-scrolling row */
   .seg-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;margin:8px 0 2px;-webkit-overflow-scrolling:touch}
   .seg-filter .sf-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 inherit;padding:0 11px;min-height:var(--tap-min,30px);border:1px solid var(--border);border-radius:var(--r-pill,7px);background:var(--panel2);color:var(--muted);cursor:pointer;white-space:nowrap;user-select:none;-webkit-tap-highlight-color:transparent;transition:.12s}
@@ -659,7 +663,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.79</span>
+    <span class="nav-version" id="navVersion">v0.2.80</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -730,6 +734,7 @@
       <button data-mode="emp">Per employee</button>
     </div>
   </div>
+  <div class="co-co-tabs seg seg-scroll" id="coCompanyTabs" role="tablist" aria-label="Selected companies" hidden></div>
   <div class="mine-note" id="mineNote"></div>
   <div id="finFlow"></div>
   <div class="kpi-topbar"><div class="kpi-mode" id="coKpiMode"><button data-mode="value" class="active" title="Show number">#</button><button data-mode="change" title="Show percent change">%</button></div></div>
@@ -737,7 +742,7 @@
   <div class="grid">
     <div class="card">
       <h2 id="chMineRankTitle">vs the market (2024)</h2>
-      <div class="chartbox"><div class="svgwrap" id="chMineRank" style="position:absolute;inset:0"></div></div>
+      <div class="chartbox" id="chMineRankBox"><div class="svgwrap" id="chMineRank" style="position:absolute;inset:0"></div></div>
     </div>
   </div>
 
@@ -1372,6 +1377,21 @@ function setCoKpiDisplay(mode, reset=true){
 (function(){ document.querySelectorAll('#coKpiMode button').forEach(b=>b.addEventListener('click',()=>setCoKpiDisplay(b.dataset.mode))); })();
 resetKpiAuto('company', ()=>coKpiMode, setCoKpiDisplay);
 
+// Colour for a selected brand = its chip colour (position in the ovBrands pool), so tabs / grouped bars
+// match the chips. Falls back to accent for brands somehow not in the pool.
+function coBrandColor(brand){ const i=ovBrands.indexOf(brand); return i>=0? cmpColor(i) : cssVar('--accent'); }
+// When >1 company is selected the profile / money-flow / KPIs show ONE at a time via a tab row (the
+// user picks which); the "vs the market" chart stays grouped across all of them. Tabs re-render the
+// focused single-company widgets by calling renderCompany() with the tapped brand.
+function renderCompanyTabs(focused){
+  const el=document.getElementById('coCompanyTabs'); if(!el) return;
+  const list = (typeof ovActiveList==='function') ? ovActiveList() : [ovBrand];
+  if(list.length<2){ el.hidden=true; el.innerHTML=''; return; }
+  el.hidden=false;
+  el.innerHTML=list.map(b=>`<button type="button" role="tab" class="co-co-tab${b===focused?' active':''}" data-brand="${esc(b)}" aria-selected="${b===focused}"><i class="ov-dot" style="background:${coBrandColor(b)}"></i>${esc(b)}</button>`).join('');
+  el.querySelectorAll('.co-co-tab').forEach(btn=>btn.addEventListener('click',()=>{ renderCompany(btn.dataset.brand); }));
+}
+
 function renderCompany(brand){
   const mine = byBrand[brand] || {};
   const mineYears = Object.keys(mine).map(Number).sort((a,b)=>a-b);
@@ -1429,7 +1449,7 @@ function renderCompany(brand){
   noteEl.innerHTML=head+infoRows.map(([k,v])=>`<div class="co-info-row"><span class="co-info-k">${k}</span><span class="co-info-v">${v}</span></div>`).join('')
     +(desc?`<div class="co-desc">${esc(desc)}</div>`:`<div class="co-info-row"><span class="co-info-k">About</span><span class="co-info-v">${nd}</span></div>`);
   noteEl.style.display='';
-  document.getElementById('chMineRankTitle').textContent = brand+' vs the market ('+coYear+(coPerEmp?', per employee':'')+')';
+  renderCompanyTabs(brand);   // company tab row (only when >1 selected) — focus one company's profile/money-flow/KPIs
   // sticky year row + tab labels follow the selected year
   const yr=document.getElementById('coYearRow'); if(yr) yr.querySelectorAll('button').forEach(b=>b.classList.toggle('active',+b.dataset.y===coYear));
   const cTabs=[...document.querySelectorAll('#companiesView .grp-tab')];
@@ -1520,14 +1540,38 @@ function renderCompany(brand){
     ]}));
   })();
 
-  const rankData = [
-    {label:'Revenue', r:mEI}, {label:'Turnover', r:mRev}, {label:'Net profit', r:mProfit},
-    {label:'Profit margin', r:mMargin}, {label:'Employees', r:mEmp}, {label:'Avg salary', r:mSal},
-  ].filter(x=>x.r);
-  if(rankData.length) drawBarsSvg(chMineRank, {
-    rows: rankData.map(x=>({label:x.label, value:x.r.pct, color: x.r.pct>=50?cssVar('--gold-rank'):cssVar('--muted'), pos:x.r.pos, total:x.r.total})),
+  // "vs the market" percentile chart. With >1 company selected it becomes a GROUPED chart: each metric
+  // shows one bar per selected company (coloured like its chip), so you compare them side by side.
+  const cmpList = (typeof ovActiveList==='function') ? ovActiveList() : [brand];
+  const grouped = cmpList.length>1;
+  const rankTitleEl=document.getElementById('chMineRankTitle');
+  if(rankTitleEl) rankTitleEl.textContent = (grouped?'Selected companies':brand)+' vs the market ('+coYear+(coPerEmp?', per employee':'')+')';
+  // Percentile spec per metric, computed for any company's chosen-year record.
+  const rankMetricSpecs = [
+    {label:'Revenue',       fn: pe(d=>d.estimatedIncome)},
+    {label:'Turnover',      fn: pe(d=>d.revenue)},
+    {label:'Net profit',    fn: pe(d=>d.profit)},
+    {label:'Profit margin', fn: d=>(d.estimatedIncome>50000 && d.profit!=null)? d.profit/d.estimatedIncome*100 : null},
+    ...(coPerEmp||partialYear ? [] : [{label:'Employees', fn: d=>d.employees}]),
+    ...(partialYear ? [] : [{label:'Avg salary', fn: d=>d.avgSalary>500?d.avgSalary:null}]),
+  ];
+  const rows=[];
+  rankMetricSpecs.forEach(spec=>{
+    (grouped?cmpList:[brand]).forEach(b=>{
+      const r=rankOf(spec.fn, (byBrand[b]&&byBrand[b][coYear])||{});
+      if(!r) return;
+      rows.push({ label: grouped ? spec.label+' — '+b : spec.label, value:r.pct,
+        color: grouped ? coBrandColor(b) : (r.pct>=50?cssVar('--gold-rank'):cssVar('--muted')),
+        pos:r.pos, total:r.total, metric:spec.label, brand:b });
+    });
+  });
+  const rankBox=document.getElementById('chMineRankBox');
+  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?26:32))+'px';   // grow with grouped bars
+  if(rows.length) drawBarsSvg(chMineRank, {
+    rows,
     xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
-    tip:r=>`<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}th percentile · #${r.pos} of ${r.total}`
+    tip:r=>{ const row=rows.find(x=>x.label===r.label);
+      return `<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}th percentile${row?` · #${row.pos} of ${row.total}`:''}`; }
   });
   else clearChart(chMineRank);
 }
@@ -2393,6 +2437,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',
+    desc:'With several companies selected, the money-flow gets a per-company tab row and the vs-market chart shows a grouped bar per company for each metric.',
+    detail:'The company profile / money-flow / KPIs were single-company only (they showed just the primary). Now when >1 company is selected a tab row (#coCompanyTabs, chip-coloured dots) lets you switch which company those focused widgets show. The "vs the market" percentile chart became grouped: rankOf runs per selected company so each metric (Revenue / Turnover / Net profit / margin / employees / salary) renders one bar per company, coloured like its chip, sized to fit; tooltip keeps the #rank of N. drawTop already golds selected companies in the rankings (v0.2.79). coBrandColor maps a brand to its chip colour.'},
   {v:'v0.2.79', date:'2026-07-11', sp:2, title:'Selected company gold in rankings + always shown',
     desc:'Your selected companies are gold in the top-10/bottom-10 ranking, and if one falls in the middle it is pulled in so you always see its rank and value.',
     detail:'drawTop now numbers every company by its full-list rank, then colours any selected brand (ovActiveList) gold (--gold-rank) so it stands out among the green leaders / red laggards. When the list splits into top-10 + bottom-10, a selected company that landed in the hidden middle is re-inserted (grp:mid, sorted into place) instead of vanishing; its tooltip shows "#rank of N". drawTop now also re-runs on selection change (ovChanged) so the gold updates live.'},
