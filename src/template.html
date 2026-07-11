@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.87</title>
+<title>Markets — LT agencies · v0.2.88</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -457,11 +457,7 @@
   .bottom-bar .yr-row::-webkit-scrollbar{display:none;width:0;height:0}
   .bottom-bar .seg{flex:0 0 auto}
   #dashView.view.active,#companiesView.view.active{padding-bottom:60px}   /* clear the fixed bottom bar so the footer isn't hidden behind it */
-  .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  /* barely-there horizontal scrollbar for the year row + company pills (very thin, faint) */
-  .yr-row::-webkit-scrollbar,.ov-chips::-webkit-scrollbar{height:3px}
-  .yr-row::-webkit-scrollbar-thumb,.ov-chips::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  .yr-row::-webkit-scrollbar-track,.ov-chips::-webkit-scrollbar-track{background:transparent}
+  .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px}   /* scrollbar hidden by the shared no-scrollbar rule below */
   .yr-row button{flex:0 0 auto;font:700 14px/1 inherit;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--muted);cursor:pointer;transition:.12s}
   .yr-row button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   /* Size-vs-profit small multiples: one horizontally scrollable row of mini scatters (DATA-16). */
@@ -491,7 +487,11 @@
   .co-stickybar .co-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0 0 6px}
   .co-stickybar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0}
   /* multi-company compare chips under the picker (DATA-16: one scrolling row) */
-  .ov-chips{display:flex;gap:5px;margin-top:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .ov-chips{display:flex;gap:5px;margin-top:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  /* Hide the horizontal scrollbar on every scrolling strip (rankings metric/segment rows, sub-tabs, chips,
+     scatter strip, data tabs) while KEEPING scroll — same treatment as the bottom-nav year row. */
+  .seg.seg-scroll,.grp-tabs,.data-tabs,.scatter-strip,.ov-chips,.yr-row{scrollbar-width:none;-ms-overflow-style:none}
+  .seg.seg-scroll::-webkit-scrollbar,.grp-tabs::-webkit-scrollbar,.data-tabs::-webkit-scrollbar,.scatter-strip::-webkit-scrollbar,.ov-chips::-webkit-scrollbar,.yr-row::-webkit-scrollbar{display:none;width:0;height:0}
   .ov-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font:600 12px/1 inherit;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text);white-space:nowrap;cursor:pointer;transition:.12s;-webkit-tap-highlight-color:transparent}
   .ov-chip.on{color:var(--text)}
   .ov-chip:not(.on){opacity:.55;color:var(--muted);border-style:dashed}
@@ -668,7 +668,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.87</span>
+    <span class="nav-version" id="navVersion">v0.2.88</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -827,6 +827,7 @@
           <button type="button" data-m="profit">Net profit</button>
           <button type="button" data-m="employees">Employees</button>
           <button type="button" data-m="wages">Wages</button>
+          <button type="button" data-m="avgSalary">Avg salary /empl.</button>
         </div>
       </div>
       <div class="chartbox"><div class="svgwrap" id="chRevSegAll" style="position:absolute;inset:0"></div><div class="chart-empty" id="revAllEmpty">Select a segment above to compare trends over time.</div></div>
@@ -1597,8 +1598,11 @@ function clearChart(el){ if(!el) return;
 // Overview company picker — searchable dropdown over EVERY brand (default: Fabula).
 const OV_BRANDS = BRANDS.slice().sort((a,b)=>a.localeCompare(b,'lt'));
 // Compare palette — SHARED with the deep-dive (sddColor) so a chip's colour dot = that company's lines.
-const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];
-const cmpColor=i=>cssVar(CMP_PAL[i%CMP_PAL.length]);
+// Compare palette: an explicit high-contrast categorical set (not theme tokens — those only had a couple of
+// distinct hues, so two selected companies both read as "green"). Ordered for maximum separation between
+// adjacent picks; bright enough to read on the dark plot and still fine on light.
+const CMP_PAL=['#4f8ef7','#f0523d','#f0b429','#a06bff','#25c26e','#ff5cb0','#00c2d1','#8a6d3b','#b0b7c3','#7a8cff'];
+const cmpColor=i=>CMP_PAL[i%CMP_PAL.length];
 // Multi-select: ovBrands = pre-selected pool (chips); ovActive = currently on for charts/compare.
 // ovBrand = primary (first active) — drives single-company widgets. × removes from pool; chip click toggles on/off.
 let ovBrands = [MY_BRAND], ovBrand = MY_BRAND;
@@ -2008,6 +2012,9 @@ const METRICS = {
   profit:   {label:'Net profit', short:'net profit', f:d=>d.profit,          pos:false, unit:'€'},
   employees:{label:'Employees',  short:'employees',  f:d=>d.employees,       pos:true,  unit:'ppl'},
   wages:    {label:'Wages',      short:'wages',      f:d=>d.salaryCosts,     pos:true,  unit:'€'},
+  // Avg monthly salary is ALREADY per-employee (a ratio), so it ignores the basis toggle: always the
+  // median of companies' avgSalary in the segment. Supports 5/95 + 25/75 percentile bands (see renderRevSegAll).
+  avgSalary:{label:'Avg salary /empl.', short:'avg salary/empl.', f:d=>d.avgSalary>500?d.avgSalary:null, pos:true, unit:'€/mo', ratio:true, bands:true},
 };
 const basisWord=b=> b==='emp'?'per employee':b==='company'?'per company':'whole-market total';
 const basisFromMode=m=> m==='avg'?'company': m;   // top toggle (avg/emp/total) → segment basis (company/emp/total)
@@ -2015,12 +2022,21 @@ const basisFromMode=m=> m==='avg'?'company': m;   // top toggle (avg/emp/total) 
 function segMetricVal(seg, metric, basis, year){
   const M=METRICS[metric];
   const ds=DATA.filter(d=>d.year===year && d.activities.includes(seg)).map(d=>({v:M.f(d), e:d.employees})).filter(o=>o.v!=null && (!M.pos||o.v>0));
+  if(M.ratio){ return ds.length? median(ds.map(o=>o.v)) : null; }   // already-per-employee ratio → basis-independent median
   if(basis==='emp'){ const w=ds.filter(o=>o.e>2).map(o=>o.v/o.e); return w.length>=3?median(w):null; }
   if(basis==='company'){ return ds.length?median(ds.map(o=>o.v)):null; }
   return ds.length? ds.reduce((s,o)=>s+o.v,0):null;   // whole market = sum
 }
+// Percentile of a segment's per-company metric values in a year (for the 5/95 + 25/75 bands).
+function segMetricPct(seg, metric, year, p){
+  const M=METRICS[metric];
+  const vals=DATA.filter(d=>d.year===year && d.activities.includes(seg)).map(d=>M.f(d)).filter(v=>v!=null && (!M.pos||v>0)).sort((a,b)=>a-b);
+  if(vals.length<4) return null;   // too few companies for a meaningful band
+  return vals[Math.min(vals.length-1, Math.floor(vals.length*p))];
+}
 function segDesc(metric, basis){
   const M=METRICS[metric];
+  if(M.ratio) return 'Median '+M.short+' across companies in each segment.';
   return basis==='total'
     ? 'Total '+M.short+' summed across every company in each segment'+(M.pos?' (positive values).':'.')
     : (basis==='emp'?'Median '+M.short+' per employee in each segment — a productivity proxy.'
@@ -2384,11 +2400,29 @@ function renderRevSegAll(){
     return;
   }
   if(empty) empty.classList.remove('show');
+  const M=METRICS[m];
   const ranked=segs.map(s=>({s, v:segMetricVal(s,m,b,LAST)||0})).sort((a,c)=>c.v-a.v).map(o=>o.s);
-  const series=ranked.map(s=>({label:segName(s), color:SEGCOLORS[s]||cssVar('--muted'),
-    data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)})).filter(se=>se.data.length);
-  if(el) drawFinSvg(el, Object.assign({ yTitle: METRICS[m].unit==='€'?'€':'people' }, CHART_PAD, { series }));
-  const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)+' Shown '+FIN_YEARS[0]+'→'+String(FIN_YEARS[FIN_YEARS.length-1]).slice(2)+'.';
+  // Bands (5/95 + 25/75 percentile of per-company values) are only readable for a couple of segments —
+  // with a crowded selection they'd overlap into noise, so we show them for ≤2 selected segments.
+  const showBands = M.bands && ranked.length<=2;
+  const series=[];
+  ranked.forEach(s=>{
+    const col=SEGCOLORS[s]||cssVar('--muted');
+    if(showBands){
+      const bandLine=(p,dash,op)=>({label:'', color:col, dash, width:1, opacity:op, noMarkers:true,
+        data:FIN_YEARS.map(y=>({x:y, y:segMetricPct(s,m,y,p)})).filter(pt=>pt.y!=null)});
+      const b95=bandLine(.95,[2,3],0.4), b75=bandLine(.75,[5,4],0.6), b25=bandLine(.25,[5,4],0.6), b05=bandLine(.05,[2,3],0.4);
+      [b95,b75,b25,b05].forEach(se=>{ if(se.data.length) series.push(se); });
+    }
+    const med={label:segName(s), color:col, width:2,
+      data:FIN_YEARS.map(y=>({x:y, y:segMetricVal(s,m,b,y)})).filter(p=>p.y!=null)};
+    if(med.data.length) series.push(med);
+  });
+  const yUnit = M.unit==='€/mo' ? '€/mo' : M.unit==='€' ? '€' : 'people';
+  if(el) drawFinSvg(el, Object.assign({ yTitle: yUnit }, CHART_PAD, { series }));
+  const d=document.getElementById('revAllDesc'); if(d) d.textContent=segDesc(m,b)
+    +(showBands?' Dashed = 25th/75th, dotted = 5th/95th percentile per segment.':'')
+    +' Shown '+FIN_YEARS[0]+'→'+String(FIN_YEARS[FIN_YEARS.length-1]).slice(2)+'.';
 }
 
 function syncRevAllSectorBtn(){
@@ -2467,6 +2501,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.88', date:'2026-07-11', sp:3, title:'Salary/empl. segment metric + bands, distinct compare colours, no scrollbars',
+    desc:'Adds an avg-salary-per-employee segment metric (with 5/95 + 25/75 percentile bands for ≤2 segments), gives multi-company charts a high-contrast palette, and hides the remaining horizontal scrollbars.',
+    detail:'Four things. (1) New "Avg salary /empl." metric in the by-segment all-years chart — median of companies\' avgSalary, basis-independent (it\'s already per-employee). (2) When ≤2 segments are selected for it, each segment\'s line gains dashed 25/75 + dotted 5/95 percentile bands (segMetricPct); crowded selections keep just the median to stay readable. (3) The compare palette (CMP_PAL / cmpColor / sddColor) switched from a few theme tokens (two of which read as green) to an explicit 10-hue high-contrast set, so selected companies are easy to tell apart in the chips, money-flow tabs, grouped vs-market and Compare-financials lines. (4) A shared rule hides the horizontal scrollbar (keeping scroll) on .seg-scroll (ranking metric/segment rows), .grp-tabs, .data-tabs, .scatter-strip, .ov-chips and every .yr-row, matching the bottom-nav year row.'},
   {v:'v0.2.87', date:'2026-07-11', sp:1, title:'Market-data tab title shows year range + basis',
     desc:'The Market per-year tab now reads e.g. "Market data 2021→2022 · per employee", derived from the selected year and basis (whole market shows just the year range).',
     detail:'New syncMarketTabTitle() sets the Market-data grp-tab to "Market data " + (prev→selected year, or just the year at the 2019 baseline) + the basis (" · average / company" / " · per employee"), omitting the basis for Whole market since the year range already implies the whole market. Called from renderMarket (every year/basis change) and once after makeSectionsCollapsible so the first paint is right; the "Market all time" tab is untouched.'},
@@ -4082,7 +4119,7 @@ function drawBarsSvg(container, cfg){
 // ---------- Company deep-dive (SVG copy) — reuses DD_SPECS, renders with drawFinSvg ----------
 let sddCos = DD_COMPANIES[0] ? [DD_COMPANIES[0]] : [], sddSrc='combined', sddMetric='ddRev';
 const SDD_PALETTE=CMP_PAL;   // shared with the top chip dots (cmpColor) so chip colour = its lines
-const sddColor=i=>cssVar(SDD_PALETTE[i%SDD_PALETTE.length]);
+const sddColor=i=>SDD_PALETTE[i%SDD_PALETTE.length];   // CMP_PAL holds hex values directly now
 const coShort=co=>((co.name||co.slug||'').replace(/,?\s*(UAB|MB|VšĮ|AB|AS)\b.*/i,'').trim()||co.slug||'?');
 // One chart spec for the current selection. 1 company → full multi-metric spec (unchanged);
 // 2+ companies → "compare mode": one PRIMARY metric line per company PER SOURCE.
