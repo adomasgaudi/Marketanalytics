@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.80</title>
+<title>Markets — LT agencies · v0.2.81</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -412,7 +412,8 @@
   .rank-hd{font-size:15px;font-weight:600;margin:0 0 6px}
   .rank-chartbox{height:auto;min-height:120px}
   .rank-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
-  .rank-tools.revall-tools{align-items:center}
+  .rank-tools.revall-tools{flex-direction:column;align-items:stretch;gap:6px}   /* metric row on top, segment row below */
+  .rank-metric-row,.rank-seg-row{max-width:100%}
   .rank-tools .rank-sector-select{flex:0 1 auto;min-width:180px}
   .rank-range{margin:6px 0 2px}
   .rank-yr-row{margin:0}
@@ -659,7 +660,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.80</span>
+    <span class="nav-version" id="navVersion">v0.2.81</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -743,6 +744,7 @@
   </div>
 
   <h2 class="section">Company all time</h2>
+  <div class="co-co-tabs seg seg-scroll" id="coCompanyTabsAll" role="tablist" aria-label="Selected companies" hidden></div>
   <div class="grid">
     <div class="card full">
       <h2 id="chCoFlowTitle">Money-flow by year</h2>
@@ -838,7 +840,8 @@
   <h2 class="section">Company rankings</h2>
   <h2 id="rankTitle" class="rank-hd">Top 10 versus bottom 10</h2>
   <div class="rank-tools revall-tools">
-    <div class="seg seg-scroll" id="rankToolbar" role="group" aria-label="Ranking metric and segments"></div>
+    <div class="seg seg-scroll rank-metric-row" id="rankMetricRow" role="group" aria-label="Ranking metric"></div>
+    <div class="seg seg-scroll rank-seg-row" id="rankSegRow" role="group" aria-label="Ranking segments"></div>
   </div>
   <div class="chartbox rank-chartbox" id="chTopBox"><div class="svgwrap" id="chTop" style="position:absolute;inset:0"></div></div>
 
@@ -1380,12 +1383,14 @@ function coBrandColor(brand){ const i=ovBrands.indexOf(brand); return i>=0? cmpC
 // user picks which); the "vs the market" chart stays grouped across all of them. Tabs re-render the
 // focused single-company widgets by calling renderCompany() with the tapped brand.
 function renderCompanyTabs(focused){
-  const el=document.getElementById('coCompanyTabs'); if(!el) return;
   const list = (typeof ovActiveList==='function') ? ovActiveList() : [ovBrand];
-  if(list.length<2){ el.hidden=true; el.innerHTML=''; return; }
-  el.hidden=false;
-  el.innerHTML=list.map(b=>`<button type="button" role="tab" class="co-co-tab${b===focused?' active':''}" data-brand="${esc(b)}" aria-selected="${b===focused}"><i class="ov-dot" style="background:${coBrandColor(b)}"></i>${esc(b)}</button>`).join('');
-  el.querySelectorAll('.co-co-tab').forEach(btn=>btn.addEventListener('click',()=>{ renderCompany(btn.dataset.brand); }));
+  ['coCompanyTabs','coCompanyTabsAll'].forEach(id=>{     // per-year + all-time both carry the tab row
+    const el=document.getElementById(id); if(!el) return;
+    if(list.length<2){ el.hidden=true; el.innerHTML=''; return; }
+    el.hidden=false;
+    el.innerHTML=list.map(b=>`<button type="button" role="tab" class="co-co-tab${b===focused?' active':''}" data-brand="${esc(b)}" aria-selected="${b===focused}"><i class="ov-dot" style="background:${coBrandColor(b)}"></i>${esc(b)}</button>`).join('');
+    el.querySelectorAll('.co-co-tab').forEach(btn=>btn.addEventListener('click',()=>{ renderCompany(btn.dataset.brand); }));
+  });
 }
 
 function renderCompany(brand){
@@ -2084,7 +2089,8 @@ document.addEventListener('click',e=>{ if(e.target.closest('.seg')) requestAnima
 const topSegs = segSorted.slice(0,5).map(s=>s[0]);   // still used by the size-vs-profit scatter grouping
 
 // ---------- Top-N ranking (follows the shared Companies year row + Full/Per-employee basis) ----------
-const rankToolbar = document.getElementById('rankToolbar');
+const rankMetricRow = document.getElementById('rankMetricRow');
+const rankSegRow = document.getElementById('rankSegRow');
 let rankMetricVal = 'estimatedIncome';
 let rankSegments = new Set(SEGMENTS);   // all segments by default → a real top-10/bottom-10 split
 const RANK_ROW_H = 32, RANK_CHART_PAD = 44;
@@ -2093,29 +2099,33 @@ function sizeRankChart(n){
   const box=document.getElementById('chTopBox');
   if(box) box.style.height = Math.max(RANK_CHART_PAD+RANK_ROW_H*2, RANK_CHART_PAD+n*RANK_ROW_H)+'px';
 }
+// Metric pills (Revenue/Turnover/…) and segment pills now live in TWO separate rows, stacked.
 function renderRankToolbar(){
-  if(!rankToolbar) return;
-  const metrics=RANK_METRICS.map(([m,lbl])=>`<button type="button" class="rank-metric${m===rankMetricVal?' active':''}" data-m="${m}">${lbl}</button>`).join('');
-  const segs=SEGMENTS.map(s=>`<button type="button" class="rank-seg${rankSegments.has(s)?' on':''}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</button>`).join('');
-  const allLbl=allSegsSelected(rankSegments)?'Clear all':'Select all';
-  rankToolbar.innerHTML=metrics+'<span class="seg-div" aria-hidden="true"></span>'+segs+`<button type="button" class="rank-seg rank-seg-all" data-s="__all">${allLbl}</button>`;
-  rankToolbar.querySelectorAll('.rank-metric').forEach(b=>b.addEventListener('click',()=>{
-    rankMetricVal=b.dataset.m;
-    renderRankToolbar();
-    drawTop();
-  }));
-  const toggleSeg=s=>{
-    if(s==='__all'){
-      if(allSegsSelected(rankSegments)) rankSegments=new Set([[...rankSegments][0]||SEGMENTS[0]]);
-      else SEGMENTS.forEach(x=>rankSegments.add(x));
-    } else {
-      if(rankSegments.has(s)&&rankSegments.size===1) return;
-      if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
-    }
-    renderRankToolbar();
-    drawTop();
-  };
-  rankToolbar.querySelectorAll('.rank-seg').forEach(b=>b.addEventListener('click',()=>toggleSeg(b.dataset.s)));
+  if(rankMetricRow){
+    rankMetricRow.innerHTML=RANK_METRICS.map(([m,lbl])=>`<button type="button" class="rank-metric${m===rankMetricVal?' active':''}" data-m="${m}">${lbl}</button>`).join('');
+    rankMetricRow.querySelectorAll('.rank-metric').forEach(b=>b.addEventListener('click',()=>{
+      rankMetricVal=b.dataset.m;
+      renderRankToolbar();
+      drawTop();
+    }));
+  }
+  if(rankSegRow){
+    const segs=SEGMENTS.map(s=>`<button type="button" class="rank-seg${rankSegments.has(s)?' on':''}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</button>`).join('');
+    const allLbl=allSegsSelected(rankSegments)?'Clear all':'Select all';
+    rankSegRow.innerHTML=segs+`<button type="button" class="rank-seg rank-seg-all" data-s="__all">${allLbl}</button>`;
+    const toggleSeg=s=>{
+      if(s==='__all'){
+        if(allSegsSelected(rankSegments)) rankSegments=new Set([[...rankSegments][0]||SEGMENTS[0]]);
+        else SEGMENTS.forEach(x=>rankSegments.add(x));
+      } else {
+        if(rankSegments.has(s)&&rankSegments.size===1) return;
+        if(rankSegments.has(s)) rankSegments.delete(s); else rankSegments.add(s);
+      }
+      renderRankToolbar();
+      drawTop();
+    };
+    rankSegRow.querySelectorAll('.rank-seg').forEach(b=>b.addEventListener('click',()=>toggleSeg(b.dataset.s)));
+  }
   requestAnimationFrame(paintSegActive);
 }
 function syncRankControls(){
@@ -2433,6 +2443,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.81', date:'2026-07-11', sp:1.5, title:'Split ranking metric/segment rows + all-time company tabs',
+    desc:'The top-10/bottom-10 toolbar now stacks the metric pills on top of the segment pills; the all-time money-flow gets the same multi-company tab row.',
+    detail:'Split #rankToolbar into two stacked rows — #rankMetricRow (Revenue/Turnover/Net profit/…) above #rankSegRow (segment multi-select + Select/Clear all) — via flex-direction:column, instead of one combined scrolling row. Added a second company tab strip (#coCompanyTabsAll) under the "Company all time" heading so switching the focused company drives the all-years money-flow too; renderCompanyTabs now fills both the per-year and all-time tab rows.'},
   {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',
     desc:'With several companies selected, the money-flow gets a per-company tab row and the vs-market chart shows a grouped bar per company for each metric.',
     detail:'The company profile / money-flow / KPIs were single-company only (they showed just the primary). Now when >1 company is selected a tab row (#coCompanyTabs, chip-coloured dots) lets you switch which company those focused widgets show. The "vs the market" percentile chart became grouped: rankOf runs per selected company so each metric (Revenue / Turnover / Net profit / margin / employees / salary) renders one bar per company, coloured like its chip, sized to fit; tooltip keeps the #rank of N. drawTop already golds selected companies in the rankings (v0.2.79). coBrandColor maps a brand to its chip colour.'},
