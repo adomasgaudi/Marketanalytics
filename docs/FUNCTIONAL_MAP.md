@@ -1,6 +1,6 @@
 # Market Analytics — Complete Functional Map
 
-> Snapshot of `src/template.html` at **v0.2.89** (4,996 lines, 435 KB). Captured to inform a possible Next.js migration. A single self-contained HTML file: `<head>` pre-paint script + ~2,300 lines of CSS + HTML body + one ~4,000-line `<script>` block. Profiles ~113 Lithuanian marketing/PR/creative agencies, with **Fabula** as the "my company" focus (gold-highlighted everywhere).
+> Snapshot of `src/template.html` at **v0.2.89** (4,996 lines, 435 KB). Captured to inform a possible Next.js migration. A single self-contained HTML file: `<head>` pre-paint script + ~2,300 lines of CSS + HTML body + one ~4,000-line `<script>` block. Profiles \~140 Lithuanian marketing/PR/creative agencies
 
 ---
 
@@ -107,7 +107,7 @@ A build pipeline (the Python scripts in `scripts/`: `parse_company.py`, `scrape_
 4. Company pills are lifted into a sticky top bar (4918–4930).
 5. Charts are **re-fit** (`fitActiveCharts`, 4948) because reparenting changed their container widths.
 
-**Rough function clusters (~145):**
+**Rough function clusters (\~145):**
 - **View/theme/mode/settings** (~20): `switchView`, `applyTheme`, `applyPalette`, `retintCharts`, `applyMode`, `applyGraphPan`, `refitSvg`, GitHub/Sodra-refresh API (1118–1175).
 - **Company rendering** (~15): `renderCompany` (1409, ~190 lines), `renderFinFlow` (nested 1475), `renderCompanyTabs`, `ovChanged`, `buildOvList`, `renderOvSegUI`, `renderOvChips`.
 - **Market rendering** (~15): `renderMarket`, `marketAgg`, `renderMoneyFlowAll`, `renderSegView`, `renderRevSegAll`, `syncMarketTabTitle`.
@@ -141,11 +141,11 @@ A build pipeline (the Python scripts in `scripts/`: `parse_company.py`, `scrape_
 
 **Genuinely dynamic / interactive (must be rebuilt as React state/components):** every chart (9 charts, 2 engines), all custom dropdowns + multi-select filters, year/basis/KPI toggles, per-year⇄all-time mode, the scrubber animation, pan/zoom SVG interactions, the full Data Explorer (source modes, EN/LT translation, search, sort, CSV export), coverage grid, data-changes panel, version-history tree, theme/palette/dev-mode.
 
-**Static-ish:** the changelog `VERSIONS` array (~280 entries, lines 2512–3442) and the sheet-description metadata — pure data.
+**Static-ish:** the changelog `VERSIONS` array (\~280 entries, lines 2512–3442) and the sheet-description metadata — pure data.
 
 **Coupling / risk hotspots:**
 1. **`makeSectionsCollapsible()` (4834)** — the app **physically reparents DOM nodes from dashView into companiesView at runtime**. There is no clean per-page component boundary in the source; "Companies" literally *is* dashboard sections moved after load. In React each of those sections must be re-authored as a component and placed on the correct route directly.
-2. **Rendering is HTML-string-coupled** — most renderers build `innerHTML` strings (`renderCompany`, `moneyFlowHtml`, `renderRek`, the whole SVG engine emits raw SVG markup strings). None of it is declarative; porting means rewriting each as JSX (charts especially — the custom SVG engine is ~500 lines of string-built SVG with manual pan/zoom/animation that would map more naturally to a charting lib or SVG-in-JSX).
+2. **Rendering is HTML-string-coupled** — most renderers build `innerHTML` strings (`renderCompany`, `moneyFlowHtml`, `renderRek`, the whole SVG engine emits raw SVG markup strings). None of it is declarative; porting means rewriting each as JSX (charts especially — the custom SVG engine is \~500 lines of string-built SVG with manual pan/zoom/animation that would map more naturally to a charting lib or SVG-in-JSX).
 3. **Global mutable state + `window.*` functions + DOM-stashed controllers (`el.__fin`)** must become React state/context.
 4. **Build-time `__DATA__` substitution** cleanly maps to Next.js data loading (import the JSON / server component / `getStaticProps`) — the easiest part to migrate.
 5. Chart.js is the only real dep and ports directly; the bespoke SVG engine is the largest single rewrite.
