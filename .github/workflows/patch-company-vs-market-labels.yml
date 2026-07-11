@@ -1,0 +1,114 @@
+name: Patch company vs market labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-company-vs-market-labels.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-deploy:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Companies vs market chart and rebuild
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/template.html')
+          text = path.read_text(encoding='utf-8')
+
+          text = text.replace('<title>Markets — LT agencies · v0.2.80</title>', '<title>Markets — LT agencies · v0.2.81</title>')
+          text = text.replace('<span class="nav-version" id="navVersion">v0.2.80</span>', '<span class="nav-version" id="navVersion">v0.2.81</span>')
+
+          old_palette = """const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];
+const cmpColor=i=>cssVar(CMP_PAL[i%CMP_PAL.length]);"""
+          new_palette = """const CMP_PAL=['--accent','--purple','--amber','--red','--green','--gold','--muted'];
+const cmpColor=i=>cssVar(CMP_PAL[i%CMP_PAL.length]);"""
+          if old_palette not in text:
+              raise SystemExit('CMP palette block not found')
+          text = text.replace(old_palette, new_palette, 1)
+
+          old_block = """  const rows=[];
+  rankMetricSpecs.forEach(spec=>{
+    (grouped?cmpList:[brand]).forEach(b=>{
+      const r=rankOf(spec.fn, (byBrand[b]&&byBrand[b][coYear])||{});
+      if(!r) return;
+      rows.push({ label: grouped ? spec.label+' — '+b : spec.label, value:r.pct,
+        color: grouped ? coBrandColor(b) : (r.pct>=50?cssVar('--gold-rank'):cssVar('--muted')),
+        pos:r.pos, total:r.total, metric:spec.label, brand:b });
+    });
+  });
+  const rankBox=document.getElementById('chMineRankBox');
+  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?26:32))+'px';   // grow with grouped bars
+  if(rows.length) drawBarsSvg(chMineRank, {
+    rows,
+    xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
+    tip:r=>{ const row=rows.find(x=>x.label===r.label);
+      return `<b>${esc(String(r.label))}</b>: ${Math.round(r.value)}th percentile${row?` · #${row.pos} of ${row.total}`:''}`; }
+  });"""
+          new_block = """  const rows=[];
+  rankMetricSpecs.forEach(spec=>{
+    const metricRows=[];
+    (grouped?cmpList:[brand]).forEach(b=>{
+      const r=rankOf(spec.fn, (byBrand[b]&&byBrand[b][coYear])||{});
+      if(!r) return;
+      metricRows.push({ label: spec.label, value:r.pct,
+        color: grouped ? coBrandColor(b) : (r.pct>=50?cssVar('--gold-rank'):cssVar('--muted')),
+        pos:r.pos, total:r.total, metric:spec.label, metricLabel:spec.label, brand:b });
+    });
+    // In grouped mode, write the metric name once for the group instead of repeating
+    // “Revenue — Company” on every bar. Company identity stays in colour + tooltip.
+    metricRows.forEach((r,i)=>rows.push(Object.assign({}, r, { label: grouped ? (i===0 ? spec.label : '') : spec.label })));
+  });
+  const rankBox=document.getElementById('chMineRankBox');
+  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?26:32))+'px';   // grow with grouped bars
+  if(rows.length) drawBarsSvg(chMineRank, {
+    rows,
+    xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
+    tip:r=>`<b>${esc(String(r.metricLabel||r.metric||r.label))}${grouped&&r.brand?' · '+esc(r.brand):''}</b>: ${Math.round(r.value)}th percentile · #${r.pos} of ${r.total}`
+  });"""
+          if old_block not in text:
+              raise SystemExit('vs-market chart block not found')
+          text = text.replace(old_block, new_block, 1)
+
+          version_anchor = """const VERSIONS = [
+  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"""
+          version_insert = """const VERSIONS = [
+  {v:'v0.2.81', date:'2026-07-11', sp:1, title:'Cleaner company-vs-market labels',
+    desc:'The grouped company-vs-market chart now uses one metric label per group and more distinct company colours.',
+    detail:'Removed repeated “Metric — Company” labels from the percentile chart. In grouped mode only the metric name is written once; company identity is carried by the chip-matched bar colour and tooltip. Reordered the compare palette so the first two selected companies are teal and purple instead of two similar green/teal tones.'},
+  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"""
+          if version_anchor not in text:
+              raise SystemExit('version anchor not found')
+          text = text.replace(version_anchor, version_insert, 1)
+
+          path.write_text(text, encoding='utf-8')
+
+          wf = Path('.github/workflows/patch-company-vs-market-labels.yml')
+          if wf.exists():
+              wf.unlink()
+          PY
+
+          python3 src/build_site.py
+
+      - name: Validate generated output
+        run: |
+          grep -q 'v0.2.81' src/template.html
+          grep -q 'v0.2.81' index.html
+          ! grep -q 'spec.label+.*—.*+b' src/template.html
+          ! grep -q 'spec.label+.*—.*+b' index.html
+
+      - name: Commit deployed files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/template.html index.html .github/workflows/patch-company-vs-market-labels.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Clean up company vs market chart labels"
+          git push
