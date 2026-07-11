@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.89</title>
+<title>Markets — LT agencies · v0.2.90</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -574,6 +574,12 @@
   .chg-wrap>summary::before{content:'▸';color:var(--muted);transition:.15s;display:inline-block}
   .chg-wrap[open]>summary::before{transform:rotate(90deg)}
   .chg-body{padding:2px 14px 14px}
+  .rek-table-wrap{margin-bottom:16px;border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden}
+  .rek-table-wrap>summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14px;color:var(--text);list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rek-table-wrap>summary::-webkit-details-marker{display:none}
+  .rek-table-wrap>summary::before{content:'▸';color:var(--muted);transition:.15s;display:inline-block}
+  .rek-table-wrap[open]>summary::before{transform:rotate(90deg)}
+  .rek-table-body{padding:2px 14px 14px}
   .chg-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 12px}
   .chg-tools input,.chg-tools select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:inherit}
   .chg-tools input{min-width:170px}
@@ -668,7 +674,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.89</span>
+    <span class="nav-version" id="navVersion">v0.2.90</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -890,6 +896,35 @@
   <div class="co-select" id="rekCompanySelect" style="margin-bottom:14px">
     <button class="co-select-btn" id="rekCoBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekCoLabel">Select company</span><span class="co-caret">▾</span></button>
     <div class="co-select-panel" id="rekCoPanel">
+      <div class="ov-filter-tools rank-tools">
+        <div class="co-select rank-sector-select" id="rekSegSelect">
+          <button type="button" class="co-select-btn" id="rekSegBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekSegBtnText">Segment</span><span class="co-caret">▼</span></button>
+          <div class="co-select-panel" id="rekSegPanel">
+            <div class="co-select-list" id="rekSegList" role="listbox" aria-multiselectable="true"></div>
+            <button type="button" class="co-select-opt revall-select-all" id="rekSegSelectAll">Select all</button>
+            <button type="button" class="co-select-opt ov-seg-done" id="rekSegDone">Done</button>
+          </div>
+        </div>
+        <div class="co-select ov-metric-select" id="rekTurnoverSelect">
+          <button type="button" class="co-select-btn" id="rekTurnoverBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekTurnoverBtnText">Turnover: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="rekTurnoverPanel"><div class="co-select-list" id="rekTurnoverList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="rekRevenueSelect">
+          <button type="button" class="co-select-btn" id="rekRevenueBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekRevenueBtnText">Revenue: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="rekRevenuePanel"><div class="co-select-list" id="rekRevenueList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="rekEmployeesSelect">
+          <button type="button" class="co-select-btn" id="rekEmployeesBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekEmployeesBtnText">Employees: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="rekEmployeesPanel"><div class="co-select-list" id="rekEmployeesList" role="listbox"></div></div>
+        </div>
+        <div class="co-select ov-metric-select" id="rekSalarySelect">
+          <button type="button" class="co-select-btn" id="rekSalaryBtn" aria-haspopup="listbox" aria-expanded="false"><span id="rekSalaryBtnText">Salary: any</span><span class="co-caret">▾</span></button>
+          <div class="co-select-panel" id="rekSalaryPanel"><div class="co-select-list" id="rekSalaryList" role="listbox"></div></div>
+        </div>
+        <button type="button" class="rank-clear" id="rekFilterClear">Clear filters</button>
+      </div>
+      <div class="seg-filter rank-seg-wrap ov-seg-wrap" id="rekSegPills"></div>
+      <div class="ov-filter-hint" id="rekFilterHint"></div>
       <input class="co-select-search" id="rekCoSearch" placeholder="Search company…" autocomplete="off">
       <div class="co-select-list" id="rekCoList" role="listbox"></div>
     </div>
@@ -925,6 +960,9 @@
       <div class="chg-list" id="chgList"></div>
     </div>
   </details>
+  <details class="rek-table-wrap" open id="rekTableSection">
+    <summary>🔎 Company field data <span class="cov-sub" id="rekSectionSub"></span></summary>
+    <div class="rek-table-body">
   <div class="data-tabs" id="rekTabs"></div>
   <div class="data-controls">
     <div class="seg" id="rekMode">
@@ -941,6 +979,8 @@
   </div>
   <div class="desc" id="rekProvHint" style="display:none;margin:4px 0 10px;font-size:12px"></div>
   <div class="table-wrap" id="rekTableWrap"></div>
+    </div>
+  </details>
 
   <details class="raw-sheets" style="margin-top:26px">
     <summary>📑 Initial data — raw Excel sheets (all companies)</summary>
@@ -2510,6 +2550,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.90', date:'2026-07-11', sp:2, title:'Explore-data company filters + collapsible field table',
+    desc:'The Explore-data company picker gains the same segment + turnover/revenue/employees/salary filters as the Companies page, and the company field-data section below Data changes is now collapsible like the others.',
+    detail:'Ported the Companies-page ov* filter into the Explore-data top company picker as rek* state: a Segment multi-select plus minimum-threshold dropdowns for turnover, revenue, employees and median salary (shared OV_THRESHOLDS, scoped to the latest financial year LAST), with pills, a "Showing N of M" hint and Clear filters. Nested dropdowns re-press to close and dismiss on outside-click/Escape/Done, matching the Companies picker so it can\'t get stuck open. The currently-selected company stays visible even when filtered out. Also wrapped the per-company field table (tabs + Merged/Initial/Rekvizitai/Sodra controls + table) in a collapsible <details> ("🔎 Company field data") styled like the coverage/data-changes folds, with the company name as its sub-label.'},
   {v:'v0.2.89', date:'2026-07-11', sp:2, title:'Grouped vs-market: metric headings + gaps; deep-dive Wages metric',
     desc:'The grouped "vs the market" chart now shows one big metric heading per group with a gap between groups (bars just say the company name); Compare financials gains a Wages metric.',
     detail:'drawBarsSvg learned two backward-compatible row kinds: {heading:"Revenue"} draws a bigger group title (no bar) and {spacer:true} leaves a gap. The grouped vs-market builder emits a heading + spacer per metric and labels each bar with just the company name (colour identifies it) instead of repeating "Revenue — Company"; tooltip still names the metric. Also renamed the deep-dive "Wage" toggle to "Avg salary" and added a "Wages" metric (total annual wage bill = salaryCosts, Initial source; per-employee basis divides it by headcount) plus dropped "/empl." from the segment "Avg salary" label.'},
@@ -4559,6 +4602,94 @@ function renderDataChanges(){
   renderDataChanges();
 })();
 
+// ── Explore-Data company-picker filters (mirrors the Companies-page ov* filter) ──
+// Same segment multi-select + turnover/revenue/employees/salary thresholds, scoped
+// to the latest financial year (LAST). Companies here are REK_COMPANIES keyed by .brand.
+const rekSegs = new Set();
+let rekMinTurnover=0, rekMinRevenue=0, rekMinEmployees=0, rekMinSalary=0;
+const rekMetricUi={
+  turnover:{btnText:()=>document.getElementById('rekTurnoverBtnText'),list:()=>document.getElementById('rekTurnoverList'),select:()=>document.getElementById('rekTurnoverSelect'),btn:()=>document.getElementById('rekTurnoverBtn'),get:()=>rekMinTurnover,set:v=>{rekMinTurnover=v;}},
+  revenue:{btnText:()=>document.getElementById('rekRevenueBtnText'),list:()=>document.getElementById('rekRevenueList'),select:()=>document.getElementById('rekRevenueSelect'),btn:()=>document.getElementById('rekRevenueBtn'),get:()=>rekMinRevenue,set:v=>{rekMinRevenue=v;}},
+  employees:{btnText:()=>document.getElementById('rekEmployeesBtnText'),list:()=>document.getElementById('rekEmployeesList'),select:()=>document.getElementById('rekEmployeesSelect'),btn:()=>document.getElementById('rekEmployeesBtn'),get:()=>rekMinEmployees,set:v=>{rekMinEmployees=v;}},
+  salary:{btnText:()=>document.getElementById('rekSalaryBtnText'),list:()=>document.getElementById('rekSalaryList'),select:()=>document.getElementById('rekSalarySelect'),btn:()=>document.getElementById('rekSalaryBtn'),get:()=>rekMinSalary,set:v=>{rekMinSalary=v;}}
+};
+function rekHasActiveFilters(){ return rekSegs.size>0 || rekMinTurnover>0 || rekMinRevenue>0 || rekMinEmployees>0 || rekMinSalary>0; }
+function rekPassesFilter(brand){
+  const d=byBrand[brand]&&byBrand[brand][LAST];
+  if(rekSegs.size && (!d || !d.activities.some(a=>rekSegs.has(a)))) return false;
+  if(rekMinTurnover>0 && (!d || (d.revenue||0)<rekMinTurnover)) return false;
+  if(rekMinRevenue>0 && (!d || (d.estimatedIncome||0)<rekMinRevenue)) return false;
+  if(rekMinEmployees>0 && (!d || (d.employees||0)<rekMinEmployees)) return false;
+  if(rekMinSalary>0 && (!d || (d.avgSalary||0)<rekMinSalary)) return false;
+  return true;
+}
+function closeRekNestedDropdowns(except){
+  document.querySelectorAll('#rekCoPanel .co-select.open').forEach(el=>{
+    if(except && (el===except || el.contains(except))) return;
+    el.classList.remove('open');
+    const b=el.querySelector('.co-select-btn'); if(b) b.setAttribute('aria-expanded','false');
+  });
+}
+function syncRekMetricBtn(key){
+  const ui=rekMetricUi[key], t=ui&&ui.btnText(); if(!t) return;
+  const cur=ui.get(), opts=OV_THRESHOLDS[key]||[];
+  const hit=opts.find(([v])=>+v===+cur);
+  t.textContent=hit?hit[1]:(opts[0]?opts[0][1]:'Any');
+}
+function renderRekMetricLists(){
+  Object.keys(rekMetricUi).forEach(key=>{
+    const ui=rekMetricUi[key], list=ui.list(), opts=OV_THRESHOLDS[key]||[];
+    if(!list) return;
+    const cur=ui.get();
+    list.innerHTML=opts.map(([v,lbl])=>`<div class="co-select-opt${+v===+cur?' active':''}" role="option" data-v="${esc(v)}">${esc(lbl)}</div>`).join('');
+    list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',e=>{
+      e.stopPropagation();
+      ui.set(+(o.dataset.v)||0);
+      syncRekMetricBtn(key); renderRekMetricLists(); closeRekNestedDropdowns(null); buildRekCompanies();
+    }));
+    syncRekMetricBtn(key);
+  });
+}
+function syncRekSegBtn(){
+  const t=document.getElementById('rekSegBtnText'); if(!t) return;
+  if(!rekSegs.size) t.textContent='Segment';
+  else if(rekSegs.size===1) t.textContent=segName([...rekSegs][0]);
+  else t.textContent=`${rekSegs.size} segments`;
+}
+function renderRekSegUI(){
+  syncRekSegBtn();
+  syncSelectAllBtn(document.getElementById('rekSegSelectAll'), rekSegs);
+  const pills=document.getElementById('rekSegPills');
+  if(pills){
+    if(!rekSegs.size){ pills.innerHTML=''; pills.style.display='none'; }
+    else{
+      pills.style.display='';
+      pills.innerHTML=[...rekSegs].sort((a,b)=>segName(a).localeCompare(segName(b),'en')).map(s=>
+        `<span class="sf-pill on" role="button" tabindex="0" data-s="${esc(s)}" aria-label="Remove ${esc(segName(s))}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}<span class="rank-seg-remove" aria-hidden="true">×</span></span>`
+      ).join('');
+      pills.querySelectorAll('.sf-pill').forEach(p=>{
+        const rm=()=>{ rekSegs.delete(p.dataset.s); renderRekSegUI(); buildRekCompanies(); };
+        p.addEventListener('click',rm);
+        p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); rm(); } });
+      });
+    }
+  }
+  const segList=document.getElementById('rekSegList');
+  if(segList){
+    segList.innerHTML=SEGMENTS.map(s=>`<div class="co-select-opt rank-sector-opt${rekSegs.has(s)?' active':''}" role="option" tabindex="0" aria-selected="${rekSegs.has(s)}" data-s="${esc(s)}"><span class="sf-dot" style="background:${SEGCOLORS[s]||'#888'}"></span>${esc(segName(s))}</div>`).join('');
+    segList.querySelectorAll('.co-select-opt').forEach(o=>{
+      const toggle=()=>{ const s=o.dataset.s; if(rekSegs.has(s)) rekSegs.delete(s); else rekSegs.add(s); renderRekSegUI(); buildRekCompanies(); };
+      o.addEventListener('click',toggle);
+      o.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+    });
+  }
+}
+function clearRekFilters(){
+  rekSegs.clear();
+  rekMinTurnover=rekMinRevenue=rekMinEmployees=rekMinSalary=0;
+  renderRekSegUI(); renderRekMetricLists(); buildRekCompanies();
+}
+
 function buildRekCompanies(){
   const sel=document.getElementById('rekCompanySelect'); if(!sel) return;
   if(REK_COMPANIES.length<2){ sel.style.display='none'; return; }   // single company: no picker
@@ -4567,16 +4698,24 @@ function buildRekCompanies(){
   if(label) label.textContent = rekCo ? (rekCo.name||rekCo.slug) : 'Select company';
   const list=document.getElementById('rekCoList');
   const q=(document.getElementById('rekCoSearch')?.value||'').trim().toLowerCase();
-  const opts=REK_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  const afterSearch=REK_COMPANIES.filter(c=>!q || (c.name||c.slug).toLowerCase().includes(q));
+  // keep the currently-selected company visible even when it fails the filter
+  const opts=afterSearch.filter(c=>rekPassesFilter(c.brand) || c===rekCo);
+  const hint=document.getElementById('rekFilterHint');
+  if(hint){
+    const active=rekHasActiveFilters()||q;
+    hint.textContent=active ? `Showing ${opts.length} of ${REK_COMPANIES.length} · ${LAST}` : '';
+  }
   const coCubes=c=>{ const has=new Set(['initial']); // every brand has Initial (dataset)
     if(c.tabs && Object.keys(c.tabs).length) has.add('rekvizitai'); if(c.sodra) has.add('sodra');
     return `<span class="co-cubes">${SOURCES.map(s=>`<span class="src-cube ${s}${has.has(s)?'':' empty'}" title="${SRC_LABEL[s]}${has.has(s)?'':' — none'}"></span>`).join('')}</span>`; };
   list.innerHTML = opts.length
     ? opts.map(c=>`<div class="co-select-opt${c===rekCo?' active':''}" role="option" data-slug="${esc(c.slug)}">${coCubes(c)}${esc(c.name||c.slug)}</div>`).join('')
-    : `<div class="co-select-empty">No company matches “${esc(q)}”.</div>`;
+    : `<div class="co-select-empty">${q?'No company matches “'+esc(q)+'” with the current filters.':'No companies match your filters.'}</div>`;
   list.querySelectorAll('.co-select-opt').forEach(o=>o.addEventListener('click',()=>{
     sel.classList.remove('open');
     document.getElementById('rekCoBtn').setAttribute('aria-expanded','false');
+    closeRekNestedDropdowns(null);
     selectCompany(o.dataset.slug);
   }));
 }
@@ -4601,6 +4740,8 @@ function selectCompany(slug){
   rekTab = (rekCo && rekCo.order && (rekCo.order.includes(prevTab) ? prevTab : rekCo.order[0])) || null;
   rekSort=-1; const s=document.getElementById('rekSearch'); if(s) s.value='';
   buildRekCompanies(); buildRekTabs(); renderRek(); renderProvenanceHint();
+  const sub=document.getElementById('rekSectionSub');
+  if(sub) sub.textContent = rekCo ? '· '+(rekCo.name||rekCo.slug) : '';
 }
 
 function buildRekTabs(){
@@ -4794,12 +4935,56 @@ function initRek(){
     const btn=document.getElementById('rekCoBtn'), panel=document.getElementById('rekCoPanel'), search=document.getElementById('rekCoSearch');
     btn.addEventListener('click',e=>{ e.stopPropagation();
       const open=sel.classList.toggle('open'); btn.setAttribute('aria-expanded',open?'true':'false');
-      if(open){ search.value=''; buildRekCompanies(); search.focus({preventScroll:true}); }
+      if(open){ closeRekNestedDropdowns(null); search.value=''; buildRekCompanies(); search.focus({preventScroll:true}); }
     });
-    panel.addEventListener('click',e=>e.stopPropagation());
+    // clicks on empty panel space (not a control) collapse any open nested dropdown
+    panel.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(e.target.closest('button, .co-select-search, .co-select-opt, .sf-pill')) return;
+      closeRekNestedDropdowns(null);
+    });
     search.addEventListener('input', buildRekCompanies);
-    document.addEventListener('click', ()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+    document.addEventListener('click', ()=>{ if(sel.classList.contains('open')){ sel.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } closeRekNestedDropdowns(null); });
+    document.addEventListener('keydown', e=>{
+      if(e.key!=='Escape') return;
+      const nestedOpen=document.querySelector('#rekCoPanel .co-select.open');
+      if(nestedOpen && nestedOpen!==sel){ closeRekNestedDropdowns(null); e.preventDefault(); return; }
+      sel.classList.remove('open'); btn.setAttribute('aria-expanded','false');
+    });
+    // Metric threshold dropdowns (turnover/revenue/employees/salary) + segment picker.
+    Object.keys(rekMetricUi).forEach(key=>{
+      const ui=rekMetricUi[key], mSel=ui.select(), mBtn=ui.btn();
+      if(!mSel||!mBtn) return;
+      mBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const wasOpen=mSel.classList.contains('open');
+        closeRekNestedDropdowns(wasOpen?null:mSel);   // re-press collapses
+        if(!wasOpen){ mSel.classList.add('open'); mBtn.setAttribute('aria-expanded','true'); }
+      });
+      const p=mSel.querySelector('.co-select-panel'); if(p) p.addEventListener('click',e=>e.stopPropagation());
+    });
+    const segBtn=document.getElementById('rekSegBtn'), segSel=document.getElementById('rekSegSelect');
+    if(segBtn && segSel){
+      segBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const wasOpen=segSel.classList.contains('open');
+        closeRekNestedDropdowns(wasOpen?null:segSel);
+        if(!wasOpen){ segSel.classList.add('open'); segBtn.setAttribute('aria-expanded','true'); }
+      });
+      const segPanel=document.getElementById('rekSegPanel');
+      if(segPanel) segPanel.addEventListener('click',e=>e.stopPropagation());
+    }
+    const segDone=document.getElementById('rekSegDone');
+    if(segDone) segDone.addEventListener('click',e=>{ e.stopPropagation(); closeRekNestedDropdowns(null); });
+    const segAll=document.getElementById('rekSegSelectAll');
+    if(segAll) segAll.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(allSegsSelected(rekSegs)) rekSegs.clear(); else SEGMENTS.forEach(s=>rekSegs.add(s));
+      renderRekSegUI(); buildRekCompanies();
+    });
+    const clr=document.getElementById('rekFilterClear');
+    if(clr) clr.addEventListener('click',e=>{ e.stopPropagation(); clearRekFilters(); });
+    renderRekSegUI(); renderRekMetricLists();
   })();
   document.getElementById('rekCsvBtn').addEventListener('click',()=>{
     const BOM='﻿', esc=v=>{const s=v==null?'':String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
