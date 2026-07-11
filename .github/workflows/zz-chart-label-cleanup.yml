@@ -1,11 +1,9 @@
-# trigger existing workflow
+# trigger existing workflow without path filter
 name: Chart label cleanup
 
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/zz-chart-label-cleanup.yml'
 
 permissions:
   contents: write
@@ -33,8 +31,10 @@ jobs:
               raise SystemExit('palette line not found')
           s = s.replace(old, new, 1)
 
-          pat = re.compile(r"""  const rows=\[\];\n  rankMetricSpecs\.forEach\(spec=>\{\n    \(grouped\?cmpList:\[brand\]\)\.forEach\(b=>\{\n      const r=rankOf\(spec\.fn, \(byBrand\[b\]&&byBrand\[b\]\[coYear\]\)\|\|\{\}\);\n      if\(!r\) return;\n      rows\.push\(\{ label: grouped \? spec\.label\+' — '\+b : spec\.label, value:r\.pct,\n        color: grouped \? coBrandColor\(b\) : \(r\.pct>=50\?cssVar\('--gold-rank'\):cssVar\('--muted'\)\),\n        pos:r\.pos, total:r\.total, metric:spec\.label, brand:b \}\);\n    \}\);\n  \}\);\n  const rankBox=document\.getElementById\('chMineRankBox'\);\n  if\(rankBox\) rankBox\.style\.height = Math\.max\(200, 44 \+ rows\.length\*\(grouped\?26:32\)\)\+'px';   // grow with grouped bars\n  if\(rows\.length\) drawBarsSvg\(chMineRank, \{\n    rows,\n    xTitle:'Percentile vs '\+BRANDS\.length\+' agencies \(100 = top\)', fmt:v=>Math\.round\(v\),\n    tip:r=>\{ const row=rows\.find\(x=>x\.label===r\.label\);\n      return `<b>\$\{esc\(String\(r\.label\)\)\}</b>: \$\{Math\.round\(r\.value\)\}th percentile\$\{row\?` · #\$\{row\.pos\} of \$\{row\.total\}`:''\}`; \}\n  \}\);""", re.M)
-          repl = """  const rows=[];
+          start = s.index('  const rows=[];\n  rankMetricSpecs.forEach(spec=>{')
+          end = s.index('  else clearChart(chMineRank);', start)
+          old_chunk = s[start:end]
+          new_chunk = """  const rows=[];
   rankMetricSpecs.forEach(spec=>{
     const metricRows=[];
     (grouped?cmpList:[brand]).forEach(b=>{
@@ -53,10 +53,9 @@ jobs:
     rows,
     xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
     tip:r=>`<b>${esc(String(r.metricLabel||r.metric||r.label))}${grouped&&r.brand?' · '+esc(r.brand):''}</b>: ${Math.round(r.value)}th percentile · #${r.pos} of ${r.total}`
-  });"""
-          s, n = pat.subn(repl, s, count=1)
-          if n != 1:
-              raise SystemExit(f'chart block replacements: {n}')
+  });
+"""
+          s = s[:start] + new_chunk + s[end:]
 
           anchor = "const VERSIONS = [\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
           entry = "const VERSIONS = [\n  {v:'v0.2.81', date:'2026-07-11', sp:1, title:'Cleaner company-vs-market labels',\n    desc:'Grouped company-vs-market now uses one metric label per group and more distinct company colours.',\n    detail:'Removed repeated Metric - Company labels from the percentile chart. In grouped mode only the metric name is written once; company identity is carried by chip-matched bar colour and tooltip. Reordered the compare palette so the first two selected companies are teal and purple instead of two similar green tones.'},\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
