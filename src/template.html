@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.72</title>
+<title>Markets — LT agencies · v0.2.73</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -443,8 +443,8 @@
   /* Fixed bottom control bar: year row + basis toggle pinned to the viewport bottom, always reachable while scrolling. One per view (hidden with its inactive view). */
   .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:400;background:var(--panel);border-top:1px solid var(--border);box-shadow:0 -1px 6px rgba(0,0,0,.14);padding:7px max(24px, calc((100% - var(--app-w)) / 2))}
   .bottom-bar .mkt-sticky{position:static;top:auto;z-index:auto;background:transparent;padding:0;margin:0;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
-  .bottom-bar .yr-row{flex:1 1 200px;min-width:0;margin-bottom:0;padding-bottom:0;overflow-x:visible;flex-wrap:wrap}
-  .bottom-bar .yr-row::-webkit-scrollbar{display:none}
+  .bottom-bar .yr-row{flex:1 1 200px;min-width:0;margin-bottom:0;padding-bottom:0;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-ms-overflow-style:none}
+  .bottom-bar .yr-row::-webkit-scrollbar{display:none;width:0;height:0}
   .bottom-bar .seg{flex:0 0 auto}
   #dashView.view.active,#companiesView.view.active{padding-bottom:60px}   /* clear the fixed bottom bar so the footer isn't hidden behind it */
   .yr-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -655,7 +655,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.72</span>
+    <span class="nav-version" id="navVersion">v0.2.73</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2437,6 +2437,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.73', date:'2026-07-11', sp:1, title:'Year row scrolls, no scrollbar',
+    desc:'Bottom-bar year buttons scroll sideways again instead of wrapping, with the scrollbar fully hidden.',
+    detail:'Reverted the bottom-bar .yr-row from flex-wrap back to overflow-x:auto + flex-wrap:nowrap so the year buttons scroll horizontally on one line. The scrollbar is hidden across engines: scrollbar-width:none (Firefox), -ms-overflow-style:none (old Edge), and ::-webkit-scrollbar{display:none;width:0;height:0} (Chrome/Safari).'},
   {v:'v0.2.72', date:'2026-07-11', sp:1.5, title:'Year row unscrolls; version box clears bar',
     desc:'Year buttons now wrap instead of scrolling, and the version box lifts above the bottom bar so years stay tappable.',
     detail:'Bottom-bar .yr-row switched from overflow-x scroll to flex-wrap (no scrollbar). A wrap-aware syncBottomBarH() measures the active bottom bar\'s real height into --bottom-bar-h, lifting the .hist-fab version box above it and padding the body so content clears the bar. Re-measured on view switch, resize, and load.'},
