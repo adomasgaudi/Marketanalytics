@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.74</title>
+<title>Markets — LT agencies · v0.2.76</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -67,6 +67,7 @@
   .page-hero{margin:6px 0 22px}
   .page-hero h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin:0;line-height:1.05}
   .page-hero p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+  .page-hero .hero-mode{margin-top:3px;font-size:15px;font-weight:600}
   .vs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
   .vs-col{border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:14px 16px}
   .vs-h{margin:0 0 10px;font-size:14px;font-weight:700}
@@ -495,6 +496,10 @@
   .ov-chip-x{cursor:pointer;color:var(--muted);font-size:14px;line-height:1}
   .ov-chip-x:hover{color:var(--red)}
   #companiesView .mkt-sticky{top:98px;z-index:79}   /* sit just below the sticky company picker */
+  /* Companies bottom bar: the ID-specific rule above leaks top:98px/z-index into the LIFTED copy, and
+     because the picker made it position:sticky elsewhere the toggle floated over the year row. Re-assert
+     the flat static flex row here (higher specificity than both) so years + toggle sit side by side. */
+  #companiesView .bottom-bar .mkt-sticky{position:static;top:auto;z-index:auto;display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
   .co-sticky .co-select-btn{max-width:340px}
   #ovCompanySelect .co-select-panel{width:min(380px,92vw)}
   .ov-filter-tools{margin-bottom:6px}
@@ -655,7 +660,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.74</span>
+    <span class="nav-version" id="navVersion">v0.2.76</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -670,7 +675,7 @@
 
 <div class="view active" id="dashView">
 <div class="wrap">
-  <header class="page-hero"><h1>Markets <span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></h1><p id="pageHeroSub"></p></header>
+  <header class="page-hero"><h1>Markets</h1><p class="hero-mode"><span id="mktViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></p><p id="pageHeroSub"></p></header>
   <div class="top-cards">
     <div class="kpi"><div class="label">Companies tracked</div><div class="value" id="topCoCount">113</div><div class="sub" id="topCoSub">9 service segments</div></div>
     <div class="kpi"><div class="label">Data sources</div>
@@ -862,7 +867,7 @@
 
 <div class="view" id="companiesView">
 <div class="wrap">
-  <header class="page-hero"><h1>Companies <span id="coViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></h1><p id="coHeroSub"></p></header>
+  <header class="page-hero"><h1>Companies</h1><p class="hero-mode"><span id="coViewWord" class="view-word" role="button" tabindex="0" title="Tap to switch per-year / all-time">per year</span></p><p id="coHeroSub"></p></header>
   <button class="explore-btn" data-view="rekView">Explore the raw data &amp; sources →</button>
   <footer class="mini-foot">by adomasgaudi.github on behalf of Fabula, copyright.</footer>
 </div>
@@ -988,7 +993,14 @@ function switchView(viewId){
   window.scrollTo(0,0);
   if(typeof syncBottomBarH==='function') syncBottomBarH(); // active view's bottom bar may differ in height
 }
-document.querySelectorAll('.nav-btn,.explore-btn').forEach(btn=>btn.addEventListener('click',()=>switchView(btn.dataset.view)));
+// Re-tapping the ALREADY-active nav button toggles that page's per-year ⇄ all-years mode (same as
+// tapping the gray mode word under the title); tapping an inactive one just switches to it.
+const NAV_TOGGLE={dashView:'toggleMktView', companiesView:'toggleCoView'};
+document.querySelectorAll('.nav-btn,.explore-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  const view=btn.dataset.view;
+  if(btn.classList.contains('nav-btn') && btn.classList.contains('active') && typeof window[NAV_TOGGLE[view]]==='function'){ window[NAV_TOGGLE[view]](); return; }
+  switchView(view);
+}));
 // Title = home: click (or Enter) returns to the dashboard.
 const navHome=document.getElementById('navHome');
 if(navHome){
@@ -2364,6 +2376,12 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.76', date:'2026-07-11', sp:0.5, title:'Fix Companies bottom bar overlap',
+    desc:'On the Companies page the Full-company / Per-employee toggle no longer sits on top of the year row.',
+    detail:'The ID-specific #companiesView .mkt-sticky{top:98px;z-index:79} rule (for the sticky-at-top picker variant) was leaking into the copy lifted into the fixed bottom bar, floating the basis toggle over the years on desktop. Added a higher-specificity #companiesView .bottom-bar .mkt-sticky rule that re-asserts the flat static flex row, so the year row and toggle sit side by side like the Markets bottom bar.'},
+  {v:'v0.2.75', date:'2026-07-11', sp:2, title:'Title = page, mode moves to gray subtitle + nav toggle',
+    desc:'H1 is now just "Companies" / "Markets" with the per-year/all-years mode as a small gray subtitle word; re-tapping the active nav button flips the mode.',
+    detail:'Split the hero H1: the page name stands alone and the clickable per-year ⇄ all-years word (#coViewWord / #mktViewWord) drops to a smaller .hero-mode subtitle line above the description. Each page toggle is exposed (window.toggleCoView / toggleMktView) so the nav handler flips the mode when you tap the ALREADY-active Companies/Markets button, instead of doing nothing; tapping an inactive nav button still just switches pages. Applied to both hero titles for consistency.'},
   {v:'v0.2.74', date:'2026-07-11', sp:2.5, title:'Rankings: per-year only, honest title, all-segment default',
     desc:'Company rankings are now a single-year snapshot filtered by the visible segment/metric toolbar; default is all segments and the title matches the real count.',
     detail:'Removed the rankings all-years range (rankFromYear/rankToYear year row + progress %); drawTop always ranks by coYear. rankSegments now defaults to ALL segments, so you immediately get a real top-10-vs-bottom-10 split instead of ~5 companies from one segment. When ≤20 companies match the (now-visible) segment filter, the heading reads "N companies ranked" instead of falsely saying "Top 10 versus bottom 10". The metric + segment pills above the chart are the ranking filter.'},
@@ -4739,6 +4757,7 @@ try{ (function(){
     const t=tabBtns[v]; if(t) t.click();
     if(typeof drawTop==='function') drawTop(); };
   const toggle=()=>{ v=v?0:1; apply(); };
+  window.toggleCoView = toggle;   // re-tapping the active "Companies" nav button flips per-year ⇄ all-years
   word.addEventListener('click', toggle);
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'coViewWord: '+err.message, error:err})); }
@@ -4757,6 +4776,7 @@ try{ (function(){
     if(yearRow) yearRow.style.display = v===1?'none':'';
     const t=tabBtns[v]; if(t) t.click(); };
   const toggle=()=>{ v=v?0:1; apply(); };
+  window.toggleMktView = toggle;   // re-tapping the active "Markets" nav button flips per-year ⇄ all-years
   word.addEventListener('click', toggle);
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'mktViewWord: '+err.message, error:err})); }
