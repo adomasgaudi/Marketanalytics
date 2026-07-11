@@ -1,0 +1,78 @@
+name: Chart label cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/zz-chart-label-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('src/template.html')
+          s = p.read_text(encoding='utf-8')
+
+          s = s.replace('<title>Markets — LT agencies · v0.2.80</title>', '<title>Markets — LT agencies · v0.2.81</title>')
+          s = s.replace('<span class="nav-version" id="navVersion">v0.2.80</span>', '<span class="nav-version" id="navVersion">v0.2.81</span>')
+
+          old = "const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];"
+          new = "const CMP_PAL=['--accent','--purple','--amber','--red','--green','--gold','--muted'];"
+          if old not in s:
+              raise SystemExit('palette line not found')
+          s = s.replace(old, new, 1)
+
+          pat = re.compile(r"""  const rows=\[\];\n  rankMetricSpecs\.forEach\(spec=>\{\n    \(grouped\?cmpList:\[brand\]\)\.forEach\(b=>\{\n      const r=rankOf\(spec\.fn, \(byBrand\[b\]&&byBrand\[b\]\[coYear\]\)\|\|\{\}\);\n      if\(!r\) return;\n      rows\.push\(\{ label: grouped \? spec\.label\+' — '\+b : spec\.label, value:r\.pct,\n        color: grouped \? coBrandColor\(b\) : \(r\.pct>=50\?cssVar\('--gold-rank'\):cssVar\('--muted'\)\),\n        pos:r\.pos, total:r\.total, metric:spec\.label, brand:b \}\);\n    \}\);\n  \}\);\n  const rankBox=document\.getElementById\('chMineRankBox'\);\n  if\(rankBox\) rankBox\.style\.height = Math\.max\(200, 44 \+ rows\.length\*\(grouped\?26:32\)\)\+'px';   // grow with grouped bars\n  if\(rows\.length\) drawBarsSvg\(chMineRank, \{\n    rows,\n    xTitle:'Percentile vs '\+BRANDS\.length\+' agencies \(100 = top\)', fmt:v=>Math\.round\(v\),\n    tip:r=>\{ const row=rows\.find\(x=>x\.label===r\.label\);\n      return `<b>\$\{esc\(String\(r\.label\)\)\}</b>: \$\{Math\.round\(r\.value\)\}th percentile\$\{row\?` · #\$\{row\.pos\} of \$\{row\.total\}`:''\}`; \}\n  \}\);""", re.M)
+          repl = """  const rows=[];
+  rankMetricSpecs.forEach(spec=>{
+    const metricRows=[];
+    (grouped?cmpList:[brand]).forEach(b=>{
+      const r=rankOf(spec.fn, (byBrand[b]&&byBrand[b][coYear])||{});
+      if(!r) return;
+      metricRows.push({ label: spec.label, value:r.pct,
+        color: grouped ? coBrandColor(b) : (r.pct>=50?cssVar('--gold-rank'):cssVar('--muted')),
+        pos:r.pos, total:r.total, metric:spec.label, metricLabel:spec.label, brand:b });
+    });
+    // Grouped mode: write each metric once; company identity is colour + tooltip.
+    metricRows.forEach((r,i)=>rows.push(Object.assign({}, r, { label: grouped ? (i===0 ? spec.label : '') : spec.label })));
+  });
+  const rankBox=document.getElementById('chMineRankBox');
+  if(rankBox) rankBox.style.height = Math.max(200, 44 + rows.length*(grouped?26:32))+'px';   // grow with grouped bars
+  if(rows.length) drawBarsSvg(chMineRank, {
+    rows,
+    xTitle:'Percentile vs '+BRANDS.length+' agencies (100 = top)', fmt:v=>Math.round(v),
+    tip:r=>`<b>${esc(String(r.metricLabel||r.metric||r.label))}${grouped&&r.brand?' · '+esc(r.brand):''}</b>: ${Math.round(r.value)}th percentile · #${r.pos} of ${r.total}`
+  });"""
+          s, n = pat.subn(repl, s, count=1)
+          if n != 1:
+              raise SystemExit(f'chart block replacements: {n}')
+
+          anchor = "const VERSIONS = [\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
+          entry = "const VERSIONS = [\n  {v:'v0.2.81', date:'2026-07-11', sp:1, title:'Cleaner company-vs-market labels',\n    desc:'Grouped company-vs-market now uses one metric label per group and more distinct company colours.',\n    detail:'Removed repeated Metric - Company labels from the percentile chart. In grouped mode only the metric name is written once; company identity is carried by chip-matched bar colour and tooltip. Reordered the compare palette so the first two selected companies are teal and purple instead of two similar green tones.'},\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
+          if anchor not in s:
+              raise SystemExit('version anchor not found')
+          s = s.replace(anchor, entry, 1)
+
+          p.write_text(s, encoding='utf-8')
+          Path('.github/workflows/zz-chart-label-cleanup.yml').unlink()
+          # remove stale trigger workflow if present
+          q = Path('.github/workflows/patch-company-vs-market-labels.yml')
+          if q.exists(): q.unlink()
+          PY
+          python3 src/build_site.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/template.html index.html .github/workflows/zz-chart-label-cleanup.yml .github/workflows/patch-company-vs-market-labels.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Clean up company vs market chart labels"
+          git push
