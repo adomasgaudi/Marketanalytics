@@ -42,8 +42,12 @@ def count_rev(spec):
         return 0
 
 try:
-    dirty = bool(git("status", "--porcelain"))
     branch = git("rev-parse", "--abbrev-ref", "HEAD")
+    # The `stacked` worktree is a scratch/dev branch the owner never pushes and
+    # doesn't want Save-nagged on. Disable this reminder entirely there.
+    if branch == "stacked":
+        sys.exit(0)
+    dirty = bool(git("status", "--porcelain"))
     # Prefer the current branch's own upstream; fall back to origin/main only if
     # the branch has no upstream set (e.g. a fresh, never-pushed branch).
     upstream = git("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}")
