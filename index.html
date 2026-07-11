@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.76</title>
+<title>Markets — LT agencies · v0.2.77</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -660,7 +660,7 @@
     <button class="nav-btn" data-view="companiesView">Companies</button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.76</span>
+    <span class="nav-version" id="navVersion">v0.2.77</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2376,6 +2376,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.77', date:'2026-07-11', sp:1, title:'Fix dark-on-dark bar labels in dark mode',
+    desc:'Company names on the ranking (and vs-market) bars now stay readable in dark mode when the name overflows a short bar.',
+    detail:'drawBarsSvg picked the in-bar name colour purely from the BAR luma: the dark-mode green (#34c98e, luma 0.59) tripped the "light bar → dark ink" branch, so #1a1f2b names went dark-on-dark wherever they spilled past a short bar onto the dark plot. Fixed the whole class: in dark mode always use light ink + the strong drop-shadow (reads on both the bar and the dark plot); in light mode keep dark ink, flipping to light only on a genuinely dark bar. Applies to every drawBarsSvg chart (rankings, vs-market, segment bars).'},
   {v:'v0.2.76', date:'2026-07-11', sp:0.5, title:'Fix Companies bottom bar overlap',
     desc:'On the Companies page the Full-company / Per-employee toggle no longer sits on top of the year row.',
     detail:'The ID-specific #companiesView .mkt-sticky{top:98px;z-index:79} rule (for the sticky-at-top picker variant) was leaking into the copy lifted into the fixed bottom bar, floating the basis toggle over the years on desktop. Added a higher-specificity #companiesView .bottom-bar .mkt-sticky rule that re-asserts the flat static flex row, so the year row and toggle sit side by side like the Markets bottom bar.'},
@@ -3858,14 +3861,16 @@ function drawBarsSvg(container, cfg){
       const x1=xAt(r.value), bx=Math.min(base,x1), bw=Math.max(0,Math.abs(x1-base));
       const barCol=r.color||cssVar('--accent');
       plot+=`<rect x="${bx.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${barCol}" rx="2"/>`;
-      // company name INSIDE the graph, at the bar's start (moves with the bar). A soft drop-shadow keeps
-      // it legible whether it sits on a coloured bar or on the dark plot beyond a short bar.
-      const onLight=barLuma(barCol)>0.55;
+      // Company name INSIDE the graph, at the bar's start (moves with the bar). The name often OVERFLOWS
+      // short bars onto the plot, so the label colour must read on the PLOT background, not just the bar:
+      //  • dark mode  → the plot is dark, so ALWAYS light ink + a strong shadow (dark ink on a mid-green/red
+      //    bar looked fine on-bar but went dark-on-dark where it spilled past a short bar — the reported bug).
+      //  • light mode → the plot is light, so dark ink; only flip to light ink on a genuinely dark bar.
       const nameX=(x1>=base?base:x1)+4, nm=esc(String(r.label));
-      const lblFill=onLight?'#1a1f2b':text;
-      const lblWt=onLight?(isDark?'600':'600'):'500';
-      const lblSh=onLight?(isDark?`url(#${st.cid}shs)`:''):`url(#${st.cid}sh)`;
-      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${lblFill}" font-size="10" font-weight="${lblWt}" text-anchor="start"${lblSh?` filter="${lblSh}"`:''}>${nm}</text>`;
+      const lblFill = isDark ? text : (barLuma(barCol)<0.45 ? '#f4f6fb' : '#1a1f2b');
+      const lblWt='600';
+      const lblSh = isDark ? `url(#${st.cid}shs)` : `url(#${st.cid}sh)`;
+      plot+=`<text x="${nameX.toFixed(1)}" y="${(cy+3).toFixed(1)}" fill="${lblFill}" font-size="10" font-weight="${lblWt}" text-anchor="start" filter="${lblSh}">${nm}</text>`;
       // value + YoY% after the bar end, never overlapping the name
       const dStr = r.delta!=null ? (r.delta>=0?'+':'')+Math.round(r.delta)+'%' : '';
       const dCol = r.delta>=0 ? (cssVar('--green')||'#3bd16f') : (cssVar('--red')||'#e2575b');
