@@ -1,4 +1,3 @@
-# trigger existing workflow without path filter
 name: Chart label cleanup
 
 on:
@@ -22,18 +21,24 @@ jobs:
           p = Path('src/template.html')
           s = p.read_text(encoding='utf-8')
 
-          s = s.replace('<title>Markets — LT agencies · v0.2.80</title>', '<title>Markets — LT agencies · v0.2.81</title>')
-          s = s.replace('<span class="nav-version" id="navVersion">v0.2.80</span>', '<span class="nav-version" id="navVersion">v0.2.81</span>')
+          m = re.search(r'<title>Markets — LT agencies · v0\.2\.(\d+)</title>', s)
+          if not m:
+              raise SystemExit('current title version not found')
+          old_patch = int(m.group(1))
+          new_ver = f'v0.2.{old_patch + 1}'
+          old_ver = f'v0.2.{old_patch}'
+          s = s.replace(f'<title>Markets — LT agencies · {old_ver}</title>', f'<title>Markets — LT agencies · {new_ver}</title>', 1)
+          s = re.sub(r'<span class="nav-version" id="navVersion">v0\.2\.\d+</span>', f'<span class="nav-version" id="navVersion">{new_ver}</span>', s, count=1)
 
-          old = "const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];"
-          new = "const CMP_PAL=['--accent','--purple','--amber','--red','--green','--gold','--muted'];"
-          if old not in s:
-              raise SystemExit('palette line not found')
-          s = s.replace(old, new, 1)
+          old_pal = "const CMP_PAL=['--accent','--green','--amber','--purple','--red','--gold','--muted'];"
+          new_pal = "const CMP_PAL=['--accent','--purple','--amber','--red','--green','--gold','--muted'];"
+          if old_pal in s:
+              s = s.replace(old_pal, new_pal, 1)
+          elif new_pal not in s:
+              raise SystemExit('compare palette line not found')
 
           start = s.index('  const rows=[];\n  rankMetricSpecs.forEach(spec=>{')
           end = s.index('  else clearChart(chMineRank);', start)
-          old_chunk = s[start:end]
           new_chunk = """  const rows=[];
   rankMetricSpecs.forEach(spec=>{
     const metricRows=[];
@@ -57,16 +62,15 @@ jobs:
 """
           s = s[:start] + new_chunk + s[end:]
 
-          anchor = "const VERSIONS = [\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
-          entry = "const VERSIONS = [\n  {v:'v0.2.81', date:'2026-07-11', sp:1, title:'Cleaner company-vs-market labels',\n    desc:'Grouped company-vs-market now uses one metric label per group and more distinct company colours.',\n    detail:'Removed repeated Metric - Company labels from the percentile chart. In grouped mode only the metric name is written once; company identity is carried by chip-matched bar colour and tooltip. Reordered the compare palette so the first two selected companies are teal and purple instead of two similar green tones.'},\n  {v:'v0.2.80', date:'2026-07-11', sp:3, title:'Multi-company: money-flow tabs + grouped vs-market',"
-          if anchor not in s:
-              raise SystemExit('version anchor not found')
-          s = s.replace(anchor, entry, 1)
+          entry = f"""const VERSIONS = [
+  {{v:'{new_ver}', date:'2026-07-11', sp:1, title:'Cleaner company-vs-market labels',
+    desc:'Grouped company-vs-market now uses one metric label per group and more distinct company colours.',
+    detail:'Removed repeated Metric - Company labels from the percentile chart. In grouped mode only the metric name is written once; company identity is carried by chip-matched bar colour and tooltip. Reordered the compare palette so the first two selected companies are teal and purple instead of two similar green tones.'}},"""
+          s = s.replace('const VERSIONS = [', entry, 1)
 
           p.write_text(s, encoding='utf-8')
-          Path('.github/workflows/zz-chart-label-cleanup.yml').unlink()
-          q = Path('.github/workflows/patch-company-vs-market-labels.yml')
-          if q.exists(): q.unlink()
+          Path('.github/workflows/zz-chart-label-cleanup.yml').unlink(missing_ok=True)
+          Path('.github/workflows/patch-company-vs-market-labels.yml').unlink(missing_ok=True)
           PY
           python3 src/build_site.py
           git config user.name "github-actions[bot]"
