@@ -3,9 +3,9 @@
 
 Paths are resolved relative to the repo root (this file's parent's parent),
 so the build works regardless of the current working directory:
-  - template  : src/template.html  (next to this script)
+  - template  : legacy-src/template.html  (next to this script)
   - data      : data/data.json, data/sheets_data.json
-  - output    : index.html  (repo root — where GitHub Pages serves it)
+  - output    : legacy-index.html + public/legacy/index.html
 """
 import json
 import os
@@ -62,7 +62,12 @@ html = html.replace('__SHEETS_DATA__', json.dumps(sheets, ensure_ascii=False))
 html = html.replace('__REK_DATA__', json.dumps(rek, ensure_ascii=False))
 html = html.replace('__DATA_EVENTS__', json.dumps(events, ensure_ascii=False))
 
-out = os.path.join(ROOT, 'index.html')
-with open(out, 'w', encoding='utf-8') as f:
-    f.write(html)
-print("index.html built,", len(html), "bytes ->", out)
+outputs = [
+    os.path.join(ROOT, 'legacy-index.html'),
+    os.path.join(ROOT, 'public', 'legacy', 'index.html'),
+]
+os.makedirs(os.path.dirname(outputs[1]), exist_ok=True)
+for out in outputs:
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(html)
+print("legacy index built,", len(html), "bytes")

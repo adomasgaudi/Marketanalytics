@@ -2,7 +2,9 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v91.10
+> v3.1.3
+
+**This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
 
 <br />
@@ -74,11 +76,18 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |- AGENTS.md                    Agent only entrypoint (built by agent)
 |- CLAUDE.md                    Agent only entrypoint 
 |- README.md                    Human entrypoint
-|- index.html                   Generated static dashboard viewed by users
+|- package.json                 Next.js app | npm run dev
+|- next.config.ts               
 |
-|- src/
+|- src/                         NEXT.JS APP - the active track (was next-app/, hoisted to root)
+|  |- app/                      App Router: layout, globals.css, routes
+|  |- features/                 Feature modules (market-rough, ...)
+|  `- lib/                      Shared utils (cn, ...)
+|
+|- legacy-src/                  PREVIOUS dashboard - still what main ships
 |  |- template.html             Dashboard source: views, global state, charts
 |  `- build_site.py             Injects JSON data into the generated dashboard
+|- legacy-index.html            Generated static dashboard viewed by users
 |
 |- data/
 |  |- data.json                 Canonical annual company financial dataset
@@ -87,7 +96,8 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- data_events.json          Data-change audit log
 |  `- sodra/                    Per-company payroll source files
 |
-|- scripts/                     Py Scraping, parsing, estimates, and data-event tools
+|- legacy-scripts/              Py Scraping, parsing, estimates, and data-event tools
+|- scripts/                     Node tooling (write-version.mjs)
 |
 |- docs/
 |  |- ai-x                      Harness space (only parts exist)

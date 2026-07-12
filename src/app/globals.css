@@ -1,17 +1,25 @@
 @import "tailwindcss";
 
-:root {
+/* Design tokens. Declared in @theme so Tailwind generates matching utilities
+   (bg-surface, text-muted, border-line, rounded-md, shadow-subtle, ...). */
+@theme {
   --color-bg: #f6f7f8;
   --color-surface: #ffffff;
   --color-surface-muted: #eef1f3;
-  --color-text: #172026;
-  --color-text-muted: #64717b;
-  --color-border: #d9e0e5;
+  --color-ink: #172026;
+  --color-muted: #64717b;
+  --color-line: #d9e0e5;
   --color-accent: #176b87;
   --color-accent-strong: #0f4c5c;
+  --color-on-accent: #ffffff;
+
   --radius-sm: 6px;
   --radius-md: 8px;
+
   --shadow-subtle: 0 1px 2px rgb(23 32 38 / 8%);
+
+  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,11 +27,12 @@
     --color-bg: #11161a;
     --color-surface: #171f24;
     --color-surface-muted: #202a30;
-    --color-text: #edf2f4;
-    --color-text-muted: #9aa8b2;
-    --color-border: #2f3c44;
+    --color-ink: #edf2f4;
+    --color-muted: #9aa8b2;
+    --color-line: #2f3c44;
     --color-accent: #5fb3c8;
     --color-accent-strong: #9bd7e3;
+    --color-on-accent: #0b1114;
   }
 }
 

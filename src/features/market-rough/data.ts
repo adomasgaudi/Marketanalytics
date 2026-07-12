@@ -3,7 +3,7 @@ import path from "node:path";
 import type { CompanyYear, MarketModel } from "./types";
 
 function projectPath(...parts: string[]) {
-  return path.join(process.cwd(), "..", ...parts);
+  return path.join(process.cwd(), ...parts);
 }
 
 function readJson<T>(...parts: string[]): T {
