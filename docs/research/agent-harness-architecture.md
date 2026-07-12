@@ -155,6 +155,7 @@ and state definitions separate. The equivalent for markdown/file-based harnesses
 is: guide, tools, commands, rules, memory, state, traces, evals.
 
 Sources:
+
 - <https://docs.langchain.com/oss/python/langgraph/overview>
 - <https://docs.langchain.com/oss/python/langgraph/application-structure>
 
@@ -221,38 +222,4 @@ A2A's vocabulary is useful for multi-agent boundaries:
 Prescription: when agents coordinate, publish capabilities and task state as
 structured metadata. Do not rely on another agent reading your whole memory.
 
-
-
 Source: <https://a2a-protocol.org/latest/specification/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

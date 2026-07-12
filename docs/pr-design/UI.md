@@ -2,7 +2,7 @@
 
 Loaded automatically by [`ui_design_reminder.py`](.claude/hooks/ui_design_reminder.py)
 whenever a prompt is about a UI / design change. Purpose: stop AIs shipping
-*ugly-but-functional* layouts that pass a quick "looks correct" glance but waste
+_ugly-but-functional_ layouts that pass a quick "looks correct" glance but waste
 space a human eye flags instantly.
 
 ---
@@ -15,7 +15,7 @@ space a human eye flags instantly.
    screenshot preferred, since mobile width is the binding constraint. Don't
    start editing UI blind.
 2. **Run the rubric against that render**, not against the code. Score
-   *proportion*, not just correctness.
+   _proportion_, not just correctness.
 3. **Build, rebuild (`python3 src/build_site.py`), then ask for a fresh
    screenshot** and re-score. UI work is a loop: render → critique → refine,
    never one-shot.
@@ -51,21 +51,21 @@ Ask each line against the render. Any "no" is a 🔴/🟠 to fix or flag.
 The whole VLM-critique literature names one gap: reviews either **iterate but
 can't see** (self-refine on code/tests, never the render) or **see but can't
 iterate** (one-shot vision-to-code, no refine pass). Both ship lopsided layouts.
-Add saliency bias (models weight *text present* over *space wasted*), no felt
+Add saliency bias (models weight _text present_ over _space wasted_), no felt
 sense of pixel cost, and prompt anchoring (asked to "analyse," models hunt for
-*broken* things and pass ugly-but-functional).
+_broken_ things and pass ugly-but-functional).
 
 **The fix is structural, not a bigger model:** a render→critique→refine loop
 scored against a fixed rubric (above), made durable by a hook (PROC-01) — which
 is what this file + `ui_design_reminder.py` implement. Few-shot of your own past
 sins beats model size (UICrit); a grid/coordinate overlay on the screenshot
-makes disproportion *measurable* instead of felt.
+makes disproportion _measurable_ instead of felt.
 
 ### Worked example (the SP column, v61)
 
 Dropped a thin one-digit SP column → the wasted space **relocated** into a wide,
 mostly-empty Version column, and the date began wrapping "2026-/06-21". Fixing
-the *case* (remove column) left the *class* (3-column table on a phone) alive.
+the _case_ (remove column) left the _class_ (3-column table on a phone) alive.
 Root fix: stacked cards. Lesson — "the case is gone" is not "the class is gone."
 
 ---

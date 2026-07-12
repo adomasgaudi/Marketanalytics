@@ -253,7 +253,7 @@
   .grp-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .grp-panel[hidden]{display:none}
   /* Default view hides dev-only settings + changelog; Dev mode shows them. */
-  html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] #viewToggle,html[data-mode="default"] .explore-btn{display:none}   /* Explore raw data → Dev mode only */
+  html[data-mode="default"] .hist-fab,html[data-mode="default"] #graphPanToggle,html[data-mode="default"] #sodraRefresh,html[data-mode="default"] #viewToggle,html[data-mode="default"] #nextPortToggle,html[data-mode="default"] .explore-btn{display:none}   /* Explore raw data → Dev mode only */
   /* Formula disclosures under KPI cards are Dev-only (hidden in the clean Default view). */
   html[data-mode="default"] .kpi-f,html[data-mode="default"] .kpi .formula{display:none}
   /* Every debug overlay (probes, error banner, audit panel) is Dev-only and vanishes the instant you leave Dev. */
@@ -322,7 +322,7 @@
     .topnav{padding:0 8px;overflow:visible;flex-wrap:nowrap;min-height:46px}
     .topnav .logo{display:inline-flex;align-items:center;font-size:13px;font-weight:800;margin-right:9px;padding:0;white-space:nowrap;line-height:1.08;flex-shrink:0;color:var(--text)}
     .topnav .logo .logo-sub{font-size:9px}
-    .nav-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;flex:1;min-width:0}
+    .nav-scroll{display:flex;flex:1;min-width:0}   /* no overflow-x: nav buttons sit side by side, never on a scrollbar */
     .nav-btn{padding:0 8px;font-size:13px;white-space:nowrap;flex-shrink:0;line-height:46px;height:46px}
     .settings-cog{padding:4px 6px}
     .nav-sub{display:none}
@@ -360,8 +360,12 @@
   .nav-scroll{display:flex}
   .nav-spacer{flex:1}
   .nav-sub{font-size:12px;color:var(--muted);padding:12px 0}
-  .nav-version{font-size:11px;font-weight:600;color:var(--muted);margin-right:6px;white-space:nowrap}
-  .settings-wrap{position:relative;margin-right:8px;display:flex;align-items:center;justify-content:center;gap:2px}
+  .nav-version{font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap;line-height:1}
+  /* Cog on top, version tucked underneath: stacking them frees the horizontal run for nav buttons. */
+  /* column-reverse, not a DOM move: the settings menu is absolutely positioned against this
+     wrapper, so reordering the nodes would drag it out of place. Version stays first in the
+     markup (the changelog FAB reads it) but paints under the cog. */
+  .settings-wrap{position:relative;margin-right:8px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:center;gap:1px;flex-shrink:0}
   .ver-hint{position:absolute;right:0;top:calc(100% + 5px);font-size:10px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:3px 8px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);z-index:210;pointer-events:none;opacity:0;transform:translateY(-2px);transition:opacity .15s,transform .15s}
   .ver-hint.show{opacity:1;transform:translateY(0)}
   .settings-cog{line-height:0;color:var(--muted);background:none;border:none;padding:4px 8px;cursor:pointer;font-family:inherit;transition:.15s}
@@ -672,9 +676,10 @@
   <div class="logo" id="navHome" role="button" tabindex="0" title="Dashboard · click to toggle per-year / all-years"><span class="home-ic">‹</span><span class="logo-txt"><span class="logo-main">Market Analytics</span><span class="logo-sub" id="mktNavMode">per year</span></span></div>
   <div class="nav-scroll">
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
+    <button class="nav-btn nav-btn-2l" id="nextPortToggle" title="Cycle the Next.js ports (Main → Rough → Ugly)"><span class="nav-btn-main">Next</span><span class="nav-btn-sub" id="nextPortSub">main</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.90</span>
+    <span class="nav-version" id="navVersion">v3.2.0</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -1139,6 +1144,25 @@ let graphPan=false;
 function applyGraphPan(on){ graphPan=!!on; document.documentElement.classList.toggle('graph-pan', graphPan);
   const b=document.getElementById('graphPanToggle'); if(b) b.textContent = graphPan?'🔓 Graph pan: ON':'🔒 Graph pan: off'; }
 applyGraphPan(false);
+
+// ---------- Next port toggle (dev-mode only) ----------
+// This dashboard is served inside the Next app's /ugly route (an iframe), which strips its
+// own chrome so there is no double nav. That left no way back out, so one nav button cycles
+// the Next routes. Escape the iframe with top.location, else we'd nest a page inside a page.
+(function(){
+  const btn=document.getElementById('nextPortToggle'); if(!btn) return;
+  const PORTS=[{path:'/',label:'main'},{path:'/rough',label:'rough'},{path:'/ugly',label:'ugly'}];
+  const sub=document.getElementById('nextPortSub');
+  // Show where the button will take you NEXT, not where you are: inside /ugly the next hop is main.
+  let i=0;
+  const paint=()=>{ if(sub) sub.textContent=PORTS[i].label; };
+  paint();
+  btn.addEventListener('click', ()=>{
+    const target=PORTS[i].path;
+    i=(i+1)%PORTS.length; paint();
+    try{ top.location.href=target; }catch(e){ location.href=target; }
+  });
+})();
 (function(){ const b=document.getElementById('graphPanToggle'); if(b) b.addEventListener('click',()=>{ applyGraphPan(!graphPan); document.getElementById('settingsMenu').classList.remove('open'); }); })();
 
 // ---------- Refresh Sodra (dev-mode only) ----------
@@ -2550,6 +2574,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v3.2.0', date:'2026-07-12', sp:1, title:'Next port toggle in nav',
+    desc:'A dev-mode-only "Next" button next to Companies cycles the Next.js routes (main → rough → ugly), so the dashboard is no longer a dead end when embedded.',
+    detail:'The Next.js app serves this dashboard inside its /ugly route as an iframe. That wrapper used to add its own header, which stacked a second nav bar on top of this one and squeezed the frame narrow enough to trip the @media(max-width:600px) rule — turning .nav-scroll into a horizontal scroller, so the Companies button slid around. Removing the wrapper chrome fixed both, but left no way to navigate back out of the iframe. So one nav-btn (#nextPortToggle, hidden in Default mode like the other dev affordances) now cycles through the Next routes, navigating via top.location so it escapes the iframe instead of nesting a page inside a page. Its sub-label shows the next destination.'},
   {v:'v0.2.90', date:'2026-07-11', sp:2, title:'Explore-data company filters + collapsible field table',
     desc:'The Explore-data company picker gains the same segment + turnover/revenue/employees/salary filters as the Companies page, and the company field-data section below Data changes is now collapsible like the others.',
     detail:'Ported the Companies-page ov* filter into the Explore-data top company picker as rek* state: a Segment multi-select plus minimum-threshold dropdowns for turnover, revenue, employees and median salary (shared OV_THRESHOLDS, scoped to the latest financial year LAST), with pills, a "Showing N of M" hint and Clear filters. Nested dropdowns re-press to close and dismiss on outside-click/Escape/Done, matching the Companies picker so it can\'t get stuck open. The currently-selected company stays visible even when filtered out. Also wrapped the per-company field table (tabs + Merged/Initial/Rekvizitai/Sodra controls + table) in a collapsible <details> ("🔎 Company field data") styled like the coverage/data-changes folds, with the company name as its sub-label.'},

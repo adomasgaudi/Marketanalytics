@@ -5,12 +5,12 @@
 
 ## What it covers
 
-| Tab | URL suffix | Yields |
-| --- | --- | --- |
-| Įmonė | `/` | codes, contacts, manager, address, LinkedIn, risk, export |
-| Finansai | `/apyvarta/` | year-by-year statement + the chart series back to \~2013–2017 |
-| Darbuotojai | `/darbuotoju-skaicius/` | headcount + annual average + dated chart points |
-| Skolos | `/skolos/` | registered-debt status, dated VMI/Sodra debt history, credit check |
+| Tab         | URL suffix              | Yields                                                             |
+| ----------- | ----------------------- | ------------------------------------------------------------------ |
+| Įmonė       | `/`                     | codes, contacts, manager, address, LinkedIn, risk, export          |
+| Finansai    | `/apyvarta/`            | year-by-year statement + the chart series back to \~2013–2017      |
+| Darbuotojai | `/darbuotoju-skaicius/` | headcount + annual average + dated chart points                    |
+| Skolos      | `/skolos/`              | registered-debt status, dated VMI/Sodra debt history, credit check |
 
 ## The one command (auto-scrape)
 
@@ -29,8 +29,6 @@ forced brand, then written once. Slugs are historical and not guessable:
 `scripts/browser_session.py` opens a visible persistent Chrome profile at
 `data/.pwprofile/`. Solve Cloudflare once; later runs reuse its cookie.
 After clearance, `REK_HEADLESS=1` runs without a window.
-
-
 
 ## Add one company by hand
 

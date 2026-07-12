@@ -1,16 +1,10 @@
-import Link from "next/link";
 import styles from "./ugly.module.css";
 
 export default function UglyPortPage() {
+  // No wrapper nav: the legacy dashboard ships its own <nav class="topnav">
+  // inside the iframe, so adding one here stacks two bars.
   return (
     <main className={styles.page}>
-      <header className={styles.bar}>
-        <strong>Market Analytics</strong>
-        <nav>
-          <Link href="/">Main</Link>
-          <Link href="/rough">Rough</Link>
-        </nav>
-      </header>
       <iframe
         className={styles.frame}
         src="/legacy/index.html"

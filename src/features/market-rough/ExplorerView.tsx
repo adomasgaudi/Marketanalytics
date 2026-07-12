@@ -11,7 +11,9 @@ export function ExplorerView({ model }: { model: MarketModel }) {
       <div className={styles.inventory}>
         <span>{model.rows.length} company-year rows</span>
         <span>{model.brands.length} brands</span>
-        <span>{model.years[0]}-{model.latestYear}</span>
+        <span>
+          {model.years[0]}-{model.latestYear}
+        </span>
       </div>
     </section>
   );

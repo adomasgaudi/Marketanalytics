@@ -1,18 +1,31 @@
 {
+  "//": "HOOK-01: every path is absolute via $CLAUDE_PROJECT_DIR. Relative paths (py .claude/hooks/x.py) resolve against the agent's cwd, so one `cd` into a subdir 404s every hook and blocks all Bash+Edit calls. That happened. See docs/ai-harness/harness.md.",
   "hooks": {
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "py .claude/hooks/ui_design_reminder.py" },
-          { "type": "command", "command": "py .claude/hooks/rule_schema_reminder.py" },
-          { "type": "command", "command": "py .claude/hooks/debug_reminder.py" }
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/ui_design_reminder.py\""
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/rule_schema_reminder.py\""
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/debug_reminder.py\""
+          }
         ]
       }
     ],
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "git config user.name 'Adomas' && git config user.email 'g@cool.lt' && git config core.hooksPath .githooks" }
+          {
+            "type": "command",
+            "command": "git config user.name 'Adomas' && git config user.email 'g@cool.lt' && git config core.hooksPath .githooks"
+          }
         ]
       }
     ],
@@ -20,9 +33,20 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "py .claude/hooks/guard_main_push.py" },
-          { "type": "command", "command": "py .claude/hooks/require_main_push.py" },
-          { "type": "command", "command": "py .claude/hooks/commit_message_check.py", "timeout": 10, "statusMessage": "commit-message format check" }
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_main_push.py\""
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/require_main_push.py\""
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/commit_message_check.py\"",
+            "timeout": 10,
+            "statusMessage": "commit-message format check"
+          }
         ]
       }
     ],
@@ -30,14 +54,28 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "py .claude/hooks/version_reminder.py", "timeout": 10, "statusMessage": "version-badge reminder" }
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/format_after_edit.py\"",
+            "timeout": 25,
+            "statusMessage": "prettier"
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/version_reminder.py\"",
+            "timeout": 10,
+            "statusMessage": "version-badge reminder"
+          }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "py .claude/hooks/save_reminder.py" }
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/save_reminder.py\""
+          }
         ]
       }
     ]

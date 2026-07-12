@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Hide the floating dev overlay. Compile/runtime errors still surface.
+  devIndicators: false,
 };
 
 export default nextConfig;

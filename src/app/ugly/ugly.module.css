@@ -1,32 +1,14 @@
 .page {
-  display: grid;
-  min-height: 100vh;
-  grid-template-rows: auto 1fr;
+  display: block;
+  height: 100vh;
   background: #101418;
 }
 
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border-bottom: 1px solid #2a333b;
-  padding: 10px 14px;
-  color: #f4f7f9;
-}
-
-.bar nav {
-  display: flex;
-  gap: 10px;
-}
-
-.bar a {
-  border: 1px solid #3a4650;
-  border-radius: 999px;
-  padding: 5px 10px;
-}
-
+/* Full-bleed. The legacy dashboard renders its own nav and layout, so the frame
+   is the whole viewport — anything less makes its topnav think it's on mobile
+   and switch to the horizontal-scrolling nav (its @media max-width:600px rule). */
 .frame {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;
