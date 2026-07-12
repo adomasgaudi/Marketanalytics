@@ -1,4 +1,4 @@
-# Map (brief) — Marketanalytics
+# Architecture — Marketanalytics
 
 Competitor-benchmarking dashboard for **Fabula** (LT PR/marketing agency) vs \~132 peers, 2019–2025 financials.
 
@@ -8,13 +8,16 @@ Competitor-benchmarking dashboard for **Fabula** (LT PR/marketing agency) vs \~1
 - **Data Explorer** (dev-mode) — raw source tables, coverage grid, change log, CSV export.
 
 ## Must-keep functionality
-Year ⇄ all-time toggle · 
 
-full-company ⇄ per-employee ⇄ whole market basis · 
 
-multi-select compare (search + chips + segment/size filters) · 
 
-9 charts (7 on a bespoke SVG engine w/ pan-zoom + year-scrubber) · 
+Year ⇄ all-time toggle ·
+
+full-company ⇄ per-employee ⇄ whole market basis ·
+
+multi-select compare (search + chips + segment/size filters) ·
+
+9 charts (7 on a bespoke SVG engine w/ pan-zoom + year-scrubber) ·
 
 EN/LT · source traceability · mobile-first · self-contained.
 
@@ -24,7 +27,7 @@ EN/LT · source traceability · mobile-first · self-contained.
 - `data/sheets_data.json` — 7 raw Excel sheets (Explorer source).
 - `data/rek_tabs.json` — scraped Rekvizitai profiles per company.
 - `data/sodra/*.json` — **115 files**, monthly Sodra payroll/headcount per company.
-`data/data_events.json` — track the data-change audit log.
+  `data/data_events.json` — track the data-change audit log.
 
 ## Build
 Edit `src/template.html` → `python3 src/build_site.py` injects the JSONs → `index.html` (deliverable). No backend; all compute is client-side JS.
@@ -33,7 +36,7 @@ Edit `src/template.html` → `python3 src/build_site.py` injects the JSONs → `
 
 ### Stack suggestions (Next.js-native — don't DIY if better solutions exist)
 - **Next.js (App Router) + TypeScript (strict)** — framework, routing, server + API in one. Replaces Vite + React Router (built-in file routing) and gives us the backend the future features need. alternatives?
-- **Tailwind v4 + shadcn/ui (on Radix)** — styling + prebuilt accessible components; don't hand-build dropdowns/dialogs. rebuilding similar components creates a drift of ui and logic, design and functionality should try to follow clean code principles of single source. 
+- **Tailwind v4 + shadcn/ui (on Radix)** — styling + prebuilt accessible components; don't hand-build dropdowns/dialogs. rebuilding similar components creates a drift of ui and logic, design and functionality should try to follow clean code principles of single source.
 - **Server Components + Server Actions** — data fetching & mutations (scraping triggers, form posts) without a separate API layer?
 - **Auth.js (NextAuth)** — sign-in/roles. Alternatives?
 - **Postgres + Drizzle ORM** (e.g. Supabase/Neon) — the DB; Drizzle for typed queries + migrations?
@@ -42,7 +45,7 @@ Edit `src/template.html` → `python3 src/build_site.py` injects the JSONs → `
 - **Recharts/visx** *considered* for the 2 Chart.js charts;
 
 ### ideas
-All future features may need a **server + DB** the current static file lacks. 
+All future features may need a **server + DB** the current static file lacks.
 
 Possible dependency order: **auth → database → private API (raw data off-client) → in-UI scraping → notifications/emails**.
 Rewrite hotspots: `makeSectionsCollapsible()` reparents DOM Markets→Companies at load (no clean page boundary); all rendering is innerHTML/SVG strings + global mutable state.
