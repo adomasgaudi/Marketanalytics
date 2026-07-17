@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { VERSIONS } from "./version-history";
 
-/** Nav version pill that opens the version-history popup (ported from the legacy dashboard). */
+/**
+ * Floating dev overlay (bottom-right, like the x-ray corner bottom-left) — NOT part of
+ * the page layout. The pill opens the version-history popup upward.
+ */
 export function VersionButton({ version }: { version: string }) {
   const [open, setOpen] = useState(false);
   const popRef = useRef<HTMLDivElement>(null);
@@ -25,7 +28,7 @@ export function VersionButton({ version }: { version: string }) {
   }, [open]);
 
   return (
-    <div className="relative ml-auto flex-shrink-0" ref={popRef}>
+    <div className="fixed right-3 bottom-3 z-[99998]" data-devcorner="" ref={popRef}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -40,7 +43,7 @@ export function VersionButton({ version }: { version: string }) {
         <div
           role="dialog"
           aria-label="Version history"
-          className="border-line bg-panel absolute top-[calc(100%+8px)] right-0 z-50 max-h-[70vh] w-[340px] overflow-y-auto rounded-lg border p-3 shadow-lg max-sm:w-[280px]"
+          className="border-line bg-panel absolute right-0 bottom-[calc(100%+8px)] max-h-[70vh] w-[340px] overflow-y-auto rounded-lg border p-3 shadow-lg max-sm:w-[280px]"
         >
           <p className="text-ink mb-2 text-[13px] font-bold">Version history</p>
           <ul className="flex flex-col gap-2">

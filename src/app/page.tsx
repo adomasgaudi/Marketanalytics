@@ -1,4 +1,3 @@
-import { APP_VERSION_LABEL } from "@/app-version";
 import { CompaniesView } from "@/features/market-rough/CompaniesView";
 import { ExplorerView } from "@/features/market-rough/ExplorerView";
 import { MarketsView } from "@/features/market-rough/MarketsView";
@@ -14,7 +13,7 @@ export default function RoughPage() {
 
   return (
     <main>
-      <TopNav version={APP_VERSION_LABEL} />
+      <TopNav />
       <div className="mx-auto w-full max-w-[840px] px-6 py-6">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">

@@ -678,7 +678,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v3.3.1</span>
+    <span class="nav-version" id="navVersion">v3.3.2</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2574,6 +2574,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v3.3.2', date:'2026-07-17', sp:1, title:'Shared x-ray dev tools',
+    desc:'Loads the shared /devtools.js CSS x-ray (box outlines, padding/margin tints, inspect readout) — the same script every Next.js page uses.',
+    detail:'Ported Pepper\'s x-ray switchboard to a vanilla public/devtools.js: box (flex cyan / grid violet / positioned amber outlines with computed-rule tooltips), pad (green inset strips), margin (orange halo), inspect (mouse-follow readout of padding/margin/font/colours). The Next root layout loads it for all routes; this template loads the identical file inside the iframe, so there is ONE implementation. State persists in localStorage dev.xray.'},
   {v:'v3.3.1', date:'2026-07-17', sp:0.5, title:'Next toggle moves into Settings',
     desc:'The dev-mode "Next" port-cycling button leaves the nav bar and becomes a Settings-menu entry.',
     detail:'#nextPortToggle moved from .nav-scroll into #settingsMenu as "⏭️ Next: <label>", keeping its id so the Default-mode hiding rule and the cycling JS (main → rough → ugly via top.location) work unchanged. Frees nav-bar width; the sub-label still shows the next destination.'},
@@ -5207,5 +5210,8 @@ try{ (function(){
   word.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
 })(); }catch(err){ window.dispatchEvent(new ErrorEvent('error',{message:'mktViewWord: '+err.message, error:err})); }
 </script>
+<!-- Shared CSS x-ray dev tools — the SAME /devtools.js the Next.js pages load, so the
+     iframe'd legacy dashboard gets identical box/pad/margin/inspect tooling. -->
+<script src="/devtools.js"></script>
 </body>
 </html>
