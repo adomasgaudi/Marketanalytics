@@ -7,6 +7,7 @@ import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
+import { SegmentChart } from "./SegmentChart";
 import type { MarketModel } from "./types";
 import { type MarketMode, useDashboardParams } from "./useDashboardParams";
 import { YearRow } from "./YearRow";
@@ -158,6 +159,8 @@ export function MarketsView({ model }: { model: MarketModel }) {
       </div>
 
       <Insights />
+
+      <SegmentChart model={model} />
     </section>
   );
 }
