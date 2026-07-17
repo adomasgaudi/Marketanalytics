@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pill, PillRow } from "@/components/ui/pills";
+import { Seg } from "@/components/ui/seg";
 import { fmtEur, fmtInt } from "./format";
 import { LineChart } from "./LineChart";
 import {
@@ -133,13 +133,15 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
         ))}
       </div>
 
-      <PillRow label="Financial metric" className="mb-3">
-        {TREND_METRICS.map((m) => (
-          <Pill key={m} selected={metric === m} onClick={() => setMetric(m)}>
-            {SEG_METRICS[m].label}
-          </Pill>
-        ))}
-      </PillRow>
+      <div className="mb-3">
+        <Seg
+          label="Financial metric"
+          value={metric}
+          onChange={setMetric}
+          btnClassName="px-[11px]"
+          options={TREND_METRICS.map((m) => ({ value: m, label: SEG_METRICS[m].label }))}
+        />
+      </div>
 
       {series.length ? (
         <>
