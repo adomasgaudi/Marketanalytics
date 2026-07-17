@@ -1,6 +1,7 @@
 import { CompaniesView } from "@/features/market-rough/CompaniesView";
 import { ExplorerView } from "@/features/market-rough/ExplorerView";
 import { MarketsView } from "@/features/market-rough/MarketsView";
+import { RankingsChart } from "@/features/market-rough/RankingsChart";
 import { TopCards } from "@/features/market-rough/TopCards";
 import { TopNav } from "@/features/market-rough/TopNav";
 import { loadMarketData } from "@/features/market-rough/data";
@@ -31,6 +32,7 @@ export default function RoughPage() {
         <TopCards model={model} />
         <MarketsView model={model} />
         <CompaniesView model={model} />
+        <RankingsChart model={model} />
         <ExplorerView model={model} />
       </div>
     </main>
