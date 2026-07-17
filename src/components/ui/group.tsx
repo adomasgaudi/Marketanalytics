@@ -13,13 +13,20 @@ export function GroupCard({
   tabs,
   /** Rendered above the tab row, visible on every tab (legacy "hoist"). */
   hoisted,
+  /** Controlled mode: the active tab index lives with the caller. */
+  active: controlled,
+  onChange,
 }: {
   title: string;
   gold?: boolean;
   tabs: { label: string; content: React.ReactNode }[];
   hoisted?: React.ReactNode;
+  active?: number;
+  onChange?: (index: number) => void;
 }) {
-  const [active, setActive] = useState(0);
+  const [uncontrolled, setUncontrolled] = useState(0);
+  const active = controlled ?? uncontrolled;
+  const setActive = onChange ?? setUncontrolled;
 
   return (
     <section className="mb-7">

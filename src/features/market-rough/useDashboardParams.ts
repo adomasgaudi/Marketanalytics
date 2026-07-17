@@ -24,9 +24,14 @@ export type MarketMode = (typeof MARKET_MODES)[number];
  * `shallow` defaults to true: the URL updates client-side with no server
  * round-trip, so this costs no more than useState.
  */
+/** Per-year vs all-years page mode — the legacy's clickable "per year" word. */
+export const VIEWS = ["year", "all"] as const;
+export type ViewMode = (typeof VIEWS)[number];
+
 export function useDashboardParams(defaultYear: number) {
   return useQueryStates({
     year: parseAsInteger.withDefault(defaultYear),
+    view: parseAsStringLiteral(VIEWS).withDefault("year"),
     basis: parseAsStringLiteral(BASES).withDefault("total"),
     market: parseAsStringLiteral(MARKET_MODES).withDefault("avg"),
     /** Brands being compared; empty means the default company. */

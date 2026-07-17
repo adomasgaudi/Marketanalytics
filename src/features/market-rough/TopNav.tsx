@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
+import { ViewSub } from "./ViewSync";
 
 /**
  * Legacy topnav, replicated 1:1: logo (main + "per year" sub), a two-line
@@ -68,7 +69,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         <span className="inline-flex flex-col leading-[1.08]">
           <span className="whitespace-nowrap">Market Analytics</span>
           <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-            per year
+            <ViewSub />
           </span>
         </span>
       </Link>
@@ -84,7 +85,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       >
         <span>Companies</span>
         <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-          per year
+          <ViewSub />
         </span>
       </Link>
 

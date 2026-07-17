@@ -1,4 +1,4 @@
-import { GroupCard } from "@/components/ui/group";
+import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
 import { BottomBar } from "@/features/market-rough/BottomBar";
 import { loadMarketData } from "@/features/market-rough/data";
 import { MarketAllTime, MarketPerYear } from "@/features/market-rough/MarketsView";
@@ -19,10 +19,7 @@ export default function MarketsPage() {
       <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
-            Markets{" "}
-            <span className="text-accent underline decoration-dotted underline-offset-[5px]">
-              per year
-            </span>
+            Markets <ViewWord />
           </h1>
           <p className="text-muted mt-1.5 text-[13.5px]">
             Lithuanian marketing &amp; communications agencies · {model.years[0]} to{" "}
@@ -32,13 +29,13 @@ export default function MarketsPage() {
 
         <TopCards model={model} />
 
-        <GroupCard
+        <ViewGroupCard
           title="Market data"
           tabs={[
             { label: `Market ${model.last}`, content: <MarketPerYear model={model} /> },
             { label: "Market all time", content: <MarketAllTime model={model} /> },
           ]}
-        />
+        ></ViewGroupCard>
 
         <a
           href="/v2"

@@ -1,4 +1,5 @@
-import { CollapsibleCard, GroupCard } from "@/components/ui/group";
+import { CollapsibleCard } from "@/components/ui/group";
+import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
 import { BottomBar } from "@/features/market-rough/BottomBar";
 import {
   CompanyAllTime,
@@ -24,10 +25,7 @@ export default function CompaniesPage() {
       <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
-            Companies{" "}
-            <span className="text-accent underline decoration-dotted underline-offset-[5px]">
-              per year
-            </span>
+            Companies <ViewWord />
           </h1>
           <p className="text-muted mt-1.5 text-[13.5px]">
             Profiles, rankings &amp; deep-dives for the {model.brands.length} tracked
@@ -35,7 +33,7 @@ export default function CompaniesPage() {
           </p>
         </header>
 
-        <GroupCard
+        <ViewGroupCard
           title="Financials"
           gold
           hoisted={<CompanyPicker model={model} />}
@@ -43,7 +41,7 @@ export default function CompaniesPage() {
             { label: `Company ${model.last}`, content: <CompanyPerYear model={model} /> },
             { label: "Company all time", content: <CompanyAllTime model={model} /> },
           ]}
-        />
+        ></ViewGroupCard>
 
         <CollapsibleCard title="Company rankings">
           <RankingsChart model={model} />
