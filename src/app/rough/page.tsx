@@ -15,7 +15,19 @@ export default function RoughPage() {
   return (
     <main>
       <TopNav version={`${APP_VERSION_LABEL} rough`} />
-      <div className="mx-auto max-w-[840px] p-6">
+      <div className="mx-auto w-full max-w-[840px] px-6 py-6">
+        <header className="mt-1.5 mb-5">
+          <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
+            Markets{" "}
+            <span className="text-accent underline decoration-dotted underline-offset-[5px]">
+              per year
+            </span>
+          </h1>
+          <p className="text-muted mt-1.5 text-[13.5px]">
+            Lithuanian marketing &amp; communications agencies · {model.years[0]} to{" "}
+            {model.years[model.years.length - 1]}
+          </p>
+        </header>
         <MarketsView model={model} />
         <CompaniesView model={model} />
         <ExplorerView model={model} />

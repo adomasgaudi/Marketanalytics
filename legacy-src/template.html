@@ -676,10 +676,9 @@
   <div class="logo" id="navHome" role="button" tabindex="0" title="Dashboard · click to toggle per-year / all-years"><span class="home-ic">‹</span><span class="logo-txt"><span class="logo-main">Market Analytics</span><span class="logo-sub" id="mktNavMode">per year</span></span></div>
   <div class="nav-scroll">
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
-    <button class="nav-btn nav-btn-2l" id="nextPortToggle" title="Cycle the Next.js ports (Main → Rough → Ugly)"><span class="nav-btn-main">Next</span><span class="nav-btn-sub" id="nextPortSub">main</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v3.2.0</span>
+    <span class="nav-version" id="navVersion">v3.3.1</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -688,6 +687,7 @@
       <button id="viewToggle">→ Default view</button>
       <button id="graphPanToggle">🔒 Graph pan: off</button>
       <button id="sodraRefresh">🔄 Refresh Sodra</button>
+      <button id="nextPortToggle" title="Cycle the Next.js ports (Main → Rough → Ugly)">⏭️ Next: <span id="nextPortSub">main</span></button>
     </div>
   </div>
 </nav>
@@ -2574,6 +2574,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v3.3.1', date:'2026-07-17', sp:0.5, title:'Next toggle moves into Settings',
+    desc:'The dev-mode "Next" port-cycling button leaves the nav bar and becomes a Settings-menu entry.',
+    detail:'#nextPortToggle moved from .nav-scroll into #settingsMenu as "⏭️ Next: <label>", keeping its id so the Default-mode hiding rule and the cycling JS (main → rough → ugly via top.location) work unchanged. Frees nav-bar width; the sub-label still shows the next destination.'},
   {v:'v3.2.0', date:'2026-07-12', sp:1, title:'Next port toggle in nav',
     desc:'A dev-mode-only "Next" button next to Companies cycles the Next.js routes (main → rough → ugly), so the dashboard is no longer a dead end when embedded.',
     detail:'The Next.js app serves this dashboard inside its /ugly route as an iframe. That wrapper used to add its own header, which stacked a second nav bar on top of this one and squeezed the frame narrow enough to trip the @media(max-width:600px) rule — turning .nav-scroll into a horizontal scroller, so the Companies button slid around. Removing the wrapper chrome fixed both, but left no way to navigate back out of the iframe. So one nav-btn (#nextPortToggle, hidden in Default mode like the other dev affordances) now cycles through the Next routes, navigating via top.location so it escapes the iframe instead of nesting a page inside a page. Its sub-label shows the next destination.'},

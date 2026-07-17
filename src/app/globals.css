@@ -80,16 +80,16 @@
   --color-gold-bar: #b8942e;
 }
 
-/* Base rules, as in the legacy dashboard. */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: var(--color-bg);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  line-height: 1.5;
+/* Base rules, as in the legacy dashboard. MUST stay inside @layer base:
+   unlayered CSS outranks every @layer rule, so an unlayered reset here would
+   silently kill all margin/padding utilities (mx-auto, px-*, ...). Tailwind's
+   preflight already provides the *{margin:0;padding:0;box-sizing:border-box}
+   reset. */
+@layer base {
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
 }

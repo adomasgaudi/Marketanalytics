@@ -1,6 +1,6 @@
 {
   "name": "marketanalytics",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "private": true,
   "scripts": {
     "version:write": "node scripts/write-version.mjs",
@@ -36,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "eslint-config-prettier": "^10.1.8",
+    "playwright": "^1.61.1",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "^5"

@@ -13,7 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // Dark is the legacy dashboard's default; light is an explicit opt-in there.
+    <html lang="en" data-theme="dark">
       {/* NuqsAdapter lets the dashboard keep its selections (year, basis,
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>
