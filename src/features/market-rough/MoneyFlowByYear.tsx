@@ -52,10 +52,20 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const R = rows.length;
   const sig = rows.map((r) => `${r.year}:${r.turnover}`).join("|");
 
-  // Legacy zoomOut 0.2: the default view leaves ~20% headroom above the max.
+  // Legacy fitState: stacked headroom ×1.22 for the total labels, then
+  // zoomOut 0.2 → ±10% margin on BOTH axes (so the 0-line floats above the
+  // bottom and the x range gains side slots).
   const fullView = useMemo<View>(() => {
-    const hi = Math.max(...rows.map((r) => r.turnover), 1) * 1.2;
-    return { vMin: 0, vMax: hi, iMin: -0.5, iMax: Math.max(0.5, R - 0.5) };
+    const hi = Math.max(...rows.map((r) => r.turnover), 1) * 1.22;
+    const xMax = Math.max(1, R - 1);
+    const xs = xMax;
+    const ys = hi;
+    return {
+      vMin: -ys * 0.1,
+      vMax: hi + ys * 0.1,
+      iMin: -xs * 0.1,
+      iMax: xMax + xs * 0.1,
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sig]);
   const v = view ?? fullView;
@@ -81,8 +91,9 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const ispan = v.iMax - v.iMin || 1;
   const y = (val: number) => m.t + ph - ((val - v.vMin) / vspan) * ph;
   const x = (i: number) => m.l + ((i - v.iMin) / ispan) * pw;
+  // Legacy: slotPx = pw / span; barW = min(slot × 0.7, 64).
   const bandW = pw / ispan;
-  const barW = Math.min(56, bandW * 0.6);
+  const barW = Math.min(bandW * 0.7, 64);
 
   // Round 1/2/5×10ⁿ y ticks that move with the view (legacy niceTicks).
   const ticks = useMemo(() => {
@@ -322,19 +333,28 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           {chartFmt(revRest)}
                         </text>
                       )}
-                      <text
-                        x={cx}
-                        y={H - 8}
-                        textAnchor="middle"
-                        fontSize="11"
-                        fill="var(--color-muted)"
-                      >
-                        {r.year}
-                      </text>
                     </g>
                   );
                 })}
               </g>
+
+              {/* Year labels live OUTSIDE the plot clip (legacy category row). */}
+              {rows.map((r, i) => {
+                const cx = x(i);
+                if (cx < m.l - 4 || cx > m.l + pw + 4) return null;
+                return (
+                  <text
+                    key={r.year}
+                    x={cx}
+                    y={H - 8}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="var(--color-muted)"
+                  >
+                    {r.year}
+                  </text>
+                );
+              })}
             </svg>
 
             <button
