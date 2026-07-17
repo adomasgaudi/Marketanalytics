@@ -65,7 +65,9 @@ export function KpiModeToggle({
       title={title}
       onClick={() => onChange(value)}
       className={cn(
-        "h-7 w-[34px] cursor-pointer border-none text-[12px] font-bold transition-colors",
+        // 13.33px mirrors the legacy's computed size (its font shorthand falls
+        // back to the inherited size); divider is border-right, as there.
+        "border-line h-7 w-[34px] cursor-pointer border-r text-[13.33px] font-bold transition-colors last:border-r-0",
         mode === value ? "bg-accent text-white" : "bg-panel2 text-muted",
       )}
     >
@@ -75,7 +77,7 @@ export function KpiModeToggle({
 
   return (
     <div className="-mt-1 mb-2 flex items-center justify-end">
-      <div className="border-line bg-panel divide-line inline-flex divide-x overflow-hidden rounded-full border">
+      <div className="border-line bg-panel inline-flex overflow-hidden rounded-full border">
         {btn("value", "#", "Show number")}
         {btn("change", "%", "Show percent change")}
       </div>

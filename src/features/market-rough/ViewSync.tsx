@@ -62,9 +62,10 @@ export function ViewGroupCard({
   const active = view === "year" ? 0 : 1;
 
   return (
-    <section className="mb-7">
+    <section className="my-4">
+      {/* Legacy .group-sum: 19px/700, 16px 2px padding, hairline, 12px below. */}
       <h2
-        className={`border-line mt-7 mb-3.5 border-b pb-2 text-[18px] font-bold ${gold ? "text-gold" : ""}`}
+        className={`border-line mb-3 flex items-center gap-2.5 border-b px-0.5 py-4 text-[19px] font-bold ${gold ? "text-gold" : ""}`}
       >
         {title}
       </h2>

@@ -38,7 +38,8 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
   if (revenue == null && turnover == null) return null;
   const T = turnover ?? revenue!;
 
-  const pass = turnover != null && revenue != null && turnover > revenue ? turnover - revenue : 0;
+  const pass =
+    turnover != null && revenue != null && turnover > revenue ? turnover - revenue : 0;
   const pctOf = (v: number) => (T > 0 ? (v / T) * 100 : 0);
 
   // Bar bottom→top: Net profit (green), rest-of-Revenue, rest-of-Turnover.
@@ -65,7 +66,13 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
       cur: revenue,
       before: prev.R,
     },
-    { dot: "bg-mf-turn", name: "Turnover", val: fmtEur(T), cur: turnover, before: prev.T },
+    {
+      dot: "bg-mf-turn",
+      name: "Turnover",
+      val: fmtEur(T),
+      cur: turnover,
+      before: prev.T,
+    },
   ].filter(Boolean) as {
     dot: string;
     name: string;
@@ -95,7 +102,7 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
       </div>
 
       <div className="flex min-h-[90px] gap-3">
-        <div className="border-line flex w-[26px] flex-none flex-col-reverse overflow-hidden rounded-md border">
+        <div className="border-line flex w-[26px] flex-none flex-col-reverse overflow-hidden rounded-[6px] border">
           {segments.map((seg, i) => (
             <div
               key={i}
@@ -109,7 +116,7 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
         {pass > 0 && revenue != null && (
           <div className="flex w-[84px] flex-none flex-col-reverse">
             <div
-              className="border-gold relative flex items-center border-l-2 pl-[7px] before:bg-gold before:absolute before:top-0 before:left-0 before:h-0.5 before:w-1.5 before:content-[''] after:bg-gold after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-1.5 after:content-['']"
+              className="border-gold before:bg-gold after:bg-gold relative flex items-center border-l-2 pl-[7px] before:absolute before:top-0 before:left-0 before:h-0.5 before:w-1.5 before:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-1.5 after:content-['']"
               style={{ flex: revPct.toFixed(2) }}
             >
               <span className="text-ink text-[11px] leading-[1.25] font-semibold">
@@ -123,7 +130,9 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
         <div className="flex min-w-0 flex-1 flex-col-reverse">
           {legend.map((item) => (
             <div key={item.name} className="flex min-h-8 flex-1 items-center gap-[9px]">
-              <span className={cn("h-[11px] w-[11px] flex-none rounded-[3px]", item.dot)} />
+              <span
+                className={cn("h-[11px] w-[11px] flex-none rounded-[3px]", item.dot)}
+              />
               <div className="flex min-w-0 flex-col text-[13px]">
                 <b>
                   {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
