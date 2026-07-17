@@ -27,7 +27,7 @@ export function ViewWord({ scope }: { scope: ViewScope }) {
       title="Tap to switch per-year / all-time"
       onClick={toggle}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle()}
-      className="text-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] hover:opacity-80"
+      className="text-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] hover:opacity-[.82]"
     >
       {view === "year" ? "per year" : "all years"}
     </span>

@@ -17,7 +17,7 @@ export default function MarketsPage() {
     <main>
       <TopNav active="markets" />
       <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
-        <header className="mt-1.5 mb-5">
+        <header className="mt-1.5 mb-[22px]">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
             Markets <ViewWord scope="mkt" />
           </h1>

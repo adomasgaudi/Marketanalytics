@@ -1,6 +1,6 @@
 {
   "name": "marketanalytics",
-  "version": "3.21.2",
+  "version": "3.21.3",
   "private": true,
   "scripts": {
     "version:write": "node scripts/write-version.mjs",

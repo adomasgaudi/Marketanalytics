@@ -9,7 +9,7 @@ const SOURCES = [
 /** The two cards under the hero: tracked-company count and the data sources. */
 export function TopCards({ model }: { model: MarketModel }) {
   return (
-    <div className="my-4 grid grid-cols-2 gap-2.5 max-sm:grid-cols-1">
+    <div className="my-4 grid grid-cols-2 gap-2.5">
       <article className="border-line bg-panel rounded-[10px] border px-[13px] py-[11px]">
         <div className="text-muted text-[11px] tracking-[.05em] uppercase">
           Companies tracked
