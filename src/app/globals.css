@@ -80,6 +80,14 @@
   --color-gold-bar: #b8942e;
 }
 
+/* Default vs Dev mode, as in the legacy: formula folds and the raw-data
+   explore button are Dev-mode-only. Kept OUT of @layer so it beats utilities
+   (that precedence is intended here, unlike the reset below). */
+html[data-mode="default"] .kpi-f,
+html[data-mode="default"] .explore-btn {
+  display: none;
+}
+
 /* Base rules, as in the legacy dashboard. MUST stay inside @layer base:
    unlayered CSS outranks every @layer rule, so an unlayered reset here would
    silently kill all margin/padding utilities (mx-auto, px-*, ...). Tailwind's

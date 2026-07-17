@@ -51,7 +51,7 @@ export default function CompaniesPage() {
 
         <a
           href="/v2"
-          className="border-line bg-panel2 text-muted hover:text-ink mt-2 inline-block rounded-lg border px-4 py-2.5 text-[14px] font-semibold transition-colors"
+          className="explore-btn border-line bg-panel2 text-muted hover:text-ink mt-2 inline-block rounded-lg border px-4 py-2.5 text-[14px] font-semibold transition-colors"
         >
           Explore the raw data &amp; sources →
         </a>

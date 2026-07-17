@@ -1,6 +1,14 @@
 "use client";
 
-import { fmtEur } from "./format";
+import { fmtPct } from "./format";
+
+/** Chart-label format, as the legacy SVG engine: 1.94M / 653.5k — no €. */
+const chartFmt = (v: number) =>
+  v >= 1e6
+    ? `${(v / 1e6).toFixed(v >= 1e7 ? 1 : 2)}M`
+    : v >= 1e3
+      ? `${(v / 1e3).toFixed(1)}k`
+      : String(Math.round(v));
 
 export type YearFlow = {
   year: number;
@@ -65,7 +73,21 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                   fontSize="10"
                   fill="var(--color-muted)"
                 >
-                  {fmtEur(v)}
+                  {chartFmt(v)}
+                </text>
+              </g>
+            ))}
+
+            {/* Legend inside the plot, top-right, as the legacy engine draws it. */}
+            {[
+              ["var(--color-green)", "Net profit"],
+              ["var(--color-mf-rev)", "Revenue"],
+              ["var(--color-mf-turn)", "Turnover"],
+            ].map(([color, label], i) => (
+              <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
+                <rect width="9" height="9" rx="2" fill={color} />
+                <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
+                  {label}
                 </text>
               </g>
             ))}
@@ -78,6 +100,11 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
               const yProfitTop = y(profit);
               const yRevTop = y(profit + revRest);
               const yTurnTop = y(profit + revRest + turnRest);
+              const prevTurnover = i > 0 ? rows[i - 1].turnover : null;
+              const yoy =
+                prevTurnover != null && prevTurnover > 0
+                  ? r.turnover / prevTurnover - 1
+                  : null;
               return (
                 <g key={r.year}>
                   <rect
@@ -109,8 +136,33 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                     fontWeight="700"
                     fill="var(--color-ink)"
                   >
-                    {fmtEur(r.turnover)}
+                    {chartFmt(r.turnover)}
                   </text>
+                  {yoy != null && (
+                    <text
+                      x={x(i)}
+                      y={yTurnTop - 18}
+                      textAnchor="middle"
+                      fontSize="9"
+                      fontWeight="600"
+                      fill={yoy >= 0 ? "var(--color-green)" : "var(--color-red)"}
+                    >
+                      {fmtPct(yoy)}
+                    </text>
+                  )}
+                  {/* Revenue value inside the dark band, as the legacy. */}
+                  {revRest > 0 && yProfitTop - yRevTop > 14 && (
+                    <text
+                      x={x(i)}
+                      y={(yRevTop + yProfitTop) / 2 + 3}
+                      textAnchor="middle"
+                      fontSize="9"
+                      fontWeight="600"
+                      fill="var(--color-ink)"
+                    >
+                      {chartFmt(r.revenue)}
+                    </text>
+                  )}
                   <text
                     x={x(i)}
                     y={H - 8}
@@ -124,22 +176,6 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
               );
             })}
           </svg>
-
-          <div className="mt-1 flex gap-4 text-[12px]">
-            {[
-              ["var(--color-green)", "Net profit"],
-              ["var(--color-mf-rev)", "Revenue"],
-              ["var(--color-mf-turn)", "Turnover"],
-            ].map(([color, label]) => (
-              <span key={label} className="flex items-center gap-1.5">
-                <span
-                  className="inline-block h-[11px] w-[11px] rounded-[3px]"
-                  style={{ background: color }}
-                />
-                {label}
-              </span>
-            ))}
-          </div>
         </div>
       )}
     </section>

@@ -1,6 +1,5 @@
 "use client";
 
-import { GroupCard } from "@/components/ui/group";
 import { useDashboardParams } from "./useDashboardParams";
 
 /**
@@ -36,18 +35,35 @@ export function ViewSub() {
  * GroupCard whose active tab is the URL's view mode: tab 0 = per-year,
  * tab 1 = all-time. Clicking a tab and clicking the hero word stay in sync.
  */
-export function ViewGroupCard(props: {
+export function ViewGroupCard({
+  title,
+  gold,
+  hoisted,
+  tabs,
+}: {
   title: string;
   gold?: boolean;
   hoisted?: React.ReactNode;
   tabs: { label: string; content: React.ReactNode }[];
 }) {
-  const [{ view }, setParams] = useDashboardParams(0);
+  const [{ view }] = useDashboardParams(0);
+  const active = view === "year" ? 0 : 1;
+
+  // Legacy default mode shows NO tab row — the hero's per-year/all-years word
+  // is the only switcher; the heading just gets a hairline underneath.
   return (
-    <GroupCard
-      {...props}
-      active={view === "year" ? 0 : 1}
-      onChange={(i) => setParams({ view: i === 0 ? "year" : "all" })}
-    />
+    <section className="mb-7">
+      <h2
+        className={`border-line mt-7 mb-3.5 border-b pb-2 text-[18px] font-bold ${gold ? "text-gold" : ""}`}
+      >
+        {title}
+      </h2>
+      {hoisted}
+      {tabs.map((tab, i) => (
+        <div key={tab.label} hidden={i !== active}>
+          {tab.content}
+        </div>
+      ))}
+    </section>
   );
 }

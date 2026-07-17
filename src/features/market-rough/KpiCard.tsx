@@ -36,7 +36,7 @@ export function KpiCard({ card, mode }: { card: KpiCardData; mode: KpiMode }) {
         {sub}
       </div>
       {card.formula && (
-        <details className="group mt-[7px]">
+        <details className="kpi-f group mt-[7px]">
           <summary className="text-muted group-open:text-ink inline-flex cursor-pointer list-none items-center gap-1 text-[10.5px] [&::-webkit-details-marker]:hidden">
             <span className="font-bold italic">ƒ</span> formula
             <span className="text-[9px] group-open:hidden">▸</span>

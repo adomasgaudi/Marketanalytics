@@ -63,9 +63,9 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
   const H = 340;
   const PAD = { top: 12, right: 12, bottom: 30, left: 44 };
   const logMin = Math.log10(10_000);
-  const logMax = Math.log10(40_000_000);
-  const yMin = -40;
-  const yMax = 60;
+  const logMax = Math.log10(8_000_000);
+  const yMin = -120;
+  const yMax = 100;
   const px = (v: number) =>
     PAD.left +
     ((Math.log10(Math.max(v, 10_000)) - logMin) / (logMax - logMin)) *
@@ -101,10 +101,13 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
         Each company = one bubble (revenue × margin, size = headcount); Fabula in gold.{" "}
         <b>Drag the slider</b> to watch every company glide year to year.
       </p>
-      <div className="text-accent mb-1 text-[22px] font-extrabold">{yearLabel}</div>
+      {/* Big centred year, as the legacy scrub-yearlbl. */}
+      <div className="text-ink mb-1 text-center text-[22px] font-extrabold">
+        {yearLabel}
+      </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img">
-        {[0, -20, 20, 40].map((v) => (
+        {[-120, -100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100].map((v) => (
           <g key={v}>
             <line
               x1={PAD.left}
@@ -112,6 +115,8 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
               y1={py(v)}
               y2={py(v)}
               stroke="var(--color-grid)"
+              strokeDasharray={v === 0 ? "4,4" : undefined}
+              strokeWidth={v === 0 ? 1.5 : 1}
             />
             <text
               x={PAD.left - 6}
@@ -124,7 +129,7 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
             </text>
           </g>
         ))}
-        {[1e5, 1e6, 1e7].map((v) => (
+        {[1e5, 3e5, 1e6, 3e6].map((v) => (
           <text
             key={v}
             x={px(v)}

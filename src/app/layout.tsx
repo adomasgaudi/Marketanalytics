@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     // Dark is the legacy dashboard's default; light is an explicit opt-in there.
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="dark" data-mode="default">
       {/* NuqsAdapter lets the dashboard keep its selections (year, basis,
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>

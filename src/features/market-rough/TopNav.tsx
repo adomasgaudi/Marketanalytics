@@ -18,6 +18,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<"classic" | "ocean">("classic");
+  const [mode, setMode] = useState<"default" | "dev">("default");
   const wrapRef = useRef<HTMLDivElement>(null);
 
   // Read the persisted choices the same way the legacy pre-paint script does.
@@ -25,6 +26,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     try {
       if (localStorage.getItem("theme") === "light") setTheme("light");
       if (localStorage.getItem("palette") === "ocean") setPalette("ocean");
+      if (localStorage.getItem("viewMode") === "dev") setMode("dev");
     } catch {}
   }, []);
 
@@ -34,11 +36,13 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     else root.removeAttribute("data-theme");
     if (palette !== "classic") root.setAttribute("data-palette", palette);
     else root.removeAttribute("data-palette");
+    root.setAttribute("data-mode", mode);
     try {
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
+      localStorage.setItem("viewMode", mode);
     } catch {}
-  }, [theme, palette]);
+  }, [theme, palette, mode]);
 
   useEffect(() => {
     if (!open) return;
@@ -136,6 +140,13 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
               onClick={() => setPalette(palette === "classic" ? "ocean" : "classic")}
             >
               {palette === "classic" ? "🎨 Classic" : "🎨 Ocean"}
+            </button>
+            <button
+              type="button"
+              className={menuItem}
+              onClick={() => setMode(mode === "default" ? "dev" : "default")}
+            >
+              → {mode === "default" ? "Default view" : "Dev view"}
             </button>
             {/* Renamed port button: opens the previous-generation dashboard. */}
             <Link href="/v2" className={menuItem} onClick={() => setOpen(false)}>
