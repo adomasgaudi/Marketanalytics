@@ -1,6 +1,14 @@
 "use client";
 
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { fmtPct } from "./format";
+
+export type YearFlow = {
+  year: number;
+  turnover: number;
+  revenue: number;
+  profit: number;
+};
 
 /** Chart-label format, as the legacy SVG engine: 1.94M / 653.5k — no €. */
 const chartFmt = (v: number) =>
@@ -10,35 +18,167 @@ const chartFmt = (v: number) =>
       ? `${(v / 1e3).toFixed(1)}k`
       : String(Math.round(v));
 
-export type YearFlow = {
-  year: number;
-  turnover: number;
-  revenue: number;
-  profit: number;
+/** Axis-tick format: 4M / 3.5M / 500k / 0 — trailing zeros dropped. */
+const axisFmt = (v: number) => {
+  if (v === 0) return "0";
+  if (Math.abs(v) >= 1e6) {
+    const m = v / 1e6;
+    return `${Number.isInteger(m) ? m : m.toFixed(1)}M`;
+  }
+  if (Math.abs(v) >= 1e3) {
+    const k = v / 1e3;
+    return `${Number.isInteger(k) ? k : k.toFixed(1)}k`;
+  }
+  return String(Math.round(v));
 };
 
+type View = { vMin: number; vMax: number; iMin: number; iMax: number };
+
 /**
- * Money-flow by year: one stacked SVG bar per year — bottom→top Net profit
- * (green), rest-of-Revenue (dark gray), rest-of-Turnover (light gray) — with
- * the turnover total on top, as the legacy drawFinSvg stacked chart.
+ * Money-flow by year — the legacy drawFinSvg stacked-bar chart: one bar per
+ * year (Net profit / rest-of-Revenue / rest-of-Turnover bottom→top), total +
+ * YoY labels on top, the rest-of-revenue value inside the dark band, in-plot
+ * legend, 20% zoom-out headroom, hover tooltip, ⤢ fit and pan/zoom gated by
+ * the Dev graph-pan setting. Container-pixel sized with a ResizeObserver.
  */
 export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: string }) {
-  const W = 760;
-  const H = 300;
-  const PAD = { top: 28, right: 12, bottom: 24, left: 44 };
-  const plotW = W - PAD.left - PAD.right;
-  const plotH = H - PAD.top - PAD.bottom;
+  const hostRef = useRef<HTMLDivElement>(null);
+  const clipId = useId();
+  const [size, setSize] = useState({ W: 720, H: 300 });
+  const [view, setView] = useState<View | null>(null);
+  const [tt, setTt] = useState<{ x: number; y: number; html: string } | null>(null);
+  const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
 
-  const max = Math.max(...rows.map((r) => r.turnover), 1) * 1.05;
-  const barW = Math.min(56, (plotW / rows.length) * 0.6);
+  const R = rows.length;
+  const sig = rows.map((r) => `${r.year}:${r.turnover}`).join("|");
 
-  const y = (v: number) => PAD.top + plotH - (v / max) * plotH;
-  const x = (i: number) => PAD.left + (plotW / rows.length) * (i + 0.5);
+  // Legacy zoomOut 0.2: the default view leaves ~20% headroom above the max.
+  const fullView = useMemo<View>(() => {
+    const hi = Math.max(...rows.map((r) => r.turnover), 1) * 1.2;
+    return { vMin: 0, vMax: hi, iMin: -0.5, iMax: Math.max(0.5, R - 0.5) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
+  const v = view ?? fullView;
 
-  // Round y-axis gridlines: 4 steps of a "nice" value.
-  const step = niceStep(max / 4);
-  const gridVals: number[] = [];
-  for (let v = step; v <= max; v += step) gridVals.push(v);
+  useEffect(() => setView(null), [sig]);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const measure = () =>
+      host.clientWidth > 0 && setSize({ W: host.clientWidth, H: host.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(host);
+    return () => ro.disconnect();
+  }, []);
+
+  const { W, H } = size;
+  const m = { t: 6, r: 12, b: 24, l: 44 };
+  const pw = W - m.l - m.r;
+  const ph = H - m.t - m.b;
+  const vspan = v.vMax - v.vMin || 1;
+  const ispan = v.iMax - v.iMin || 1;
+  const y = (val: number) => m.t + ph - ((val - v.vMin) / vspan) * ph;
+  const x = (i: number) => m.l + ((i - v.iMin) / ispan) * pw;
+  const bandW = pw / ispan;
+  const barW = Math.min(56, bandW * 0.6);
+
+  // Round 1/2/5×10ⁿ y ticks that move with the view (legacy niceTicks).
+  const ticks = useMemo(() => {
+    if (!(v.vMax > v.vMin)) return [v.vMin];
+    const raw = (v.vMax - v.vMin) / 8;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const nrm = raw / mag;
+    const step = (nrm < 1.5 ? 1 : nrm < 3 ? 2 : nrm < 7 ? 5 : 10) * mag;
+    const out: number[] = [];
+    for (
+      let t = Math.ceil(v.vMin / step - 1e-9) * step;
+      t <= v.vMax + step * 1e-9;
+      t += step
+    )
+      out.push(Math.abs(t) < step * 1e-6 ? 0 : t);
+    return out;
+  }, [v]);
+
+  const graphPanOn = () => {
+    try {
+      return localStorage.getItem("graphPan") === "on";
+    } catch {
+      return false;
+    }
+  };
+
+  const zoomAbout = (cx: number, cy: number, kx: number, ky: number) => {
+    const rect = hostRef.current!.getBoundingClientRect();
+    const fx = Math.max(0, Math.min(1, (cx - rect.left - m.l) / (pw || 1)));
+    const fy = Math.max(0, Math.min(1, (cy - rect.top - m.t) / (ph || 1)));
+    const focI = v.iMin + fx * ispan;
+    const ni = ispan * kx;
+    // y is inverted: top of plot = vMax.
+    const focV = v.vMax - fy * vspan;
+    const nv = Math.max(1e-6, vspan * ky);
+    setView({
+      iMin: focI - fx * ni,
+      iMax: focI + (1 - fx) * ni,
+      vMax: focV + fy * nv,
+      vMin: focV + fy * nv - nv,
+    });
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const host = hostRef.current;
+    if (!host || drag.current?.moved) return;
+    const rect = host.getBoundingClientRect();
+    const xv = e.clientX - rect.left;
+    if (xv < m.l || xv > m.l + pw) return setTt(null);
+    const i = Math.round(v.iMin + ((xv - m.l) / pw) * ispan);
+    if (i < 0 || i >= R) return setTt(null);
+    const r = rows[i];
+    setTt({
+      x: Math.max(2, xv + 8),
+      y: e.clientY - rect.top + 8,
+      html:
+        `<b>${r.year}</b><br>` +
+        `Turnover €${chartFmt(r.turnover)}<br>` +
+        `Revenue €${chartFmt(r.revenue)}<br>` +
+        `Net profit €${chartFmt(r.profit)}`,
+    });
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!graphPanOn()) return;
+    drag.current = { x0: e.clientX, y0: e.clientY, v: { ...v }, moved: false };
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d) return;
+    if (Math.abs(e.clientX - d.x0) + Math.abs(e.clientY - d.y0) > 3) d.moved = true;
+    if (!d.moved) return;
+    setTt(null);
+    const di = ((e.clientX - d.x0) / (pw || 1)) * (d.v.iMax - d.v.iMin);
+    const dv = ((e.clientY - d.y0) / (ph || 1)) * (d.v.vMax - d.v.vMin);
+    setView({
+      iMin: d.v.iMin - di,
+      iMax: d.v.iMax - di,
+      vMin: d.v.vMin + dv,
+      vMax: d.v.vMax + dv,
+    });
+  };
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!graphPanOn()) return;
+      e.preventDefault();
+      const k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+      zoomAbout(e.clientX, e.clientY, e.shiftKey ? 1 : k, e.altKey ? 1 : k);
+    };
+    host.addEventListener("wheel", onWheel, { passive: false });
+    return () => host.removeEventListener("wheel", onWheel);
+  });
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
@@ -46,144 +186,179 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
       {rows.length === 0 ? (
         <p className="text-muted p-6 text-center text-[13px]">No data.</p>
       ) : (
-        <div className="relative">
-          <span className="text-muted absolute top-0 left-0 text-[10px] opacity-60">
+        <div className="chartbox relative h-[340px]">
+          <span className="bg-panel2 text-muted pointer-events-none absolute top-1 left-1 z-[7] rounded-[3px] px-1 py-0.5 text-[8px] font-semibold tracking-[.04em] opacity-70">
             SVG
           </span>
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            className="h-auto w-full"
-            role="img"
-            aria-label={title}
+          <div
+            ref={hostRef}
+            className="absolute inset-0 touch-none select-none"
+            onMouseMove={onMouseMove}
+            onMouseLeave={() => setTt(null)}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={() => (drag.current = null)}
+            onDoubleClick={() => setView(null)}
           >
-            {gridVals.map((v) => (
-              <g key={v}>
-                <line
-                  x1={PAD.left}
-                  x2={W - PAD.right}
-                  y1={y(v)}
-                  y2={y(v)}
-                  stroke="var(--color-grid)"
-                  strokeWidth="1"
-                />
-                <text
-                  x={PAD.left - 6}
-                  y={y(v) + 3}
-                  textAnchor="end"
-                  fontSize="10"
-                  fill="var(--color-muted)"
-                >
-                  {chartFmt(v)}
-                </text>
-              </g>
-            ))}
-
-            {/* Legend inside the plot, top-right, as the legacy engine draws it. */}
-            {[
-              ["var(--color-green)", "Net profit"],
-              ["var(--color-mf-rev)", "Revenue"],
-              ["var(--color-mf-turn)", "Turnover"],
-            ].map(([color, label], i) => (
-              <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
-                <rect width="9" height="9" rx="2" fill={color} />
-                <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
-                  {label}
-                </text>
-              </g>
-            ))}
-
-            {rows.map((r, i) => {
-              const profit = Math.max(0, r.profit);
-              const revRest = Math.max(0, r.revenue - profit);
-              const turnRest = Math.max(0, r.turnover - r.revenue);
-              const x0 = x(i) - barW / 2;
-              const yProfitTop = y(profit);
-              const yRevTop = y(profit + revRest);
-              const yTurnTop = y(profit + revRest + turnRest);
-              const prevTurnover = i > 0 ? rows[i - 1].turnover : null;
-              const yoy =
-                prevTurnover != null && prevTurnover > 0
-                  ? r.turnover / prevTurnover - 1
-                  : null;
-              return (
-                <g key={r.year}>
-                  <rect
-                    x={x0}
-                    y={yProfitTop}
-                    width={barW}
-                    height={y(0) - yProfitTop}
-                    fill="var(--color-green)"
-                  />
-                  <rect
-                    x={x0}
-                    y={yRevTop}
-                    width={barW}
-                    height={yProfitTop - yRevTop}
-                    fill="var(--color-mf-rev)"
-                  />
-                  <rect
-                    x={x0}
-                    y={yTurnTop}
-                    width={barW}
-                    height={yRevTop - yTurnTop}
-                    fill="var(--color-mf-turn)"
-                  />
-                  <text
-                    x={x(i)}
-                    y={yTurnTop - 5}
-                    textAnchor="middle"
-                    fontSize="10"
-                    fontWeight="700"
-                    fill="var(--color-ink)"
-                  >
-                    {chartFmt(r.turnover)}
-                  </text>
-                  {yoy != null && (
+            <svg
+              width="100%"
+              height="100%"
+              viewBox={`0 0 ${W} ${H}`}
+              className="block overflow-visible"
+            >
+              <defs>
+                <clipPath id={`${clipId}p`}>
+                  <rect x={m.l} y={m.t} width={pw} height={ph} />
+                </clipPath>
+              </defs>
+              {ticks.map((t) => {
+                const ty = y(t);
+                if (ty < m.t - 1 || ty > m.t + ph + 1) return null;
+                return (
+                  <g key={t}>
+                    <line
+                      x1={m.l}
+                      x2={W - m.r}
+                      y1={ty}
+                      y2={ty}
+                      stroke="var(--color-grid)"
+                      strokeWidth="1"
+                    />
                     <text
-                      x={x(i)}
-                      y={yTurnTop - 18}
-                      textAnchor="middle"
-                      fontSize="9"
-                      fontWeight="600"
-                      fill={yoy >= 0 ? "var(--color-green)" : "var(--color-red)"}
+                      x={m.l - 6}
+                      y={ty + 3}
+                      textAnchor="end"
+                      fontSize="10"
+                      fill="var(--color-muted)"
                     >
-                      {fmtPct(yoy)}
+                      {axisFmt(t)}
                     </text>
-                  )}
-                  {/* Revenue value inside the dark band, as the legacy. */}
-                  {revRest > 0 && yProfitTop - yRevTop > 14 && (
-                    <text
-                      x={x(i)}
-                      y={(yRevTop + yProfitTop) / 2 + 3}
-                      textAnchor="middle"
-                      fontSize="9"
-                      fontWeight="600"
-                      fill="var(--color-ink)"
-                    >
-                      {chartFmt(r.revenue)}
-                    </text>
-                  )}
-                  <text
-                    x={x(i)}
-                    y={H - 8}
-                    textAnchor="middle"
-                    fontSize="11"
-                    fill="var(--color-muted)"
-                  >
-                    {r.year}
+                  </g>
+                );
+              })}
+
+              {/* Legend inside the plot, top-right, as the legacy engine. */}
+              {[
+                ["var(--color-green)", "Net profit"],
+                ["var(--color-mf-rev)", "Revenue"],
+                ["var(--color-mf-turn)", "Turnover"],
+              ].map(([color, label], i) => (
+                <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
+                  <rect width="9" height="9" rx="2" fill={color} />
+                  <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
+                    {label}
                   </text>
                 </g>
-              );
-            })}
-          </svg>
+              ))}
+
+              <g clipPath={`url(#${clipId}p)`}>
+                {rows.map((r, i) => {
+                  const profit = Math.max(0, r.profit);
+                  const revRest = Math.max(0, r.revenue - profit);
+                  const turnRest = Math.max(0, r.turnover - r.revenue);
+                  const cx = x(i);
+                  if (cx < m.l - bandW || cx > m.l + pw + bandW) return null;
+                  const x0 = cx - barW / 2;
+                  const yProfitTop = y(profit);
+                  const yRevTop = y(profit + revRest);
+                  const yTurnTop = y(profit + revRest + turnRest);
+                  const prev = i > 0 ? rows[i - 1].turnover : null;
+                  const yoy = prev != null && prev > 0 ? r.turnover / prev - 1 : null;
+                  return (
+                    <g key={r.year}>
+                      <rect
+                        x={x0}
+                        y={yProfitTop}
+                        width={barW}
+                        height={Math.max(0, y(0) - yProfitTop)}
+                        fill="var(--color-green)"
+                      />
+                      <rect
+                        x={x0}
+                        y={yRevTop}
+                        width={barW}
+                        height={Math.max(0, yProfitTop - yRevTop)}
+                        fill="var(--color-mf-rev)"
+                      />
+                      <rect
+                        x={x0}
+                        y={yTurnTop}
+                        width={barW}
+                        height={Math.max(0, yRevTop - yTurnTop)}
+                        fill="var(--color-mf-turn)"
+                      />
+                      <text
+                        x={cx}
+                        y={yTurnTop - 5}
+                        textAnchor="middle"
+                        fontSize="10"
+                        fontWeight="700"
+                        fill="var(--color-ink)"
+                      >
+                        {chartFmt(r.turnover)}
+                      </text>
+                      {yoy != null && (
+                        <text
+                          x={cx}
+                          y={yTurnTop - 18}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="600"
+                          fill={yoy >= 0 ? "var(--color-green)" : "var(--color-red)"}
+                        >
+                          {fmtPct(yoy)}
+                        </text>
+                      )}
+                      {/* Rest-of-revenue SEGMENT value inside the dark band (legacy). */}
+                      {revRest > 0 && yProfitTop - yRevTop > 14 && (
+                        <text
+                          x={cx}
+                          y={(yRevTop + yProfitTop) / 2 + 3}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="600"
+                          fill="var(--color-ink)"
+                        >
+                          {chartFmt(revRest)}
+                        </text>
+                      )}
+                      <text
+                        x={cx}
+                        y={H - 8}
+                        textAnchor="middle"
+                        fontSize="11"
+                        fill="var(--color-muted)"
+                      >
+                        {r.year}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+            </svg>
+
+            <button
+              type="button"
+              title="Fit — reset zoom & pan"
+              onClick={(e) => {
+                e.stopPropagation();
+                setView(null);
+              }}
+              className="border-line bg-panel text-muted absolute top-1 right-1 z-[7] cursor-pointer rounded-[4px] border px-[5px] py-0.5 text-[12px] font-semibold opacity-60"
+            >
+              ⤢
+            </button>
+
+            {tt && (
+              <div
+                className="border-line bg-panel text-ink pointer-events-none absolute z-[6] rounded-[4px] border px-1.5 py-1 text-[11px] whitespace-nowrap"
+                style={{ left: tt.x, top: tt.y }}
+                dangerouslySetInnerHTML={{ __html: tt.html }}
+              />
+            )}
+          </div>
         </div>
       )}
     </section>
   );
-}
-
-function niceStep(raw: number): number {
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const norm = raw / mag;
-  return (norm >= 5 ? 5 : norm >= 2 ? 2 : 1) * mag;
 }
