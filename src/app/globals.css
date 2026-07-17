@@ -20,6 +20,8 @@
   --color-gold: #c79410;
   --color-gold-bar: #a67c08;
   --color-grid: #e6e9ef;
+  /* Chart canvas background — doughnut slice borders use this, not the panel. */
+  --color-chart-bg: #ffffff;
   --color-zebra: rgb(0 0 0 / 2.2%);
   /* Money-flow stack: rest-of-revenue vs rest-of-turnover. */
   --color-mf-rev: #5e6678;
@@ -55,6 +57,7 @@
   --color-gold: #f4c542;
   --color-gold-bar: #c9a020;
   --color-grid: #222a3a;
+  --color-chart-bg: #0e1117;
   --color-zebra: rgb(255 255 255 / 1.5%);
   --color-mf-rev: #7d8696;
   --color-mf-turn: #c2c8d2;
@@ -93,6 +96,20 @@ html[data-mode="default"] .hist-fab {
    !important: the corner is styled inline with display:flex. */
 html[data-mode="default"] [data-devcorner] {
   display: none !important;
+}
+
+/* Legacy ≤600px density: tighter page gutters, 12px cards, 300px chart boxes.
+   Deliberately unlayered so these beat the utility classes at small widths. */
+@media (max-width: 600px) {
+  .wrap {
+    padding: 16px 10px 70px;
+  }
+  .card {
+    padding: 12px;
+  }
+  .chartbox {
+    height: 300px;
+  }
 }
 
 /* Base rules, as in the legacy dashboard. MUST stay inside @layer base:

@@ -73,7 +73,7 @@ export function RankVsMarket({
   if (!rows.length) return null;
 
   return (
-    <div className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+    <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h3 className="mb-2 text-[15px] font-semibold">vs the market ({year})</h3>
       <div className="flex flex-col gap-1.5">
         {rows.map(({ label, rank }) => (

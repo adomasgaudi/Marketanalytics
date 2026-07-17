@@ -80,7 +80,7 @@ export function RankingsChart({ model }: { model: MarketModel }) {
 
   return (
     <section id="rankings">
-      <div className="border-line bg-panel min-w-0 rounded-xl border p-[18px]">
+      <div className="card border-line bg-panel min-w-0 rounded-xl border p-[18px]">
         <h3 className="mb-2 text-[15px] font-semibold">
           Top 10 versus bottom 10 · {metric.label} {year}
           {perEmp ? " · per employee" : ""}

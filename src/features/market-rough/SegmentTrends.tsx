@@ -51,7 +51,7 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
     .filter((s) => s.data.length);
 
   return (
-    <div className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+    <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h3 className="mb-2 text-[15px] font-semibold">Financial metrics by segment</h3>
 
       {/* Legacy segment picker: a select-style dropdown + removable chips + Clear all. */}

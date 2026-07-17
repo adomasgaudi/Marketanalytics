@@ -84,7 +84,7 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
   const revPct = revenue != null ? Math.max(0, Math.min(100, pctOf(revenue))) : 100;
 
   return (
-    <div className="border-line bg-panel mb-4 rounded-xl border p-4">
+    <div className="card border-line bg-panel mb-4 rounded-xl border p-4">
       <div className="text-muted mb-2 flex flex-wrap items-baseline gap-2 text-[13px]">
         <b className="text-ink text-[15px]">Turnover</b>
         <span className="text-ink text-[15px] font-bold">{fmtEur(T)}</span>

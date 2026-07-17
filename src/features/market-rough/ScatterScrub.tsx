@@ -95,7 +95,7 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
     .sort((a, b) => (a.brand === MY_BRAND ? 1 : 0) - (b.brand === MY_BRAND ? 1 : 0));
 
   return (
-    <section className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+    <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h3 className="mb-1 text-[15px] font-semibold">Size vs profitability by year</h3>
       <p className="text-muted mb-1.5 text-[12px]">
         Each company = one bubble (revenue × margin, size = headcount); Fabula in gold.{" "}

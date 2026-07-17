@@ -41,7 +41,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   for (let v = step; v <= max; v += step) gridVals.push(v);
 
   return (
-    <section className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+    <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">{title}</h2>
       {rows.length === 0 ? (
         <p className="text-muted p-6 text-center text-[13px]">No data.</p>

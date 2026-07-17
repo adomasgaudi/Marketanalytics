@@ -73,7 +73,7 @@ export function DeepDive({ model }: { model: MarketModel }) {
   return (
     <section id="deepdive" className="mb-7">
       <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Company deep-dive</h2>
-      <div className="border-line bg-panel min-w-0 rounded-xl border p-[18px]">
+      <div className="card border-line bg-panel min-w-0 rounded-xl border p-[18px]">
         <PillRow label="Deep-dive metric" className="mb-2">
           {DD_METRICS.map((m) => (
             <Pill

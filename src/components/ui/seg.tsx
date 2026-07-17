@@ -13,19 +13,22 @@ export function Seg<T extends string>({
   onChange,
   label,
   className,
+  btnClassName,
 }: {
   options: { value: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
   label: string;
   className?: string;
+  /** Override button padding (legacy .seg-row segs are denser: 6px 11px). */
+  btnClassName?: string;
 }) {
   return (
     <div
       role="group"
       aria-label={label}
       className={cn(
-        "border-line inline-flex overflow-hidden rounded-lg border",
+        "border-line inline-flex overflow-hidden rounded-[8px] border",
         className,
       )}
     >
@@ -39,6 +42,7 @@ export function Seg<T extends string>({
             option.value === value
               ? "bg-accent text-white"
               : "bg-panel2 text-muted hover:text-ink",
+            btnClassName,
           )}
         >
           {option.label}

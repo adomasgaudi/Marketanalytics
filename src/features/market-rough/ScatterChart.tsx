@@ -77,7 +77,7 @@ export function ScatterChart({ model }: { model: MarketModel }) {
 
   if (!rows.length) {
     return (
-      <section className="border-line bg-panel mb-4 rounded-xl border p-[18px]">
+      <section className="card border-line bg-panel mb-4 rounded-xl border p-[18px]">
         <h2 className="mb-1 text-[15px] font-semibold">Size vs profitability ({year})</h2>
         <p className="text-muted p-6 text-center text-[13px]">No data for {year}.</p>
       </section>
@@ -113,12 +113,12 @@ export function ScatterChart({ model }: { model: MarketModel }) {
     ]);
 
   return (
-    <section className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+    <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">
         Size vs profitability ({year}
         {perEmp ? " · per employee" : ""})
       </h2>
-      <div className="relative h-[520px]">
+      <div className="chartbox tall relative h-[520px]">
         <span className="text-muted absolute top-0 left-0 z-1 text-[10px] opacity-60">
           Chart.js
         </span>
