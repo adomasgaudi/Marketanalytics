@@ -89,6 +89,12 @@ html[data-mode="default"] .hist-fab {
   display: none;
 }
 
+/* CSS x-ray / vision tools (devtools.js corner + tooltips) are Dev-mode-only.
+   !important: the corner is styled inline with display:flex. */
+html[data-mode="default"] [data-devcorner] {
+  display: none !important;
+}
+
 /* Base rules, as in the legacy dashboard. MUST stay inside @layer base:
    unlayered CSS outranks every @layer rule, so an unlayered reset here would
    silently kill all margin/padding utilities (mx-auto, px-*, ...). Tailwind's

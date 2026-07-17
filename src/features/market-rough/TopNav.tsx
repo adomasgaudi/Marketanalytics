@@ -25,6 +25,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [graphPan, setGraphPan] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [mktView, setMktView] = useViewMode("mkt");
+  const [coView, setCoView] = useViewMode("co");
 
   // Read the persisted choices the same way the legacy pre-paint script does.
   useEffect(() => {
@@ -103,9 +104,16 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </div>
 
-      {/* Two-line nav button: page name + small gray mode sub-label. */}
+      {/* Two-line nav button: page name + small gray mode sub-label. Re-tapping
+          it while ALREADY on Companies toggles per-year ⇄ all-years (legacy). */}
       <Link
         href="/companies"
+        onClick={(e) => {
+          if (active === "companies") {
+            e.preventDefault();
+            setCoView(coView === "year" ? "all" : "year");
+          }
+        }}
         className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
           active === "companies"
             ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
