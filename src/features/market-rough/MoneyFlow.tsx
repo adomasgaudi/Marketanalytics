@@ -1,0 +1,138 @@
+import { cn } from "@/lib/cn";
+import { fmtEur, fmtPct } from "./format";
+import type { Rank } from "./metrics";
+
+/** Previous-year figures on the same basis, for the per-item YoY chips. */
+export type MoneyFlowPrev = { T?: number | null; R?: number | null; P?: number | null };
+
+type Props = {
+  /** Turnover. Falls back to revenue when missing (as the legacy does). */
+  turnover: number | null;
+  revenue: number | null;
+  profit: number | null;
+  prev?: MoneyFlowPrev;
+  /** Rank chip after the turnover headline (company view). */
+  rank?: Rank | null;
+  /** Small scope tag after the headline, e.g. "per company · 113 cos". */
+  tag?: string;
+};
+
+function Yoy({ cur, prev }: { cur: number | null; prev?: number | null }) {
+  if (cur == null || prev == null || prev <= 0) return null;
+  const ratio = cur / prev - 1;
+  return (
+    <span
+      className={cn("text-[12px] font-semibold", ratio >= 0 ? "text-green" : "text-red")}
+    >
+      {fmtPct(ratio)}
+    </span>
+  );
+}
+
+/**
+ * The legacy money-flow card: one vertical stacked bar (net profit / rest of
+ * revenue / rest of turnover, bottom→top), a gold revenue bracket, and a
+ * bottom→top legend that matches the bar order.
+ */
+export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: Props) {
+  if (revenue == null && turnover == null) return null;
+  const T = turnover ?? revenue!;
+
+  const pass = turnover != null && revenue != null && turnover > revenue ? turnover - revenue : 0;
+  const pctOf = (v: number) => (T > 0 ? (v / T) * 100 : 0);
+
+  // Bar bottom→top: Net profit (green), rest-of-Revenue, rest-of-Turnover.
+  const profitSeg = profit != null && profit > 0 ? profit : 0;
+  const revRest = revenue != null ? Math.max(0, revenue - profitSeg) : 0;
+  const segments = [
+    profitSeg > 0 && { cls: "bg-green", pct: pctOf(profitSeg) },
+    revRest > 0 && { cls: "bg-mf-rev", pct: pctOf(revRest) },
+    pass > 0 && { cls: "bg-mf-turn", pct: pctOf(pass) },
+  ].filter(Boolean) as { cls: string; pct: number }[];
+
+  const legend = [
+    profit != null && {
+      dot: "bg-green",
+      name: "Net profit",
+      val: fmtEur(profit),
+      cur: profit,
+      before: prev.P,
+    },
+    revenue != null && {
+      dot: "bg-mf-rev",
+      name: "Revenue",
+      val: fmtEur(revenue),
+      cur: revenue,
+      before: prev.R,
+    },
+    { dot: "bg-mf-turn", name: "Turnover", val: fmtEur(T), cur: turnover, before: prev.T },
+  ].filter(Boolean) as {
+    dot: string;
+    name: string;
+    val: string;
+    cur: number | null;
+    before?: number | null;
+  }[];
+
+  const revPct = revenue != null ? Math.max(0, Math.min(100, pctOf(revenue))) : 100;
+
+  return (
+    <div className="border-line bg-panel mb-4 rounded-xl border p-4">
+      <div className="text-muted mb-2 flex flex-wrap items-baseline gap-2 text-[13px]">
+        <b className="text-ink text-[15px]">Turnover</b>
+        <span className="text-ink text-[15px] font-bold">{fmtEur(T)}</span>
+        <Yoy cur={turnover} prev={prev.T} />
+        {rank && (
+          <span className="text-gold text-[12px] font-semibold">
+            #{rank.pos}/{rank.total}
+          </span>
+        )}
+        {tag && (
+          <span className="border-line bg-panel2 text-muted rounded-[5px] border px-1.5 py-px align-middle text-[10px] font-semibold">
+            {tag}
+          </span>
+        )}
+      </div>
+
+      <div className="flex min-h-[90px] gap-3">
+        <div className="border-line flex w-[26px] flex-none flex-col-reverse overflow-hidden rounded-md border">
+          {segments.map((seg, i) => (
+            <div
+              key={i}
+              className={cn("min-h-1 w-full", seg.cls)}
+              style={{ flex: Math.max(seg.pct, 3).toFixed(2) }}
+            />
+          ))}
+        </div>
+
+        {/* Gold revenue bracket, only when a pass-through slice exists. */}
+        {pass > 0 && revenue != null && (
+          <div className="flex w-[84px] flex-none flex-col-reverse">
+            <div
+              className="border-gold relative flex items-center border-l-2 pl-[7px] before:bg-gold before:absolute before:top-0 before:left-0 before:h-0.5 before:w-1.5 before:content-[''] after:bg-gold after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-1.5 after:content-['']"
+              style={{ flex: revPct.toFixed(2) }}
+            >
+              <span className="text-ink text-[11px] leading-[1.25] font-semibold">
+                Revenue {fmtEur(revenue)} <Yoy cur={revenue} prev={prev.R} />
+              </span>
+            </div>
+            <div style={{ flex: (100 - revPct).toFixed(2) }} />
+          </div>
+        )}
+
+        <div className="flex min-w-0 flex-1 flex-col-reverse">
+          {legend.map((item) => (
+            <div key={item.name} className="flex min-h-8 flex-1 items-center gap-[9px]">
+              <span className={cn("h-[11px] w-[11px] flex-none rounded-[3px]", item.dot)} />
+              <div className="flex min-w-0 flex-col text-[13px]">
+                <b>
+                  {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
+                </b>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

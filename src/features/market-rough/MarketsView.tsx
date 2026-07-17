@@ -4,6 +4,7 @@ import { Kpi, KpiGrid } from "@/components/ui/card";
 import { Pill, PillRow } from "@/components/ui/pills";
 import { fmtEur, fmtInt, fmtPct } from "./format";
 import { marketTotals, medianSalary } from "./metrics";
+import { MoneyFlow } from "./MoneyFlow";
 import type { MarketModel } from "./types";
 import { type MarketMode, useDashboardParams } from "./useDashboardParams";
 import { YearRow } from "./YearRow";
@@ -72,6 +73,28 @@ export function MarketsView({ model }: { model: MarketModel }) {
           </Pill>
         ))}
       </PillRow>
+
+      <MoneyFlow
+        turnover={scale(cur.revenue)}
+        revenue={scale(cur.estimatedIncome)}
+        profit={scale(cur.profit)}
+        prev={
+          hasPrev
+            ? {
+                T: scalePrev(prev.revenue),
+                R: scalePrev(prev.estimatedIncome),
+                P: scalePrev(prev.profit),
+              }
+            : {}
+        }
+        tag={
+          market === "avg"
+            ? `per company · ${cur.count} cos`
+            : market === "emp"
+              ? `per employee · ${Math.round(cur.employees).toLocaleString()} staff`
+              : "whole market"
+        }
+      />
 
       {/* Legacy card order: Revenue, Employees, Salary, Turnover. */}
       <KpiGrid>
