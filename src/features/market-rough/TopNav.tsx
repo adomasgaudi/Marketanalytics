@@ -1,25 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
-import { ViewSub } from "./ViewSync";
+import { VERSIONS } from "./version-history";
+import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
- * Legacy topnav, replicated 1:1: logo (main + "per year" sub), a two-line
- * Companies button, and the settings-wrap on the right (version label under
- * the ⚙️ cog, dropdown menu). Only deliberate difference from the original:
- * the port-cycle button is named "⏭️ v2" and simply opens /v2.
- *
- * The bar spans the viewport while its contents line up with the centred
- * column — the legacy's max() padding trick, no wrapper element needed.
+ * Legacy topnav, replicated 1:1: logo-as-button (back chevron off home, view
+ * toggle on home), two-line Companies button, settings-wrap (clickable version
+ * under the ⚙️ cog, dropdown menu with Dev-mode-gated items). Only deliberate
+ * difference: the port-cycle button is named "⏭️ v2" and opens /v2.
  */
 export function TopNav({ active }: { active?: "markets" | "companies" }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [histOpen, setHistOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<"classic" | "ocean">("classic");
   const [mode, setMode] = useState<"default" | "dev">("default");
+  const [graphPan, setGraphPan] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const [mktView, setMktView] = useViewMode("mkt");
 
   // Read the persisted choices the same way the legacy pre-paint script does.
   useEffect(() => {
@@ -27,6 +30,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       if (localStorage.getItem("theme") === "light") setTheme("light");
       if (localStorage.getItem("palette") === "ocean") setPalette("ocean");
       if (localStorage.getItem("viewMode") === "dev") setMode("dev");
+      if (localStorage.getItem("graphPan") === "on") setGraphPan(true);
     } catch {}
   }, []);
 
@@ -41,16 +45,23 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
       localStorage.setItem("viewMode", mode);
+      localStorage.setItem("graphPan", graphPan ? "on" : "off");
     } catch {}
-  }, [theme, palette, mode]);
+  }, [theme, palette, mode, graphPan]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !histOpen) return;
     const onDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setHistOpen(false);
+      }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setHistOpen(false);
+      }
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -58,25 +69,43 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, histOpen]);
+
+  // Legacy navHome: on the dashboard the logo toggles per-year/all-years; from
+  // any other view it navigates home.
+  const onLogo = () => {
+    if (active === "markets") setMktView(mktView === "year" ? "all" : "year");
+    // Keep the URL params so both pages' view modes survive the hop, as the
+    // legacy's in-memory state does.
+    else router.push(`/${window.location.search}`);
+  };
 
   const menuItem =
     "flex w-full cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-2.5 py-[7px] text-left text-[13px] text-ink hover:bg-panel2";
 
   return (
     <nav className="border-line bg-panel sticky top-0 z-100 flex min-h-[50px] items-center border-b px-[max(24px,calc((100%-840px)/2))] max-sm:min-h-[46px] max-sm:px-2">
-      {/* Logo = the Markets "tab", as in the legacy (clicking it goes home). */}
-      <Link
-        href="/"
-        className="hover:text-accent mr-6 inline-flex flex-shrink-0 cursor-pointer items-center text-[15px] leading-[1.1] font-extrabold whitespace-nowrap transition-colors max-sm:mr-2 max-sm:text-[13px]"
+      <div
+        role="button"
+        tabIndex={0}
+        title="Dashboard · click to toggle per-year / all-years"
+        onClick={onLogo}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onLogo()}
+        className="hover:text-accent focus-visible:text-accent mr-6 inline-flex flex-shrink-0 cursor-pointer items-center text-[15px] leading-[1.1] font-extrabold whitespace-nowrap transition-colors focus-visible:outline-none max-sm:mr-2 max-sm:text-[13px]"
       >
+        {/* Back chevron: hidden on the dashboard, shown off-home (legacy .home-ic). */}
+        {active !== "markets" && (
+          <span className="text-muted mr-[5px] align-[-1px] text-[1.15em] font-bold">
+            ‹
+          </span>
+        )}
         <span className="inline-flex flex-col leading-[1.08]">
           <span className="whitespace-nowrap">Market Analytics</span>
           <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-            <ViewSub />
+            <ViewSub scope="mkt" />
           </span>
         </span>
-      </Link>
+      </div>
 
       {/* Two-line nav button: page name + small gray mode sub-label. */}
       <Link
@@ -89,24 +118,38 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       >
         <span>Companies</span>
         <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-          <ViewSub />
+          <ViewSub scope="co" />
         </span>
       </Link>
 
-      {/* settings-wrap: cog above, version label below, menu anchored right. */}
+      {/* settings-wrap: cog above, clickable version below, menus anchored right.
+          Desktop: follows Companies (legacy .nav-scroll has no flex-grow there);
+          ≤600px the legacy grows nav-scroll, pushing this cluster right. */}
       <div
         ref={wrapRef}
-        className="relative mr-2 ml-auto flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
+        className="relative mr-2 flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px max-sm:ml-auto"
       >
-        <span className="text-muted text-[10px] leading-none font-semibold whitespace-nowrap">
+        <button
+          type="button"
+          aria-expanded={histOpen}
+          title="Version history"
+          onClick={() => {
+            setHistOpen((v) => !v);
+            setOpen(false);
+          }}
+          className="text-muted hover:text-ink cursor-pointer border-none bg-transparent text-[10px] leading-none font-semibold whitespace-nowrap"
+        >
           {APP_VERSION_LABEL}
-        </span>
+        </button>
         <button
           type="button"
           title="Settings"
           aria-label="Settings"
           aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            setOpen((v) => !v);
+            setHistOpen(false);
+          }}
           className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
         >
           <svg
@@ -141,17 +184,53 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             >
               {palette === "classic" ? "🎨 Classic" : "🎨 Ocean"}
             </button>
-            <button
-              type="button"
-              className={menuItem}
-              onClick={() => setMode(mode === "default" ? "dev" : "default")}
-            >
-              → {mode === "default" ? "Default view" : "Dev view"}
-            </button>
-            {/* Renamed port button: opens the previous-generation dashboard. */}
-            <Link href="/v2" className={menuItem} onClick={() => setOpen(false)}>
-              ⏭️ v2
-            </Link>
+            {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
+            {mode === "dev" && (
+              <>
+                <button
+                  type="button"
+                  className={menuItem}
+                  onClick={() => setMode("default")}
+                >
+                  → Default view
+                </button>
+                <button
+                  type="button"
+                  className={menuItem}
+                  onClick={() => setGraphPan((v) => !v)}
+                >
+                  🔒 Graph pan: {graphPan ? "on" : "off"}
+                </button>
+                <button
+                  type="button"
+                  className={`${menuItem} cursor-default opacity-50`}
+                  title="Sodra scraping runs from the legacy app"
+                >
+                  🔄 Refresh Sodra
+                </button>
+                {/* Renamed port button: opens the previous-generation dashboard. */}
+                <Link href="/v2" className={menuItem} onClick={() => setOpen(false)}>
+                  ⏭️ v2
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+
+        {histOpen && (
+          <div className="border-line bg-panel absolute top-[calc(100%+5px)] right-0 z-200 max-h-[70vh] w-[340px] overflow-y-auto rounded-lg border p-3 shadow-[0_4px_20px_rgba(0,0,0,.4)] max-sm:w-[280px]">
+            <p className="text-ink mb-2 text-[13px] font-bold">Version history</p>
+            <ul className="flex flex-col gap-2">
+              {VERSIONS.map((entry) => (
+                <li key={entry.v} className="border-line border-b pb-2 last:border-b-0">
+                  <p className="text-ink text-[13px] font-semibold">
+                    {entry.v}
+                    <span className="text-muted ml-2 font-normal">{entry.date}</span>
+                  </p>
+                  <p className="text-ink text-[13px]">{entry.title}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

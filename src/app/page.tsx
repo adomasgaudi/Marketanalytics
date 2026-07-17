@@ -19,7 +19,7 @@ export default function MarketsPage() {
       <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
-            Markets <ViewWord />
+            Markets <ViewWord scope="mkt" />
           </h1>
           <p className="text-muted mt-1.5 text-[13.5px]">
             Lithuanian marketing &amp; communications agencies · {model.years[0]} to{" "}
@@ -31,6 +31,7 @@ export default function MarketsPage() {
 
         <ViewGroupCard
           title="Market data"
+          scope="mkt"
           tabs={[
             { label: `Market ${model.last}`, content: <MarketPerYear model={model} /> },
             { label: "Market all time", content: <MarketAllTime model={model} /> },

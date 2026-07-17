@@ -31,7 +31,10 @@ export type ViewMode = (typeof VIEWS)[number];
 export function useDashboardParams(defaultYear: number) {
   return useQueryStates({
     year: parseAsInteger.withDefault(defaultYear),
-    view: parseAsStringLiteral(VIEWS).withDefault("year"),
+    // Markets and Companies keep INDEPENDENT view modes, as the legacy's
+    // separate mktNavMode / coNavMode labels do.
+    mktView: parseAsStringLiteral(VIEWS).withDefault("year"),
+    coView: parseAsStringLiteral(VIEWS).withDefault("year"),
     basis: parseAsStringLiteral(BASES).withDefault("total"),
     market: parseAsStringLiteral(MARKET_MODES).withDefault("avg"),
     /** Brands being compared; empty means the default company. */

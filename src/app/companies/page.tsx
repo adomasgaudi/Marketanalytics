@@ -25,7 +25,7 @@ export default function CompaniesPage() {
       <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
-            Companies <ViewWord />
+            Companies <ViewWord scope="co" />
           </h1>
           <p className="text-muted mt-1.5 text-[13.5px]">
             Profiles, rankings &amp; deep-dives for the {model.brands.length} tracked
@@ -35,6 +35,7 @@ export default function CompaniesPage() {
 
         <ViewGroupCard
           title="Financials"
+          scope="co"
           gold
           hoisted={<CompanyPicker model={model} />}
           tabs={[
