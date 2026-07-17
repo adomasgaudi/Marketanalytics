@@ -1,4 +1,5 @@
 import { CompaniesView } from "@/features/market-rough/CompaniesView";
+import { DeepDive } from "@/features/market-rough/DeepDive";
 import { ExplorerView } from "@/features/market-rough/ExplorerView";
 import { MarketsView } from "@/features/market-rough/MarketsView";
 import { RankingsChart } from "@/features/market-rough/RankingsChart";
@@ -33,7 +34,18 @@ export default function RoughPage() {
         <MarketsView model={model} />
         <CompaniesView model={model} />
         <RankingsChart model={model} />
+        <DeepDive model={model} />
         <ExplorerView model={model} />
+
+        <a
+          href="/v2"
+          className="border-line bg-panel2 text-muted hover:text-ink mt-2 inline-block rounded-lg border px-4 py-2.5 text-[14px] font-semibold transition-colors"
+        >
+          Explore the raw data &amp; sources →
+        </a>
+        <footer className="text-muted mt-8 mb-2 text-[11px]">
+          by adomasgaudi.github on behalf of Fabula, copyright.
+        </footer>
       </div>
     </main>
   );

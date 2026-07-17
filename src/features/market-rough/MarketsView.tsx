@@ -10,6 +10,7 @@ import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
 import { SegmentChart } from "./SegmentChart";
+import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
 import { type MarketMode, useDashboardParams } from "./useDashboardParams";
 import { YearRow } from "./YearRow";
@@ -181,6 +182,8 @@ export function MarketsView({ model }: { model: MarketModel }) {
           };
         })}
       />
+
+      <SegmentTrends model={model} />
     </section>
   );
 }

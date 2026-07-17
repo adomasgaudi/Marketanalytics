@@ -21,16 +21,33 @@ const SEG_LABEL: Record<string, string> = {
 };
 export const segName = (seg: string) => SEG_LABEL[seg] ?? seg;
 
-export type SegMetricKey = "revenue" | "turnover" | "profit";
+export type SegMetricKey =
+  "revenue" | "turnover" | "profit" | "employees" | "wages" | "avgSalary";
 export type SegBasis = "company" | "emp" | "total";
 
 export const SEG_METRICS: Record<
   SegMetricKey,
-  { label: string; short: string; f: (d: CompanyYear) => number | null; pos: boolean }
+  {
+    label: string;
+    short: string;
+    f: (d: CompanyYear) => number | null;
+    pos: boolean;
+    /** Already a per-head ratio → basis-independent median (legacy avgSalary). */
+    ratio?: boolean;
+  }
 > = {
   revenue: { label: "Revenue", short: "revenue", f: (d) => d.estimatedIncome, pos: true },
   turnover: { label: "Turnover", short: "turnover", f: (d) => d.revenue, pos: true },
   profit: { label: "Net profit", short: "net profit", f: (d) => d.profit, pos: false },
+  employees: { label: "Employees", short: "employees", f: (d) => d.employees, pos: true },
+  wages: { label: "Wages", short: "wages", f: (d) => d.salaryCosts, pos: true },
+  avgSalary: {
+    label: "Avg salary",
+    short: "avg salary",
+    f: (d) => ((d.avgSalary ?? 0) > 500 ? d.avgSalary : null),
+    pos: true,
+    ratio: true,
+  },
 };
 
 export const basisWord = (b: SegBasis) =>
@@ -55,6 +72,7 @@ export function segMetricVal(
       (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
     );
 
+  if (M.ratio) return median(ds.map((o) => o.v));
   if (basis === "emp") {
     const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
     return w.length >= 3 ? median(w) : null;

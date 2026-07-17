@@ -87,7 +87,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           ))}
         </PillRow>
         <PillRow label="Metric">
-          {(Object.keys(SEG_METRICS) as SegMetricKey[]).map((m) => (
+          {(["revenue", "turnover", "profit"] as SegMetricKey[]).map((m) => (
             <Pill key={m} selected={metric === m} onClick={() => setMetric(m)}>
               {SEG_METRICS[m].label}
             </Pill>
