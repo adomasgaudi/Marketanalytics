@@ -34,10 +34,10 @@ export function TopNav({ version }: { version: string }) {
         ))}
 
         <Link
-          href="/ugly"
+          href="/v2"
           className="text-muted hover:text-ink mr-3 ml-auto h-[50px] px-4 text-[15px] leading-[50px] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] max-sm:leading-[46px]"
         >
-          Ugly
+          v2
         </Link>
 
         <VersionButton version={version} />

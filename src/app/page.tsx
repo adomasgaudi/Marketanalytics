@@ -1,49 +1,37 @@
 import { APP_VERSION_LABEL } from "@/app-version";
+import { CompaniesView } from "@/features/market-rough/CompaniesView";
+import { ExplorerView } from "@/features/market-rough/ExplorerView";
+import { MarketsView } from "@/features/market-rough/MarketsView";
+import { TopNav } from "@/features/market-rough/TopNav";
 import { loadMarketData } from "@/features/market-rough/data";
-import { fmtEur, fmtInt } from "@/features/market-rough/format";
-import { marketTotals } from "@/features/market-rough/metrics";
-import styles from "./page.module.css";
 
-export default function Home() {
+/**
+ * Server Component: the data is read and indexed here, once, and handed to the
+ * views as props. Only the views that read URL state are client components.
+ */
+export default function RoughPage() {
   const model = loadMarketData();
-  const totals = marketTotals(model.rows, model.last);
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <div className={styles.intro}>
-          <h1>LT Market Analytics {APP_VERSION_LABEL}</h1>
-          <p>
-            Main Next.js dashboard track. The rough port stays available for comparison.
+    <main>
+      <TopNav version={APP_VERSION_LABEL} />
+      <div className="mx-auto w-full max-w-[840px] px-6 py-6">
+        <header className="mt-1.5 mb-5">
+          <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
+            Markets{" "}
+            <span className="text-accent underline decoration-dotted underline-offset-[5px]">
+              per year
+            </span>
+          </h1>
+          <p className="text-muted mt-1.5 text-[13.5px]">
+            Lithuanian marketing &amp; communications agencies · {model.years[0]} to{" "}
+            {model.years[model.years.length - 1]}
           </p>
-        </div>
-        <section className={styles.snapshot} aria-label="Market snapshot">
-          <h2>Market snapshot {model.last}</h2>
-          <div className={styles.kpis}>
-            <p>
-              <b>{fmtInt(totals.count)}</b>
-              <span>companies</span>
-            </p>
-            <p>
-              <b>{fmtEur(totals.revenue)}</b>
-              <span>revenue</span>
-            </p>
-            <p>
-              <b>{fmtEur(totals.profit)}</b>
-              <span>profit</span>
-            </p>
-            <p>
-              <b>{fmtInt(totals.employees)}</b>
-              <span>employees</span>
-            </p>
-          </div>
-        </section>
-        <div className={styles.ctas}>
-          <a className={styles.primary} href="/rough">
-            Open Rough Port
-          </a>
-        </div>
-      </main>
-    </div>
+        </header>
+        <MarketsView model={model} />
+        <CompaniesView model={model} />
+        <ExplorerView model={model} />
+      </div>
+    </main>
   );
 }

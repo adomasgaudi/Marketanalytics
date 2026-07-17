@@ -60,8 +60,8 @@ export function VersionButton({ version }: { version: string }) {
               </li>
             ))}
           </ul>
-          <a href="/ugly" className="text-accent mt-2 block text-[12px] hover:underline">
-            Full legacy changelog → /ugly
+          <a href="/v2" className="text-accent mt-2 block text-[12px] hover:underline">
+            Full legacy changelog → /v2
           </a>
         </div>
       )}

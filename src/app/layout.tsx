@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
@@ -19,6 +20,9 @@ export default function RootLayout({
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>
         <NuqsAdapter>{children}</NuqsAdapter>
+        {/* Shared CSS x-ray dev tools (from the Pepper repo) — one script for every
+            page; the legacy iframe loads the same /devtools.js inside its document. */}
+        <Script src="/devtools.js" strategy="afterInteractive" />
       </body>
     </html>
   );
