@@ -28,7 +28,12 @@ export function VersionButton({ version }: { version: string }) {
   }, [open]);
 
   return (
-    <div className="fixed right-3 bottom-3 z-[99998]" data-devcorner="" ref={popRef}>
+    // hist-fab analog: Dev-mode-only, like the legacy's floating changelog badge.
+    <div
+      className="hist-fab fixed right-3 bottom-3 z-[99998]"
+      data-devcorner=""
+      ref={popRef}
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
-import { VERSIONS } from "./version-history";
 import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
@@ -16,7 +15,10 @@ import { useViewMode, ViewSub } from "./ViewSync";
 export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [histOpen, setHistOpen] = useState(false);
+  // Secret dev key: 8 clicks on the version label enter Dev mode (hint at 5).
+  const verClicks = useRef(0);
+  const verTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [verHint, setVerHint] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<"classic" | "ocean">("classic");
   const [mode, setMode] = useState<"default" | "dev">("default");
@@ -50,18 +52,12 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   }, [theme, palette, mode, graphPan]);
 
   useEffect(() => {
-    if (!open && !histOpen) return;
+    if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setHistOpen(false);
-      }
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        setHistOpen(false);
-      }
+      if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -69,7 +65,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open, histOpen]);
+  }, [open]);
 
   // Legacy navHome: on the dashboard the logo toggles per-year/all-years; from
   // any other view it navigates home.
@@ -129,27 +125,40 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         ref={wrapRef}
         className="relative mr-2 flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px max-sm:ml-auto"
       >
-        <button
-          type="button"
-          aria-expanded={histOpen}
-          title="Version history"
-          onClick={() => {
-            setHistOpen((v) => !v);
-            setOpen(false);
+        {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
+            5; the counter resets after 3.2s. Inert once already in Dev mode. */}
+        <span
+          onClick={(e) => {
+            if (mode === "dev") return;
+            e.stopPropagation();
+            verClicks.current++;
+            if (verTimer.current) clearTimeout(verTimer.current);
+            verTimer.current = setTimeout(() => {
+              verClicks.current = 0;
+              setVerHint("");
+            }, 3200);
+            if (verClicks.current === 5) setVerHint("Click 3 more times");
+            if (verClicks.current >= 8) {
+              verClicks.current = 0;
+              setVerHint("");
+              setMode("dev");
+            }
           }}
-          className="text-muted hover:text-ink cursor-pointer border-none bg-transparent text-[10px] leading-none font-semibold whitespace-nowrap"
+          className="text-muted text-[10px] leading-none font-semibold whitespace-nowrap select-none"
         >
           {APP_VERSION_LABEL}
-        </button>
+        </span>
+        {verHint && (
+          <span className="border-line bg-panel text-muted absolute top-[calc(100%+5px)] right-0 z-210 rounded-[4px] border px-2 py-[3px] text-[10px] font-semibold whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,.18)]">
+            {verHint}
+          </span>
+        )}
         <button
           type="button"
           title="Settings"
           aria-label="Settings"
           aria-expanded={open}
-          onClick={() => {
-            setOpen((v) => !v);
-            setHistOpen(false);
-          }}
+          onClick={() => setOpen((v) => !v)}
           className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
         >
           <svg
@@ -170,19 +179,20 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
 
         {open && (
           <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
+            {/* Labels name the mode you'd switch TO, not the current one. */}
             <button
               type="button"
               className={menuItem}
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+              {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
             </button>
             <button
               type="button"
               className={menuItem}
               onClick={() => setPalette(palette === "classic" ? "ocean" : "classic")}
             >
-              {palette === "classic" ? "🎨 Classic" : "🎨 Ocean"}
+              {palette === "classic" ? "🎨 Ocean" : "🎨 Classic"}
             </button>
             {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
             {mode === "dev" && (
@@ -214,23 +224,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
                 </Link>
               </>
             )}
-          </div>
-        )}
-
-        {histOpen && (
-          <div className="border-line bg-panel absolute top-[calc(100%+5px)] right-0 z-200 max-h-[70vh] w-[340px] overflow-y-auto rounded-lg border p-3 shadow-[0_4px_20px_rgba(0,0,0,.4)] max-sm:w-[280px]">
-            <p className="text-ink mb-2 text-[13px] font-bold">Version history</p>
-            <ul className="flex flex-col gap-2">
-              {VERSIONS.map((entry) => (
-                <li key={entry.v} className="border-line border-b pb-2 last:border-b-0">
-                  <p className="text-ink text-[13px] font-semibold">
-                    {entry.v}
-                    <span className="text-muted ml-2 font-normal">{entry.date}</span>
-                  </p>
-                  <p className="text-ink text-[13px]">{entry.title}</p>
-                </li>
-              ))}
-            </ul>
           </div>
         )}
       </div>

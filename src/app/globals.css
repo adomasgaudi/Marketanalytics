@@ -84,7 +84,8 @@
    explore button are Dev-mode-only. Kept OUT of @layer so it beats utilities
    (that precedence is intended here, unlike the reset below). */
 html[data-mode="default"] .kpi-f,
-html[data-mode="default"] .explore-btn {
+html[data-mode="default"] .explore-btn,
+html[data-mode="default"] .hist-fab {
   display: none;
 }
 
