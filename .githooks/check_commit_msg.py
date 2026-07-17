@@ -18,7 +18,9 @@ Why a git hook AND the Claude PreToolUse hook:
 import re
 import sys
 
-HOUSE = re.compile(r"^v\d+\s+[A-Z]{2,5}-\d+\s*\|\s*.+\s*\|\s*\d+(?:\.\d+)?\s*sp\s*$")
+# vN (legacy, e.g. v70) or semver vX.Y[.Z] (stacked convention: minor = visual
+# change, patch = non-visual), e.g. v3.11.0 / v2.9.1.
+HOUSE = re.compile(r"^v\d+(?:\.\d+){0,2}\s+[A-Z]{2,5}-\d+\s*\|\s*.+\s*\|\s*\d+(?:\.\d+)?\s*sp\s*$")
 
 
 def first_subject(text):
