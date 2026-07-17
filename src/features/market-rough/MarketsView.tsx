@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pill, PillRow } from "@/components/ui/pills";
 import { fmtEur, fmtInt, fmtPct } from "./format";
+import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
@@ -155,6 +156,8 @@ export function MarketsView({ model }: { model: MarketModel }) {
           <KpiCard key={card.label} card={card} mode={kpiMode} />
         ))}
       </div>
+
+      <Insights />
     </section>
   );
 }
