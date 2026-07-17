@@ -1,8 +1,9 @@
 "use client";
 
-import { Kpi, KpiGrid } from "@/components/ui/card";
+import { useState } from "react";
 import { Pill, PillRow } from "@/components/ui/pills";
 import { fmtEur, fmtInt, fmtPct } from "./format";
+import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import type { MarketModel } from "./types";
@@ -16,16 +17,10 @@ const MODE_OPTIONS: { value: MarketMode; label: string }[] = [
   { value: "whole", label: "Whole market" },
 ];
 
-/** Coloured YoY line under a KPI, as on every legacy market card. */
-function Delta({ ratio }: { ratio: number | null }) {
-  if (ratio == null) return <span>—</span>;
-  return (
-    <span className={ratio >= 0 ? "text-green" : "text-red"}>{fmtPct(ratio)}</span>
-  );
-}
-
 export function MarketsView({ model }: { model: MarketModel }) {
   const [{ year, market }, setParams] = useDashboardParams(model.last);
+  // #/% is ephemeral UI, not page identity — it stays out of the URL.
+  const [kpiMode, setKpiMode] = useState<KpiMode>("value");
 
   // Derived from the selected year, never stored: React recomputes these on
   // render, so there is no cached aggregate that can fall out of sync.
@@ -34,27 +29,85 @@ export function MarketsView({ model }: { model: MarketModel }) {
   const hasPrev = prev.count > 0;
 
   // Three views of the same money: ÷ companies, ÷ employees, or raw totals.
-  const div =
-    market === "avg" ? cur.count : market === "emp" ? cur.employees : 1;
-  const divPrev =
-    market === "avg" ? prev.count : market === "emp" ? prev.employees : 1;
+  const div = market === "avg" ? cur.count : market === "emp" ? cur.employees : 1;
+  const divPrev = market === "avg" ? prev.count : market === "emp" ? prev.employees : 1;
   const scale = (value: number) => (div > 0 ? value / div : 0);
   const scalePrev = (value: number) => (divPrev > 0 ? value / divPrev : 0);
-  const yoy = (get: (t: typeof cur) => number) => {
-    if (!hasPrev) return null;
-    const before = scalePrev(get(prev));
-    return before > 0 ? scale(get(cur)) / before - 1 : null;
-  };
 
   // "24→25" range label, as the legacy cards title themselves.
-  const yrLabel = hasPrev
-    ? `${String(year - 1).slice(2)}→${String(year).slice(2)}`
-    : String(year);
+  const y2 = String(year).slice(2);
+  const yrLabel = hasPrev ? `${String(year - 1).slice(2)}→${y2}` : String(year);
+  const basisNote =
+    market === "avg"
+      ? ` ÷ ${cur.count} companies`
+      : market === "emp"
+        ? ` ÷ ${Math.round(cur.employees).toLocaleString()} employees`
+        : " (whole-market total)";
 
-  const salary = medianSalary(model.rows, year);
-  const salaryPrev = medianSalary(model.rows, year - 1);
-  const avgEmployees = cur.count > 0 ? cur.employees / cur.count : 0;
-  const avgEmployeesPrev = prev.count > 0 ? prev.employees / prev.count : 0;
+  const yoyCard = (
+    label: string,
+    curVal: number,
+    prevVal: number,
+    fmt: (v: number) => string,
+    formulaName: string,
+  ): KpiCardData => {
+    const ratio = hasPrev && prevVal > 0 ? curVal / prevVal - 1 : null;
+    return {
+      label: `${label} ${yrLabel}`,
+      valueText: fmt(curVal),
+      changeText: ratio == null ? "—" : fmtPct(ratio),
+      rangeText: hasPrev ? `${fmt(prevVal)} → ${fmt(curVal)}` : fmt(curVal),
+      changeCls: ratio != null && ratio < 0 ? "neg" : "pos",
+      formula: !hasPrev
+        ? `No prior year before ${year} in the data.`
+        : `(${fmt(curVal)} ÷ ${fmt(prevVal)}) − 1 = change from ${year - 1} to ${year}. ${formulaName}${basisNote}.`,
+    };
+  };
+
+  const salary = medianSalary(model.rows, year) ?? 0;
+  const salaryPrev = medianSalary(model.rows, year - 1) ?? 0;
+  const salaryFmt = (v: number) => `€${Math.round(v).toLocaleString()}/mo`;
+
+  const empCur =
+    market === "avg" ? (cur.count ? cur.employees / cur.count : 0) : cur.employees;
+  const empPrev =
+    market === "avg" ? (prev.count ? prev.employees / prev.count : 0) : prev.employees;
+  const empFmt = (v: number) => (market === "avg" ? v.toFixed(1) : fmtInt(v));
+
+  // Legacy card order: Revenue, Employees, Salary, Turnover.
+  const cards: KpiCardData[] = [
+    yoyCard(
+      market === "emp" ? "Revenue/empl." : "Revenue",
+      scale(cur.estimatedIncome),
+      scalePrev(prev.estimatedIncome),
+      fmtEur,
+      "Revenue",
+    ),
+    {
+      ...yoyCard(
+        market === "avg" ? "Avg employees/co" : "Total employees",
+        empCur,
+        empPrev,
+        empFmt,
+        "Employees",
+      ),
+      formula:
+        (market === "avg"
+          ? `Total headcount ÷ ${cur.count} companies`
+          : "Sum of reported headcount") + ". YoY = this year ÷ last year − 1.",
+    },
+    {
+      ...yoyCard("Median salary", salary, salaryPrev, salaryFmt, "Median salary"),
+      formula: `Middle value of every company's average monthly salary in ${year} (only companies reporting > €500/mo). YoY = this ÷ ${year - 1} − 1.`,
+    },
+    yoyCard(
+      market === "emp" ? "Turnover/empl." : "Turnover",
+      scale(cur.revenue),
+      scalePrev(prev.revenue),
+      fmtEur,
+      "Turnover",
+    ),
+  ];
 
   return (
     <section id="markets" className="mb-7">
@@ -96,53 +149,12 @@ export function MarketsView({ model }: { model: MarketModel }) {
         }
       />
 
-      {/* Legacy card order: Revenue, Employees, Salary, Turnover. */}
-      <KpiGrid>
-        <Kpi
-          label={`Revenue ${yrLabel}`}
-          value={fmtEur(scale(cur.estimatedIncome))}
-          sub={<Delta ratio={yoy((t) => t.estimatedIncome)} />}
-        />
-        <Kpi
-          label={
-            market === "avg" ? `Avg employees/co ${yrLabel}` : `Employees ${yrLabel}`
-          }
-          value={
-            market === "avg" ? avgEmployees.toFixed(1) : fmtInt(cur.employees)
-          }
-          sub={
-            <Delta
-              ratio={
-                market === "avg"
-                  ? avgEmployeesPrev > 0
-                    ? avgEmployees / avgEmployeesPrev - 1
-                    : null
-                  : hasPrev && prev.employees > 0
-                    ? cur.employees / prev.employees - 1
-                    : null
-              }
-            />
-          }
-        />
-        <Kpi
-          label={`Median salary ${yrLabel}`}
-          value={salary == null ? "–" : `€${Math.round(salary).toLocaleString()}/mo`}
-          sub={
-            <Delta
-              ratio={
-                salary != null && salaryPrev != null && salaryPrev > 0
-                  ? salary / salaryPrev - 1
-                  : null
-              }
-            />
-          }
-        />
-        <Kpi
-          label={`Turnover ${yrLabel}`}
-          value={fmtEur(scale(cur.revenue))}
-          sub={<Delta ratio={yoy((t) => t.revenue)} />}
-        />
-      </KpiGrid>
+      <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
+      <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
+        {cards.map((card) => (
+          <KpiCard key={card.label} card={card} mode={kpiMode} />
+        ))}
+      </div>
     </section>
   );
 }
