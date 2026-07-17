@@ -1,41 +1,34 @@
-import fs from "node:fs";
-import path from "node:path";
+import raw from "../../../data/data.json";
 import type { CompanyYear, MarketModel } from "./types";
 
-function projectPath(...parts: string[]) {
-  return path.join(process.cwd(), ...parts);
-}
+const rows = raw as CompanyYear[];
 
-function readJson<T>(...parts: string[]): T {
-  return JSON.parse(fs.readFileSync(projectPath(...parts), "utf8")) as T;
-}
-
-function sum(
-  rows: CompanyYear[],
-  key: keyof Pick<CompanyYear, "revenue" | "profit" | "employees">,
-) {
-  return rows.reduce((total, row) => total + (Number(row[key]) || 0), 0);
-}
-
+/** Builds the indexes the legacy dashboard derives at load (byBrand, BRANDS,
+    SEGMENTS, YEARS, LAST, FIN_YEARS). Runs on the server; the model is handed
+    down to the views. */
 export function loadMarketData(): MarketModel {
-  const rows = readJson<CompanyYear[]>("data", "data.json");
-  const brands = [...new Set(rows.map((row) => row.brand).filter(Boolean))].sort();
-  const years = [...new Set(rows.map((row) => row.year).filter(Boolean))].sort(
-    (a, b) => a - b,
+  const years = [...new Set(rows.map((row) => row.year))].sort((a, b) => a - b);
+
+  // Latest year that actually carries financials — a year with headcount but no
+  // filings shouldn't become the default for the money views.
+  const last = Math.max(
+    ...rows.filter((row) => row.revenue != null).map((row) => row.year),
   );
-  const latestYear = years.at(-1) ?? new Date().getFullYear();
-  const latestRows = rows.filter((row) => row.year === latestYear);
+  const finYears = years.filter((year) => year <= last);
+
+  const byBrand: Record<string, Record<number, CompanyYear>> = {};
+  for (const row of rows) {
+    (byBrand[row.brand] ??= {})[row.year] = row;
+  }
 
   return {
     rows,
-    brands,
+    byBrand,
+    // Insertion order, as in the legacy — not sorted.
+    brands: Object.keys(byBrand),
+    segments: [...new Set(rows.flatMap((row) => row.activities))].sort(),
     years,
-    latestYear,
-    latestRows,
-    totals: {
-      revenue: sum(latestRows, "revenue"),
-      profit: sum(latestRows, "profit"),
-      employees: sum(latestRows, "employees"),
-    },
+    last,
+    finYears,
   };
 }

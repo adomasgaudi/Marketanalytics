@@ -8,7 +8,8 @@ import { spawn } from "node:child_process";
 const opts = { stdio: "inherit", shell: process.platform === "win32" };
 const children = [
   spawn("node", ["scripts/watch-legacy.mjs"], opts),
-  spawn("npx", ["next", "dev"], opts),
+  // -H 0.0.0.0 binds every interface, so phones on the same Wi-Fi can hit http://<lan-ip>:3000.
+  spawn("npx", ["next", "dev", "-H", "0.0.0.0"], opts),
 ];
 
 // If either process dies, take the other down too — a half-running dev setup is a trap

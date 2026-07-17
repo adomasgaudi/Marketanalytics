@@ -2,7 +2,7 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.2.1
+> v3.3.0
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -115,3 +115,14 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 ```
 
 This file is very valuable context. All edit here must be vital. If this file gets too big it will loose its purpose.
+
+<br />
+
+if i reject or ask questions that means im trying to understand or slow you down, supervise, not object
+
+try to reply in under 40w unless you need more to explain, but treat reply length as a cost of how much effort you want me to spend. if you want 100w ok maybe you can judge that i need to read it if you want more, then ask me: i need 200w to explain, then ill allow it or suggest shorter reply
+
+The same for code, explain what you're going to do and why - top level view\
+explain what each part of the code does - more technical\
+write the code. but don't write more than 50lines of code at a time, so that i can be checked.
+
