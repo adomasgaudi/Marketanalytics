@@ -8,6 +8,7 @@ import { margin, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankChip } from "./RankChip";
+import { RankVsMarket } from "./RankVsMarket";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 import { YearRow } from "./YearRow";
@@ -159,6 +160,12 @@ export function CompaniesView({ model }: { model: MarketModel }) {
               sub={<RankChip rank={profitMargin} />}
             />
           </KpiGrid>
+          <RankVsMarket
+            model={model}
+            brand={brand}
+            year={year}
+            perEmployee={perEmployee}
+          />
         </>
       )}
 
