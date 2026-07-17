@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Pill, PillRow } from "@/components/ui/pills";
 import { fmtEur, fmtInt, fmtPct } from "./format";
 import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
@@ -13,18 +12,19 @@ import { ScatterScrub } from "./ScatterScrub";
 import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
-import { type MarketMode, useDashboardParams } from "./useDashboardParams";
-import { YearRow } from "./YearRow";
+import { useDashboardParams } from "./useDashboardParams";
 
-/** Legacy basis row: average per company (default), per employee, whole market. */
-const MODE_OPTIONS: { value: MarketMode; label: string }[] = [
-  { value: "avg", label: "Average / company" },
-  { value: "emp", label: "Per employee" },
-  { value: "whole", label: "Whole market" },
-];
+/** Tab label for the per-year panel: "Market 2024→2025 · average / company". */
+export function marketTabLabel(model: MarketModel, year: number, market: string) {
+  const yrLabel = year - 1 >= model.years[0] ? `${year - 1}→${year}` : String(year);
+  const suffix =
+    market === "avg" ? " · average / company" : market === "emp" ? " · per employee" : "";
+  return `Market data ${yrLabel}${suffix}`;
+}
 
-export function MarketsView({ model }: { model: MarketModel }) {
-  const [{ year, market }, setParams] = useDashboardParams(model.last);
+/** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
+export function MarketPerYear({ model }: { model: MarketModel }) {
+  const [{ year, market }] = useDashboardParams(model.last);
   // #/% is ephemeral UI, not page identity — it stays out of the URL.
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
 
@@ -116,23 +116,7 @@ export function MarketsView({ model }: { model: MarketModel }) {
   ];
 
   return (
-    <section id="markets" className="mb-7">
-      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Market data</h2>
-
-      <YearRow years={model.finYears} defaultYear={model.last} />
-
-      <PillRow label="Basis" className="mb-3.5">
-        {MODE_OPTIONS.map((option) => (
-          <Pill
-            key={option.value}
-            selected={market === option.value}
-            onClick={() => setParams({ market: option.value })}
-          >
-            {option.label}
-          </Pill>
-        ))}
-      </PillRow>
-
+    <div>
       <MoneyFlow
         turnover={scale(cur.revenue)}
         revenue={scale(cur.estimatedIncome)}
@@ -146,13 +130,6 @@ export function MarketsView({ model }: { model: MarketModel }) {
               }
             : {}
         }
-        tag={
-          market === "avg"
-            ? `per company · ${cur.count} cos`
-            : market === "emp"
-              ? `per employee · ${Math.round(cur.employees).toLocaleString()} staff`
-              : "whole market"
-        }
       />
 
       <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
@@ -163,12 +140,18 @@ export function MarketsView({ model }: { model: MarketModel }) {
       </div>
 
       <Insights />
-
       <SegmentChart model={model} />
-
       <ScatterChart model={model} />
+    </div>
+  );
+}
 
-      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Market all time</h2>
+/** The "Market all time" panel: money-flow by year, segment trends, scrubber. */
+export function MarketAllTime({ model }: { model: MarketModel }) {
+  const [{ market }] = useDashboardParams(model.last);
+
+  return (
+    <div>
       <MoneyFlowByYear
         title={`Total market money-flow by year (${model.finYears[0]}–${model.finYears[model.finYears.length - 1]})`}
         rows={model.finYears.map((fy) => {
@@ -183,10 +166,8 @@ export function MarketsView({ model }: { model: MarketModel }) {
           };
         })}
       />
-
       <SegmentTrends model={model} />
-
       <ScatterScrub model={model} />
-    </section>
+    </div>
   );
 }

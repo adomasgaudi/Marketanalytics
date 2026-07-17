@@ -1,27 +1,35 @@
 "use client";
 
-import { Kpi, KpiGrid } from "@/components/ui/card";
-import { Pill, PillRow } from "@/components/ui/pills";
+import { useState } from "react";
 import { CompanySelector } from "./CompanySelector";
 import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
-import { margin, rankOf } from "./metrics";
+import { type KpiMode, KpiModeToggle } from "./KpiCard";
+import { margin, type Rank, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankChip } from "./RankChip";
 import { RankVsMarket } from "./RankVsMarket";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
-import { YearRow } from "./YearRow";
 
-const BASIS_OPTIONS = [
-  { value: "total", label: "Full company" },
-  { value: "emp", label: "Per employee" },
-] as const;
-
-export function CompaniesView({ model }: { model: MarketModel }) {
-  const [{ year, basis, companies }, setParams] = useDashboardParams(model.last);
-
+export function useSelectedBrand(model: MarketModel) {
+  const [{ companies }, setParams] = useDashboardParams(model.last);
   const brand = companies[0] ?? model.brands[0];
+  return { brand, select: (next: string) => setParams({ companies: [next] }) };
+}
+
+/** The hoisted company picker, visible on every Financials tab. */
+export function CompanyPicker({ model }: { model: MarketModel }) {
+  const { brand, select } = useSelectedBrand(model);
+  return <CompanySelector brands={model.brands} selected={brand} onSelect={select} />;
+}
+
+/** The "Company {year}" panel: money-flow, #/% KPIs with rank chips, vs-market. */
+export function CompanyPerYear({ model }: { model: MarketModel }) {
+  const [{ year, basis }] = useDashboardParams(model.last);
+  const { brand } = useSelectedBrand(model);
+  const [kpiMode, setKpiMode] = useState<KpiMode>("value");
+
   const row = model.byBrand[brand]?.[year];
   const prev = model.byBrand[brand]?.[year - 1];
 
@@ -53,7 +61,11 @@ export function CompaniesView({ model }: { model: MarketModel }) {
   );
   const profitMargin = rankOf(model.rows, year, row, margin);
 
-  // Money-flow follows the basis toggle: per-employee divides by headcount.
+  const yoy =
+    row?.revenue != null && (prev?.revenue ?? 0) > 0
+      ? row.revenue / (prev!.revenue as number) - 1
+      : null;
+
   const scaleMoney = (v: number | null) =>
     v == null
       ? null
@@ -71,105 +83,78 @@ export function CompaniesView({ model }: { model: MarketModel }) {
           : null
         : v;
 
-  // Year-over-year on the selected year, not a growth rate anchored to 2019 —
-  // it must agree with the change shown on every other card.
-  const yoy =
-    row?.revenue != null && (prev?.revenue ?? 0) > 0
-      ? row.revenue / (prev!.revenue as number) - 1
-      : null;
+  if (!row)
+    return (
+      <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
+        {brand} has no {year} filing.
+      </p>
+    );
+
+  const kpi = (
+    label: string,
+    valueText: string,
+    rankData: Rank | null,
+    changeText?: string,
+  ) => (
+    <article className="border-line bg-panel rounded-[10px] border px-[13px] py-[11px]">
+      <div className="text-muted text-[11px] tracking-[.05em] uppercase">{label}</div>
+      <div className="mt-0.5 text-[21px] font-bold">
+        {kpiMode === "change" && changeText ? changeText : valueText}
+      </div>
+      <div className="text-muted mt-0.5 text-[12px]">
+        {changeText && kpiMode === "value" ? changeText : <RankChip rank={rankData} />}
+      </div>
+    </article>
+  );
 
   return (
-    <section id="companies" className="mb-7">
-      <h1 className="mt-7 mb-3.5 text-[18px] font-bold">{brand}</h1>
-
-      <CompanySelector
-        brands={model.brands}
-        selected={brand}
-        onSelect={(next) => setParams({ companies: [next] })}
+    <div>
+      <MoneyFlow
+        turnover={scaleMoney(row.revenue)}
+        revenue={scaleMoney(row.estimatedIncome)}
+        profit={scaleMoney(row.profit)}
+        prev={
+          prev
+            ? {
+                T: scaleMoneyPrev(prev.revenue),
+                R: scaleMoneyPrev(prev.estimatedIncome),
+                P: scaleMoneyPrev(prev.profit),
+              }
+            : {}
+        }
+        rank={turnover}
       />
 
-      <YearRow years={model.finYears} defaultYear={model.last} />
+      <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
+      <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
+        {kpi("Revenue", fmtEur(revenue?.value), revenue)}
+        {kpi(
+          "Turnover",
+          fmtEur(turnover?.value),
+          turnover,
+          yoy == null ? undefined : `${fmtPct(yoy)} YoY`,
+        )}
+        {kpi("Net profit", fmtEur(profit?.value), profit)}
+        {employees && kpi("Employees", fmtInt(employees.value), employees)}
+        {kpi("Avg. salary", fmtEurFull(salary?.value), salary)}
+        {kpi(
+          "Profit margin",
+          profitMargin ? `${profitMargin.value.toFixed(1)}%` : "–",
+          profitMargin,
+        )}
+      </div>
 
-      <PillRow label="Basis" className="mb-3.5">
-        {BASIS_OPTIONS.map((option) => (
-          <Pill
-            key={option.value}
-            selected={basis === option.value}
-            onClick={() => setParams({ basis: option.value })}
-          >
-            {option.label}
-          </Pill>
-        ))}
-      </PillRow>
+      <RankVsMarket model={model} brand={brand} year={year} perEmployee={perEmployee} />
+    </div>
+  );
+}
 
-      {!row ? (
-        <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
-          {brand} has no {year} filing.
-        </p>
-      ) : (
-        <>
-          <MoneyFlow
-            turnover={scaleMoney(row.revenue)}
-            revenue={scaleMoney(row.estimatedIncome)}
-            profit={scaleMoney(row.profit)}
-            prev={
-              prev
-                ? {
-                    T: scaleMoneyPrev(prev.revenue),
-                    R: scaleMoneyPrev(prev.estimatedIncome),
-                    P: scaleMoneyPrev(prev.profit),
-                  }
-                : {}
-            }
-            rank={turnover}
-            tag={
-              perEmployee ? `per employee · ${row.employees ?? 0} staff` : "full company"
-            }
-          />
-          <KpiGrid>
-            <Kpi
-              label="Revenue"
-              value={fmtEur(revenue?.value)}
-              sub={<RankChip rank={revenue} />}
-            />
-            <Kpi
-              label="Turnover"
-              value={fmtEur(turnover?.value)}
-              sub={yoy == null ? <RankChip rank={turnover} /> : `${fmtPct(yoy)} YoY`}
-            />
-            <Kpi
-              label="Net profit"
-              value={fmtEur(profit?.value)}
-              sub={<RankChip rank={profit} />}
-            />
-            {employees && (
-              <Kpi
-                label="Employees"
-                value={fmtInt(employees.value)}
-                sub={<RankChip rank={employees} />}
-              />
-            )}
-            <Kpi
-              label="Avg. salary"
-              value={fmtEurFull(salary?.value)}
-              sub={<RankChip rank={salary} />}
-            />
-            <Kpi
-              label="Profit margin"
-              value={profitMargin ? `${profitMargin.value.toFixed(1)}%` : "–"}
-              sub={<RankChip rank={profitMargin} />}
-            />
-          </KpiGrid>
-          <RankVsMarket
-            model={model}
-            brand={brand}
-            year={year}
-            perEmployee={perEmployee}
-          />
-        </>
-      )}
+/** The "Company all time" panel: money-flow by year + the deep-dive chart. */
+export function CompanyAllTime({ model }: { model: MarketModel }) {
+  const { brand } = useSelectedBrand(model);
 
-      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Company all time</h2>
+  return (
+    <div>
       <MoneyFlowByYear
         title={`${brand} — money-flow by year`}
         rows={model.finYears
@@ -182,6 +167,6 @@ export function CompaniesView({ model }: { model: MarketModel }) {
             profit: r.profit ?? 0,
           }))}
       />
-    </section>
+    </div>
   );
 }

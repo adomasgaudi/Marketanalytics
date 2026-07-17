@@ -1,23 +1,22 @@
-import { CompaniesView } from "@/features/market-rough/CompaniesView";
-import { DeepDive } from "@/features/market-rough/DeepDive";
-import { ExplorerView } from "@/features/market-rough/ExplorerView";
-import { MarketsView } from "@/features/market-rough/MarketsView";
-import { RankingsChart } from "@/features/market-rough/RankingsChart";
+import { GroupCard } from "@/components/ui/group";
+import { BottomBar } from "@/features/market-rough/BottomBar";
+import { loadMarketData } from "@/features/market-rough/data";
+import { MarketAllTime, MarketPerYear } from "@/features/market-rough/MarketsView";
 import { TopCards } from "@/features/market-rough/TopCards";
 import { TopNav } from "@/features/market-rough/TopNav";
-import { loadMarketData } from "@/features/market-rough/data";
 
 /**
- * Server Component: the data is read and indexed here, once, and handed to the
- * views as props. Only the views that read URL state are client components.
+ * The Markets view — mirrors the legacy dashView: hero, top cards, one
+ * "Market data" card with per-year/all-time tabs, footer, and the fixed
+ * bottom bar carrying the year row + basis toggle.
  */
-export default function RoughPage() {
+export default function MarketsPage() {
   const model = loadMarketData();
 
   return (
     <main>
-      <TopNav />
-      <div className="mx-auto w-full max-w-[840px] px-6 py-6">
+      <TopNav active="markets" />
+      <div className="mx-auto w-full max-w-[840px] px-6 pt-6 pb-[70px]">
         <header className="mt-1.5 mb-5">
           <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
             Markets{" "}
@@ -30,12 +29,16 @@ export default function RoughPage() {
             {model.years[model.years.length - 1]}
           </p>
         </header>
+
         <TopCards model={model} />
-        <MarketsView model={model} />
-        <CompaniesView model={model} />
-        <RankingsChart model={model} />
-        <DeepDive model={model} />
-        <ExplorerView model={model} />
+
+        <GroupCard
+          title="Market data"
+          tabs={[
+            { label: `Market ${model.last}`, content: <MarketPerYear model={model} /> },
+            { label: "Market all time", content: <MarketAllTime model={model} /> },
+          ]}
+        />
 
         <a
           href="/v2"
@@ -47,6 +50,7 @@ export default function RoughPage() {
           by adomasgaudi.github on behalf of Fabula, copyright.
         </footer>
       </div>
+      <BottomBar model={model} mode="market" />
     </main>
   );
 }

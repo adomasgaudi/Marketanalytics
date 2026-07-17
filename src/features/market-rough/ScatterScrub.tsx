@@ -90,7 +90,9 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
         opacity: d0 && d1 ? 0.85 : d0 ? 0.85 * (1 - frac) : 0.85 * frac,
       };
     })
-    .sort((d) => (d.brand === MY_BRAND ? 1 : -1));
+    // Fabula last so its gold bubble draws on top. Stable two-arg comparator —
+    // a one-arg version hydration-mismatches (server/client order differs).
+    .sort((a, b) => (a.brand === MY_BRAND ? 1 : 0) - (b.brand === MY_BRAND ? 1 : 0));
 
   return (
     <section className="border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">

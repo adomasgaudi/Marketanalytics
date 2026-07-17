@@ -13,7 +13,7 @@ import { APP_VERSION_LABEL } from "@/app-version";
  * The bar spans the viewport while its contents line up with the centred
  * column — the legacy's max() padding trick, no wrapper element needed.
  */
-export function TopNav() {
+export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<"classic" | "ocean">("classic");
@@ -42,8 +42,7 @@ export function TopNav() {
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node))
-        setOpen(false);
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -75,15 +74,19 @@ export function TopNav() {
       </Link>
 
       {/* Two-line nav button: page name + small gray mode sub-label. */}
-      <a
-        href="#companies"
-        className="text-muted hover:text-ink inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px]"
+      <Link
+        href="/companies"
+        className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
+          active === "companies"
+            ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
+            : "text-muted hover:text-ink"
+        }`}
       >
         <span>Companies</span>
         <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
           per year
         </span>
-      </a>
+      </Link>
 
       {/* settings-wrap: cog above, version label below, menu anchored right. */}
       <div

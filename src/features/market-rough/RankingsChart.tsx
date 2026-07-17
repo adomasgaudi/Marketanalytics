@@ -79,8 +79,7 @@ export function RankingsChart({ model }: { model: MarketModel }) {
   );
 
   return (
-    <section id="rankings" className="mb-7">
-      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Company rankings</h2>
+    <section id="rankings">
       <div className="border-line bg-panel min-w-0 rounded-xl border p-[18px]">
         <h3 className="mb-2 text-[15px] font-semibold">
           Top 10 versus bottom 10 · {metric.label} {year}
