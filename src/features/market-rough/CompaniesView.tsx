@@ -5,6 +5,7 @@ import { Pill, PillRow } from "@/components/ui/pills";
 import { CompanySelector } from "./CompanySelector";
 import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
 import { margin, rankOf } from "./metrics";
+import { MoneyFlow } from "./MoneyFlow";
 import { RankChip } from "./RankChip";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -50,6 +51,24 @@ export function CompaniesView({ model }: { model: MarketModel }) {
   );
   const profitMargin = rankOf(model.rows, year, row, margin);
 
+  // Money-flow follows the basis toggle: per-employee divides by headcount.
+  const scaleMoney = (v: number | null) =>
+    v == null
+      ? null
+      : perEmployee
+        ? (row?.employees ?? 0) > 0
+          ? v / row!.employees!
+          : null
+        : v;
+  const scaleMoneyPrev = (v: number | null | undefined) =>
+    v == null
+      ? null
+      : perEmployee
+        ? (prev?.employees ?? 0) > 0
+          ? v / prev!.employees!
+          : null
+        : v;
+
   // Year-over-year on the selected year, not a growth rate anchored to 2019 —
   // it must agree with the change shown on every other card.
   const yoy =
@@ -86,40 +105,60 @@ export function CompaniesView({ model }: { model: MarketModel }) {
           {brand} has no {year} filing.
         </p>
       ) : (
-        <KpiGrid>
-          <Kpi
-            label="Revenue"
-            value={fmtEur(revenue?.value)}
-            sub={<RankChip rank={revenue} />}
+        <>
+          <MoneyFlow
+            turnover={scaleMoney(row.revenue)}
+            revenue={scaleMoney(row.estimatedIncome)}
+            profit={scaleMoney(row.profit)}
+            prev={
+              prev
+                ? {
+                    T: scaleMoneyPrev(prev.revenue),
+                    R: scaleMoneyPrev(prev.estimatedIncome),
+                    P: scaleMoneyPrev(prev.profit),
+                  }
+                : {}
+            }
+            rank={turnover}
+            tag={
+              perEmployee ? `per employee · ${row.employees ?? 0} staff` : "full company"
+            }
           />
-          <Kpi
-            label="Turnover"
-            value={fmtEur(turnover?.value)}
-            sub={yoy == null ? <RankChip rank={turnover} /> : `${fmtPct(yoy)} YoY`}
-          />
-          <Kpi
-            label="Net profit"
-            value={fmtEur(profit?.value)}
-            sub={<RankChip rank={profit} />}
-          />
-          {employees && (
+          <KpiGrid>
             <Kpi
-              label="Employees"
-              value={fmtInt(employees.value)}
-              sub={<RankChip rank={employees} />}
+              label="Revenue"
+              value={fmtEur(revenue?.value)}
+              sub={<RankChip rank={revenue} />}
             />
-          )}
-          <Kpi
-            label="Avg. salary"
-            value={fmtEurFull(salary?.value)}
-            sub={<RankChip rank={salary} />}
-          />
-          <Kpi
-            label="Profit margin"
-            value={profitMargin ? `${profitMargin.value.toFixed(1)}%` : "–"}
-            sub={<RankChip rank={profitMargin} />}
-          />
-        </KpiGrid>
+            <Kpi
+              label="Turnover"
+              value={fmtEur(turnover?.value)}
+              sub={yoy == null ? <RankChip rank={turnover} /> : `${fmtPct(yoy)} YoY`}
+            />
+            <Kpi
+              label="Net profit"
+              value={fmtEur(profit?.value)}
+              sub={<RankChip rank={profit} />}
+            />
+            {employees && (
+              <Kpi
+                label="Employees"
+                value={fmtInt(employees.value)}
+                sub={<RankChip rank={employees} />}
+              />
+            )}
+            <Kpi
+              label="Avg. salary"
+              value={fmtEurFull(salary?.value)}
+              sub={<RankChip rank={salary} />}
+            />
+            <Kpi
+              label="Profit margin"
+              value={profitMargin ? `${profitMargin.value.toFixed(1)}%` : "–"}
+              sub={<RankChip rank={profitMargin} />}
+            />
+          </KpiGrid>
+        </>
       )}
     </section>
   );
