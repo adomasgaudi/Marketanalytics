@@ -9,6 +9,7 @@ import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
+import { ScatterScrub } from "./ScatterScrub";
 import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
@@ -184,6 +185,8 @@ export function MarketsView({ model }: { model: MarketModel }) {
       />
 
       <SegmentTrends model={model} />
+
+      <ScatterScrub model={model} />
     </section>
   );
 }
