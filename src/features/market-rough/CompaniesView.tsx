@@ -6,6 +6,7 @@ import { CompanySelector } from "./CompanySelector";
 import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
 import { margin, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
+import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankChip } from "./RankChip";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -160,6 +161,20 @@ export function CompaniesView({ model }: { model: MarketModel }) {
           </KpiGrid>
         </>
       )}
+
+      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Company all time</h2>
+      <MoneyFlowByYear
+        title={`${brand} — money-flow by year`}
+        rows={model.finYears
+          .map((fy) => model.byBrand[brand]?.[fy])
+          .filter((r): r is CompanyYear => r != null && r.revenue != null)
+          .map((r) => ({
+            year: r.year,
+            turnover: r.revenue ?? 0,
+            revenue: r.estimatedIncome ?? 0,
+            profit: r.profit ?? 0,
+          }))}
+      />
     </section>
   );
 }

@@ -7,6 +7,7 @@ import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
+import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
 import { SegmentChart } from "./SegmentChart";
 import type { MarketModel } from "./types";
@@ -164,6 +165,22 @@ export function MarketsView({ model }: { model: MarketModel }) {
       <SegmentChart model={model} />
 
       <ScatterChart model={model} />
+
+      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Market all time</h2>
+      <MoneyFlowByYear
+        title={`Total market money-flow by year (${model.finYears[0]}–${model.finYears[model.finYears.length - 1]})`}
+        rows={model.finYears.map((fy) => {
+          const t = marketTotals(model.rows, fy);
+          const d = market === "avg" ? t.count : market === "emp" ? t.employees : 1;
+          const dv = (v: number) => (d > 0 ? v / d : 0);
+          return {
+            year: fy,
+            turnover: dv(t.revenue),
+            revenue: dv(t.estimatedIncome),
+            profit: dv(t.profit),
+          };
+        })}
+      />
     </section>
   );
 }
