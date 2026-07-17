@@ -219,44 +219,94 @@ function BarsSvg({
   fmt: (v: number) => string;
   xTitle: string;
 }) {
+  // Legacy drawBarsSvg geometry: names sit INSIDE the plot at each bar's
+  // start, so the left margin is tiny and bars span nearly the full width.
   const W = 754;
   const H = 320;
-  const PAD = { left: 110, right: 56, top: 8, bottom: 26 };
-  const rowH = (H - PAD.top - PAD.bottom) / rows.length;
+  const m = { t: 6, r: 42, b: 24, l: 10 };
+  const pw = W - m.l - m.r;
+  const ph = H - m.t - m.b;
   const max = Math.max(...rows.map((r) => Math.max(0, r.value)), 1);
-  const barLen = (v: number) =>
-    Math.max(2, (Math.max(0, v) / max) * (W - PAD.left - PAD.right));
+  const xAt = (v: number) => m.l + (Math.max(0, v) / max) * pw;
+  const band = ph / rows.length;
+  const barH = Math.max(2, Math.min(22, band * 0.62));
+
+  // Round 1/2/5×10ⁿ tick values, as the legacy niceTicks (PB-1).
+  const ticks: number[] = [];
+  {
+    const raw = max / 8;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const nrm = raw / mag;
+    const step = (nrm < 1.5 ? 1 : nrm < 3 ? 2 : nrm < 7 ? 5 : 10) * mag;
+    for (let v = 0; v <= max + step * 1e-9; v += step) ticks.push(v);
+  }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img">
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full overflow-visible" role="img">
+      <defs>
+        <filter id="segbar-sh" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0"
+            dy="0.5"
+            stdDeviation="1"
+            floodColor="#000"
+            floodOpacity="0.5"
+          />
+        </filter>
+      </defs>
+      {ticks.map((v) => (
+        <g key={v}>
+          <line
+            x1={xAt(v)}
+            y1={m.t}
+            x2={xAt(v)}
+            y2={m.t + ph}
+            stroke="var(--color-grid)"
+            strokeWidth="1"
+          />
+          <text
+            x={xAt(v)}
+            y={H - 12}
+            textAnchor="middle"
+            fontSize="10"
+            fill="var(--color-muted)"
+          >
+            {fmt(v)}
+          </text>
+        </g>
+      ))}
       {rows.map((r, i) => {
-        const y = PAD.top + i * rowH;
-        const h = Math.min(20, rowH * 0.62);
+        const cy = m.t + band * (i + 0.5);
+        const x1 = xAt(r.value);
+        const nameX = m.l + 4;
+        const nameW = r.label.length * 5.8;
         return (
           <g key={r.label}>
+            <rect
+              x={m.l}
+              y={cy - barH / 2}
+              width={Math.max(0, x1 - m.l)}
+              height={barH}
+              rx="2"
+              fill={r.color}
+            />
+            {/* Name inside the plot at the bar's start, shadowed for contrast. */}
             <text
-              x={PAD.left - 8}
-              y={y + rowH / 2 + 3.5}
-              textAnchor="end"
-              fontSize="11"
-              fill="var(--color-muted)"
+              x={nameX}
+              y={cy + 3}
+              fontSize="10"
+              fontWeight="600"
+              fill="var(--color-ink)"
+              filter="url(#segbar-sh)"
             >
               {r.label}
             </text>
-            <rect
-              x={PAD.left}
-              y={y + (rowH - h) / 2}
-              width={barLen(r.value)}
-              height={h}
-              rx="3"
-              fill={r.color}
-            />
+            {/* Value after the bar end, never overlapping the name. */}
             <text
-              x={PAD.left + barLen(r.value) + 6}
-              y={y + rowH / 2 + 3.5}
-              fontSize="11"
-              fontWeight="600"
-              fill="var(--color-ink)"
+              x={Math.max(x1 + 4, nameX + nameW + 6)}
+              y={cy + 3}
+              fontSize="9"
+              fill="var(--color-muted)"
             >
               {fmt(r.value)}
             </text>
@@ -264,10 +314,10 @@ function BarsSvg({
         );
       })}
       <text
-        x={PAD.left + (W - PAD.left - PAD.right) / 2}
-        y={H - 6}
+        x={m.l + pw / 2}
+        y={H - 1}
         textAnchor="middle"
-        fontSize="11"
+        fontSize="10"
         fill="var(--color-muted)"
       >
         {xTitle}
