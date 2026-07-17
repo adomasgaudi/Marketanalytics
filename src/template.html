@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
-<title>Markets — LT agencies · v0.2.90</title>
+<title>Markets — LT agencies · v0.2.91</title>
 <!--
   DEV NOTE — 2025 derived/estimated fields (not surfaced in the UI).
   rekvizitai's free page gives only revenue + profit for 2025; the three cost/
@@ -674,7 +674,7 @@
     <button class="nav-btn nav-btn-2l" data-view="companiesView"><span class="nav-btn-main">Companies</span><span class="nav-btn-sub" id="coNavMode">per year</span></button>
   </div>
   <div class="settings-wrap">
-    <span class="nav-version" id="navVersion">v0.2.90</span>
+    <span class="nav-version" id="navVersion">v0.2.91</span>
     <span class="ver-hint" id="verHint" aria-live="polite"></span>
     <button class="settings-cog" id="settingsCog" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.6l1.5 2.7 3-.7.4 3 2.7 1.4-1.5 2.6 1.5 2.6-2.7 1.4-.4 3-3-.7L12 21.4l-1.5-2.7-3 .7-.4-3L4.4 15l1.5-2.6L4.4 9.8l2.7-1.4.4-3 3 .7z"/></svg></button>
     <div class="settings-menu" id="settingsMenu">
@@ -2550,6 +2550,9 @@ let _dashRT; window.addEventListener('resize',()=>{ clearTimeout(_dashRT); _dash
 // ---------- SP & version history ----------
 // Each entry: title (2-5 words) · desc (5-15 words) · detail (15-50 words).
 const VERSIONS = [
+  {v:'v0.2.91', date:'2026-07-17', sp:0.5, title:'Version bump to 2.91',
+    desc:'Housekeeping bump after repo doc reorg; no functional dashboard changes.',
+    detail:'Synced main (docs restructure into docs/ai-harness, pr-* folders, graphify output) and bumped title + nav badge to v0.2.91.'},
   {v:'v0.2.90', date:'2026-07-11', sp:2, title:'Explore-data company filters + collapsible field table',
     desc:'The Explore-data company picker gains the same segment + turnover/revenue/employees/salary filters as the Companies page, and the company field-data section below Data changes is now collapsible like the others.',
     detail:'Ported the Companies-page ov* filter into the Explore-data top company picker as rek* state: a Segment multi-select plus minimum-threshold dropdowns for turnover, revenue, employees and median salary (shared OV_THRESHOLDS, scoped to the latest financial year LAST), with pills, a "Showing N of M" hint and Clear filters. Nested dropdowns re-press to close and dismiss on outside-click/Escape/Done, matching the Companies picker so it can\'t get stuck open. The currently-selected company stays visible even when filtered out. Also wrapped the per-company field table (tabs + Merged/Initial/Rekvizitai/Sodra controls + table) in a collapsible <details> ("🔎 Company field data") styled like the coverage/data-changes folds, with the company name as its sub-label.'},
