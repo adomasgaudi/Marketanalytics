@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { fmtEur, fmtInt } from "./format";
-import { LineChart } from "./LineChart";
+import { LineChart, type LineSeries } from "./LineChart";
 import {
   SEG_COLORS,
   SEG_METRICS,
   segDesc,
   type SegBasis,
   type SegMetricKey,
+  segMetricPct,
   segMetricVal,
   segName,
 } from "./segments";
@@ -39,16 +40,51 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
     market === "avg" ? "company" : market === "emp" ? "emp" : "total";
   const fmt = metric === "employees" ? fmtInt : fmtEur;
 
-  const series = model.segments
+  // Legacy renderRevSegAll: series ordered by their latest-year value, and
+  // 5/95 + 25/75 percentile bands for avgSalary when ≤2 segments are picked.
+  const ranked = model.segments
     .filter((s) => segs.has(s))
-    .map((s) => ({
+    .map((s) => ({ s, v: segMetricVal(model.rows, s, metric, basis, model.last) ?? 0 }))
+    .sort((a, b) => b.v - a.v)
+    .map((o) => o.s);
+  const showBands = metric === "avgSalary" && ranked.length <= 2;
+
+  const series: LineSeries[] = [];
+  ranked.forEach((s) => {
+    const col = SEG_COLORS[s] ?? "var(--color-muted)";
+    if (showBands) {
+      const bandLine = (p: number, dash: number[], opacity: number): LineSeries => ({
+        label: "",
+        color: col,
+        dash,
+        width: 1,
+        opacity,
+        noMarkers: true,
+        data: model.finYears
+          .map((y) => ({ x: y, y: segMetricPct(model.rows, s, metric, y, p) }))
+          .filter((pt): pt is { x: number; y: number } => pt.y != null),
+      });
+      [
+        bandLine(0.95, [2, 3], 0.4),
+        bandLine(0.75, [5, 4], 0.6),
+        bandLine(0.25, [5, 4], 0.6),
+        bandLine(0.05, [2, 3], 0.4),
+      ].forEach((se) => {
+        if (se.data.length) series.push(se);
+      });
+    }
+    const med: LineSeries = {
       label: segName(s),
-      color: SEG_COLORS[s] ?? "var(--color-muted)",
+      color: col,
+      width: 2,
       data: model.finYears
         .map((y) => ({ x: y, y: segMetricVal(model.rows, s, metric, basis, y) }))
         .filter((p): p is { x: number; y: number } => p.y != null),
-    }))
-    .filter((s) => s.data.length);
+    };
+    if (med.data.length) series.push(med);
+  });
+
+  const yUnit = metric === "avgSalary" ? "€/mo" : metric === "employees" ? "people" : "€";
 
   return (
     <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
@@ -145,16 +181,25 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
 
       {series.length ? (
         <>
-          <LineChart series={series} fmt={fmt} />
+          <LineChart series={series} fmt={fmt} yTitle={yUnit} />
           <p className="text-muted mt-2 text-[12px]">
-            {segDesc(metric, basis)} Shown {model.finYears[0]}→
+            {segDesc(metric, basis)}
+            {showBands
+              ? " Dashed = 25th/75th, dotted = 5th/95th percentile per segment."
+              : ""}{" "}
+            Shown {model.finYears[0]}→
             {String(model.finYears[model.finYears.length - 1]).slice(2)}.
           </p>
         </>
       ) : (
-        <p className="text-muted p-6 text-center text-[13px]">
-          Select a segment above to compare trends over time.
-        </p>
+        <>
+          <p className="text-muted p-6 text-center text-[13px]">
+            Select a segment above to compare trends over time.
+          </p>
+          <p className="text-muted mt-2 text-[12px]">
+            Pick one or more segments from the dropdown to compare over time.
+          </p>
+        </>
       )}
     </div>
   );

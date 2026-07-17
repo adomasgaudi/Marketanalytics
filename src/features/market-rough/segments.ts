@@ -81,6 +81,24 @@ export function segMetricVal(
   return ds.length ? ds.reduce((s, o) => s + o.v, 0) : null;
 }
 
+/** Percentile of a segment's per-company metric values in a year (bands). */
+export function segMetricPct(
+  rows: CompanyYear[],
+  seg: string,
+  metric: SegMetricKey,
+  year: number,
+  p: number,
+): number | null {
+  const M = SEG_METRICS[metric];
+  const vals = rows
+    .filter((d) => d.year === year && d.activities.includes(seg))
+    .map((d) => M.f(d))
+    .filter((v): v is number => v != null && (!M.pos || v > 0))
+    .sort((a, b) => a - b);
+  if (vals.length < 4) return null; // too few companies for a meaningful band
+  return vals[Math.min(vals.length - 1, Math.floor(vals.length * p))];
+}
+
 export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
   const M = SEG_METRICS[metric];
   return basis === "total"
