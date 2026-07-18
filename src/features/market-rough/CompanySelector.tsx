@@ -72,6 +72,108 @@ export const CMP_PAL = [
 ];
 export const cmpColor = (i: number) => CMP_PAL[i % CMP_PAL.length];
 
+const activeOf = (selected: string[], off: string[]) =>
+  selected.filter((b) => !off.includes(b));
+
+/** Legacy toggle: not in pool → add (on); off → on; on → off (keep ≥1 active).
+    Never reorders the pool. */
+export function togglePool(b: string, selected: string[], off: string[]) {
+  if (!selected.includes(b)) return { selected: [...selected, b], off };
+  if (off.includes(b)) return { selected, off: off.filter((x) => x !== b) };
+  if (activeOf(selected, off).length > 1) return { selected, off: [...off, b] };
+  return { selected, off };
+}
+
+/** Legacy chip ×: drop from the pool; never leave the pool with nothing active. */
+export function removeFromPool(
+  b: string,
+  selected: string[],
+  off: string[],
+  fallback: string,
+) {
+  const next = selected.filter((x) => x !== b);
+  let nextOff = off.filter((x) => x !== b && next.includes(x));
+  if (next.length && next.every((x) => nextOff.includes(x)))
+    nextOff = nextOff.filter((x) => x !== next[0]);
+  return { selected: next.length ? next : [fallback], off: nextOff };
+}
+
+/** The compare pills (legacy .ov-chips, lifted into the sticky .co-stickybar):
+    stable order, click toggles the brand on/off for charts (dashed = off),
+    × removes from the pool. Rendered OUTSIDE the picker so it can stick alone. */
+export function CompareChips({
+  selected,
+  off,
+  onChange,
+  onOffChange,
+  fallbackBrand,
+}: {
+  selected: string[];
+  off: string[];
+  onChange: (brands: string[]) => void;
+  onOffChange: (off: string[]) => void;
+  fallbackBrand: string;
+}) {
+  if (selected.length < 2) return null;
+  const activeList = activeOf(selected, off);
+
+  const apply = (next: { selected: string[]; off: string[] }) => {
+    if (next.selected !== selected) onChange(next.selected);
+    if (next.off !== off) onOffChange(next.off);
+  };
+
+  return (
+    <div className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+      {selected.map((b, i) => {
+        const on = !off.includes(b);
+        const primary = on && b === activeList[0];
+        return (
+          <span
+            key={b}
+            role="button"
+            tabIndex={0}
+            title={
+              on
+                ? primary
+                  ? "Primary · click to hide"
+                  : "Shown · click to hide"
+                : "Hidden · click to show"
+            }
+            className={cn(
+              "border-line bg-panel2 flex flex-none cursor-pointer items-center gap-1.5 rounded-[7px] border px-2 py-[5px] text-[12px] font-semibold",
+              primary && "border-accent text-accent",
+              !on && "text-muted border-dashed opacity-55",
+            )}
+            onClick={() => apply(togglePool(b, selected, off))}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                apply(togglePool(b, selected, off));
+              }
+            }}
+          >
+            <i
+              className={cn("h-2 w-2 flex-none rounded-full", !on && "opacity-35")}
+              style={{ background: cmpColor(i) }}
+            />
+            {b}
+            <span
+              title="Remove from list"
+              className="text-muted hover:text-red text-[14px] leading-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                apply(removeFromPool(b, selected, off, fallbackBrand));
+              }}
+            >
+              ×
+            </span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Green/blue/amber data-source cubes (Initial / Rekvizitai / Sodra), dimmed
     empty when a source is missing (legacy srcCubes). */
 function SrcCubes({ profile }: { profile?: CompanyProfile }) {
@@ -98,14 +200,19 @@ export function CompanySelector({
   model,
   year,
   selected,
+  off,
   onChange,
+  onOffChange,
   profiles,
 }: {
   model: MarketModel;
   year: number;
-  /** Selected compare pool — first entry is the primary brand. */
+  /** Selected compare pool — order is stable; never reordered by clicks. */
   selected: string[];
+  /** Pool brands currently toggled off (hidden from charts). */
+  off: string[];
   onChange: (brands: string[]) => void;
+  onOffChange: (off: string[]) => void;
   profiles?: Record<string, CompanyProfile>;
 }) {
   const [open, setOpen] = useState(false);
@@ -161,10 +268,13 @@ export function CompanySelector({
     ]),
   ];
 
-  // Legacy list click: not selected → add; selected → remove (keep at least 1).
+  const isOn = (b: string) => selected.includes(b) && !off.includes(b);
+  const activeList = activeOf(selected, off);
+
   const toggleBrand = (b: string) => {
-    if (!selected.includes(b)) onChange([...selected, b]);
-    else if (selected.length > 1) onChange(selected.filter((x) => x !== b));
+    const next = togglePool(b, selected, off);
+    if (next.selected !== selected) onChange(next.selected);
+    if (next.off !== off) onOffChange(next.off);
   };
   const filtersOn = segs.size > 0 || METRIC_KEYS.some((k) => mins[k] > 0) || q.length > 0;
 
@@ -217,7 +327,7 @@ export function CompanySelector({
   };
 
   return (
-    <div ref={rootRef} className="relative mb-3">
+    <div ref={rootRef} className="relative">
       <button
         type="button"
         aria-haspopup="listbox"
@@ -233,49 +343,13 @@ export function CompanySelector({
           }
         }}
       >
-        {selected.length > 1
-          ? `${selected[0]} +${selected.length - 1}`
-          : (selected[0] ?? "Select company")}
+        {activeList.length > 1
+          ? `${activeList[0]} +${activeList.length - 1}`
+          : (activeList[0] ?? selected[0] ?? "Select company")}
         <span className={cn("text-[10px] transition-transform", open && "rotate-180")}>
           ▾
         </span>
       </button>
-
-      {/* Compare chips: dot colour matches tabs/grouped bars; × removes,
-          chip click makes it the primary brand (legacy .ov-chips). */}
-      {selected.length > 1 && (
-        <div className="mt-1.5 flex [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-          {selected.map((b, i) => (
-            <span
-              key={b}
-              role="button"
-              tabIndex={0}
-              title={i === 0 ? "Primary" : "Click to make primary"}
-              className={cn(
-                "border-line bg-panel2 flex flex-none cursor-pointer items-center gap-1.5 rounded-[7px] border px-2 py-[5px] text-[12px] font-semibold",
-                i === 0 && "border-accent",
-              )}
-              onClick={() => onChange([b, ...selected.filter((x) => x !== b)])}
-            >
-              <i
-                className="h-2 w-2 flex-none rounded-full"
-                style={{ background: cmpColor(i) }}
-              />
-              {b}
-              <span
-                title="Remove from list"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const next = selected.filter((x) => x !== b);
-                  onChange(next.length ? next : [model.brands[0]]);
-                }}
-              >
-                ×
-              </span>
-            </span>
-          ))}
-        </div>
-      )}
 
       {open && (
         <div className="border-line bg-panel absolute z-20 mt-1 w-[min(380px,92vw)] rounded-lg border p-2 shadow-xl">
@@ -419,8 +493,14 @@ export function CompanySelector({
                 <div
                   key={b}
                   role="option"
-                  aria-selected={selected.includes(b)}
-                  className={cn(optCls, selected.includes(b) && "bg-accent text-white")}
+                  aria-selected={isOn(b)}
+                  className={cn(
+                    optCls,
+                    isOn(b) && "bg-accent font-semibold text-white",
+                    selected.includes(b) &&
+                      !isOn(b) &&
+                      "bg-panel2 text-muted border-line border border-dashed font-semibold",
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleBrand(b);

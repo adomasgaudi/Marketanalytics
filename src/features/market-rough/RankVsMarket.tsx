@@ -15,6 +15,7 @@ export function RankVsMarket({
   model,
   brand,
   brands,
+  colorPool,
   year,
   perEmployee,
 }: {
@@ -22,12 +23,13 @@ export function RankVsMarket({
   brand: string;
   /** Full compare pool — >1 switches to grouped mode (one bar per company). */
   brands?: string[];
+  /** Full pool incl. hidden brands — keeps bar colours matching the chips. */
+  colorPool?: string[];
   year: number;
   perEmployee: boolean;
 }) {
   const pool = brands?.length ? brands : [brand];
   const grouped = pool.length > 1;
-  const row = model.byBrand[brand]?.[year];
   const partialYear = year > model.last;
 
   const pe = (metric: (r: CompanyYear) => number | null) => (candidate: CompanyYear) => {
@@ -56,24 +58,43 @@ export function RankVsMarket({
   const rankFor = (b: string, f: (r: CompanyYear) => number | null) =>
     rankOf(model.rows, year, model.byBrand[b]?.[year], f);
 
-  // Grouped (>1 company): one bar per company per metric, chip colours.
-  const entries = metricDefs.flatMap((m) =>
-    (grouped ? pool : [brand]).map((b) => ({
-      label: grouped ? `${m.label} — ${b}` : m.label,
-      rank: rankFor(b, m.f),
-      color: grouped ? cmpColor(pool.indexOf(b)) : undefined,
-    })),
-  );
-
-  const withRank = entries.filter((s): s is typeof s & { rank: Rank } => s.rank != null);
-  if (!withRank.length) return null;
-
-  const ranks = new Map(withRank.map((s) => [s.label, s.rank]));
-  const bars: BarRow[] = withRank.map((s) => ({
-    label: s.label,
-    value: s.rank.pct,
-    color: s.color ?? (s.rank.pct >= 50 ? "var(--color-gold)" : "var(--color-muted)"),
-  }));
+  // Grouped (>1 company): one metric HEADING per group (spacer above for a
+  // gap), then one bar per company labelled with just the company name — its
+  // chip colour identifies it (legacy v0.2.89). Tooltip still names the metric.
+  const bars: BarRow[] = [];
+  const meta: ({ metric: string; rank: Rank } | null)[] = [];
+  metricDefs.forEach((m, gi) => {
+    const cells = (grouped ? pool : [brand]).flatMap((b) => {
+      const rank = rankFor(b, m.f);
+      if (!rank) return [];
+      return {
+        row: {
+          label: grouped ? b : m.label,
+          value: rank.pct,
+          color: grouped
+            ? cmpColor((colorPool ?? pool).indexOf(b))
+            : rank.pct >= 50
+              ? "var(--color-gold-rank)"
+              : "var(--color-muted)",
+        },
+        rank,
+      };
+    });
+    if (!cells.length) return;
+    if (grouped) {
+      if (gi > 0) {
+        bars.push({ spacer: true, label: "", value: 0, color: "" });
+        meta.push(null);
+      }
+      bars.push({ heading: m.label, label: "", value: 0, color: "" });
+      meta.push(null);
+    }
+    cells.forEach((c) => {
+      bars.push(c.row);
+      meta.push({ metric: m.label, rank: c.rank });
+    });
+  });
+  if (!meta.some(Boolean)) return null;
 
   // Legacy: chart box grows with the row count — 32px/row, 24px grouped.
   const height = Math.max(200, 44 + bars.length * (grouped ? 24 : 32));
@@ -90,9 +111,11 @@ export function RankVsMarket({
           rows={bars}
           fmt={(v) => String(Math.round(v))}
           xTitle={`Percentile vs ${model.brands.length} agencies (100 = top)`}
-          tip={(bar) => {
-            const r = ranks.get(bar.label)!;
-            return `${bar.label}: ${r.pct}th percentile · #${r.pos} of ${r.total}`;
+          tip={(bar, i) => {
+            const m = meta[i];
+            if (!m) return "";
+            const name = grouped ? `${m.metric} — ${bar.label}` : bar.label;
+            return `<b>${name}</b>: ${Math.round(bar.value)}th percentile · #${m.rank.pos} of ${m.rank.total}`;
           }}
         />
       </div>

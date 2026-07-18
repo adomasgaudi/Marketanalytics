@@ -39,6 +39,8 @@ export function useDashboardParams(defaultYear: number) {
     market: parseAsStringLiteral(MARKET_MODES).withDefault("avg"),
     /** Brands being compared; empty means the default company. */
     companies: parseAsArrayOf(parseAsString).withDefault([]),
+    /** Brands in the pool that are toggled OFF (hidden from charts). */
+    off: parseAsArrayOf(parseAsString).withDefault([]),
     /** Segment filter; empty means no filter (all segments). */
     segments: parseAsArrayOf(parseAsString).withDefault([]),
   });

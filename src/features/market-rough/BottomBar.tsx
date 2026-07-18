@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Seg } from "@/components/ui/seg";
 import { cn } from "@/lib/cn";
 import type { MarketModel } from "./types";
@@ -39,8 +40,29 @@ export function BottomBar({
   // Legacy: the year row only makes sense per-year — all-years mode hides it.
   const [view] = useViewMode(mode === "market" ? "mkt" : "co");
 
+  // Legacy syncBottomBarH: measure the bar (it can wrap to 2 rows on narrow
+  // screens) and publish --bb-h, which .wrap uses as its bottom padding so
+  // the footer is never hidden behind the fixed bar.
+  const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const root = document.documentElement;
+    const sync = () => root.style.setProperty("--bb-h", `${bar.offsetHeight}px`);
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(bar);
+    return () => {
+      ro.disconnect();
+      root.style.removeProperty("--bb-h");
+    };
+  }, []);
+
   return (
-    <div className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-840px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]">
+    <div
+      ref={barRef}
+      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-840px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]"
+    >
       <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2">
         <div
           className={cn(

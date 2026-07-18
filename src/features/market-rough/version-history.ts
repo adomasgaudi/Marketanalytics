@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.35.0",
+    date: "2026-07-18",
+    sp: 3,
+    title:
+      "COPA-04 | picker parity + page polish: chips toggle on/off (dashed = hidden, × removes, order stable), pills-only sticky bar lifted to page level, vs-market metric headings + gaps, scatter Fabula de-starred, bottom-bar height var clears the footer, inset footer",
+  },
+  {
     v: "v3.34.0",
     date: "2026-07-18",
     sp: 2,

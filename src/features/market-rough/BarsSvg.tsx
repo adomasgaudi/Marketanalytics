@@ -2,7 +2,15 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
-export type BarRow = { label: string; value: number; color: string };
+export type BarRow = {
+  label: string;
+  value: number;
+  color: string;
+  /** Group-title row: bigger muted label, no bar (legacy {heading}). */
+  heading?: string;
+  /** Empty gap row between metric groups (legacy {spacer}). */
+  spacer?: boolean;
+};
 
 type View = { vMin: number; vMax: number; iMin: number; iMax: number };
 
@@ -23,7 +31,7 @@ export function BarsSvg({
   rows: BarRow[];
   fmt: (v: number) => string;
   xTitle?: string;
-  tip?: (row: BarRow) => string;
+  tip?: (row: BarRow, index: number) => string;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const clipId = useId();
@@ -35,7 +43,7 @@ export function BarsSvg({
   const R = rows.length;
 
   // Full-data view (legacy fullView): refit whenever the data signature changes.
-  const sig = rows.map((r) => `${r.label}:${r.value}`).join("|");
+  const sig = rows.map((r) => `${r.heading ?? r.label}:${r.value}`).join("|");
   const fullView = useMemo<View>(() => {
     let lo = 0;
     let hi = 0;
@@ -49,7 +57,12 @@ export function BarsSvg({
   }, [sig]);
   const v = view ?? fullView;
 
-  useEffect(() => setView(null), [sig]);
+  // Refit on data change — adjust-during-render, not an effect.
+  const [prevSig, setPrevSig] = useState(sig);
+  if (prevSig !== sig) {
+    setPrevSig(sig);
+    setView(null);
+  }
 
   // Container-pixel sizing, re-rendered on resize (legacy ResizeObserver).
   useEffect(() => {
@@ -127,10 +140,11 @@ export function BarsSvg({
     const i = Math.round(v.iMin + ((yv - m.t) / ph) * ispan);
     if (i < 0 || i >= R) return setTt(null);
     const row = rows[i];
+    if (row.heading || row.spacer) return setTt(null);
     setTt({
       x: Math.max(2, e.clientX - rect.left + 8),
       y: e.clientY - rect.top + 8,
-      html: tip ? tip(row) : `<b>${row.label}</b>: ${fmt(row.value)}`,
+      html: tip ? tip(row, i) : `<b>${row.label}</b>: ${fmt(row.value)}`,
     });
   };
 
@@ -240,6 +254,21 @@ export function BarsSvg({
           {rows.map((r, i) => {
             const cy = rowY(i);
             if (cy < m.t - bandH || cy > m.t + ph + bandH) return null;
+            if (r.spacer) return null;
+            if (r.heading)
+              return (
+                <text
+                  key={`h${i}`}
+                  x={m.l + 2}
+                  y={cy + 4}
+                  fontSize="12.5"
+                  fontWeight="700"
+                  letterSpacing=".02em"
+                  fill="var(--color-muted)"
+                >
+                  {r.heading}
+                </text>
+              );
             const x1 = xAt(r.value);
             const bx = Math.min(base, x1);
             const bw = Math.max(0, Math.abs(x1 - base));
@@ -247,7 +276,7 @@ export function BarsSvg({
             const nameW = r.label.length * 5.8;
             const lx = x1 >= base ? Math.max(x1 + 4, nameX + nameW + 6) : x1 - 4;
             return (
-              <g key={r.label}>
+              <g key={`${r.label}${i}`}>
                 <rect
                   x={bx}
                   y={cy - barH / 2}

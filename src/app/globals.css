@@ -19,6 +19,8 @@
   /* Fabula's identity colour — gold marks "my company" everywhere. */
   --color-gold: #c79410;
   --color-gold-bar: #a67c08;
+  /* vs-market top-half bars: regular gold in light, bar-gold in dark (legacy --gold-rank). */
+  --color-gold-rank: #c79410;
   --color-grid: #e6e9ef;
   /* Chart canvas background — doughnut slice borders use this, not the panel. */
   --color-chart-bg: #ffffff;
@@ -56,6 +58,7 @@
   --color-cost: #566179;
   --color-gold: #f4c542;
   --color-gold-bar: #c9a020;
+  --color-gold-rank: #c9a020;
   --color-grid: #222a3a;
   --color-chart-bg: #0e1117;
   --color-zebra: rgb(255 255 255 / 1.5%);
@@ -71,6 +74,7 @@
   --color-purple: #6b7fd4;
   --color-gold: #b8860b;
   --color-gold-bar: #946f00;
+  --color-gold-rank: #b8860b;
 }
 
 [data-theme="dark"][data-palette="ocean"] {
@@ -81,6 +85,7 @@
   --color-purple: #9aa8f0;
   --color-gold: #d9b84a;
   --color-gold-bar: #b8942e;
+  --color-gold-rank: #b8942e;
 }
 
 /* Default vs Dev mode, as in the legacy: formula folds and the raw-data
@@ -98,11 +103,18 @@ html[data-mode="default"] [data-devcorner] {
   display: none !important;
 }
 
+/* Clear the fixed bottom bar: its measured height (--bb-h, set by BottomBar)
+   plus a gap, so the footer is never hidden behind it. Unlayered on purpose —
+   it must beat the pages' pb-[84px] fallback utility. */
+.wrap {
+  padding-bottom: calc(var(--bb-h, 60px) + 24px);
+}
+
 /* Legacy ≤600px density: tighter page gutters, 12px cards, 300px chart boxes.
    Deliberately unlayered so these beat the utility classes at small widths. */
 @media (max-width: 600px) {
   .wrap {
-    padding: 16px 10px 70px;
+    padding: 16px 10px calc(var(--bb-h, 60px) + 12px);
   }
   .card {
     padding: 12px;

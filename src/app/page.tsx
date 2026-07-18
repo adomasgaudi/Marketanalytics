@@ -1,3 +1,4 @@
+import { Footer } from "@/components/ui/footer";
 import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
 import { BottomBar } from "@/features/market-rough/BottomBar";
 import { loadMarketData } from "@/features/market-rough/data";
@@ -44,9 +45,7 @@ export default function MarketsPage() {
         >
           Explore the raw data &amp; sources →
         </a>
-        <footer className="text-muted mt-8 mb-2 text-[11px]">
-          by adomasgaudi.github on behalf of Fabula, copyright.
-        </footer>
+        <Footer />
       </div>
       <BottomBar model={model} mode="market" />
     </main>

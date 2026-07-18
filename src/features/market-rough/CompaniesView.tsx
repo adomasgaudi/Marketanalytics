@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CompanyProfileCard } from "./CompanyProfile";
-import { cmpColor, CompanySelector } from "./CompanySelector";
+import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
@@ -14,11 +14,20 @@ import { RankVsMarket } from "./RankVsMarket";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
-/** The selected compare pool; first entry is the primary brand (legacy ovBrands). */
+/** The selected compare pool (legacy ovBrands + ovActive): `pool` keeps its
+    order; `off` hides brands from charts; `brands` = the visible (active)
+    list, first entry is the primary brand. */
 export function useSelectedBrands(model: MarketModel) {
-  const [{ companies }, setParams] = useDashboardParams(model.last);
-  const brands = companies.length ? companies : [model.brands[0]];
-  return { brands, set: (next: string[]) => setParams({ companies: next }) };
+  const [{ companies, off }, setParams] = useDashboardParams(model.last);
+  const pool = companies.length ? companies : [model.brands[0]];
+  const active = pool.filter((b) => !off.includes(b));
+  return {
+    pool,
+    off,
+    brands: active.length ? active : [pool[0]],
+    set: (next: string[]) => setParams({ companies: next }),
+    setOff: (next: string[]) => setParams({ off: next }),
+  };
 }
 
 export function useSelectedBrand(model: MarketModel) {
@@ -34,16 +43,36 @@ export function CompanyPicker({
   model: MarketModel;
   profiles?: Record<string, CompanyProfile>;
 }) {
-  const { brands, set } = useSelectedBrands(model);
+  const { pool, off, set, setOff } = useSelectedBrands(model);
   const [{ year }] = useDashboardParams(model.last);
   return (
-    <CompanySelector
-      model={model}
-      year={year}
-      selected={brands}
-      onChange={set}
-      profiles={profiles}
-    />
+    <>
+      {/* The picker button scrolls away, like the legacy #ovCompanySelect. */}
+      <div className="mb-1.5">
+        <CompanySelector
+          model={model}
+          year={year}
+          selected={pool}
+          off={off}
+          onChange={set}
+          onOffChange={setOff}
+          profiles={profiles}
+        />
+      </div>
+      {/* Only the company PILLS stay pinned under the 50px top nav — the
+          legacy page-level .co-stickybar (top:44px, z-80, border-bottom). */}
+      {pool.length > 1 && (
+        <div className="bg-bg border-line sticky top-[50px] z-40 mb-2 border-b py-1.5 max-sm:top-[46px]">
+          <CompareChips
+            selected={pool}
+            off={off}
+            onChange={set}
+            onOffChange={setOff}
+            fallbackBrand={model.brands[0]}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -51,10 +80,13 @@ export function CompanyPicker({
     profile / money-flow / KPI widgets focus (legacy #coCompanyTabs). */
 export function CompanyTabs({
   brands,
+  colorPool,
   focused,
   onFocus,
 }: {
   brands: string[];
+  /** Full pool incl. hidden brands — keeps dot colours matching the chips. */
+  colorPool?: string[];
   focused: string;
   onFocus: (brand: string) => void;
 }) {
@@ -65,7 +97,7 @@ export function CompanyTabs({
       aria-label="Selected companies"
       className="mb-3 flex [scrollbar-width:none] gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden"
     >
-      {brands.map((b, i) => (
+      {brands.map((b) => (
         <button
           key={b}
           type="button"
@@ -76,7 +108,10 @@ export function CompanyTabs({
             b === focused ? "bg-accent border-accent text-white" : "bg-panel2 text-muted"
           }`}
         >
-          <i className="h-2 w-2 rounded-full" style={{ background: cmpColor(i) }} />
+          <i
+            className="h-2 w-2 rounded-full"
+            style={{ background: cmpColor((colorPool ?? brands).indexOf(b)) }}
+          />
           {b}
         </button>
       ))}
@@ -93,7 +128,7 @@ export function CompanyPerYear({
   profiles?: Record<string, CompanyProfile>;
 }) {
   const [{ year, basis }] = useDashboardParams(model.last);
-  const { brands } = useSelectedBrands(model);
+  const { brands, pool } = useSelectedBrands(model);
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
   const brand = focus && brands.includes(focus) ? focus : brands[0];
@@ -145,7 +180,9 @@ export function CompanyPerYear({
           : null
         : v;
 
-  const tabs = <CompanyTabs brands={brands} focused={brand} onFocus={setFocus} />;
+  const tabs = (
+    <CompanyTabs brands={brands} colorPool={pool} focused={brand} onFocus={setFocus} />
+  );
   const profileCard = (
     <CompanyProfileCard
       model={model}
@@ -311,6 +348,7 @@ export function CompanyPerYear({
         model={model}
         brand={brand}
         brands={brands}
+        colorPool={pool}
         year={year}
         perEmployee={perEmployee}
       />

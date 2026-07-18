@@ -17,9 +17,6 @@ import { useDashboardParams } from "./useDashboardParams";
 
 Chart.register(PointElement, LinearScale, LogarithmicScale, Tooltip, Legend);
 
-/** The gold-highlighted "my company" — as in the legacy MY_COMPANIES. */
-const MY_BRAND = "Fabula";
-
 type Dot = {
   x: number;
   y: number;
@@ -87,30 +84,14 @@ export function ScatterChart({ model }: { model: MarketModel }) {
   const ink = cssVar("--color-ink");
   const grid = cssVar("--color-grid");
 
-  const datasets = topSegs
-    .concat(["Other"])
-    .map((s) => ({
-      label: segName(s),
-      data: rows.filter(
-        (r) =>
-          r.brand !== MY_BRAND &&
-          (s === "Other" ? !topSegs.includes(r.seg) : r.seg === s),
-      ),
-      backgroundColor: `${SEG_COLORS[s] ?? "#888"}99`,
-      borderColor: SEG_COLORS[s] ?? "#888",
-      borderWidth: 1,
-    }))
-    .concat([
-      {
-        label: "★ Fabula (you)",
-        data: rows
-          .filter((r) => r.brand === MY_BRAND)
-          .map((r) => ({ ...r, r: Math.max(r.r, 9) })),
-        backgroundColor: "rgba(244,197,66,.95)",
-        borderColor: ink,
-        borderWidth: 2,
-      },
-    ]);
+  // No "my company" star — every brand is just a bubble in its segment.
+  const datasets = topSegs.concat(["Other"]).map((s) => ({
+    label: segName(s),
+    data: rows.filter((r) => (s === "Other" ? !topSegs.includes(r.seg) : r.seg === s)),
+    backgroundColor: `${SEG_COLORS[s] ?? "#888"}99`,
+    borderColor: SEG_COLORS[s] ?? "#888",
+    borderWidth: 1,
+  }));
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">

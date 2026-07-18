@@ -6,8 +6,6 @@ import { SEG_COLORS } from "./segments";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
-const MY_BRAND = "Fabula";
-
 type Dot = { x: number; y: number; r: number; brand: string; seg: string };
 
 /**
@@ -75,30 +73,26 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
     (1 - (Math.min(Math.max(v, yMin), yMax) - yMin) / (yMax - yMin)) *
       (H - PAD.top - PAD.bottom);
 
-  const dots = [...brands]
-    .map((brand) => {
-      const d0 = a[brand];
-      const d1 = b[brand];
-      const d = d0 && d1 ? d0 : (d0 ?? d1)!;
-      return {
-        brand,
-        seg: d.seg,
-        x: d0 && d1 ? lerp(d0.x, d1.x) : d.x,
-        y: d0 && d1 ? lerp(d0.y, d1.y) : d.y,
-        r: d0 && d1 ? lerp(d0.r, d1.r) : d.r,
-        // Entering/leaving companies fade in/out with the scrub position.
-        opacity: d0 && d1 ? 0.85 : d0 ? 0.85 * (1 - frac) : 0.85 * frac,
-      };
-    })
-    // Fabula last so its gold bubble draws on top. Stable two-arg comparator —
-    // a one-arg version hydration-mismatches (server/client order differs).
-    .sort((a, b) => (a.brand === MY_BRAND ? 1 : 0) - (b.brand === MY_BRAND ? 1 : 0));
+  const dots = [...brands].map((brand) => {
+    const d0 = a[brand];
+    const d1 = b[brand];
+    const d = d0 && d1 ? d0 : (d0 ?? d1)!;
+    return {
+      brand,
+      seg: d.seg,
+      x: d0 && d1 ? lerp(d0.x, d1.x) : d.x,
+      y: d0 && d1 ? lerp(d0.y, d1.y) : d.y,
+      r: d0 && d1 ? lerp(d0.r, d1.r) : d.r,
+      // Entering/leaving companies fade in/out with the scrub position.
+      opacity: d0 && d1 ? 0.85 : d0 ? 0.85 * (1 - frac) : 0.85 * frac,
+    };
+  });
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h3 className="mb-1 text-[15px] font-semibold">Size vs profitability by year</h3>
       <p className="text-muted mb-1.5 text-[12px]">
-        Each company = one bubble (revenue × margin, size = headcount); Fabula in gold.{" "}
+        Each company = one bubble (revenue × margin, size = headcount).{" "}
         <b>Drag the slider</b> to watch every company glide year to year.
       </p>
       {/* Big centred year, as the legacy scrub-yearlbl. */}
@@ -147,14 +141,8 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
             cx={px(d.x)}
             cy={py(d.y)}
             r={d.r}
-            fill={
-              d.brand === MY_BRAND ? "var(--color-gold)" : (SEG_COLORS[d.seg] ?? "#888")
-            }
-            fillOpacity={
-              d.brand === MY_BRAND ? Math.min(1, d.opacity + 0.15) : d.opacity * 0.7
-            }
-            stroke={d.brand === MY_BRAND ? "var(--color-ink)" : "none"}
-            strokeWidth={d.brand === MY_BRAND ? 1.5 : 0}
+            fill={SEG_COLORS[d.seg] ?? "#888"}
+            fillOpacity={d.opacity * 0.7}
           />
         ))}
       </svg>

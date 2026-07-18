@@ -1,3 +1,4 @@
+import { Footer } from "@/components/ui/footer";
 import { CollapsibleCard } from "@/components/ui/group";
 import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
 import { BottomBar } from "@/features/market-rough/BottomBar";
@@ -34,11 +35,14 @@ export default function CompaniesPage() {
           </p>
         </header>
 
+        {/* Page-level, like the legacy liftCompanyControls: the picker scrolls
+            away; the compare pills stick for the WHOLE Companies page. */}
+        <CompanyPicker model={model} profiles={profiles} />
+
         <ViewGroupCard
           title="Financials"
           scope="co"
           gold
-          hoisted={<CompanyPicker model={model} profiles={profiles} />}
           tabs={[
             {
               label: `Company ${model.last}`,
@@ -58,9 +62,7 @@ export default function CompaniesPage() {
         >
           Explore the raw data &amp; sources →
         </a>
-        <footer className="text-muted mt-8 mb-2 text-[11px]">
-          by adomasgaudi.github on behalf of Fabula, copyright.
-        </footer>
+        <Footer />
       </div>
       <BottomBar model={model} mode="company" />
     </main>
