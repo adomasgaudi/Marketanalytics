@@ -15,6 +15,61 @@ export type LineSeries = {
 
 type View = { vMin: number; vMax: number; xMin: number; xMax: number };
 
+/** Glide the fitted view (axis range) from the old metric's scale to the new
+ *  one over 450ms, so gridlines and axis numbers move rather than snap. */
+function useTweenedView(target: View, sig: string): View {
+  const [disp, setDisp] = useState(target);
+  const dispRef = useRef(target);
+  dispRef.current = disp;
+  const raf = useRef(0);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      setDisp(target);
+      return;
+    }
+    const from = dispRef.current;
+    const t0 = performance.now();
+    const D = 450;
+    const L = (a: number, b: number, e: number) => a + (b - a) * e;
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / D);
+      const e = 1 - (1 - k) ** 3;
+      setDisp({
+        xMin: L(from.xMin, target.xMin, e),
+        xMax: L(from.xMax, target.xMax, e),
+        vMin: L(from.vMin, target.vMin, e),
+        vMax: L(from.vMax, target.vMax, e),
+      });
+      if (k < 1) raf.current = requestAnimationFrame(step);
+    };
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
+  return disp;
+}
+
+/** Three-step metric switch: the new series land in place on the NEW scale
+ *  immediately; the previous series linger as a "ghost" re-plotted on that same
+ *  new scale (so bigger/smaller is directly comparable), then fade out. */
+function useGhostSeries(next: LineSeries[], sig: string) {
+  const [ghost, setGhost] = useState<{ series: LineSeries[]; key: string } | null>(null);
+  const prev = useRef({ sig, series: next });
+  useEffect(() => {
+    if (prev.current.sig !== sig) {
+      setGhost({ series: prev.current.series, key: sig });
+      const t = setTimeout(() => setGhost(null), 1300);
+      prev.current = { sig, series: next };
+      return () => clearTimeout(t);
+    }
+    prev.current = { sig, series: next };
+  }, [sig, next]);
+  return ghost;
+}
+
 /**
  * Line chart on the legacy drawFinSvg engine pattern: container-pixel sizing,
  * CHART_PAD fit (0.5-slot x margin, 5% y headroom, 5%/10% zoom-out, floor at
@@ -22,7 +77,7 @@ type View = { vMin: number; vMax: number; xMin: number; xMax: number };
  * and pan/zoom behind the Dev graph-pan setting.
  */
 export function LineChart({
-  series,
+  series: seriesIn,
   fmt,
   yTitle,
 }: {
@@ -37,6 +92,8 @@ export function LineChart({
   const [tt, setTt] = useState<{ x: number; y: number; html: string } | null>(null);
   const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
 
+  const series = seriesIn;
+
   const pts = series.flatMap((s) => s.data);
   const xs = useMemo(
     () => [...new Set(pts.map((p) => p.x))].sort((a, b) => a - b),
@@ -46,6 +103,7 @@ export function LineChart({
   const sig = series
     .map((s) => `${s.label}:${s.data.map((p) => p.y.toFixed(1)).join(",")}`)
     .join("|");
+  const ghost = useGhostSeries(series, sig);
 
   // Legacy CHART_PAD fit: x ±0.5 slot then 5% zoom-out; y extent floored at 0,
   // +5% headroom, then 10% zoom-out.
@@ -68,7 +126,8 @@ export function LineChart({
     return { xMin, xMax, vMin: lo - (ys * 0.1) / 2, vMax: hi + (ys * 0.1) / 2 };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sig]);
-  const v = view ?? fullView;
+  const tweenedFull = useTweenedView(fullView, sig);
+  const v = view ?? tweenedFull;
 
   useEffect(() => setView(null), [sig]);
 
@@ -116,7 +175,7 @@ export function LineChart({
     }
   };
 
-  const labeled = series.filter((s) => s.label);
+  const labeled = seriesIn.filter((s) => s.label);
 
   const onMouseMove = (e: React.MouseEvent) => {
     const host = hostRef.current;
@@ -269,19 +328,39 @@ export function LineChart({
             const cx = px(xv);
             if (cx < m.l - 4 || cx > m.l + pw + 4) return null;
             return (
-              <text
-                key={xv}
-                x={cx}
-                y={H - 6}
-                textAnchor="middle"
-                fontSize="11"
-                fill="var(--color-muted)"
-              >
-                {xv}
-              </text>
+              <g key={xv}>
+                <line x1={cx} x2={cx} y1={m.t} y2={m.t + ph} stroke="var(--color-grid)" />
+                <text
+                  x={cx}
+                  y={H - 6}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="var(--color-muted)"
+                >
+                  {xv}
+                </text>
+              </g>
             );
           })}
           <g clipPath={`url(#${clipId}p)`}>
+            {/* Ghost: previous metric's lines re-plotted on the new scale, held
+                visible then faded, so the size change reads directly. */}
+            {ghost && (
+              <g key={ghost.key} style={{ animation: "lcGhost 1.3s forwards" }}>
+                <style>{`@keyframes lcGhost{0%,45%{opacity:.4}100%{opacity:0}}`}</style>
+                {ghost.series.map((s, si) => (
+                  <polyline
+                    key={`g-${s.label}-${si}`}
+                    points={s.data.map((p) => `${px(p.x)},${py(p.y)}`).join(" ")}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth={s.width ?? 2}
+                    strokeDasharray="4,4"
+                    strokeLinejoin="round"
+                  />
+                ))}
+              </g>
+            )}
             {series.map((s, si) => (
               <g key={`${s.label}-${si}`} opacity={s.opacity ?? 0.9}>
                 <polyline
