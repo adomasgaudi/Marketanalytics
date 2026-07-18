@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.34.0",
+    date: "2026-07-18",
+    sp: 2,
+    title:
+      "INSI-01 | key insights recomputed per selected year with interpretive verdicts: growth regime, pass-through segment, scale-vs-margin, loss-making growers, wage pressure, winner clustering",
+  },
+  {
     v: "v3.33.0",
     date: "2026-07-18",
     sp: 3,

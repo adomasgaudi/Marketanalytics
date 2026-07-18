@@ -139,7 +139,7 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
         ))}
       </div>
 
-      <Insights />
+      <Insights model={model} year={year} />
       <SegmentChart model={model} />
       <ScatterChart model={model} />
     </div>
