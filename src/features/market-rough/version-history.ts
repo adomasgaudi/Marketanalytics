@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.36.0",
+    date: "2026-07-18",
+    sp: 1,
+    title:
+      "DEVX-01 | x-ray upgraded to Pepper's current toolkit: inspect tints the hovered box + its whole ancestor stack, readout lists the ancestor boxes, Ctrl+F flips all toggles (dev mode only)",
+  },
+  {
     v: "v3.35.0",
     date: "2026-07-18",
     sp: 3,
