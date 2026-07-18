@@ -9,6 +9,9 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    // @adomas/dev-tools is a file: symlink shipping raw TS — resolve its
+    // imports (react, jsx-runtime) from THIS project's node_modules.
+    "preserveSymlinks": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

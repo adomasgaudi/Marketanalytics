@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-import { APP_VERSION_LABEL } from "@/app-version";
-import { VersionButton } from "@/features/market-rough/VersionButton";
+import { DevCornerMount } from "@/dev/DevCornerMount";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
@@ -22,11 +20,10 @@ export default function RootLayout({
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>
         <NuqsAdapter>{children}</NuqsAdapter>
-        {/* Dev overlays — external to the page, not part of the site layout:
-            x-ray corner bottom-left (shared /devtools.js, also loaded by the legacy
-            iframe) and the floating version-history pill bottom-right. */}
-        <Script src="/devtools.js" strategy="afterInteractive" />
-        <VersionButton version={APP_VERSION_LABEL} />
+        {/* Dev overlay — the Pepper dev corner (src/dev): edit/view trays,
+            x-ray, depth experiments, version history. Dev mode only; the
+            legacy iframe keeps its own /devtools.js copy. */}
+        <DevCornerMount />
       </body>
     </html>
   );

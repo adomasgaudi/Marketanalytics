@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.37.0",
+    date: "2026-07-18",
+    sp: 2,
+    title:
+      "DEVX-02 | the real Pepper dev corner, as a shared package: @adomas/dev-tools (file:../Meta apps/dev-tools) mounts in Dev mode — edit/view trays, x-ray, depth, history; /api/design-note appends design-notes.jsonl; Pepper consumes the same package",
+  },
+  {
     v: "v3.36.0",
     date: "2026-07-18",
     sp: 1,
