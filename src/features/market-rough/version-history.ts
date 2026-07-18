@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.38.0",
+    date: "2026-07-18",
+    sp: 5,
+    title:
+      "EXPL-01 (WIP) | /explore — v2 rekView ported: coverage grid, data-changes log, company field data (4 source modes, EN toggle, CSV), raw-sheet explorers; explore buttons repointed. KNOWN ISSUE: ~2min dev SSR, see HANDOFF.md",
+  },
+  {
     v: "v3.37.0",
     date: "2026-07-18",
     sp: 2,

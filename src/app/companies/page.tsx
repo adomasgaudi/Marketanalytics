@@ -57,7 +57,7 @@ export default function CompaniesPage() {
         </CollapsibleCard>
 
         <a
-          href="/v2"
+          href="/explore"
           className="explore-btn border-line bg-panel2 text-muted hover:text-ink mt-2 inline-block rounded-lg border px-4 py-2.5 text-[14px] font-semibold transition-colors"
         >
           Explore the raw data &amp; sources →
