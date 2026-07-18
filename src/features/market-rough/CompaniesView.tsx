@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CompanyProfileCard } from "./CompanyProfile";
 import { CompanySelector } from "./CompanySelector";
-import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
-import { type KpiMode, KpiModeToggle } from "./KpiCard";
-import { margin, type Rank, rankOf } from "./metrics";
+import { DeepDive } from "./DeepDive";
+import type { CompanyProfile } from "./profile";
+import { fmtEur, fmtPct } from "./format";
+import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
+import { rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
-import { RankChip } from "./RankChip";
 import { RankVsMarket } from "./RankVsMarket";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -24,11 +26,25 @@ export function CompanyPicker({ model }: { model: MarketModel }) {
   return <CompanySelector brands={model.brands} selected={brand} onSelect={select} />;
 }
 
-/** The "Company {year}" panel: money-flow, #/% KPIs with rank chips, vs-market. */
-export function CompanyPerYear({ model }: { model: MarketModel }) {
+/** The "Company {year}" panel: profile box, money-flow, #/% KPIs, vs-market. */
+export function CompanyPerYear({
+  model,
+  profiles,
+}: {
+  model: MarketModel;
+  profiles?: Record<string, CompanyProfile>;
+}) {
   const [{ year, basis }] = useDashboardParams(model.last);
   const { brand } = useSelectedBrand(model);
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
+  // Legacy auto-flip: 8s after load the KPIs flip #→% once, unless touched.
+  const touched = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!touched.current) setKpiMode("change");
+    }, 8000);
+    return () => clearTimeout(t);
+  }, []);
 
   const row = model.byBrand[brand]?.[year];
   const prev = model.byBrand[brand]?.[year - 1];
@@ -49,22 +65,7 @@ export function CompanyPerYear({ model }: { model: MarketModel }) {
   const rank = (metric: (row: CompanyYear) => number | null) =>
     rankOf(model.rows, year, row, per(metric));
 
-  const revenue = rank((r) => r.estimatedIncome);
   const turnover = rank((r) => r.revenue);
-  const profit = rank((r) => r.profit);
-  const employees = perEmployee
-    ? null
-    : rankOf(model.rows, year, row, (r) => r.employees);
-  // Salary is already a per-head ratio, so the basis toggle must not divide it again.
-  const salary = rankOf(model.rows, year, row, (r) =>
-    (r.avgSalary ?? 0) > 500 ? r.avgSalary : null,
-  );
-  const profitMargin = rankOf(model.rows, year, row, margin);
-
-  const yoy =
-    row?.revenue != null && (prev?.revenue ?? 0) > 0
-      ? row.revenue / (prev!.revenue as number) - 1
-      : null;
 
   const scaleMoney = (v: number | null) =>
     v == null
@@ -83,65 +84,163 @@ export function CompanyPerYear({ model }: { model: MarketModel }) {
           : null
         : v;
 
+  const profileCard = (
+    <CompanyProfileCard
+      model={model}
+      brand={brand}
+      year={year}
+      profile={profiles?.[brand]}
+    />
+  );
+
+  // The profile box shows for every company, even without a filing (legacy).
   if (!row)
     return (
-      <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
-        {brand} has no {year} filing.
-      </p>
+      <div>
+        {profileCard}
+        <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
+          {year > model.last
+            ? `No ${year} data for ${brand} yet — only ~12 companies have a partial ${year} so far.`
+            : `${brand} has no ${year} filing.`}
+        </p>
+      </div>
     );
 
-  const kpi = (
-    label: string,
-    valueText: string,
-    rankData: Rank | null,
-    changeText?: string,
-  ) => (
-    <article className="border-line bg-panel rounded-[10px] border px-[13px] py-[11px]">
-      <div className="text-muted text-[11px] tracking-[.05em] uppercase">{label}</div>
-      <div className="mt-0.5 text-[21px] font-bold">
-        {kpiMode === "change" && changeText ? changeText : valueText}
-      </div>
-      <div className="text-muted mt-0.5 text-[12px]">
-        {changeText && kpiMode === "value" ? changeText : <RankChip rank={rankData} />}
-      </div>
-    </article>
+  // Legacy company KPI cards: Revenue / Employees / Median salary / Turnover,
+  // each labelled "23→24", with YoY change, prev→cur range and a formula fold.
+  const hasFin = row.revenue != null;
+  const hasPrev = !!(
+    prev &&
+    (prev.revenue != null ||
+      prev.estimatedIncome != null ||
+      prev.employees != null ||
+      prev.avgSalary != null)
   );
+  const yrLab = hasPrev
+    ? `${String(year - 1).slice(2)}→${String(year).slice(2)}`
+    : String(year);
+  const E = (v: number | null) =>
+    v != null ? `€${Math.round(v).toLocaleString()}` : "–";
+
+  const emp = row.employees != null ? Math.round(row.employees) : null;
+  const sal = (row.avgSalary ?? 0) > 500 ? Math.round(row.avgSalary!) : null;
+  const prevEmp = prev?.employees != null ? Math.round(prev.employees) : null;
+  const prevSal = (prev?.avgSalary ?? 0) > 500 ? Math.round(prev!.avgSalary!) : null;
+  const curRevenue = scaleMoney(row.estimatedIncome);
+  const prevRevenue = scaleMoneyPrev(prev?.estimatedIncome);
+  const curTurnover = scaleMoney(row.revenue);
+  const prevTurnover = scaleMoneyPrev(prev?.revenue);
+  const revYoY =
+    curRevenue != null && (prevRevenue ?? 0) > 0 ? curRevenue / prevRevenue! - 1 : null;
+  const turnYoY =
+    curTurnover != null && (prevTurnover ?? 0) > 0
+      ? curTurnover / prevTurnover! - 1
+      : null;
+  const empYoY = row.employees != null && (prevEmp ?? 0) > 0;
+  const salYoY = row.avgSalary != null && (prevSal ?? 0) > 0;
+
+  const cards: KpiCardData[] = [
+    {
+      label: `${perEmployee ? "Revenue/empl." : "Revenue"} ${yrLab}`,
+      valueText: hasFin ? fmtEur(curRevenue) : "–",
+      changeText: hasFin && revYoY != null ? fmtPct(revYoY) : "—",
+      rangeText:
+        revYoY != null
+          ? `${fmtEur(prevRevenue)} → ${fmtEur(curRevenue)}`
+          : fmtEur(curRevenue),
+      changeCls: revYoY != null ? (revYoY >= 0 ? "pos" : "neg") : "",
+      formula:
+        revYoY != null
+          ? `Year-over-year change in revenue. (${E(curRevenue)} ÷ ${E(prevRevenue)}) − 1.`
+          : undefined,
+    },
+    {
+      label: `Employees ${yrLab}`,
+      valueText: emp != null ? emp.toLocaleString() : "–",
+      changeText: empYoY ? fmtPct(row.employees! / prevEmp! - 1) : "—",
+      rangeText: empYoY
+        ? `${prevEmp!.toLocaleString()} → ${emp!.toLocaleString()}`
+        : emp != null
+          ? emp.toLocaleString()
+          : "–",
+      changeCls: empYoY ? (row.employees! >= prevEmp! ? "pos" : "neg") : "",
+      formula: empYoY
+        ? `Sum of reported headcount in ${year}. YoY = this year ÷ last year − 1.`
+        : undefined,
+    },
+    {
+      label: `Median salary ${yrLab}`,
+      valueText: sal != null ? `€${sal.toLocaleString()}/mo` : "–",
+      changeText: salYoY ? fmtPct(row.avgSalary! / prevSal! - 1) : "—",
+      rangeText: salYoY
+        ? `€${prevSal!.toLocaleString()}/mo → €${sal!.toLocaleString()}/mo`
+        : sal != null
+          ? `€${sal.toLocaleString()}/mo`
+          : "–",
+      changeCls: salYoY ? (row.avgSalary! >= prevSal! ? "pos" : "neg") : "",
+      formula: salYoY
+        ? `Middle value of the company's average monthly salary in ${year}. YoY = this year ÷ last year − 1.`
+        : undefined,
+    },
+    {
+      label: `${perEmployee ? "Turnover/empl." : "Turnover"} ${yrLab}`,
+      valueText: hasFin ? fmtEur(curTurnover) : "–",
+      changeText: hasFin && turnYoY != null ? fmtPct(turnYoY) : "—",
+      rangeText:
+        turnYoY != null
+          ? `${fmtEur(prevTurnover)} → ${fmtEur(curTurnover)}`
+          : fmtEur(curTurnover),
+      changeCls: turnYoY != null ? (turnYoY >= 0 ? "pos" : "neg") : "",
+      formula:
+        turnYoY != null
+          ? `Year-over-year change in turnover. (${E(curTurnover)} ÷ ${E(prevTurnover)}) − 1.`
+          : undefined,
+    },
+  ];
 
   return (
     <div>
-      <MoneyFlow
-        turnover={scaleMoney(row.revenue)}
-        revenue={scaleMoney(row.estimatedIncome)}
-        profit={scaleMoney(row.profit)}
-        prev={
-          prev
-            ? {
-                T: scaleMoneyPrev(prev.revenue),
-                R: scaleMoneyPrev(prev.estimatedIncome),
-                P: scaleMoneyPrev(prev.profit),
-              }
-            : {}
-        }
-        rank={turnover}
-      />
+      {profileCard}
+      {!hasFin ? (
+        // Partial year (2025+): record exists but financials aren't filed yet.
+        <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
+          {year} financials aren&rsquo;t filed yet — Lithuanian annual reports land ~mid-
+          {year + 1}. Showing Sodra headcount &amp; pay only.
+        </div>
+      ) : (
+        <MoneyFlow
+          turnover={scaleMoney(row.revenue)}
+          revenue={scaleMoney(row.estimatedIncome)}
+          profit={scaleMoney(row.profit)}
+          prev={
+            prev
+              ? {
+                  T: scaleMoneyPrev(prev.revenue),
+                  R: scaleMoneyPrev(prev.estimatedIncome),
+                  P: scaleMoneyPrev(prev.profit),
+                }
+              : {}
+          }
+          rank={perEmployee ? null : turnover}
+          tag={
+            perEmployee && (row.employees ?? 0) > 0
+              ? `per employee · ${Math.round(row.employees!)} staff`
+              : undefined
+          }
+        />
+      )}
 
-      <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
+      <KpiModeToggle
+        mode={kpiMode}
+        onChange={(m) => {
+          touched.current = true;
+          setKpiMode(m);
+        }}
+      />
       <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
-        {kpi("Revenue", fmtEur(revenue?.value), revenue)}
-        {kpi(
-          "Turnover",
-          fmtEur(turnover?.value),
-          turnover,
-          yoy == null ? undefined : `${fmtPct(yoy)} YoY`,
-        )}
-        {kpi("Net profit", fmtEur(profit?.value), profit)}
-        {employees && kpi("Employees", fmtInt(employees.value), employees)}
-        {kpi("Avg. salary", fmtEurFull(salary?.value), salary)}
-        {kpi(
-          "Profit margin",
-          profitMargin ? `${profitMargin.value.toFixed(1)}%` : "–",
-          profitMargin,
-        )}
+        {cards.map((card) => (
+          <KpiCard key={card.label} card={card} mode={kpiMode} />
+        ))}
       </div>
 
       <RankVsMarket model={model} brand={brand} year={year} perEmployee={perEmployee} />
@@ -149,7 +248,8 @@ export function CompanyPerYear({ model }: { model: MarketModel }) {
   );
 }
 
-/** The "Company all time" panel: money-flow by year + the deep-dive chart. */
+/** The "Company all time" panel: money-flow by year + the folded-in
+    "Compare financials" deep-dive (legacy makeSectionsCollapsible). */
 export function CompanyAllTime({ model }: { model: MarketModel }) {
   const { brand } = useSelectedBrand(model);
 
@@ -167,6 +267,7 @@ export function CompanyAllTime({ model }: { model: MarketModel }) {
             profit: r.profit ?? 0,
           }))}
       />
+      <DeepDive model={model} title="Compare financials" />
     </div>
   );
 }

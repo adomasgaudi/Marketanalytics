@@ -7,7 +7,7 @@ import {
   CompanyPicker,
 } from "@/features/market-rough/CompaniesView";
 import { loadMarketData } from "@/features/market-rough/data";
-import { DeepDive } from "@/features/market-rough/DeepDive";
+import { loadProfiles } from "@/features/market-rough/profile";
 import { RankingsChart } from "@/features/market-rough/RankingsChart";
 import { TopNav } from "@/features/market-rough/TopNav";
 
@@ -18,6 +18,7 @@ import { TopNav } from "@/features/market-rough/TopNav";
  */
 export default function CompaniesPage() {
   const model = loadMarketData();
+  const profiles = loadProfiles();
 
   return (
     <main>
@@ -39,7 +40,10 @@ export default function CompaniesPage() {
           gold
           hoisted={<CompanyPicker model={model} />}
           tabs={[
-            { label: `Company ${model.last}`, content: <CompanyPerYear model={model} /> },
+            {
+              label: `Company ${model.last}`,
+              content: <CompanyPerYear model={model} profiles={profiles} />,
+            },
             { label: "Company all time", content: <CompanyAllTime model={model} /> },
           ]}
         ></ViewGroupCard>
@@ -47,8 +51,6 @@ export default function CompaniesPage() {
         <CollapsibleCard title="Company rankings">
           <RankingsChart model={model} />
         </CollapsibleCard>
-
-        <DeepDive model={model} />
 
         <a
           href="/v2"

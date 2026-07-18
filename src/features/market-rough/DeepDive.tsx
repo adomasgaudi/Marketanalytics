@@ -58,8 +58,9 @@ const DD_METRICS: {
   },
 ];
 
-/** Company deep-dive: one metric across every year for the selected company. */
-export function DeepDive({ model }: { model: MarketModel }) {
+/** Company deep-dive: one metric across every year for the selected company.
+    Lives inside the all-time panel as "Compare financials" (legacy fold). */
+export function DeepDive({ model, title }: { model: MarketModel; title?: string }) {
   const [{ companies }] = useDashboardParams(model.last);
   const [metricKey, setMetricKey] = useState("ddRev");
 
@@ -72,7 +73,9 @@ export function DeepDive({ model }: { model: MarketModel }) {
 
   return (
     <section id="deepdive" className="mb-7">
-      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">Company deep-dive</h2>
+      <h2 className="mt-7 mb-3.5 text-[18px] font-bold">
+        {title ?? "Company deep-dive"}
+      </h2>
       <div className="card border-line bg-panel min-w-0 rounded-xl border p-[18px]">
         <PillRow label="Deep-dive metric" className="mb-2">
           {DD_METRICS.map((m) => (
