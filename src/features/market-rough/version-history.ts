@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.32.0",
+    date: "2026-07-18",
+    sp: 3,
+    title:
+      "COPA-02 | company picker is the legacy dropdown: Fabula ▾ button, segment multi-select, metric-threshold filters, clear-filters, hint, search + results list",
+  },
+  {
     v: "v3.31.0",
     date: "2026-07-18",
     sp: 5,

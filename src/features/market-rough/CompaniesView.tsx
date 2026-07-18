@@ -23,7 +23,8 @@ export function useSelectedBrand(model: MarketModel) {
 /** The hoisted company picker, visible on every Financials tab. */
 export function CompanyPicker({ model }: { model: MarketModel }) {
   const { brand, select } = useSelectedBrand(model);
-  return <CompanySelector brands={model.brands} selected={brand} onSelect={select} />;
+  const [{ year }] = useDashboardParams(model.last);
+  return <CompanySelector model={model} year={year} selected={brand} onSelect={select} />;
 }
 
 /** The "Company {year}" panel: profile box, money-flow, #/% KPIs, vs-market. */
