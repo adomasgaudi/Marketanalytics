@@ -38,7 +38,7 @@ export default function CompaniesPage() {
           title="Financials"
           scope="co"
           gold
-          hoisted={<CompanyPicker model={model} />}
+          hoisted={<CompanyPicker model={model} profiles={profiles} />}
           tabs={[
             {
               label: `Company ${model.last}`,

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CompanyProfileCard } from "./CompanyProfile";
-import { CompanySelector } from "./CompanySelector";
+import { cmpColor, CompanySelector } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
@@ -14,17 +14,74 @@ import { RankVsMarket } from "./RankVsMarket";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
-export function useSelectedBrand(model: MarketModel) {
+/** The selected compare pool; first entry is the primary brand (legacy ovBrands). */
+export function useSelectedBrands(model: MarketModel) {
   const [{ companies }, setParams] = useDashboardParams(model.last);
-  const brand = companies[0] ?? model.brands[0];
-  return { brand, select: (next: string) => setParams({ companies: [next] }) };
+  const brands = companies.length ? companies : [model.brands[0]];
+  return { brands, set: (next: string[]) => setParams({ companies: next }) };
+}
+
+export function useSelectedBrand(model: MarketModel) {
+  const { brands, set } = useSelectedBrands(model);
+  return { brand: brands[0], select: (next: string) => set([next]) };
 }
 
 /** The hoisted company picker, visible on every Financials tab. */
-export function CompanyPicker({ model }: { model: MarketModel }) {
-  const { brand, select } = useSelectedBrand(model);
+export function CompanyPicker({
+  model,
+  profiles,
+}: {
+  model: MarketModel;
+  profiles?: Record<string, CompanyProfile>;
+}) {
+  const { brands, set } = useSelectedBrands(model);
   const [{ year }] = useDashboardParams(model.last);
-  return <CompanySelector model={model} year={year} selected={brand} onSelect={select} />;
+  return (
+    <CompanySelector
+      model={model}
+      year={year}
+      selected={brands}
+      onChange={set}
+      profiles={profiles}
+    />
+  );
+}
+
+/** Tab row shown when >1 company is selected — picks which single company the
+    profile / money-flow / KPI widgets focus (legacy #coCompanyTabs). */
+export function CompanyTabs({
+  brands,
+  focused,
+  onFocus,
+}: {
+  brands: string[];
+  focused: string;
+  onFocus: (brand: string) => void;
+}) {
+  if (brands.length < 2) return null;
+  return (
+    <div
+      role="tablist"
+      aria-label="Selected companies"
+      className="mb-3 flex [scrollbar-width:none] gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+    >
+      {brands.map((b, i) => (
+        <button
+          key={b}
+          type="button"
+          role="tab"
+          aria-selected={b === focused}
+          onClick={() => onFocus(b)}
+          className={`border-line flex flex-none cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[12.5px] font-semibold ${
+            b === focused ? "bg-accent border-accent text-white" : "bg-panel2 text-muted"
+          }`}
+        >
+          <i className="h-2 w-2 rounded-full" style={{ background: cmpColor(i) }} />
+          {b}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 /** The "Company {year}" panel: profile box, money-flow, #/% KPIs, vs-market. */
@@ -36,7 +93,10 @@ export function CompanyPerYear({
   profiles?: Record<string, CompanyProfile>;
 }) {
   const [{ year, basis }] = useDashboardParams(model.last);
-  const { brand } = useSelectedBrand(model);
+  const { brands } = useSelectedBrands(model);
+  // Focused company for the single-company widgets; follows the pool.
+  const [focus, setFocus] = useState<string | null>(null);
+  const brand = focus && brands.includes(focus) ? focus : brands[0];
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
   // Legacy auto-flip: 8s after load the KPIs flip #→% once, unless touched.
   const touched = useRef(false);
@@ -85,6 +145,7 @@ export function CompanyPerYear({
           : null
         : v;
 
+  const tabs = <CompanyTabs brands={brands} focused={brand} onFocus={setFocus} />;
   const profileCard = (
     <CompanyProfileCard
       model={model}
@@ -98,6 +159,7 @@ export function CompanyPerYear({
   if (!row)
     return (
       <div>
+        {tabs}
         {profileCard}
         <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
           {year > model.last
@@ -201,6 +263,7 @@ export function CompanyPerYear({
 
   return (
     <div>
+      {tabs}
       {profileCard}
       {!hasFin ? (
         // Partial year (2025+): record exists but financials aren't filed yet.
@@ -244,7 +307,13 @@ export function CompanyPerYear({
         ))}
       </div>
 
-      <RankVsMarket model={model} brand={brand} year={year} perEmployee={perEmployee} />
+      <RankVsMarket
+        model={model}
+        brand={brand}
+        brands={brands}
+        year={year}
+        perEmployee={perEmployee}
+      />
     </div>
   );
 }

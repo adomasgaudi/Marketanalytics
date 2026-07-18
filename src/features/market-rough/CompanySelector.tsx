@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import type { CompanyProfile } from "./profile";
 import { SEG_COLORS, segName } from "./segments";
 import type { MarketModel } from "./types";
 
@@ -56,16 +57,56 @@ const optCls = "cursor-pointer rounded-[6px] px-2.5 py-1.5 text-[12.5px] hover:b
  * a segment multi-select, four metric-threshold dropdowns, Clear filters, the
  * active-segment pill row, a hint line, search, and the results list.
  */
+/** Compare palette shared with chips/tabs/grouped bars (legacy CMP_PAL). */
+export const CMP_PAL = [
+  "#4f8ef7",
+  "#f0523d",
+  "#f0b429",
+  "#a06bff",
+  "#25c26e",
+  "#ff5cb0",
+  "#00c2d1",
+  "#8a6d3b",
+  "#b0b7c3",
+  "#7a8cff",
+];
+export const cmpColor = (i: number) => CMP_PAL[i % CMP_PAL.length];
+
+/** Green/blue/amber data-source cubes (Initial / Rekvizitai / Sodra), dimmed
+    empty when a source is missing (legacy srcCubes). */
+function SrcCubes({ profile }: { profile?: CompanyProfile }) {
+  const have = [true, !!profile?.rekvizitai, !!profile?.sodra];
+  const colors = ["var(--color-green)", "var(--color-accent)", "var(--color-amber)"];
+  return (
+    <span className="mr-2 inline-flex gap-0.5 align-middle">
+      {have.map((on, i) => (
+        <span
+          key={i}
+          className="inline-block h-[9px] w-[9px] rounded-[3px]"
+          style={
+            on
+              ? { background: colors[i] }
+              : { border: "1px solid var(--color-line)", opacity: 0.5 }
+          }
+        />
+      ))}
+    </span>
+  );
+}
+
 export function CompanySelector({
   model,
   year,
   selected,
-  onSelect,
+  onChange,
+  profiles,
 }: {
   model: MarketModel;
   year: number;
-  selected: string;
-  onSelect: (brand: string) => void;
+  /** Selected compare pool — first entry is the primary brand. */
+  selected: string[];
+  onChange: (brands: string[]) => void;
+  profiles?: Record<string, CompanyProfile>;
 }) {
   const [open, setOpen] = useState(false);
   const [nested, setNested] = useState<string | null>(null);
@@ -112,13 +153,19 @@ export function CompanySelector({
 
   const q = query.trim().toLowerCase();
   const afterSearch = model.brands.filter((b) => !q || b.toLowerCase().includes(q));
-  // The already-selected brand stays listed even when it fails the filters.
+  // Already-selected brands stay listed even when they fail the filters.
   const opts = [
     ...new Set([
       ...afterSearch.filter(passes),
-      ...afterSearch.filter((b) => b === selected && !passes(b)),
+      ...afterSearch.filter((b) => selected.includes(b) && !passes(b)),
     ]),
   ];
+
+  // Legacy list click: not selected → add; selected → remove (keep at least 1).
+  const toggleBrand = (b: string) => {
+    if (!selected.includes(b)) onChange([...selected, b]);
+    else if (selected.length > 1) onChange(selected.filter((x) => x !== b));
+  };
   const filtersOn = segs.size > 0 || METRIC_KEYS.some((k) => mins[k] > 0) || q.length > 0;
 
   const clearFilters = () => {
@@ -186,11 +233,49 @@ export function CompanySelector({
           }
         }}
       >
-        {selected}
+        {selected.length > 1
+          ? `${selected[0]} +${selected.length - 1}`
+          : (selected[0] ?? "Select company")}
         <span className={cn("text-[10px] transition-transform", open && "rotate-180")}>
           ▾
         </span>
       </button>
+
+      {/* Compare chips: dot colour matches tabs/grouped bars; × removes,
+          chip click makes it the primary brand (legacy .ov-chips). */}
+      {selected.length > 1 && (
+        <div className="mt-1.5 flex [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {selected.map((b, i) => (
+            <span
+              key={b}
+              role="button"
+              tabIndex={0}
+              title={i === 0 ? "Primary" : "Click to make primary"}
+              className={cn(
+                "border-line bg-panel2 flex flex-none cursor-pointer items-center gap-1.5 rounded-[7px] border px-2 py-[5px] text-[12px] font-semibold",
+                i === 0 && "border-accent",
+              )}
+              onClick={() => onChange([b, ...selected.filter((x) => x !== b)])}
+            >
+              <i
+                className="h-2 w-2 flex-none rounded-full"
+                style={{ background: cmpColor(i) }}
+              />
+              {b}
+              <span
+                title="Remove from list"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const next = selected.filter((x) => x !== b);
+                  onChange(next.length ? next : [model.brands[0]]);
+                }}
+              >
+                ×
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {open && (
         <div className="border-line bg-panel absolute z-20 mt-1 w-[min(380px,92vw)] rounded-lg border p-2 shadow-xl">
@@ -324,20 +409,24 @@ export function CompanySelector({
             className="border-line bg-panel2 mb-1.5 w-full rounded-sm border px-3 py-1.5 text-[13px]"
           />
 
-          <div role="listbox" className="max-h-[260px] overflow-y-auto">
+          <div
+            role="listbox"
+            aria-multiselectable
+            className="max-h-[260px] overflow-y-auto"
+          >
             {opts.length ? (
               opts.map((b) => (
                 <div
                   key={b}
                   role="option"
-                  aria-selected={b === selected}
-                  className={cn(optCls, b === selected && "bg-accent text-white")}
-                  onClick={() => {
-                    onSelect(b);
-                    setOpen(false);
-                    setNested(null);
+                  aria-selected={selected.includes(b)}
+                  className={cn(optCls, selected.includes(b) && "bg-accent text-white")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleBrand(b);
                   }}
                 >
+                  <SrcCubes profile={profiles?.[b]} />
                   {b}
                 </div>
               ))

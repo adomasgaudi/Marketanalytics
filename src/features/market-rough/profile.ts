@@ -9,6 +9,9 @@ export type CompanyProfile = {
   founded: string | null;
   website: string | null;
   description: string | null;
+  /** Data sources available for the brand (legacy REK_HAS; Initial is always there). */
+  rekvizitai: boolean;
+  sodra: boolean;
 };
 
 type Sheet = { columns: string[]; rows: (string | number | null)[][] };
@@ -20,7 +23,30 @@ type RekCompany = {
 export function loadProfiles(): Record<string, CompanyProfile> {
   const out: Record<string, CompanyProfile> = {};
   const get = (brand: string) =>
-    (out[brand] ??= { ceo: null, founded: null, website: null, description: null });
+    (out[brand] ??= {
+      ceo: null,
+      founded: null,
+      website: null,
+      description: null,
+      rekvizitai: false,
+      sodra: false,
+    });
+
+  // Sodra files are keyed by jarCode (data/sodra/<code>.json), matched via the
+  // "Įmonės kodas" field of the Rekvizitai Įmonė tab (as legacy build_site.py).
+  let sodraCodes = new Set<string>();
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require("fs") as typeof import("fs");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require("path") as typeof import("path");
+    const dir = path.join(process.cwd(), "data", "sodra");
+    sodraCodes = new Set(
+      fs.readdirSync(dir).map((f: string) => f.replace(/\.json$/, "")),
+    );
+  } catch {
+    /* no sodra dir — all sodra flags stay false */
+  }
 
   const sh = (sheets as Record<string, Sheet>)["Įmonės"];
   if (sh) {
@@ -47,6 +73,9 @@ export function loadProfiles(): Record<string, CompanyProfile> {
     p.description = g("Įmonės aprašymas") ?? p.description;
     // Rekvizitai website wins over the sheet, as in the legacy.
     p.website = g("Tinklalapis") ?? p.website;
+    p.rekvizitai = Object.keys(c.tabs ?? {}).length > 0;
+    const code = g("Įmonės kodas");
+    p.sodra = code != null && sodraCodes.has(String(code).trim());
   }
   return out;
 }
