@@ -1,0 +1,497 @@
+@import "tailwindcss";
+/* The shared dev corner's classes live outside the app tree — scan them too. */
+@source "../../node_modules/@adomas/dev-tools/src";
+
+/* Design tokens, ported from the legacy dashboard's :root block. Declared in
+   @theme so Tailwind generates matching utilities (bg-panel, text-muted,
+   border-line, text-gold, ...) — components style with utilities, not CSS. */
+@theme {
+  --color-bg: #f5f6f8;
+  --color-panel: #ffffff;
+  --color-panel2: #eef0f4;
+  --color-line: #d8dce4;
+  --color-ink: #1a1f2b;
+  --color-muted: #5e6678;
+  --color-accent: #2f6fe0;
+  --color-green: #1faa72;
+  --color-red: #dc4d4d;
+  --color-amber: #d08a1f;
+  --color-purple: #7c5cf0;
+  --color-cost: #aab2c2;
+  /* Fabula's identity colour — gold marks "my company" everywhere. */
+  --color-gold: #c79410;
+  --color-gold-bar: #a67c08;
+  /* vs-market top-half bars: regular gold in light, bar-gold in dark (legacy --gold-rank). */
+  --color-gold-rank: #c79410;
+  --color-grid: #e6e9ef;
+  /* Chart canvas background — doughnut slice borders use this, not the panel. */
+  --color-chart-bg: #ffffff;
+  --color-zebra: rgb(0 0 0 / 2.2%);
+  /* Money-flow stack: rest-of-revenue vs rest-of-turnover. */
+  --color-mf-rev: #5e6678;
+  --color-mf-turn: #c2c8d2;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  /* Layout cap — dashboard is a centred column; the explorer opts out. */
+  --spacing-app: 840px;
+
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Themes are driven by data attributes on <html>, not prefers-color-scheme:
+   the app has an explicit theme/palette toggle, so a switch is one attribute
+   write and charts can read the live colour off the document at render. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  /* Lifted a few steps off near-black — same ladder (bg < panel < panel2). */
+  --color-bg: #171b24;
+  --color-panel: #1f2430;
+  --color-panel2: #272d3b;
+  --color-line: #384054;
+  --color-ink: #e6e9f0;
+  --color-muted: #8b93a7;
+  --color-accent: #4f8ef7;
+  --color-green: #34c98e;
+  --color-red: #f06a6a;
+  --color-amber: #f0b04f;
+  --color-purple: #a78bfa;
+  --color-cost: #566179;
+  --color-gold: #f4c542;
+  --color-gold-bar: #c9a020;
+  --color-gold-rank: #c9a020;
+  --color-grid: #2e3648;
+  --color-chart-bg: #171b24;
+  --color-zebra: rgb(255 255 255 / 1.5%);
+  --color-mf-rev: #7d8696;
+  --color-mf-turn: #c2c8d2;
+}
+
+[data-palette="ocean"] {
+  --color-accent: #1a9e8f;
+  --color-green: #2a9a72;
+  --color-red: #d4564f;
+  --color-amber: #c98a28;
+  --color-purple: #6b7fd4;
+  --color-gold: #b8860b;
+  --color-gold-bar: #946f00;
+  --color-gold-rank: #b8860b;
+}
+
+[data-theme="dark"][data-palette="ocean"] {
+  --color-accent: #3dd6c6;
+  --color-green: #4dd4a8;
+  --color-red: #f07a72;
+  --color-amber: #e8b04f;
+  --color-purple: #9aa8f0;
+  --color-gold: #d9b84a;
+  --color-gold-bar: #b8942e;
+  --color-gold-rank: #b8942e;
+}
+
+/* Compare-chip remove zone: the chip's right quarter, transparent at rest and
+   tinting red on hover, replacing the old × glyph. NOT skin-scoped — the
+   markup changed for both skins, so this has to hold in either. */
+.chip-remove {
+  background: transparent;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.chip-remove:hover {
+  background: color-mix(in srgb, var(--color-red) 24%, transparent);
+}
+.chip-remove:active {
+  background: color-mix(in srgb, var(--color-red) 38%, transparent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   REFINED SKIN — optional polish layer, toggled from the settings menu
+   (TopNav writes data-skin on <html>). Everything below is scoped to
+   [data-skin="refined"]; switching to "classic" restores the original design
+   with no other change, which is the kill switch for untested devices.
+
+   Ordered AFTER the theme/palette blocks on purpose: these selectors carry
+   equal-or-higher specificity and must win, mirroring the same
+   base → dark → ocean → dark+ocean cascade.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Light · classic — near-white ground, borders quieted so type leads. */
+[data-skin="refined"] {
+  --color-bg: #f6f7f9;
+  --color-panel: #ffffff;
+  --color-panel2: #eef1f5;
+  --color-line: #e3e7ee;
+  --color-ink: #0f1420;
+  --color-muted: #596172;
+  --color-accent: #2563eb;
+  --color-green: #0e9f6e;
+  --color-red: #d94a4a;
+  --color-amber: #c4871c;
+  --color-purple: #7c5cf0;
+  --color-cost: #a9b1c1;
+  --color-gold: #bd8f16;
+  --color-gold-bar: #9a7208;
+  --color-gold-rank: #bd8f16;
+  --color-grid: #e9ecf2;
+  --color-chart-bg: #ffffff;
+  --color-zebra: rgb(0 0 0 / 2%);
+  --color-mf-rev: #596172;
+  --color-mf-turn: #c5cbd6;
+}
+
+/* Dark · classic — deeper, slightly cool ground; panels separate by value,
+   not by border weight. */
+[data-skin="refined"][data-theme="dark"] {
+  --color-bg: #0a0c11;
+  --color-panel: #10131a;
+  --color-panel2: #161a23;
+  --color-line: #222734;
+  --color-ink: #e9ecf3;
+  --color-muted: #8a92a3;
+  --color-accent: #5b8cff;
+  --color-green: #35d19b;
+  --color-red: #f76d6d;
+  --color-amber: #f2b34d;
+  --color-purple: #a78bfa;
+  --color-cost: #4e586d;
+  --color-gold: #f2c44f;
+  --color-gold-bar: #c9a132;
+  --color-gold-rank: #c9a132;
+  --color-grid: #1d2330;
+  --color-chart-bg: #0a0c11;
+  --color-zebra: rgb(255 255 255 / 2%);
+  --color-mf-rev: #7b8598;
+  --color-mf-turn: #b9c0cd;
+}
+
+/* Light · ocean — teal accent, greens pulled toward it so the family reads
+   as one decision rather than two. */
+[data-skin="refined"][data-palette="ocean"] {
+  --color-accent: #0d8f86;
+  --color-green: #16957a;
+  --color-red: #d1564d;
+  --color-amber: #bf8420;
+  --color-purple: #5f74cc;
+  --color-gold: #b0850f;
+  --color-gold-bar: #8d6a05;
+  --color-gold-rank: #b0850f;
+}
+
+/* Dark · ocean */
+[data-skin="refined"][data-theme="dark"][data-palette="ocean"] {
+  --color-accent: #2fd4c4;
+  --color-green: #45d6ab;
+  --color-red: #f5776f;
+  --color-amber: #e9b355;
+  --color-purple: #93a4f5;
+  --color-gold: #dcbb52;
+  --color-gold-bar: #b89733;
+  --color-gold-rank: #b89733;
+}
+
+/* ── Accent palettes ───────────────────────────────────────────────────────
+   UI accent only — these never encode data, so they can be as tonal and
+   closely-harmonised as we like. (The categorical palettes in segments.ts /
+   CompanySelector.tsx are the opposite case: they carry identity and must
+   stay separable. Do not unify the two.)
+   Each defines a light pair + a dark pair; accent-2 is a near neighbour used
+   for gradients and hover states. */
+[data-skin="refined"][data-palette="indigo"] {
+  --color-accent: #4f46e5;
+}
+[data-skin="refined"][data-theme="dark"][data-palette="indigo"] {
+  --color-accent: #818cf8;
+}
+
+[data-skin="refined"][data-palette="violet"] {
+  --color-accent: #7c3aed;
+}
+[data-skin="refined"][data-theme="dark"][data-palette="violet"] {
+  --color-accent: #a78bfa;
+}
+
+[data-skin="refined"][data-palette="emerald"] {
+  --color-accent: #059669;
+}
+[data-skin="refined"][data-theme="dark"][data-palette="emerald"] {
+  --color-accent: #34d399;
+}
+
+[data-skin="refined"][data-palette="amber"] {
+  --color-accent: #b45309;
+}
+[data-skin="refined"][data-theme="dark"][data-palette="amber"] {
+  --color-accent: #fbbf24;
+}
+
+[data-skin="refined"][data-palette="slate"] {
+  --color-accent: #475569;
+}
+[data-skin="refined"][data-theme="dark"][data-palette="slate"] {
+  --color-accent: #94a3b8;
+}
+
+/* Default vs Dev mode, as in the legacy: formula folds and the raw-data
+   explore button are Dev-mode-only. Kept OUT of @layer so it beats utilities
+   (that precedence is intended here, unlike the reset below). */
+html[data-mode="default"] .kpi-f,
+html[data-mode="default"] .explore-btn,
+html[data-mode="default"] .hist-fab {
+  display: none;
+}
+
+/* CSS x-ray / vision tools (devtools.js corner + tooltips) are Dev-mode-only.
+   !important: the corner is styled inline with display:flex. */
+html[data-mode="default"] [data-devcorner] {
+  display: none !important;
+}
+
+/* The shared dev corner (Pepper toolkit) sits bottom-right at z-30 — this app
+   has a fixed bottom bar at z-400, so lift the corner and its trays above it
+   and clear the bar's measured height. */
+[data-devcorner].bottom-3 {
+  bottom: calc(var(--bb-h, 0px) + 12px);
+  z-index: 500;
+}
+[data-devcorner].bottom-12 {
+  bottom: calc(var(--bb-h, 0px) + 48px);
+  z-index: 500;
+}
+
+/* Clear the fixed bottom bar: its measured height (--bb-h, set by BottomBar)
+   plus a gap, so the footer is never hidden behind it. Unlayered on purpose —
+   it must beat the pages' pb-[84px] fallback utility. */
+.wrap {
+  padding-bottom: calc(var(--bb-h, 60px) + 24px);
+}
+
+/* Legacy ≤600px density: tighter page gutters, 12px cards, 300px chart boxes.
+   Deliberately unlayered so these beat the utility classes at small widths. */
+@media (max-width: 600px) {
+  .wrap {
+    padding: 16px 10px calc(var(--bb-h, 60px) + 12px);
+  }
+  .card {
+    padding: 12px;
+  }
+  .chartbox {
+    height: 300px;
+  }
+}
+
+/* Base rules, as in the legacy dashboard. MUST stay inside @layer base:
+   unlayered CSS outranks every @layer rule, so an unlayered reset here would
+   silently kill all margin/padding utilities (mx-auto, px-*, ...). Tailwind's
+   preflight already provides the *{margin:0;padding:0;box-sizing:border-box}
+   reset. */
+@layer base {
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+}
+
+/* ── Refined skin · craft layer ────────────────────────────────────────────
+   Unlayered on purpose: these must beat the utility classes they replace
+   (notably .letterpress overriding text-muted). Still fully scoped to
+   [data-skin="refined"] — the kill switch turns all of it off. */
+
+/* De-emphasis tier (version label, footer credit): sits just off the
+   background — present if you look for it, silent otherwise. Flat colour, no
+   shadow or glow; the engraved treatment read as a rendering fault. */
+[data-skin="refined"] .letterpress {
+  color: color-mix(in srgb, var(--color-bg) 78%, var(--color-muted));
+  opacity: 1;
+  text-shadow: none;
+}
+
+/* UI type. Segoe UI Variable Text ships on Win11 and is a cleaner redraw of
+   Segoe UI at control sizes; Inter/SF Pro win where present. Headings keep
+   the original face — only body/controls change. */
+[data-skin="refined"] body {
+  font-family:
+    "Inter", "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.006em;
+}
+[data-skin="refined"] h1,
+[data-skin="refined"] h2,
+[data-skin="refined"] h3 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.021em;
+}
+
+/* Small-type floor. 10–11px at tight tracking is the single biggest "cheap"
+   tell — real product UI sets a ~12px floor and OPENS tracking as size drops
+   (small text needs more letter-space, not less). Matched by class substring
+   so the arbitrary Tailwind sizes are retuned in one place. */
+[data-skin="refined"] [class*="text-[10px]"] {
+  font-size: 11.5px;
+  letter-spacing: 0.028em;
+}
+[data-skin="refined"] [class*="text-[11px]"] {
+  font-size: 12px;
+  letter-spacing: 0.022em;
+}
+[data-skin="refined"] [class*="text-[12px]"] {
+  font-size: 12.5px;
+  letter-spacing: 0.014em;
+}
+[data-skin="refined"] [class*="text-[13px]"] {
+  font-size: 13.5px;
+  letter-spacing: 0.006em;
+}
+
+/* Uppercase micro-labels ("COMPANIES TRACKED") need noticeably wider tracking
+   than lowercase at the same size, or they read as a solid block. */
+[data-skin="refined"] [class*="uppercase"],
+[data-skin="refined"] [class*="tracking-"] {
+  letter-spacing: 0.075em;
+}
+
+/* Tabular figures everywhere numbers live — stops digits jittering when the
+   year or basis changes. The core type fix for a financial dashboard. */
+[data-skin="refined"] button,
+[data-skin="refined"] table,
+[data-skin="refined"] .card {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Scrollbars hidden entirely — page gutter and the year strip alike — while
+   scrolling itself is untouched (wheel, trackpad, touch, keyboard all work).
+   overflow stays auto/scroll; only the chrome is suppressed. */
+[data-skin="refined"] *,
+[data-skin="refined"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+[data-skin="refined"] ::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Pills / segmented controls. The flat bordered rectangle is what reads as
+   unfinished; these get a fuller radius, a quieter resting state, and a
+   selected state that sits ON the surface via ring + shadow. */
+[data-skin="refined"] .bb-pill {
+  border-radius: 9px;
+  border-color: transparent;
+  background: transparent;
+  font-weight: 550;
+}
+[data-skin="refined"] .bb-pill:hover {
+  background: var(--color-panel2);
+  color: var(--color-ink);
+}
+[data-skin="refined"] .bb-pill[data-on="true"] {
+  background: var(--color-accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.16),
+    inset 0 1px 0 rgb(255 255 255 / 0.14);
+}
+/* Dark: a flat accent block glares against #0a0c11 — soften it and let the
+   ring carry the edge instead of raw luminance. */
+[data-skin="refined"][data-theme="dark"] .bb-pill[data-on="true"] {
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5),
+    inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+/* Segmented control stays JOINED (unlike .bb-pill) — only the resting fill
+   and the selected segment change. */
+[data-skin="refined"] .seg-group {
+  border-radius: 10px;
+  background: var(--color-panel2);
+  padding: 2px;
+  border-color: transparent;
+}
+[data-skin="refined"] .seg-btn {
+  border-right-color: transparent;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 550;
+}
+[data-skin="refined"] .seg-btn:hover {
+  color: var(--color-ink);
+}
+/* Selected segment reads as a raised chip inside the track. */
+[data-skin="refined"] .seg-btn[data-on="true"] {
+  background: var(--color-panel);
+  color: var(--color-ink);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.14),
+    0 0 0 1px rgb(0 0 0 / 0.04);
+}
+[data-skin="refined"][data-theme="dark"] .seg-btn[data-on="true"] {
+  background: color-mix(in srgb, var(--color-panel) 70%, var(--color-accent));
+  color: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.55);
+}
+
+/* Panels: hairline borders + a whisper of elevation, rather than a hard 1px
+   box. In dark, borders do the work since shadows vanish on near-black. */
+[data-skin="refined"] .card {
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 8px 24px -12px rgb(0 0 0 / 0.1);
+}
+[data-skin="refined"][data-theme="dark"] .card {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.03) inset,
+    0 12px 32px -16px rgb(0 0 0 / 0.7);
+}
+
+/* One shared easing + duration for every interactive element, so hovers feel
+   like one system. 150ms is the sweet spot: perceptible, never laggy. */
+[data-skin="refined"] a,
+[data-skin="refined"] button,
+[data-skin="refined"] [role="button"] {
+  transition:
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Press feedback: a 1px sink reads as physical without moving layout. */
+[data-skin="refined"] button:active,
+[data-skin="refined"] [role="button"]:active {
+  transform: translateY(1px);
+}
+
+/* Keyboard focus only — never on mouse click. Accent ring at a consistent
+   offset replaces the browser's default outline. */
+[data-skin="refined"] :focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Cards lift on hover in dark via a light-toned border rather than a shadow
+   (shadows are near-invisible on a #0a0c11 ground). */
+[data-skin="refined"] .card {
+  transition:
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Respect the OS reduced-motion setting — an award-site table stake. */
+@media (prefers-reduced-motion: reduce) {
+  [data-skin="refined"] *,
+  [data-skin="refined"] *::before,
+  [data-skin="refined"] *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

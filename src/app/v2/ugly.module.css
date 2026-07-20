@@ -1,0 +1,16 @@
+.page {
+  display: block;
+  height: 100vh;
+  background: #101418;
+}
+
+/* Full-bleed. The legacy dashboard renders its own nav and layout, so the frame
+   is the whole viewport — anything less makes its topnav think it's on mobile
+   and switch to the horizontal-scrolling nav (its @media max-width:600px rule). */
+.frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: white;
+}

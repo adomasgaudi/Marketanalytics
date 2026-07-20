@@ -1,0 +1,18 @@
+# Generated — build_site.py rewrites these from legacy-src/template.html.
+# Formatting them would be undone on the next build, and they are ~3.7MB each.
+legacy-index.html
+public/legacy/index.html
+
+# Generated from package.json by scripts/write-version.mjs
+src/app-version.ts
+
+# Data + build output
+data/
+.next/
+node_modules/
+graphify-out/
+package-lock.json
+
+# The legacy dashboard is one hand-tuned 3.7MB file with inlined CSS/JS.
+# Reformatting it would produce an unreviewable diff and churn the generated output.
+legacy-src/template.html

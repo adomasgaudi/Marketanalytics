@@ -7,15 +7,15 @@
 
 Run the scrape pipeline later when Rekvizitai access is available.
 
-| Slug | Company / brand note |
-| --- | --- |
-| `coagency` | co:agency, UAB |
-| `digitfruition` | DigitFruition / Digitfruition, MB |
-| `fotokomanda` | Foko / Fotokomanda |
-| `uab_love_media` | Love media |
-| `socialus_marketingas` | SOMA Agency = Havas Creative SOMA, UAB |
-| `whatabout_agency` | WhatAbout / Whatabout agency, UAB |
-| `be_reklamos` | Be reklamos negerai = BE REKLAMOS, UAB; verify brand match |
+| Slug                   | Company / brand note                                       |
+| ---------------------- | ---------------------------------------------------------- |
+| `coagency`             | co:agency, UAB                                             |
+| `digitfruition`        | DigitFruition / Digitfruition, MB                          |
+| `fotokomanda`          | Foko / Fotokomanda                                         |
+| `uab_love_media`       | Love media                                                 |
+| `socialus_marketingas` | SOMA Agency = Havas Creative SOMA, UAB                     |
+| `whatabout_agency`     | WhatAbout / Whatabout agency, UAB                          |
+| `be_reklamos`          | Be reklamos negerai = BE REKLAMOS, UAB; verify brand match |
 
 ## Still Unresolved
 

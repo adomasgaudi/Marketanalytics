@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    // @adomas/dev-tools is a file: symlink shipping raw TS — resolve its
+    // imports (react, jsx-runtime) from THIS project's node_modules.
+    "preserveSymlinks": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      // Ordered fallback: the real optional package when the sibling checkout
+      // is present, otherwise the local stub. TS tries each entry in turn, so
+      // CI type-checks against the stub instead of failing to resolve.
+      // Keyed with a wildcard on purpose: SWC only accepts a fallback LIST when
+      // the pattern contains one, and we need the list.
+      "@adomas/*": [
+        "./node_modules/@adomas/*/src/index.ts",
+        "./src/dev/dev-corner-stub.tsx"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

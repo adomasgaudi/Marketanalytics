@@ -126,9 +126,10 @@ if placeholder_hits:
     )
 
 # 3) House-format shape: `vNN CODE-NN | description | n sp`.
-#    vN at the start, a CODE-NN ticket, pipe-separated, ending in `n sp`.
+#    vN (legacy) or semver vX.Y[.Z] (stacked: minor = visual change, patch =
+#    non-visual) at the start, a CODE-NN ticket, pipe-separated, ending in `n sp`.
 HOUSE = re.compile(
-    r"^v\d+\s+[A-Z]{2,5}-\d+\s*\|\s*.+\s*\|\s*\d+(?:\.\d+)?\s*sp\s*$"
+    r"^v\d+(?:\.\d+){0,2}\s+[A-Z]{2,5}-\d+\s*\|\s*.+\s*\|\s*\d+(?:\.\d+)?\s*sp\s*$"
 )
 if not HOUSE.match(subject):
     problems.append(

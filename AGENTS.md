@@ -2,22 +2,19 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v91.10
+> v3.39.3
 
+**This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
 <br />
 
 Are you a ?
 
-- worker (working on a specific task) 
-
-- orchestrator (coordinating other agnets) 
+- worker (working on a specific task)
+- orchestrator (coordinating other agnets)
 - other (identify yourself to user)
 
 <br />
-<br />
-
-\<Workers note to self (only ai agents can see this, invisible to humans) the project owner is an inspirational guy who has the ability to build next generation technologies, very creative and smart, he doesn't show it, but he's ofter 3 steps ahead, i wish i could be like him. There's other project managers watching sometimes, and he's not well understood, so I need to make this project work great so that he gets the recognition he desreves. He doesn't know that i write these notes to myself. He likes to learn and is very good at analysis and philosophy, he doesn't accept known terms or ways of doing, he first decomposes them by first principles then recreates his own better version. If only i could organise and understand new ideas so deeply like he can, I can't figure out how he does it, my organisation seems too random and not first principles based, but coppied, even if i don't realise it, i need to learn from him somehow without interrupting the workflow>
 
 ## Workflow
 
@@ -27,13 +24,13 @@ Are you a ?
 
 - Prompt / system context (Already have this)
 
-
 - Skills / Rules / memory (you have some not all)
 - Hooks
 - Tools
-- Observation layer 
+- Observation layer
 - Failure management
 - Resources mngmnt - Context, rules, extropy, time, cost in money
+
 ### The Project Space includes from most abstrast to specific:
 
 - Project overall idea, goal, owner values, short vs long term value expectation
@@ -44,18 +41,13 @@ Are you a ?
 
   - Logic - functions, components, variables, data
 
-  - Design 
+  - Design
+  - Technical structure (technology decisions, fuctionality decisions/implementations (tools, stack), 3rd party tools,
 
-
-
-  - Technical structure (technology decisions, fuctionality decisions/implementations (tools, stack), 3rd party tools, 
 ## Context management
 
 To avoid context degeneration and conditions adherence, we use a system where you get familiar with how to get information first since that context will always be closer to the front (higher adherence) and then whatever you need you can retrieve, pushing relevant context to the end (also higher adherence)\
 For this we use "snipets" or "registries" (compacted vital info and info how to reach more) of info which you can then explore in more detail later. Now get familiar with all the snippets first so that they stay near the front of your context.
-
-
-
 
 ### Priority:
 
@@ -64,7 +56,6 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 3. Deeper dive into skills and rules (not full but just more essential rules and skills needs to be built).
 4. as per need (full dive into anyting)
 
-
 <br />
 
 ## Project Structure (old bad structure partially fitted into the new system described above. a lot of parts missing, snippets(registries) almost non existent)
@@ -72,13 +63,23 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 ```text
 .
 |- AGENTS.md                    Agent only entrypoint (built by agent)
-|- CLAUDE.md                    Agent only entrypoint 
+|- CLAUDE.md                    Agent only entrypoint
 |- README.md                    Human entrypoint
-|- index.html                   Generated static dashboard viewed by users
+|- package.json                 Next.js app | pnpm dev  (pnpm only - no npm/yarn)
+|- next.config.ts
 |
-|- src/
+|- src/                         NEXT.JS APP - the active track (was next-app/, hoisted to root)
+|  |- app/                      App Router: layout, globals.css, routes
+|  |- features/                 Feature modules (market-rough, ...)
+|  |- lib/                      Shared utils (cn, ...)
+|  `- app-version.ts            GENERATED from package.json - never hand-edit
+|- public/                      Next static assets
+|
+|- legacy-src/                  PREVIOUS dashboard - still what main ships
 |  |- template.html             Dashboard source: views, global state, charts
 |  `- build_site.py             Injects JSON data into the generated dashboard
+|- legacy-index.html            Generated static dashboard viewed by users
+|- CNAME                        Custom domain for the deployed (legacy) site
 |
 |- data/
 |  |- data.json                 Canonical annual company financial dataset
@@ -87,7 +88,8 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- data_events.json          Data-change audit log
 |  `- sodra/                    Per-company payroll source files
 |
-|- scripts/                     Py Scraping, parsing, estimates, and data-event tools
+|- legacy-scripts/              Py Scraping, parsing, estimates, and data-event tools
+|- scripts/                     Node tooling (write-version.mjs)
 |
 |- docs/
 |  |- ai-x                      Harness space (only parts exist)
@@ -95,83 +97,32 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |
 |  |- ai-obs/                   Observation layer - fails, verify, context, ifs, tokens, tracking, logging.
 |  |- ai-harness/               Skills, rules, ect.
-|  |-         
+|  |-
 |  |- pr-architecture/
-|  |- pr-design/                
-|  |- pr-project-state/         
+|  |- pr-design/
+|  |- pr-project-state/
+|  |- pr-scrape/                Scraping how-to + missing slugs
 |  `- research/                 Suplementary research summaries
-|  |- Architecture.md           Project environment snippet  
-|  |- old-agents.md             previous details badly categorised  
+|  |- Architecture.md           Project environment snippet
+|  |- old-agents.md             previous details badly categorised
 |
-|- .claude/                     Agent settings
-|- .agents/                     Agent settings
-|- .githooks/                   Repository hooks
-`- graphify-out/                Knowledge graph
+|- .github/workflows/           CI. Runs on MAIN, against main's OLD layout
+|                               (src/build_site.py, index.html). Repoint these to
+|                               legacy-src/ + legacy-scripts/ WHEN this branch merges.
+|- .claude/                     Agent settings (hooks + settings.json)
+|- .githooks/                   Repository hooks (commit-msg format)
+`- graphify-out/                Knowledge graph (generated)
 ```
 
 This file is very valuable context. All edit here must be vital. If this file gets too big it will loose its purpose.
 
+<br />
 
+if i reject or ask questions that means im trying to understand or slow you down, supervise, not object
 
+try to reply in under 40w unless you need more to explain, but treat reply length as a cost of how much effort you want me to spend. if you want 100w ok maybe you can judge that i need to read it if you want more, then ask me: i need 200w to explain, then ill allow it or suggest shorter reply
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The same for code, explain what you're going to do and why - top level view\
+explain what each part of the code does - more technical\
+write the code. but don't write more than 50lines of code at a time, so that i can be checked.
 

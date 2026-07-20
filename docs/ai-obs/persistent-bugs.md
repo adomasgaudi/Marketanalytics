@@ -6,24 +6,26 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 ---
 
 ## PB-1 — Chart axis numbers are arbitrary / change on pan-zoom
+
 - **Recurrences:** 2 (line engine, then bar engine)
 - **Seen on:** Android / Brave (owner's phone), money-flow + rankings charts.
 - **Symptom:** axis tick labels are non-round (€-0.19M, €1.47M, €3.12M…) and CHANGE to different
   arbitrary values when the chart is panned/zoomed, instead of round numbers (€0M, €1M, €2M…) that
   stay put and just slide.
-- **Root cause:** ticks computed as `min + k·span/N` (evenly divides the *current view*), so every
+- **Root cause:** ticks computed as `min + k·span/N` (evenly divides the _current view_), so every
   pan re-derives ugly values. Fix = "nice" ticks at `1/2/5 × 10ⁿ` multiples of a step, which are
   round and only move position as you pan.
 - **Fixes:**
   - `drawFinSvg` (line/bar-line engine) — niceTicks added earlier (y-axis).
-  - `drawBarsSvg` (horizontal rank bars) — niceTicks added v0.1.181 (x-axis). *(was missed when the
-    line engine was fixed — same class, different function.)*
+  - `drawBarsSvg` (horizontal rank bars) — niceTicks added v0.1.181 (x-axis). _(was missed when the
+    line engine was fixed — same class, different function.)_
 - **Guard against re-introduction:** any new chart axis MUST use a niceTicks-style round-step
   generator, never `min + k·span/N`. Both engines now share the same logic; copy it for any new one.
 
 ---
 
 ## PB-2 — Company "Revenue CAGR 2019–YYYY" card is a 2019-anchored outlier, not per-year
+
 - **Recurrences:** 2 (label-year patch, then full YoY conversion)
 - **Seen on:** Android / Brave (owner's phone), Companies page, every company (e.g. Fabula, APG media).
 - **Symptom:** every other card on the Companies view shows the SELECTED year (money-flow YoY badges,
@@ -44,6 +46,7 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 ---
 
 ## PB-3 — "Fixed" change never actually reached the deployed build
+
 - **Recurrences:** 1 (scatter per-employee basis "fixed" in v194 but unchanged on the live site)
 - **Seen on:** Android / Brave (owner's phone), the size-vs-profitability scrubber.
 - **Symptom:** owner toggles Per employee, nothing changes — even the caption text didn't update,
@@ -63,6 +66,7 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 ---
 
 ## PB-4 — Black-on-black text in dark mode (surface token used as text colour)
+
 - **Recurrences:** multiple across sessions (owner: "still black on black text left").
 - **Seen on:** Android / Brave (owner's phone), dark theme — Data Explorer null cells + row numbers; native `<select>` option lists.
 - **Symptom:** some text invisible in dark mode (dark text on dark surface).
@@ -83,6 +87,7 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 ---
 
 ## PB-5 — Active "Doughnut" toggle text rendered dark despite CSS saying white
+
 - **Recurrences:** multiple (kept reporting "doughnut text dark"; survived several looks).
 - **Seen on:** Android / Brave (owner's phone), dark theme, segment-card chart-type toggle.
 - **Symptom:** the ACTIVE "Doughnut" `.seg` button shows dark text on the blue active background, while
@@ -102,6 +107,7 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 ---
 
 ## PB-6 — SVG dashboard charts don't fit on FIRST load (correct only after a resize/toggle)
+
 - **Recurrences:** 1 logged (money-flow chart "doesn't fit when first running the website").
 - **Seen on:** Android / Brave (owner's phone), Market dashboard — money-flow + by-segment all-years.
 - **Symptom:** on first page load a chart is mis-sized (content overflows / clipped); it snaps to the
@@ -111,7 +117,7 @@ and leave a `PB-n` comment at the fix site. Read this before touching an area wi
 - **Prior failed fix:** v0.2.5 raised stacked-bar headroom 14→22% — that only addressed label clipping,
   not the real cause, so "still doesn't fit" (this entry).
 - **Root cause:** `drawFinSvg`'s `render()` sizes the SVG from `container.clientWidth/clientHeight` at the
-  moment it runs. The charts are drawn during init, but `makeSectionsCollapsible()` runs *afterwards* and
+  moment it runs. The charts are drawn during init, but `makeSectionsCollapsible()` runs _afterwards_ and
   REPARENTS every chart node into `.group-card` cards (`insertBefore`), changing each container's width —
   and nothing re-fit the charts after that move. So every chart kept the pixel scale of the pre-card layout
   until some later event called `refitSvg`. (`refitSvg` already existed and is wired to resize / view-switch
