@@ -9,6 +9,12 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.4",
+    date: "2026-07-20",
+    title: "Custom segment menu",
+    desc: "Replaced the native segment selector with a fully custom, icon-led mobile menu.",
+  },
+  {
     v: "v3.40.3",
     date: "2026-07-20",
     title: "Compact segment picker",

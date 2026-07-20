@@ -149,6 +149,7 @@ export function BottomBar({
   // The basis/market control is icon-only, so confirm each pick in words for a
   // moment after it's made — otherwise the icons are a guessing game.
   const [flash, setFlash] = useState<string | null>(null);
+  const [segmentOpen, setSegmentOpen] = useState(false);
   // Hover/focus explanation for the icon under the pointer. Takes the same
   // popup slot as the flash, and wins while the pointer is on a button.
   const [hint, setHint] = useState<string | null>(null);
@@ -157,6 +158,11 @@ export function BottomBar({
     setFlash(label);
     if (flashTimer.current) clearTimeout(flashTimer.current);
     flashTimer.current = setTimeout(() => setFlash(null), 1600);
+  };
+  const selectSegment = (next: string) => {
+    setParams({ segment: next || null });
+    setSegmentOpen(false);
+    showFlash(`Segment: ${next ? segName(next) : "All segments"}`);
   };
   useEffect(
     () => () => void (flashTimer.current && clearTimeout(flashTimer.current)),
@@ -172,11 +178,11 @@ export function BottomBar({
   // Wheel anywhere over the track picks the next/previous year; the centring
   // effect below then pulls it into view, so the track scrolls as a side effect.
   useWheelStep(trackRef, (dir) => setParams({ year: stepIn(model.finYears, year, dir) }));
-  // Same gesture on the segment select. "" is the All-segments entry, so it
+  // Same gesture on the segment picker. "" is the All-segments entry, so it
   // has to be part of the list the wheel walks.
-  const segmentRef = useRef<HTMLSelectElement>(null);
+  const segmentRef = useRef<HTMLDivElement>(null);
   useWheelStep(segmentRef, (dir) =>
-    setParams({ segment: stepIn(["", ...model.segments], segment ?? "", dir) || null }),
+    selectSegment(stepIn(["", ...model.segments], segment ?? "", dir)),
   );
   useEffect(() => {
     const track = trackRef.current;
@@ -284,28 +290,41 @@ export function BottomBar({
         {/* Segment scope for the cash-flow panel. A <select> rather than a Seg:
             9 segments as joined buttons would be ~900px wide. */}
         {mode === "market" && (
-          <div className="segment-select-wrap">
-            <span className="segment-select-icon" aria-hidden>
-              <IconSegments size={20} />
-            </span>
-            <select
-              ref={segmentRef}
+          <div ref={segmentRef} className="segment-picker">
+            <button
+              type="button"
               aria-label="Segment scope"
-              value={segment}
-              onChange={(e) => {
-                const next = e.target.value;
-                setParams({ segment: next || null });
-                showFlash(`Segment: ${next ? segName(next) : "All segments"}`);
-              }}
-              className="segment-select border-line bg-panel2 text-muted hover:text-ink max-w-[104px] flex-none cursor-pointer rounded border px-1.5 py-0.5 text-[11px] leading-5 font-semibold md:max-w-[180px] md:px-2.5 md:py-1 md:text-[12px] md:leading-6"
+              aria-expanded={segmentOpen}
+              aria-haspopup="listbox"
+              className="segment-picker-trigger"
+              onClick={() => setSegmentOpen((open) => !open)}
             >
-              <option value="">All segments</option>
-              {model.segments.map((s) => (
-                <option key={s} value={s}>
-                  {segName(s)}
-                </option>
-              ))}
-            </select>
+              <IconSegments size={20} />
+              <span className="segment-picker-label">
+                {segment ? segName(segment) : "All segments"}
+              </span>
+            </button>
+            {segmentOpen && (
+              <div
+                className="segment-picker-menu"
+                role="listbox"
+                aria-label="Segment scope"
+              >
+                {["", ...model.segments].map((option) => (
+                  <button
+                    key={option || "all"}
+                    type="button"
+                    role="option"
+                    aria-selected={(segment ?? "") === option}
+                    className="segment-picker-option"
+                    data-on={(segment ?? "") === option}
+                    onClick={() => selectSegment(option)}
+                  >
+                    {option ? segName(option) : "All segments"}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

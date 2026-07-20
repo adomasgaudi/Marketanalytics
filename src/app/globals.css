@@ -287,40 +287,78 @@ html[data-mode="default"] [data-devcorner] {
   padding-bottom: calc(var(--bb-h, 60px) + 24px);
 }
 
-/* On phones the segment picker is a 44px tap target with a bespoke segment
-   icon, leaving the year track its maximum width. The native select remains
-   transparent on top for keyboard and screen-reader semantics; desktop keeps
-   the labelled control. */
-.segment-select-wrap {
+/* Fully custom segment picker. Phones get an icon-only 44px trigger so the
+   year track keeps its width; larger screens reveal the active segment label. */
+.segment-picker {
   position: relative;
   flex: none;
 }
-.segment-select-icon {
+.segment-picker-trigger {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-panel2);
+  color: var(--color-muted);
+}
+.segment-picker-trigger:hover,
+.segment-picker-trigger[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.segment-picker-label {
   display: none;
 }
-@media (max-width: 767px) {
-  .segment-select-wrap {
-    width: 44px;
-    height: 44px;
+.segment-picker-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 430;
+  display: grid;
+  width: min(220px, calc(100vw - 24px));
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: var(--color-panel);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 0.2);
+}
+.segment-picker-option {
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+.segment-picker-option:hover,
+.segment-picker-option[data-on="true"] {
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-panel));
+  color: var(--color-ink);
+}
+@media (min-width: 768px) {
+  .segment-picker-trigger {
+    display: flex;
+    width: auto;
+    min-width: 132px;
+    height: 36px;
+    gap: 7px;
+    padding: 0 10px;
+    justify-content: flex-start;
   }
-  .segment-select-icon {
-    border: 1px solid var(--color-line);
-    background: var(--color-panel2);
-    color: var(--color-muted);
-    display: grid;
-    width: 44px;
-    height: 44px;
-    place-items: center;
-    border-radius: 8px;
-  }
-  .segment-select {
-    position: absolute;
-    inset: 0;
-    width: 44px;
-    height: 44px;
-    max-width: none;
-    cursor: pointer;
-    opacity: 0;
+  .segment-picker-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
   }
 }
 
