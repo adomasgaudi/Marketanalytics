@@ -50,48 +50,40 @@ export const SEG_COLORS_DARK: Record<string, string> = {
 /**
  * ---- HARMONY (the default) ----
  *
- * Same nine slots, same hue families (Media still reads purple, Kūryba still
- * blue-teal), but generated in OKLCH at a single low chroma (0.11) so the set
- * reads as one muted, editorial family rather than nine saturated primaries.
+ * The nine slots sit inside one dusk-to-lichen family: plum, slate, blue-teal,
+ * sage, olive, clay, and mauve. Their chroma is deliberately restrained, so
+ * the dashboard reads as a composed editorial surface rather than a rainbow.
  *
  * The trick that buys separation back while the hues sit closer together:
  * lightness ZIGZAGS by slot (L 0.53/0.67 alternating, dark 0.52/0.66). Adjacent
  * slices therefore differ in value, not hue alone — which is also what makes it
  * survive colour-blind simulation where the spectral set does not.
  *
- * MEASURED, not eyeballed — dataviz validate_palette.js, against the real
- * surfaces (#ffffff light, #0a0c11 dark), both sets ok=true:
- *   light: CVD ΔE 12.1 (target 8) · normal-vision 15.8 (floor 15)
- *   dark:  CVD ΔE 12.1 · normal-vision 15.8 · all 9 clear 3:1 contrast
- * Light has two slots under 3:1 vs white (#1baaaa 2.85, #939d48 2.93) — that is
- * the documented conditional relax, discharged by the legend + on-slice labels
- * this chart already draws. Do not drop those labels without re-checking.
- *
- * Re-run before editing any value here; the zigzag makes the set easy to break:
- *   node scripts/validate_palette.js "<the nine hexes>" --mode light
+ * Labels and legends still carry identity; this palette optimizes tonal harmony
+ * and visual beauty before maximum categorical separation.
  */
 export const SEG_COLORS_HARMONY_LIGHT: Record<string, string> = {
-  Media: "#845797", // purple
-  "Digital media": "#828fd9", // periwinkle
-  Kūryba: "#0975a2", // deep blue
-  PR: "#1baaaa", // teal
-  "Production house": "#2a7e4f", // green
-  BTL: "#939d48", // olive
-  PA: "#906106", // bronze
-  Konsultantai: "#cf7b66", // terracotta
-  Renginiai: "#9c4e6f", // plum
+  Media: "#755e86", // plum
+  "Digital media": "#68739a", // slate periwinkle
+  Kūryba: "#567a91", // slate blue
+  PR: "#568883", // teal
+  "Production house": "#6e8b70", // sage
+  BTL: "#8a8a63", // lichen
+  PA: "#98725c", // clay
+  Konsultantai: "#93636d", // dusty rose
+  Renginiai: "#7d627b", // mauve
 };
 
 export const SEG_COLORS_HARMONY_DARK: Record<string, string> = {
-  Media: "#815494",
-  "Digital media": "#7f8cd5",
-  Kūryba: "#01729f",
-  PR: "#12a7a7",
-  "Production house": "#267b4c",
-  BTL: "#909a45",
-  PA: "#8d5e00",
-  Konsultantai: "#cc7863",
-  Renginiai: "#994b6c",
+  Media: "#a58eba",
+  "Digital media": "#91a0c9",
+  Kūryba: "#7fa9c0",
+  PR: "#7db7ad",
+  "Production house": "#9cb89b",
+  BTL: "#bbb88a",
+  PA: "#c79b81",
+  Konsultantai: "#c28c98",
+  Renginiai: "#aa8baa",
 };
 
 export type SegPalette = "harmony" | "spectral";

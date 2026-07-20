@@ -9,6 +9,12 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.5",
+    date: "2026-07-20",
+    title: "Tonal segment harmony",
+    desc: "Retuned segment colours into a quieter, related dusk palette with tonal variety.",
+  },
+  {
     v: "v3.40.4",
     date: "2026-07-20",
     title: "Custom segment menu",
