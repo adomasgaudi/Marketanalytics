@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@adomas/dev-tools':
-        specifier: file:../../Meta apps/dev-tools
-        version: file:../../Meta apps/dev-tools(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@radix-ui/react-dialog':
         specifier: ^1.1.19
         version: 1.1.19(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -93,6 +90,10 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+    optionalDependencies:
+      '@adomas/dev-tools':
+        specifier: file:../../Meta apps/dev-tools
+        version: file:../../Meta apps/dev-tools(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
 packages:
 
@@ -2635,6 +2636,7 @@ snapshots:
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
+    optional: true
 
   '@alloc/quick-lru@5.2.0': {}
 

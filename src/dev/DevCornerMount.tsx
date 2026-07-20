@@ -1,9 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { APP_VERSION } from "@/app-version";
 import { VERSIONS } from "@/features/market-rough/version-history";
-import { DevCorner } from "@adomas/dev-tools";
+
+/**
+ * @adomas/dev-tools is an OPTIONAL dependency: it resolves to a path outside
+ * this repo, so CI installs without it. Loading it lazily and swallowing the
+ * resolution failure keeps the production build green — the corner is dev-only
+ * anyway, and `dev` is always false in a deployed build.
+ */
+const DevCorner = dynamic(
+  () => import("@adomas/dev-tools").then((m) => m.DevCorner).catch(() => () => null),
+  { ssr: false },
+);
 
 /**
  * Next.js seam for the portable Pepper dev toolkit (src/dev): mounts

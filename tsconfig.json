@@ -22,7 +22,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      // Ordered fallback: the real optional package when the sibling checkout
+      // is present, otherwise the local stub. TS tries each entry in turn, so
+      // CI type-checks against the stub instead of failing to resolve.
+      // Keyed with a wildcard on purpose: SWC only accepts a fallback LIST when
+      // the pattern contains one, and we need the list.
+      "@adomas/*": [
+        "./node_modules/@adomas/*/src/index.ts",
+        "./src/dev/dev-corner-stub.tsx"
+      ]
     }
   },
   "include": [
