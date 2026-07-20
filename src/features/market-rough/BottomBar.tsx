@@ -61,7 +61,9 @@ export function BottomBar({
   return (
     <div
       ref={barRef}
-      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-840px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]"
+      // Padding matches TopNav: folds in the content wrap's px-6 (840+48=792)
+      // so the year pills line up with the page content's left edge.
+      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]"
     >
       <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2">
         <div
@@ -75,8 +77,11 @@ export function BottomBar({
               key={option}
               type="button"
               onClick={() => setParams({ year: option })}
+              // bb-pill + data-on are styling hooks for the refined skin; they
+              // have no effect while the skin is set to classic.
+              data-on={option === year}
               className={cn(
-                "border-line flex-none cursor-pointer rounded-md border px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap transition-colors",
+                "bb-pill border-line flex-none cursor-pointer rounded-md border px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap transition-colors",
                 option === year
                   ? "border-accent bg-accent text-white"
                   : "bg-panel2 text-muted hover:text-ink",

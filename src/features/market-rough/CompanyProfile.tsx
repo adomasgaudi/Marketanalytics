@@ -1,7 +1,8 @@
 "use client";
 
 import type { CompanyProfile } from "./profile";
-import { SEG_COLORS, segName } from "./segments";
+import { segName } from "./segments";
+import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 
 const Nd = () => <span className="text-muted italic">no data</span>;
@@ -38,6 +39,8 @@ export function CompanyProfileCard({
       : `https://${profile.website.trim()}`;
     webDom = webHref.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
   }
+
+  const SEG_COLORS = useSegColors();
 
   // Segment dots: the selected year's activities, else the newest year that has any.
   const years = Object.keys(mine)

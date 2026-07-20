@@ -15,14 +15,30 @@ type Props = {
   rank?: Rank | null;
   /** Small scope tag after the headline, e.g. "per company · 113 cos". */
   tag?: string;
+  /** Mirrors the €/% KPI toggle: "change" swaps each value for its YoY. */
+  mode?: "value" | "change";
+  /** "2024 → 2025" — the span the YoY figures compare. */
+  yrLabel?: string;
 };
 
-function Yoy({ cur, prev }: { cur: number | null; prev?: number | null }) {
+function Yoy({
+  cur,
+  prev,
+  big,
+}: {
+  cur: number | null;
+  prev?: number | null;
+  big?: boolean;
+}) {
   if (cur == null || prev == null || prev <= 0) return null;
   const ratio = cur / prev - 1;
   return (
     <span
-      className={cn("text-[12px] font-semibold", ratio >= 0 ? "text-green" : "text-red")}
+      className={cn(
+        "font-semibold",
+        big ? "text-[19px]" : "text-[12px]",
+        ratio >= 0 ? "text-green" : "text-red",
+      )}
     >
       {fmtPct(ratio)}
     </span>
@@ -34,7 +50,16 @@ function Yoy({ cur, prev }: { cur: number | null; prev?: number | null }) {
  * revenue / rest of turnover, bottom→top), a gold revenue bracket, and a
  * bottom→top legend that matches the bar order.
  */
-export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: Props) {
+export function MoneyFlow({
+  turnover,
+  revenue,
+  profit,
+  prev = {},
+  rank,
+  tag,
+  mode = "value",
+  yrLabel,
+}: Props) {
   if (revenue == null && turnover == null) return null;
   const T = turnover ?? revenue!;
 
@@ -72,6 +97,8 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
       val: fmtEur(T),
       cur: turnover,
       before: prev.T,
+      // Turnover is the card's headline now that the title row is gone.
+      lead: true,
     },
   ].filter(Boolean) as {
     dot: string;
@@ -79,27 +106,34 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
     val: string;
     cur: number | null;
     before?: number | null;
+    lead?: boolean;
   }[];
 
   const revPct = revenue != null ? Math.max(0, Math.min(100, pctOf(revenue))) : 100;
 
   return (
     <div className="card border-line bg-panel mb-4 rounded-xl border p-4">
-      <div className="text-muted mb-2 flex flex-wrap items-baseline gap-2 text-[13px]">
-        <b className="text-ink text-[15px]">Turnover</b>
-        <span className="text-ink text-[15px] font-bold">{fmtEur(T)}</span>
-        <Yoy cur={turnover} prev={prev.T} />
-        {rank && (
-          <span className="text-gold text-[12px] font-semibold">
-            #{rank.pos}/{rank.total}
-          </span>
-        )}
-        {tag && (
-          <span className="border-line bg-panel2 text-muted rounded-[5px] border px-1.5 py-px align-middle text-[10px] font-semibold">
-            {tag}
-          </span>
-        )}
-      </div>
+      {/* Headline turnover lives in the legend below — this row carries the
+          compared span plus any rank/tag. */}
+      {(rank || tag || yrLabel) && (
+        <div className="text-muted mb-2 flex flex-wrap items-baseline gap-2 text-[13px]">
+          {yrLabel && (
+            <span className="text-[11px] font-semibold tracking-[.12em] uppercase">
+              {yrLabel}
+            </span>
+          )}
+          {rank && (
+            <span className="text-gold text-[12px] font-semibold">
+              #{rank.pos}/{rank.total}
+            </span>
+          )}
+          {tag && (
+            <span className="border-line bg-panel2 text-muted rounded-[5px] border px-1.5 py-px align-middle text-[10px] font-semibold">
+              {tag}
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="flex min-h-[90px] gap-3">
         <div className="border-line flex w-[26px] flex-none flex-col-reverse overflow-hidden rounded-[6px] border">
@@ -131,12 +165,37 @@ export function MoneyFlow({ turnover, revenue, profit, prev = {}, rank, tag }: P
           {legend.map((item) => (
             <div key={item.name} className="flex min-h-8 flex-1 items-center gap-[9px]">
               <span
-                className={cn("h-[11px] w-[11px] flex-none rounded-[3px]", item.dot)}
+                className={cn(
+                  "flex-none rounded-[3px]",
+                  item.lead ? "h-[15px] w-[15px]" : "h-[11px] w-[11px]",
+                  item.dot,
+                )}
               />
-              <div className="flex min-w-0 flex-col text-[13px]">
-                <b>
-                  {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
-                </b>
+              <div
+                className={cn(
+                  "flex min-w-0 flex-col",
+                  item.lead ? "text-[19px] leading-tight" : "text-[13px]",
+                )}
+              >
+                {/* % mode promotes the YoY to the headline and drops the
+                    absolute figures to the sub line, like the KPI cards. */}
+                {mode === "change" ? (
+                  <>
+                    <b>
+                      {item.name}{" "}
+                      <Yoy cur={item.cur} prev={item.before} big={item.lead} />
+                    </b>
+                    {item.before != null && item.before > 0 && (
+                      <span className="text-muted text-[11px] font-normal">
+                        {fmtEur(item.before)} → {item.val}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <b>
+                    {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
+                  </b>
+                )}
               </div>
             </div>
           ))}

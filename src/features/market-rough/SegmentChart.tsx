@@ -8,13 +8,13 @@ import { BarsSvg } from "./BarsSvg";
 import { fmtEur } from "./format";
 import {
   basisWord,
-  SEG_COLORS,
   SEG_METRICS,
   type SegBasis,
   type SegMetricKey,
   segMetricVal,
   segName,
 } from "./segments";
+import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
@@ -65,6 +65,7 @@ const cssVar = (name: string) =>
 /** "{year} Revenue by segment" — doughnut or SVG bars, %/€, follows year + basis. */
 export function SegmentChart({ model }: { model: MarketModel }) {
   const [{ year, market }] = useDashboardParams(model.last);
+  const SEG_COLORS = useSegColors();
   const [type, setType] = useState<"doughnut" | "bars">("doughnut");
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   const [show, setShow] = useState<"pct" | "eur">("pct");

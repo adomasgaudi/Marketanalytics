@@ -6,7 +6,8 @@ import type { CompanyYear, MarketModel } from "./types";
 type Insight = {
   accent: string;
   title: string;
-  body: React.ReactNode;
+  /** Rendered as bullets — keep each line ~10-15 words, figures intact. */
+  lines: React.ReactNode[];
 };
 
 const pct = (from: number | null | undefined, to: number | null | undefined) =>
@@ -47,30 +48,20 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
     insights.push({
       accent: "border-l-accent",
       title,
-      body: (
+      lines: [
         <>
-          {year} moved <b>{fmtPct(revMove)}</b> YoY against a{" "}
-          <b>{fmtPct(pct(base.revenue, cur.revenue))}</b> run since {first} (
-          {fmtEur(base.revenue)} → {fmtEur(cur.revenue)}).{" "}
-          {jobless ? (
-            <>
-              Headcount fell <b>{fmtPct(headMove)}</b> while revenue held — agencies are
-              doing the same work with fewer people, which shows up as productivity, not
-              growth.
-            </>
-          ) : headMove > revMove + 0.03 ? (
-            <>
-              Headcount grew <b>{fmtPct(headMove)}</b>, faster than revenue — hiring is
-              running ahead of the business, which erodes revenue per head.
-            </>
-          ) : (
-            <>
-              Headcount moved <b>{fmtPct(headMove)}</b> — roughly in step with revenue, so
-              this is real demand, not a staffing effect.
-            </>
-          )}
-        </>
-      ),
+          <b>{fmtPct(revMove)}</b> YoY; <b>{fmtPct(pct(base.revenue, cur.revenue))}</b>{" "}
+          since {first} ({fmtEur(base.revenue)} → {fmtEur(cur.revenue)})
+        </>,
+        <>
+          Headcount <b>{fmtPct(headMove)}</b> —{" "}
+          {jobless
+            ? "productivity, not growth"
+            : headMove > revMove + 0.03
+              ? "hiring ahead of the business, eroding revenue per head"
+              : "in step with revenue: real demand"}
+        </>,
+      ],
     });
   }
 
@@ -97,26 +88,21 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
       title: passThrough
         ? `${big.seg} is big, but it's a pass-through`
         : `${big.seg} is where the money is`,
-      body: (
+      lines: [
         <>
-          {big.seg} takes <b>{Math.round((big.revenue / cur.revenue) * 100)}%</b> of{" "}
-          {year} revenue ({fmtEur(big.revenue)}, led by {big.top.brand}), but keeps only{" "}
-          <b>{bigMargin.toFixed(1)}%</b> of it as profit.{" "}
-          {passThrough ? (
-            <>
-              Most of that revenue flows through to media/suppliers — the real fee economy
-              is{" "}
-              {list(segRevenue.slice(1, 4).map((s) => `${s.seg} (${fmtEur(s.revenue)})`))}
-              , where talent competition actually happens.
-            </>
-          ) : (
-            <>
-              That is a healthy keep-rate for its size — segment revenue here reflects
-              real fee work, not pass-through spend.
-            </>
-          )}
-        </>
-      ),
+          <b>{Math.round((big.revenue / cur.revenue) * 100)}%</b> of {year} revenue (
+          {fmtEur(big.revenue)}, led by {big.top.brand}); keeps{" "}
+          <b>{bigMargin.toFixed(1)}%</b> as profit
+        </>,
+        passThrough ? (
+          <>
+            Rest flows to media/suppliers — real fee economy is{" "}
+            {list(segRevenue.slice(1, 4).map((s) => `${s.seg} (${fmtEur(s.revenue)})`))}
+          </>
+        ) : (
+          <>Healthy keep-rate for its size: fee work, not pass-through spend</>
+        ),
+      ],
     });
   }
 
@@ -139,13 +125,14 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
       title: smallWin
         ? "Scale does not buy profitability"
         : "The big firms out-earn the boutiques",
-      body: (
+      lines: [
         <>
-          The largest quartile by fee revenue runs a median <b>{bigMedian.toFixed(0)}%</b>{" "}
-          margin vs <b>{smallMedian.toFixed(0)}%</b> for everyone else.{" "}
-          {smallWin
-            ? "Being big mostly means more payroll, not more profit — the year's margin leaders are specialists: "
-            : "Size is paying off this year, but the top of the margin table is still held by specialists: "}
+          Top quartile by fee revenue: median <b>{bigMedian.toFixed(0)}%</b> margin vs{" "}
+          <b>{smallMedian.toFixed(0)}%</b> for the rest
+        </>,
+        <>
+          {smallWin ? "Big means payroll, not profit. " : "Scale pays, but "}
+          margin leaders are specialists:{" "}
           {list(
             byMargin.slice(0, 3).map(({ row, m }) => (
               <b key={row.brand}>
@@ -153,9 +140,8 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
               </b>
             )),
           )}
-          .
-        </>
-      ),
+        </>,
+      ],
     });
   }
 
@@ -186,39 +172,35 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
       title: unprofitableGrower
         ? "Growth isn't the same as health"
         : "Agencies in trouble",
-      body: (
-        <>
-          {unprofitableGrower ? (
-            <>
-              <b>{unprofitableGrower.brand}</b> grew revenue{" "}
-              <b>
-                {fmtPct(
-                  pct(
-                    model.byBrand[unprofitableGrower.brand]?.[back]?.revenue,
-                    unprofitableGrower.revenue,
-                  ),
-                )}
-              </b>{" "}
-              since {back} yet posted a <b>{fmtEur(unprofitableGrower.profit)}</b> loss —
-              buying share below cost.{" "}
-            </>
-          ) : null}
-          {decliners.length ? (
-            <>
-              {unprofitableGrower ? "Meanwhile " : ""}
-              {list(
-                decliners.slice(0, 4).map(({ row, change }) => (
-                  <b key={row.brand}>
-                    {row.brand} ({fmtPct(change)})
-                  </b>
-                )),
-              )}{" "}
-              lost over a quarter of their revenue since {back} — the market grows, but
-              not for everyone.
-            </>
-          ) : null}
-        </>
-      ),
+      lines: [
+        unprofitableGrower ? (
+          <>
+            <b>{unprofitableGrower.brand}</b>:{" "}
+            <b>
+              {fmtPct(
+                pct(
+                  model.byBrand[unprofitableGrower.brand]?.[back]?.revenue,
+                  unprofitableGrower.revenue,
+                ),
+              )}
+            </b>{" "}
+            growth since {back}, yet a <b>{fmtEur(unprofitableGrower.profit)}</b> loss —
+            share bought below cost
+          </>
+        ) : null,
+        decliners.length ? (
+          <>
+            {list(
+              decliners.slice(0, 4).map(({ row, change }) => (
+                <b key={row.brand}>
+                  {row.brand} ({fmtPct(change)})
+                </b>
+              )),
+            )}{" "}
+            lost a quarter-plus of revenue since {back}
+          </>
+        ) : null,
+      ].filter(Boolean),
     });
   }
 
@@ -234,16 +216,17 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
         salaryUp > revUp
           ? "Wage inflation is squeezing margins"
           : "Revenue is outrunning wages",
-      body: (
+      lines: [
         <>
-          Median agency salary rose <b>{fmtPct(salaryUp)}</b> since {back} (€
-          {Math.round(salaryBase)} → €{Math.round(salary)}/mo) while market revenue moved{" "}
-          <b>{fmtPct(revUp)}</b>.{" "}
+          Median salary <b>{fmtPct(salaryUp)}</b> since {back} (€{Math.round(salaryBase)}{" "}
+          → €{Math.round(salary)}/mo) vs revenue <b>{fmtPct(revUp)}</b>
+        </>,
+        <>
           {salaryUp > revUp
-            ? "Payroll is growing faster than the market — margin pressure."
-            : "The market is absorbing wage growth so far."}
-        </>
-      ),
+            ? "Payroll outgrowing the market — margin pressure"
+            : "Market absorbing wage growth so far"}
+        </>,
+      ],
     });
   }
 
@@ -270,30 +253,25 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
       title: clustered
         ? `Demand is shifting toward ${hot[0]}`
         : `Winners of ${back}–${year}`,
-      body: (
+      lines: [
         <>
-          The standout growers among €1M+ firms —{" "}
+          Standout €1M+ growers:{" "}
           {list(
             winners.slice(0, 4).map(({ row, change }) => (
               <b key={row.brand}>
                 {row.brand} ({fmtPct(change)})
               </b>
             )),
-          )}{" "}
-          —{" "}
-          {clustered ? (
-            <>
-              mostly play in <b>{hot[0]}</b>: that is where client budgets are moving, not
-              just who is executing well.
-            </>
-          ) : (
-            <>
-              are spread across segments, so the growth story is company execution rather
-              than one hot niche.
-            </>
           )}
-        </>
-      ),
+        </>,
+        clustered ? (
+          <>
+            Mostly <b>{hot[0]}</b> — client budgets are moving there
+          </>
+        ) : (
+          <>Spread across segments — execution, not one hot niche</>
+        ),
+      ],
     });
   }
 
@@ -325,7 +303,16 @@ export function Insights({ model, year }: { model: MarketModel; year: number }) 
             )}
           >
             <h3 className="mb-1 text-[13px] font-semibold">{insight.title}</h3>
-            <p className="text-muted [&>b]:text-ink text-[12.5px]">{insight.body}</p>
+            <ul className="text-muted [&_b]:text-ink space-y-1 text-[12.5px]">
+              {insight.lines.map((line, i) => (
+                <li
+                  key={i}
+                  className="relative pl-3 before:absolute before:left-0 before:content-['·']"
+                >
+                  {line}
+                </li>
+              ))}
+            </ul>
           </article>
         ))}
       </div>

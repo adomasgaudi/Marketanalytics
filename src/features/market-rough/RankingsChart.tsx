@@ -5,7 +5,8 @@ import { Pill, PillRow } from "@/components/ui/pills";
 import { type BarRow, BarsSvg } from "./BarsSvg";
 import { margin } from "./metrics";
 import { EngTag } from "./SegmentChart";
-import { SEG_COLORS, segName } from "./segments";
+import { segName } from "./segments";
+import { useSegColors } from "./useSegColors";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
@@ -37,6 +38,7 @@ type Row = { brand: string; val: number; rank: number; grp?: "top" | "mid" | "bo
     hidden middle; selected gold, top green, bottom red. */
 export function RankingsChart({ model }: { model: MarketModel }) {
   const [{ year, basis, companies }] = useDashboardParams(model.last);
+  const SEG_COLORS = useSegColors();
   const [metricKey, setMetricKey] = useState("estimatedIncome");
   const [segs, setSegs] = useState<Set<string>>(new Set(model.segments));
 

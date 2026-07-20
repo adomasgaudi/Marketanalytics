@@ -1,4 +1,11 @@
-# HANDOFF — /explore port (v2 rekView → v3), stopped mid-verification
+# HANDOFF — /explore port (v2 rekView → v3) — RESOLVED 2026-07-18
+
+All open items below are done: the 2-min SSR was `structuredClone` on the
+Turbopack JSON-module namespace + the module-scope rek_tabs.json import (now
+`readFileSync` + `JSON.parse`, ~1s); /explore verified headless; layout matched
+to v2 (1500px wrap, legacy section order via ExploreView children slot);
+coverage-grid click-through opens the company in the field explorer
+(window CustomEvent `explore:company`). Original notes kept for history:
 
 _2026-07-18. Branch `stacked`, committed as v3.38.0 (WIP)._
 
@@ -25,7 +32,7 @@ now link to a new **/explore** page — a faithful port of the legacy v2 rekView
   (sheet tabs, sort, search, pager, CSV, English toggle) from
   `data/sheets_data.json`.
 
-All files pass `npx tsc --noEmit` and eslint.
+All files pass `pnpm exec tsc --noEmit` and eslint.
 
 ## OPEN PROBLEM — /explore takes ~2 min to server-render in dev
 
@@ -46,7 +53,7 @@ So the cost is page-level. Prime suspects, in order:
    dev (imported even in the bisections).
 3. `loadProfiles()` — unlikely; /companies uses it and is fast.
 
-How to reproduce: `npm run dev`, then
+How to reproduce: `pnpm dev`, then
 `Measure-Command { Invoke-WebRequest http://localhost:3000/explore -UseBasicParsing -TimeoutSec 300 }`.
 Watch out for STALE dev servers holding :3000 (`⚠ Port 3000 is in use` in the
 log means requests hit an old process — `taskkill /PID <pid> /F`).

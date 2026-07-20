@@ -5,7 +5,6 @@ import { Seg } from "@/components/ui/seg";
 import { fmtEur, fmtInt } from "./format";
 import { LineChart, type LineSeries } from "./LineChart";
 import {
-  SEG_COLORS,
   SEG_METRICS,
   segDesc,
   type SegBasis,
@@ -16,6 +15,7 @@ import {
 } from "./segments";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
+import { useSegColors } from "./useSegColors";
 
 const TREND_METRICS: SegMetricKey[] = [
   "revenue",
@@ -39,6 +39,7 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
   const basis: SegBasis =
     market === "avg" ? "company" : market === "emp" ? "emp" : "total";
   const fmt = metric === "employees" ? fmtInt : fmtEur;
+  const SEG_COLORS = useSegColors();
 
   // Legacy renderRevSegAll: series ordered by their latest-year value, and
   // 5/95 + 25/75 percentile bands for avgSalary when ≤2 segments are picked.

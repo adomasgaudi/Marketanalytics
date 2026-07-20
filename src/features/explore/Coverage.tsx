@@ -17,6 +17,11 @@ const COV_FIELDS = [
   "estimatedIncome",
 ] as const;
 
+/** Legacy parity: clicking a coverage row opens that company in the field
+    explorer. Coverage is slotted through the server page, so it can't take a
+    callback from ExploreView — it announces the pick as a window event. */
+export const EXPLORE_COMPANY_EVENT = "explore:company";
+
 function covInfo(rec: CompanyYear | undefined) {
   if (!rec) return { cls: "cov-0", lbl: "No data", n: 0 };
   const n = COV_FIELDS.reduce((a, f) => a + (rec[f] != null ? 1 : 0), 0);
@@ -123,29 +128,37 @@ export function Coverage({ model }: { model: MarketModel }) {
                 {y}
               </div>
             ))}
-            {shown.map((b) => (
-              // Fragment per company row: sticky name cell + one square per year.
-              <div key={b} className="contents">
-                <div
-                  className="border-line bg-panel text-ink sticky left-0 z-[1] flex items-center overflow-hidden border-b px-1.5 py-[5px] font-semibold text-ellipsis whitespace-nowrap"
-                  title={b}
-                >
-                  {b}
+            {shown.map((b) => {
+              const open = () =>
+                window.dispatchEvent(
+                  new CustomEvent(EXPLORE_COMPANY_EVENT, { detail: b }),
+                );
+              return (
+                // Fragment per company row: sticky name cell + one square per year.
+                <div key={b} className="contents">
+                  <div
+                    className="border-line bg-panel text-ink hover:bg-panel2 sticky left-0 z-[1] flex cursor-pointer items-center overflow-hidden border-b px-1.5 py-[5px] font-semibold text-ellipsis whitespace-nowrap"
+                    title={`${b} — open in explorer`}
+                    onClick={open}
+                  >
+                    {b}
+                  </div>
+                  {years.map((y) => {
+                    const info = covInfo(byBrand[b]?.[y]);
+                    return (
+                      <div
+                        key={y}
+                        className="border-line hover:bg-panel2 flex cursor-pointer items-center justify-center border-b px-1.5 py-[5px]"
+                        title={`${b} · ${y} — ${info.lbl}`}
+                        onClick={open}
+                      >
+                        <Csq cls={info.cls} />
+                      </div>
+                    );
+                  })}
                 </div>
-                {years.map((y) => {
-                  const info = covInfo(byBrand[b]?.[y]);
-                  return (
-                    <div
-                      key={y}
-                      className="border-line flex items-center justify-center border-b px-1.5 py-[5px]"
-                      title={`${b} · ${y} — ${info.lbl}`}
-                    >
-                      <Csq cls={info.cls} />
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

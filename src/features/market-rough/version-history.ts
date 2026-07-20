@@ -9,6 +9,14 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.39.0",
+    date: "2026-07-20",
+    sp: 5,
+    title:
+      "DSGN-01 | refined skin (data-skin, one-tap kill switch): rebuilt tokens across all 4 theme×palette combos, 5 new accent palettes (7 total, cycling), SVG icon set replaces emoji + hand-drawn cog, Segoe UI Variable + tabular figures + 12px small-type floor, hidden scrollbars, 150ms motion system + focus rings, nav/footer aligned to the content column, settings right-anchored, chip × → right-quarter hover zone, rankings open by default, scatter 50% taller",
+    desc: "Chart palettes rebuilt on a spectral wheel. The previous segment palette failed 4 of 5 machine checks (two hues read as gray; PA↔Production house ΔE 12.6). Current palette is beauty-first by explicit choice — measured trade-off: adjacent violet↔blue ΔE 1.3 under deuteranopia, normal-vision floor 9.6 vs 15 target.",
+  },
+  {
     v: "v3.38.1",
     date: "2026-07-20",
     sp: 1,

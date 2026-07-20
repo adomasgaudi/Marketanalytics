@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { fmtM } from "./format";
-import { SEG_COLORS } from "./segments";
+import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
@@ -14,6 +14,7 @@ type Dot = { x: number; y: number; r: number; brand: string; seg: string };
  */
 export function ScatterScrub({ model }: { model: MarketModel }) {
   const [{ market }] = useDashboardParams(model.last);
+  const SEG_COLORS = useSegColors();
   const perEmp = market === "emp";
   const [t, setT] = useState(0);
 

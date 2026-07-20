@@ -1,3 +1,4 @@
+import { Bloom } from "@/components/ui/bloom";
 import { Footer } from "@/components/ui/footer";
 import { CollapsibleCard } from "@/components/ui/group";
 import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
@@ -25,18 +26,28 @@ export default function CompaniesPage() {
     <main>
       <TopNav active="companies" />
       <div className="wrap mx-auto w-full max-w-[840px] px-6 pt-6 pb-[84px]">
-        <header className="mt-1.5 mb-[22px]">
-          <h1 className="text-[34px] leading-[1.05] font-extrabold tracking-[-0.5px]">
+        {/* Same hero treatment as Markets: oversized title over a soft accent
+            bloom that bleeds past the 840px column. */}
+        <header className="relative isolate mt-1.5 mb-8">
+          <Bloom
+            color="accent"
+            opacity={16}
+            className="-top-24 -left-[20vw] h-[380px] w-[80vw]"
+          />
+          <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
             Companies <ViewWord scope="co" />
           </h1>
-          <p className="text-muted mt-1.5 text-[13.5px]">
+          <p className="text-muted mt-3 text-[13.5px]">
             Profiles, rankings &amp; deep-dives for the {model.brands.length} tracked
             agencies
           </p>
+          <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
         </header>
 
         {/* Page-level, like the legacy liftCompanyControls: the picker scrolls
             away; the compare pills stick for the WHOLE Companies page. */}
+        {/* NOT wrapped in a bloom container — an extra ancestor box would clamp
+            the sticky compare pills to it instead of the whole page. */}
         <CompanyPicker model={model} profiles={profiles} />
 
         <ViewGroupCard
@@ -52,9 +63,17 @@ export default function CompaniesPage() {
           ]}
         ></ViewGroupCard>
 
-        <CollapsibleCard title="Company rankings">
-          <RankingsChart model={model} />
-        </CollapsibleCard>
+        <div className="relative isolate">
+          <Bloom
+            color="gold"
+            opacity={8}
+            blur={90}
+            className="-top-24 -left-[10vw] h-[420px] w-[70vw]"
+          />
+          <CollapsibleCard title="Company rankings">
+            <RankingsChart model={model} />
+          </CollapsibleCard>
+        </div>
 
         <a
           href="/explore"

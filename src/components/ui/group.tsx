@@ -64,15 +64,33 @@ export function GroupCard({
 export function CollapsibleCard({
   title,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   children: React.ReactNode;
+  /** Expanded on load. Still collapsible — this only sets the initial state. */
+  defaultOpen?: boolean;
 }) {
   return (
-    <details className="group mb-7">
+    <details className="group mb-7" open={defaultOpen}>
       <summary className="mt-7 mb-3.5 flex cursor-pointer list-none items-center gap-2.5 text-[18px] font-bold [&::-webkit-details-marker]:hidden">
-        <span className="text-muted text-[12px] transition-transform group-open:rotate-90">
-          ▸
+        {/* Stroked chevron rather than the ▸ glyph, which renders as a
+            different weight per-platform and never matched the icon set. */}
+        <span className="text-muted transition-transform group-open:rotate-90">
+          <svg
+            viewBox="0 0 24 24"
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="block"
+          >
+            <path d="m9 6 6 6-6 6" />
+          </svg>
         </span>
         {title}
       </summary>

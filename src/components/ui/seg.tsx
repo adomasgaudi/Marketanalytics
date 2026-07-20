@@ -28,7 +28,7 @@ export function Seg<T extends string>({
       role="group"
       aria-label={label}
       className={cn(
-        "border-line inline-flex overflow-hidden rounded-[8px] border",
+        "seg-group border-line inline-flex overflow-hidden rounded-[8px] border",
         className,
       )}
     >
@@ -37,8 +37,9 @@ export function Seg<T extends string>({
           key={option.value}
           type="button"
           onClick={() => onChange(option.value)}
+          data-on={option.value === value}
           className={cn(
-            "border-line cursor-pointer border-r px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors last:border-r-0",
+            "seg-btn border-line cursor-pointer border-r px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors last:border-r-0",
             option.value === value
               ? "bg-accent text-white"
               : "bg-panel2 text-muted hover:text-ink",

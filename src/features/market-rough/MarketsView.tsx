@@ -80,15 +80,9 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
     market === "avg" ? (prev.count ? prev.employees / prev.count : 0) : prev.employees;
   const empFmt = (v: number) => (market === "avg" ? v.toFixed(1) : fmtInt(v));
 
-  // Legacy card order: Revenue, Employees, Salary, Turnover.
+  // Revenue and Turnover are already in the money-flow card — only the two
+  // figures it can't show get their own KPI cards.
   const cards: KpiCardData[] = [
-    yoyCard(
-      market === "emp" ? "Revenue/empl." : "Revenue",
-      scale(cur.estimatedIncome),
-      scalePrev(prev.estimatedIncome),
-      fmtEur,
-      "Revenue",
-    ),
     {
       ...yoyCard(
         market === "avg" ? "Avg employees/co" : "Total employees",
@@ -106,37 +100,36 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
       ...yoyCard("Median salary", salary, salaryPrev, salaryFmt, "Median salary"),
       formula: `Middle value of every company's average monthly salary in ${year} (only companies reporting > €500/mo). YoY = this ÷ ${year - 1} − 1.`,
     },
-    yoyCard(
-      market === "emp" ? "Turnover/empl." : "Turnover",
-      scale(cur.revenue),
-      scalePrev(prev.revenue),
-      fmtEur,
-      "Turnover",
-    ),
   ];
 
   return (
     <div>
-      <MoneyFlow
-        turnover={scale(cur.revenue)}
-        revenue={scale(cur.estimatedIncome)}
-        profit={scale(cur.profit)}
-        prev={
-          hasPrev
-            ? {
-                T: scalePrev(prev.revenue),
-                R: scalePrev(prev.estimatedIncome),
-                P: scalePrev(prev.profit),
-              }
-            : {}
-        }
-      />
-
       <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
-      <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
-        {cards.map((card) => (
-          <KpiCard key={card.label} card={card} mode={kpiMode} />
-        ))}
+      {/* iPad and up: money-flow and the KPI cards sit on one row. */}
+      <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
+        <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
+          <MoneyFlow
+            mode={kpiMode}
+            yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
+            turnover={scale(cur.revenue)}
+            revenue={scale(cur.estimatedIncome)}
+            profit={scale(cur.profit)}
+            prev={
+              hasPrev
+                ? {
+                    T: scalePrev(prev.revenue),
+                    R: scalePrev(prev.estimatedIncome),
+                    P: scalePrev(prev.profit),
+                  }
+                : {}
+            }
+          />
+        </div>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:w-[340px] md:flex-none md:grid-cols-2">
+          {cards.map((card) => (
+            <KpiCard key={card.label} card={card} mode={kpiMode} />
+          ))}
+        </div>
       </div>
 
       <Insights model={model} year={year} />

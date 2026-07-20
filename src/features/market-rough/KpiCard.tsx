@@ -78,7 +78,7 @@ export function KpiModeToggle({
   return (
     <div className="-mt-1 mb-2 flex items-center justify-end">
       <div className="border-line bg-panel inline-flex overflow-hidden rounded-full border">
-        {btn("value", "#", "Show number")}
+        {btn("value", "€", "Show euro value")}
         {btn("change", "%", "Show percent change")}
       </div>
     </div>

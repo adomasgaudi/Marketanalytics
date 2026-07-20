@@ -522,7 +522,9 @@ export function SheetExplorer({ order }: { order?: string[] }) {
 /* ---------- the two legacy <details> sections from rekView ---------- */
 export function RawSheets() {
   return (
-    <>
+    // One wrapper element: as ExploreView's `after` slot this crosses the RSC
+    // boundary, where a fragment's child array warns for list keys.
+    <div>
       <details className="mt-[26px]">
         <summary className="text-ink cursor-pointer font-semibold select-none">
           📑 Initial data — raw Excel sheets (all companies)
@@ -543,6 +545,6 @@ export function RawSheets() {
         </div>
         <SheetExplorer order={["Raw"]} />
       </details>
-    </>
+    </div>
   );
 }

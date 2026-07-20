@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { CompanyProfile } from "./profile";
-import { SEG_COLORS, segName } from "./segments";
+import { segName } from "./segments";
+import { useCmpColor, useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 
 /** Legacy ovCoSelect thresholds — value 0 = "any". */
@@ -57,20 +58,21 @@ const optCls = "cursor-pointer rounded-[6px] px-2.5 py-1.5 text-[12.5px] hover:b
  * a segment multi-select, four metric-threshold dropdowns, Clear filters, the
  * active-segment pill row, a hint line, search, and the results list.
  */
-/** Compare palette shared with chips/tabs/grouped bars (legacy CMP_PAL). */
-export const CMP_PAL = [
-  "#4f8ef7",
-  "#f0523d",
-  "#f0b429",
-  "#a06bff",
-  "#25c26e",
-  "#ff5cb0",
-  "#00c2d1",
-  "#8a6d3b",
-  "#b0b7c3",
-  "#7a8cff",
-];
-export const cmpColor = (i: number) => CMP_PAL[i % CMP_PAL.length];
+/**
+ * Compare palette shared with chips/tabs/grouped bars (legacy CMP_PAL).
+ * Machine-validated as a 10-slot categorical palette in BOTH modes — see
+ * segments.ts for the same treatment and why dark is selected, not flipped.
+ *
+ * Slot order is load-bearing: adjacent-pair separation was validated in this
+ * order (slot 5 sits between yellow and aqua because purple↔cyan failed
+ * deuteranopia separation at ΔE 4.0). Do not reorder.
+ *
+ * The old set failed 3 of 5 checks — #8a6d3b and #b0b7c3 read as gray, and
+ * cyan↔pink were ΔE 5.3 apart under deuteranopia.
+ */
+/* Values live in segments.ts so the colour hooks can import them without a
+   cycle back through this module; re-exported here for existing call sites. */
+export { CMP_PAL, CMP_PAL_DARK, CMP_PAL_LIGHT, cmpColor } from "./segments";
 
 const activeOf = (selected: string[], off: string[]) =>
   selected.filter((b) => !off.includes(b));
@@ -114,8 +116,9 @@ export function CompareChips({
   onOffChange: (off: string[]) => void;
   fallbackBrand: string;
 }) {
-  if (selected.length < 2) return null;
+  const cmpColor = useCmpColor();
   const activeList = activeOf(selected, off);
+  if (selected.length < 2) return null;
 
   const apply = (next: { selected: string[]; off: string[] }) => {
     if (next.selected !== selected) onChange(next.selected);
@@ -140,7 +143,9 @@ export function CompareChips({
                 : "Hidden · click to show"
             }
             className={cn(
-              "border-line bg-panel2 flex flex-none cursor-pointer items-center gap-1.5 rounded-[7px] border px-2 py-[5px] text-[12px] font-semibold",
+              // relative + pr-6: positioning context for .chip-remove, and
+              // enough right padding that the zone never covers the label.
+              "border-line bg-panel2 relative flex flex-none cursor-pointer items-center gap-1.5 rounded-[7px] border py-[5px] pr-6 pl-2 text-[12px] font-semibold",
               primary && "border-accent text-accent",
               !on && "text-muted border-dashed opacity-55",
             )}
@@ -157,16 +162,20 @@ export function CompareChips({
               style={{ background: cmpColor(i) }}
             />
             {b}
+            {/* Remove = the chip's right quarter, not a glyph. Invisible until
+                hovered, then it tints red so the target is the shape itself.
+                Bigger hit area on touch, and no tiny × to aim at. */}
             <span
+              role="button"
+              tabIndex={-1}
               title="Remove from list"
-              className="text-muted hover:text-red text-[14px] leading-none"
+              aria-label={`Remove ${b}`}
+              className="chip-remove absolute inset-y-0 right-0 w-1/4 rounded-r-[7px]"
               onClick={(e) => {
                 e.stopPropagation();
                 apply(removeFromPool(b, selected, off, fallbackBrand));
               }}
-            >
-              ×
-            </span>
+            />
           </span>
         );
       })}
@@ -215,6 +224,7 @@ export function CompanySelector({
   onOffChange: (off: string[]) => void;
   profiles?: Record<string, CompanyProfile>;
 }) {
+  const SEG_COLORS = useSegColors();
   const [open, setOpen] = useState(false);
   const [nested, setNested] = useState<string | null>(null);
   const [query, setQuery] = useState("");

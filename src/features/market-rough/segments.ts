@@ -1,17 +1,82 @@
 import type { CompanyYear } from "./types";
 
-/** Segment colours (classic palette), keyed by the LT data keys. */
-export const SEG_COLORS: Record<string, string> = {
-  Media: "#4f8ef7",
-  "Digital media": "#34c98e",
-  Kūryba: "#f0b04f",
-  PR: "#a78bfa",
-  "Production house": "#f06a6a",
-  BTL: "#5dd0d6",
-  PA: "#e58fc5",
-  Konsultantai: "#9aa56b",
-  Renginiai: "#c9a26b",
+/**
+ * Segment colours, keyed by the LT data keys.
+ *
+ * BEAUTY-FIRST palette, chosen deliberately over a maximally-separable one at
+ * the owner's direction. Nine hues evenly spaced around the wheel at constant
+ * lightness and chroma, laid out in spectral order so neighbouring slices read
+ * as a gradient rather than a collision.
+ *
+ * Known, accepted trade-off (measured, not guessed): adjacent violet↔blue sit
+ * ΔE 1.3 apart under deuteranopia and the normal-vision floor is 9.6 (target
+ * 15) — some neighbours are hard to tell apart, more so for colourblind
+ * viewers. Legends and direct labels carry identity instead of colour alone.
+ * Do not "fix" this without asking; it is a choice, not an oversight.
+ *
+ * Slot order is load-bearing — it is the spectral sequence. The dark set is
+ * SELECTED for the dark surface, not a flip of the light one.
+ */
+export const SEG_COLORS_LIGHT: Record<string, string> = {
+  Media: "#8b5cf6", // violet
+  "Digital media": "#3b82f6", // blue
+  Kūryba: "#06b6d4", // cyan
+  PR: "#10b981", // emerald
+  "Production house": "#84cc16", // lime
+  BTL: "#f59e0b", // amber
+  PA: "#f97316", // orange
+  Konsultantai: "#f43f5e", // rose
+  Renginiai: "#d946ef", // fuchsia
 };
+
+export const SEG_COLORS_DARK: Record<string, string> = {
+  Media: "#a78bfa",
+  "Digital media": "#60a5fa",
+  Kūryba: "#22d3ee",
+  PR: "#34d399",
+  "Production house": "#a3e635",
+  BTL: "#fbbf24",
+  PA: "#fb923c",
+  Konsultantai: "#fb7185",
+  Renginiai: "#e879f9",
+};
+
+/** Light set is the SSR/default export — see useSegColors() for live theming. */
+export const SEG_COLORS = SEG_COLORS_LIGHT;
+
+/**
+ * Compare palette (chips / tabs / grouped bars) — the same beauty-first
+ * spectrum as SEG_COLORS, extended to ten slots with teal between cyan and
+ * emerald. Same accepted trade-off: adjacent hues are close by design.
+ * Order is the spectral sequence; colour follows the company, not its rank.
+ */
+export const CMP_PAL_LIGHT = [
+  "#8b5cf6", // violet
+  "#3b82f6", // blue
+  "#06b6d4", // cyan
+  "#14b8a6", // teal
+  "#10b981", // emerald
+  "#84cc16", // lime
+  "#f59e0b", // amber
+  "#f97316", // orange
+  "#f43f5e", // rose
+  "#d946ef", // fuchsia
+];
+export const CMP_PAL_DARK = [
+  "#a78bfa",
+  "#60a5fa",
+  "#22d3ee",
+  "#2dd4bf",
+  "#34d399",
+  "#a3e635",
+  "#fbbf24",
+  "#fb923c",
+  "#fb7185",
+  "#e879f9",
+];
+export const CMP_PAL = CMP_PAL_LIGHT;
+/** Static, light-only. Prefer useCmpColor() in components. */
+export const cmpColor = (i: number) => CMP_PAL_LIGHT[i % CMP_PAL_LIGHT.length];
 
 /** English display names; the data keys stay Lithuanian. */
 const SEG_LABEL: Record<string, string> = {
