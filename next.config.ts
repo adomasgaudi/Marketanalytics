@@ -2,6 +2,7 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   // Hide the floating dev overlay. Compile/runtime errors still surface.
   devIndicators: false,
   // The shared dev corner ships raw TypeScript — Next compiles it in place.
