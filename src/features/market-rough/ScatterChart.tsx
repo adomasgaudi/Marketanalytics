@@ -109,10 +109,10 @@ export function ScatterChart({ model }: { model: MarketModel }) {
         Size vs profitability ({year}
         {perEmp ? " · per employee" : ""})
       </h2>
-      {/* Height is set per breakpoint, not fixed: the canvas is ~310px wide on
-          a phone and ~790px on desktop, so a single height reads as cramped on
-          one and absurdly tall on the other. iPad is the reference shape. */}
-      <div className="chartbox tall relative h-[450px] md:h-[210px] lg:h-[90px]">
+      {/* The phone height is intentionally shorter via the mobile override;
+          tablets and desktops retain enough vertical room for axes, legend,
+          and the bubble field to remain readable. */}
+      <div className="chartbox tall relative h-[450px] md:h-[300px] lg:h-[320px]">
         <span className="text-muted absolute top-0 left-0 z-1 text-[10px] opacity-60">
           Chart.js
         </span>

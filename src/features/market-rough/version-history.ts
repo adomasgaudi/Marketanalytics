@@ -9,6 +9,12 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.7",
+    date: "2026-07-20",
+    title: "Restore scatter depth",
+    desc: "Restored desktop chart height so the scatter axes, legend, and bubbles remain readable.",
+  },
+  {
     v: "v3.40.6",
     date: "2026-07-20",
     title: "Theme-rich segment colours",
