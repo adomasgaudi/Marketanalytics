@@ -109,6 +109,15 @@ export function IconAverage(p: IconProps) {
   );
 }
 
+/* Three stacked slices: compact marker for narrowing the market to a segment. */
+export function IconSegments(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M4 6h16M7 12h10M10 18h4" />
+    </Svg>
+  );
+}
+
 /* Half-filled disc — the standard "swap colour scheme" mark. */
 export function IconPalette(p: IconProps) {
   return (

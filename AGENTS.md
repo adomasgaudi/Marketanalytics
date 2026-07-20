@@ -2,7 +2,7 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.40.1
+> v3.40.3
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -17,6 +17,10 @@ Are you a ?
 <br />
 
 ## Workflow
+
+### Push policy
+
+Push approved work directly to `main`. This policy was set by the owner on 2026-07-20; do not ask again unless they change it.
 
 ### There is the agent Harness "space" and the Project "Space:
 

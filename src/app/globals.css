@@ -287,6 +287,43 @@ html[data-mode="default"] [data-devcorner] {
   padding-bottom: calc(var(--bb-h, 60px) + 24px);
 }
 
+/* On phones the segment picker is a 44px tap target with a bespoke segment
+   icon, leaving the year track its maximum width. The native select remains
+   transparent on top for keyboard and screen-reader semantics; desktop keeps
+   the labelled control. */
+.segment-select-wrap {
+  position: relative;
+  flex: none;
+}
+.segment-select-icon {
+  display: none;
+}
+@media (max-width: 767px) {
+  .segment-select-wrap {
+    width: 44px;
+    height: 44px;
+  }
+  .segment-select-icon {
+    border: 1px solid var(--color-line);
+    background: var(--color-panel2);
+    color: var(--color-muted);
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 8px;
+  }
+  .segment-select {
+    position: absolute;
+    inset: 0;
+    width: 44px;
+    height: 44px;
+    max-width: none;
+    cursor: pointer;
+    opacity: 0;
+  }
+}
+
 /* Legacy ≤600px density: tighter page gutters, 12px cards, 300px chart boxes.
    Deliberately unlayered so these beat the utility classes at small widths. */
 @media (max-width: 600px) {

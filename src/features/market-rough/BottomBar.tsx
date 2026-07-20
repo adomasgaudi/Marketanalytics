@@ -3,7 +3,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { cn } from "@/lib/cn";
-import { IconAverage, IconBuilding, IconMarket, IconPerson } from "./Icons";
+import { IconAverage, IconBuilding, IconMarket, IconPerson, IconSegments } from "./Icons";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
 import { useViewMode } from "./ViewSync";
@@ -42,13 +42,13 @@ const BASIS_HINTS: Record<Basis, string> = {
 /** Basis/market controls are icon-only in the bar; the words live on the data
  *  headings above. Tooltip + aria-label carry the meaning. */
 const BASIS_ICONS: Record<Basis, ReactNode> = {
-  total: <IconBuilding size={15} />,
-  emp: <IconPerson size={15} />,
+  total: <IconBuilding size={18} />,
+  emp: <IconPerson size={18} />,
 };
 const MARKET_ICONS: Record<MarketMode, ReactNode> = {
-  avg: <IconAverage size={15} />,
-  emp: <IconPerson size={15} />,
-  whole: <IconMarket size={15} />,
+  avg: <IconAverage size={18} />,
+  emp: <IconPerson size={18} />,
+  whole: <IconMarket size={18} />,
 };
 
 /** Carousel-dot treatment: only the selected year spells itself out, the rest
@@ -207,7 +207,7 @@ export function BottomBar({
       ref={barRef}
       // Padding matches TopNav: folds in the content wrap's px-6 (840+48=792)
       // so the year pills line up with the page content's left edge.
-      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] pt-1 pb-2.5 shadow-[0_-1px_6px_rgba(0,0,0,.14)] md:pt-2.5 md:pb-4"
+      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] pt-2 pb-4 shadow-[0_-1px_6px_rgba(0,0,0,.14)] md:pt-2.5 md:pb-4"
     >
       {/* One line: abbreviated year ticks + icon-only basis leave room for the
           segment select, so nothing wraps to a second row. On desktop there is
@@ -284,47 +284,35 @@ export function BottomBar({
         {/* Segment scope for the cash-flow panel. A <select> rather than a Seg:
             9 segments as joined buttons would be ~900px wide. */}
         {mode === "market" && (
-          <select
-            ref={segmentRef}
-            aria-label="Segment scope"
-            value={segment}
-            onChange={(e) => setParams({ segment: e.target.value || null })}
-            // Height matches the basis Seg beside it (py-0.5 + leading-5, then
-            // py-1 + leading-6 from md), so the two controls read as one row
-            // instead of the select sitting short.
-            className="border-line bg-panel2 text-muted hover:text-ink max-w-[104px] flex-none cursor-pointer rounded border px-1.5 py-0.5 text-[11px] leading-5 font-semibold md:max-w-[180px] md:px-2.5 md:py-1 md:text-[12px] md:leading-6"
-          >
-            <option value="">All segments</option>
-            {model.segments.map((s) => (
-              <option key={s} value={s}>
-                {segName(s)}
-              </option>
-            ))}
-          </select>
+          <div className="segment-select-wrap">
+            <span className="segment-select-icon" aria-hidden>
+              <IconSegments size={20} />
+            </span>
+            <select
+              ref={segmentRef}
+              aria-label="Segment scope"
+              value={segment}
+              onChange={(e) => {
+                const next = e.target.value;
+                setParams({ segment: next || null });
+                showFlash(`Segment: ${next ? segName(next) : "All segments"}`);
+              }}
+              className="segment-select border-line bg-panel2 text-muted hover:text-ink max-w-[104px] flex-none cursor-pointer rounded border px-1.5 py-0.5 text-[11px] leading-5 font-semibold md:max-w-[180px] md:px-2.5 md:py-1 md:text-[12px] md:leading-6"
+            >
+              <option value="">All segments</option>
+              {model.segments.map((s) => (
+                <option key={s} value={s}>
+                  {segName(s)}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
 
         {/* The basis control can't shrink (nowrap labels, ~340px wide), so on a
             phone it used to stretch the flex line and push the year track off
             screen. Its own scroll box keeps the overflow local. */}
         <div className="relative max-w-full min-w-0 shrink [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
-          {/* Names the pick just made, then fades. aria-live so it is announced
-              rather than only seen — the buttons themselves are icon-only. */}
-          {(hint ?? flash) && (
-            <div
-              role="status"
-              aria-live="polite"
-              className={cn(
-                "border-line bg-panel pointer-events-none absolute right-0 bottom-[calc(100%+6px)] z-[420] max-w-[240px] rounded-md border px-2.5 py-1 text-[11.5px] shadow-[0_4px_16px_rgba(0,0,0,.22)]",
-                // Explanation wraps and reads quieter; the confirmation is one
-                // short emphatic line.
-                hint
-                  ? "text-muted font-medium"
-                  : "text-ink font-semibold whitespace-nowrap",
-              )}
-            >
-              {hint ?? flash}
-            </div>
-          )}
           {mode === "market" ? (
             <Seg
               label="Market basis"
@@ -346,7 +334,7 @@ export function BottomBar({
               }}
               onHoverChange={(m) => setHint(m && MARKET_HINTS[m])}
               className="flex-none"
-              btnClassName="px-2.5 py-1 text-[13px] leading-[22px] md:px-3.5 md:text-[12.5px] md:leading-[28px]"
+              btnClassName="px-3 py-2 text-[14px] leading-5 md:px-3.5 md:py-1 md:text-[12.5px] md:leading-[28px]"
             />
           ) : (
             <Seg
@@ -368,11 +356,25 @@ export function BottomBar({
               }}
               onHoverChange={(b) => setHint(b && BASIS_HINTS[b])}
               className="flex-none"
-              btnClassName="px-2.5 py-1 text-[13px] leading-[22px] md:px-3.5 md:text-[12.5px] md:leading-[28px]"
+              btnClassName="px-3 py-2 text-[14px] leading-5 md:px-3.5 md:py-1 md:text-[12.5px] md:leading-[28px]"
             />
           )}
         </div>
       </div>
+      {/* Kept outside the horizontally scrolling control wrapper so it cannot
+          be clipped on narrow phones. */}
+      {(hint ?? flash) && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={cn(
+            "border-line bg-panel pointer-events-none absolute right-3 bottom-[calc(100%+8px)] z-[420] max-w-[240px] rounded-md border px-2.5 py-1.5 text-[12px] shadow-[0_4px_16px_rgba(0,0,0,.22)]",
+            hint ? "text-muted font-medium" : "text-ink font-semibold whitespace-nowrap",
+          )}
+        >
+          {hint ?? flash}
+        </div>
+      )}
     </div>
   );
 }
