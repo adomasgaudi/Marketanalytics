@@ -9,6 +9,12 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.9",
+    date: "2026-07-20",
+    title: "Company donut ring",
+    desc: "Added an unlabeled inner ring that subdivides each segment by its reporting companies.",
+  },
+  {
     v: "v3.40.8",
     date: "2026-07-20",
     title: "Gradient-aligned segments",

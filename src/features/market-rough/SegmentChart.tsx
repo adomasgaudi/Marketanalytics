@@ -90,6 +90,28 @@ export function SegmentChart({ model }: { model: MarketModel }) {
 
   const title = `${year} ${SEG_METRICS[metric].label} by segment${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
 
+  // The inner ring subdivides each displayed segment value by its reporting
+  // companies, so the two rings keep exactly the same segment boundaries.
+  const companySlices = rows.flatMap((segmentRow) => {
+    const companyValues = model.rows
+      .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
+      .map((d) => {
+        const raw = SEG_METRICS[metric].f(d);
+        const value =
+          raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
+        return Math.max(0, value);
+      })
+      .filter((value) => value > 0);
+    const companyTotal = companyValues.reduce((sum, value) => sum + value, 0);
+    const displayedSegmentValue = Math.max(0, segmentRow.v);
+    return companyTotal > 0 && displayedSegmentValue > 0
+      ? companyValues.map((value) => ({
+          value: (value / companyTotal) * displayedSegmentValue,
+          color: SEG_COLORS[segmentRow.s] ?? "#888",
+        }))
+      : [];
+  });
+
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">{title}</h2>
@@ -148,6 +170,14 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                   borderColor: cssVar("--color-chart-bg"),
                   borderWidth: 2,
                 },
+                {
+                  // The outer ring remains the readable description; company
+                  // slices intentionally have no labels, legend, or tooltip.
+                  data: companySlices.map((slice) => slice.value),
+                  backgroundColor: companySlices.map((slice) => slice.color),
+                  borderColor: cssVar("--color-chart-bg"),
+                  borderWidth: 1,
+                },
               ],
             }}
             options={
@@ -179,6 +209,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                     },
                   },
                   tooltip: {
+                    filter: (c: { datasetIndex: number }) => c.datasetIndex === 0,
                     titleColor: cssVar("--color-ink"),
                     bodyColor: cssVar("--color-ink"),
                     backgroundColor: cssVar("--color-panel"),
