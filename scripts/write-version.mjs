@@ -8,7 +8,7 @@ export const APP_VERSION_LABEL = \`v\${APP_VERSION}\`;
 writeFileSync(new URL("../src/app-version.ts", import.meta.url), body);
 
 // AGENTS.md carries a human-visible version number too. Derive it from the same source
-// so the two can't drift — run `npm run version:write` after bumping package.json.
+// so the two can't drift — run `pnpm version:write` after bumping package.json.
 const agentsUrl = new URL("../AGENTS.md", import.meta.url);
 const agents = readFileSync(agentsUrl, "utf8");
 const stamped = agents.replace(/^> v.*$/m, `> v${pkg.version}`);

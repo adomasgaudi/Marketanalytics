@@ -1,4 +1,4 @@
-// `npm run dev` — starts Next AND the legacy-template watcher together.
+// `pnpm dev` — starts Next AND the legacy-template watcher together.
 //
 // Both are needed because the app serves two things: the Next routes (hot-reloaded by
 // next dev) and the generated legacy dashboard embedded in /ugly (rebuilt by the watcher).
@@ -9,7 +9,7 @@ const opts = { stdio: "inherit", shell: process.platform === "win32" };
 const children = [
   spawn("node", ["scripts/watch-legacy.mjs"], opts),
   // -H 0.0.0.0 binds every interface, so phones on the same Wi-Fi can hit http://<lan-ip>:3000.
-  spawn("npx", ["next", "dev", "-H", "0.0.0.0"], opts),
+  spawn("pnpm", ["exec", "next", "dev", "-H", "0.0.0.0"], opts),
 ];
 
 // If either process dies, take the other down too — a half-running dev setup is a trap

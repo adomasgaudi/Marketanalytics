@@ -9,6 +9,13 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.38.1",
+    date: "2026-07-20",
+    sp: 1,
+    title:
+      "DEVX-03 | npm → pnpm (packageManager pin, lockfile, onlyBuiltDependencies); `pnpm lan` prints the Wi-Fi URL + opens a scannable QR PNG; allowedDevOrigins unblocks phone testing (page loaded but never hydrated, so nothing was clickable)",
+  },
+  {
     v: "v3.38.0",
     date: "2026-07-18",
     sp: 5,

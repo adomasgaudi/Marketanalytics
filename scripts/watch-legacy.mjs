@@ -5,7 +5,7 @@
 // nothing you can see, so this closes that gap: save the template, the build runs,
 // and `next dev` (which serves public/) picks it up on refresh.
 //
-// Runs as part of `npm run dev` — you should never need to call build_site.py by hand.
+// Runs as part of `pnpm dev` — you should never need to call build_site.py by hand.
 import { spawn } from "node:child_process";
 import { watch } from "node:fs";
 
