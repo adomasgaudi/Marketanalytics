@@ -55,25 +55,33 @@ export function KpiCard({ card, mode }: { card: KpiCardData; mode: KpiMode }) {
 export function KpiModeToggle({
   mode,
   onChange,
+  /** No prior year to compare against — % has nothing to show. */
+  changeDisabled,
 }: {
   mode: KpiMode;
   onChange: (mode: KpiMode) => void;
+  changeDisabled?: boolean;
 }) {
-  const btn = (value: KpiMode, label: string, title: string) => (
-    <button
-      type="button"
-      title={title}
-      onClick={() => onChange(value)}
-      className={cn(
-        // 13.33px mirrors the legacy's computed size (its font shorthand falls
-        // back to the inherited size); divider is border-right, as there.
-        "border-line h-7 w-[34px] cursor-pointer border-r text-[13.33px] font-bold transition-colors last:border-r-0",
-        mode === value ? "bg-accent text-white" : "bg-panel2 text-muted",
-      )}
-    >
-      {label}
-    </button>
-  );
+  const btn = (value: KpiMode, label: string, title: string) => {
+    const off = value === "change" && changeDisabled;
+    return (
+      <button
+        type="button"
+        disabled={off}
+        title={off ? "No earlier year to compare against" : title}
+        onClick={() => onChange(value)}
+        className={cn(
+          // 13.33px mirrors the legacy's computed size (its font shorthand falls
+          // back to the inherited size); divider is border-right, as there.
+          "border-line h-7 w-[34px] border-r text-[13.33px] font-bold transition-colors last:border-r-0",
+          off ? "bg-panel2 text-muted cursor-not-allowed opacity-40" : "cursor-pointer",
+          !off && mode === value ? "bg-accent text-white" : "bg-panel2 text-muted",
+        )}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div className="-mt-1 mb-2 flex items-center justify-end">

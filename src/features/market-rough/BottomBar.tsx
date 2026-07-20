@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { Seg } from "@/components/ui/seg";
 import { cn } from "@/lib/cn";
 import type { MarketModel } from "./types";
-import { useViewMode } from "./ViewSync";
 import {
   BASES,
   type Basis,
@@ -37,8 +36,6 @@ export function BottomBar({
   mode: "market" | "company";
 }) {
   const [{ year, market, basis }, setParams] = useDashboardParams(model.last);
-  // Legacy: the year row only makes sense per-year — all-years mode hides it.
-  const [view] = useViewMode(mode === "market" ? "mkt" : "co");
 
   // Legacy syncBottomBarH: measure the bar (it can wrap to 2 rows on narrow
   // screens) and publish --bb-h, which .wrap uses as its bottom padding so
@@ -66,12 +63,9 @@ export function BottomBar({
       className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]"
     >
       <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2">
-        <div
-          className={cn(
-            "flex min-w-0 flex-1 basis-[200px] [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden",
-            view === "all" && "hidden",
-          )}
-        >
+        {/* Shown in every view, not just per-year: the row is the page's year
+            anchor, and hiding it in all-years mode made the bar jump. */}
+        <div className="flex min-w-0 flex-1 basis-[200px] [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {model.finYears.map((option) => (
             <button
               key={option}

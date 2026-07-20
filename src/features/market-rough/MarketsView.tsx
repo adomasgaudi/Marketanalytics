@@ -25,7 +25,7 @@ export function marketTabLabel(model: MarketModel, year: number, market: string)
 /** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
 export function MarketPerYear({ model }: { model: MarketModel }) {
   const [{ year, market }] = useDashboardParams(model.last);
-  // #/% is ephemeral UI, not page identity — it stays out of the URL.
+  // €/% is ephemeral UI, not page identity — it stays out of the URL.
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
 
   // Derived from the selected year, never stored: React recomputes these on
@@ -33,6 +33,9 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
   const cur = marketTotals(model.rows, year);
   const prev = marketTotals(model.rows, year - 1);
   const hasPrev = prev.count > 0;
+  // The first year has nothing to compare against, so % is force-reverted to €
+  // rather than left showing a grid of em-dashes.
+  const shownMode: KpiMode = hasPrev ? kpiMode : "value";
 
   // Three views of the same money: ÷ companies, ÷ employees, or raw totals.
   const div = market === "avg" ? cur.count : market === "emp" ? cur.employees : 1;
@@ -104,12 +107,12 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
 
   return (
     <div>
-      <KpiModeToggle mode={kpiMode} onChange={setKpiMode} />
+      <KpiModeToggle mode={shownMode} onChange={setKpiMode} changeDisabled={!hasPrev} />
       {/* iPad and up: money-flow and the KPI cards sit on one row. */}
       <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
         <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
           <MoneyFlow
-            mode={kpiMode}
+            mode={shownMode}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             turnover={scale(cur.revenue)}
             revenue={scale(cur.estimatedIncome)}
@@ -127,7 +130,7 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:w-[340px] md:flex-none md:grid-cols-2">
           {cards.map((card) => (
-            <KpiCard key={card.label} card={card} mode={kpiMode} />
+            <KpiCard key={card.label} card={card} mode={shownMode} />
           ))}
         </div>
       </div>
