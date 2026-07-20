@@ -9,6 +9,18 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.11",
+    date: "2026-07-20",
+    title: "Company hover names",
+    desc: "Added company names to inner donut slice tooltips without adding static labels.",
+  },
+  {
+    v: "v3.40.10",
+    date: "2026-07-20",
+    title: "Stable thin company ring",
+    desc: "Fixed company slice positions across updates and made the inner donut half as thick.",
+  },
+  {
     v: "v3.40.9",
     date: "2026-07-20",
     title: "Company donut ring",

@@ -90,26 +90,40 @@ export function SegmentChart({ model }: { model: MarketModel }) {
 
   const title = `${year} ${SEG_METRICS[metric].label} by segment${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
 
-  // The inner ring subdivides each displayed segment value by its reporting
-  // companies, so the two rings keep exactly the same segment boundaries.
+  // Fixed company slots preserve every inner-slice position across years and
+  // metric/basis changes. Missing or unreported companies simply shrink to 0.
   const companySlices = rows.flatMap((segmentRow) => {
-    const companyValues = model.rows
-      .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
-      .map((d) => {
-        const raw = SEG_METRICS[metric].f(d);
-        const value =
-          raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
-        return Math.max(0, value);
-      })
-      .filter((value) => value > 0);
-    const companyTotal = companyValues.reduce((sum, value) => sum + value, 0);
+    const brands = [
+      ...new Set(
+        model.rows.filter((d) => d.activities.includes(segmentRow.s)).map((d) => d.brand),
+      ),
+    ].sort();
+    const valuesByBrand = new Map(
+      model.rows
+        .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
+        .map((d) => {
+          const raw = SEG_METRICS[metric].f(d);
+          const value =
+            raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
+          return [d.brand, Math.max(0, value)] as const;
+        }),
+    );
+    const companyTotal = [...valuesByBrand.values()].reduce(
+      (sum, value) => sum + value,
+      0,
+    );
     const displayedSegmentValue = Math.max(0, segmentRow.v);
-    return companyTotal > 0 && displayedSegmentValue > 0
-      ? companyValues.map((value) => ({
-          value: (value / companyTotal) * displayedSegmentValue,
-          color: SEG_COLORS[segmentRow.s] ?? "#888",
-        }))
-      : [];
+    return brands.map((brand) => {
+      const value = valuesByBrand.get(brand) ?? 0;
+      return {
+        value:
+          companyTotal > 0 && displayedSegmentValue > 0
+            ? (value / companyTotal) * displayedSegmentValue
+            : 0,
+        brand,
+        color: SEG_COLORS[segmentRow.s] ?? "#888",
+      };
+    });
   });
 
   return (
@@ -158,9 +172,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         <div className="chartbox relative h-[340px]">
           <EngTag label="Chart.js" />
           <Doughnut
-            // Year changes animate in place (arcs grow/shrink); metric/basis
-            // changes are a different quantity, so those still rebuild.
-            key={`${metric}-${basis}`}
+            // Stable segment/company slots let Chart.js animate all changes.
             data={{
               labels: rows.map((o) => segName(o.s)),
               datasets: [
@@ -169,6 +181,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                   backgroundColor: rows.map((o) => SEG_COLORS[o.s] ?? "#888"),
                   borderColor: cssVar("--color-chart-bg"),
                   borderWidth: 2,
+                  weight: 2,
                 },
                 {
                   // The outer ring remains the readable description; company
@@ -177,6 +190,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                   backgroundColor: companySlices.map((slice) => slice.color),
                   borderColor: cssVar("--color-chart-bg"),
                   borderWidth: 1,
+                  weight: 1,
                 },
               ],
             }}
@@ -209,15 +223,21 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                     },
                   },
                   tooltip: {
-                    filter: (c: { datasetIndex: number }) => c.datasetIndex === 0,
                     titleColor: cssVar("--color-ink"),
                     bodyColor: cssVar("--color-ink"),
                     backgroundColor: cssVar("--color-panel"),
                     borderColor: cssVar("--color-line"),
                     borderWidth: 1,
                     callbacks: {
-                      label: (c: { dataIndex: number; label?: string }) =>
-                        ` ${c.label}: ${fmtEur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`,
+                      label: (c: {
+                        datasetIndex: number;
+                        dataIndex: number;
+                        label?: string;
+                      }) => {
+                        if (c.datasetIndex === 1)
+                          return ` ${companySlices[c.dataIndex]?.brand ?? "Company"}`;
+                        return ` ${c.label}: ${fmtEur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`;
+                      },
                     },
                   },
                 },
