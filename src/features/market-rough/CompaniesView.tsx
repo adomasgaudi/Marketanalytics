@@ -6,8 +6,9 @@ import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
+import { moneyFormulas, Op, V, yoy } from "./Formula";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
-import { rankOf } from "./metrics";
+import { defaultBrand, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankVsMarket } from "./RankVsMarket";
@@ -19,7 +20,7 @@ import { useDashboardParams } from "./useDashboardParams";
     list, first entry is the primary brand. */
 export function useSelectedBrands(model: MarketModel) {
   const [{ companies, off }, setParams] = useDashboardParams(model.last);
-  const pool = companies.length ? companies : [model.brands[0]];
+  const pool = companies.length ? companies : [defaultBrand(model)];
   const active = pool.filter((b) => !off.includes(b));
   return {
     pool,
@@ -68,7 +69,7 @@ export function CompanyPicker({
             off={off}
             onChange={set}
             onOffChange={setOff}
-            fallbackBrand={model.brands[0]}
+            fallbackBrand={defaultBrand(model)}
           />
         </div>
       )}
@@ -92,29 +93,43 @@ export function CompanyTabs({
 }) {
   if (brands.length < 2) return null;
   return (
+    // Underline-indicator tabs rather than bordered folder tabs: no seams to
+    // hide, and the active rule is drawn in the company's own chip colour, so
+    // the tab, its dot and its bars all read as one identity.
     <div
       role="tablist"
       aria-label="Selected companies"
-      className="mb-3 flex [scrollbar-width:none] gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+      className="border-line mb-3 flex [scrollbar-width:none] gap-0.5 overflow-x-auto border-b [&::-webkit-scrollbar]:hidden"
     >
-      {brands.map((b) => (
-        <button
-          key={b}
-          type="button"
-          role="tab"
-          aria-selected={b === focused}
-          onClick={() => onFocus(b)}
-          className={`border-line flex flex-none cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[12.5px] font-semibold ${
-            b === focused ? "bg-accent border-accent text-white" : "bg-panel2 text-muted"
-          }`}
-        >
-          <i
-            className="h-2 w-2 rounded-full"
-            style={{ background: cmpColor((colorPool ?? brands).indexOf(b)) }}
-          />
-          {b}
-        </button>
-      ))}
+      {brands.map((b) => {
+        const color = cmpColor((colorPool ?? brands).indexOf(b));
+        const on = b === focused;
+        return (
+          <button
+            key={b}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            onClick={() => onFocus(b)}
+            className={`relative flex flex-none cursor-pointer items-center gap-2 rounded-t-md px-3 py-2 text-[13px] font-semibold whitespace-nowrap transition-colors select-none ${
+              on ? "text-ink" : "text-muted hover:text-ink hover:bg-panel2/60"
+            }`}
+          >
+            <i
+              className="h-2 w-2 flex-none rounded-full transition-opacity"
+              style={{ background: color, opacity: on ? 1 : 0.45 }}
+            />
+            {b}
+            {on && (
+              <span
+                aria-hidden
+                className="absolute inset-x-2 -bottom-px h-[2px] rounded-full"
+                style={{ background: color }}
+              />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -209,6 +224,11 @@ export function CompanyPerYear({
   // Legacy company KPI cards: Revenue / Employees / Median salary / Turnover,
   // each labelled "23→24", with YoY change, prev→cur range and a formula fold.
   const hasFin = row.revenue != null;
+  // 93 filings report employees:0 (20 brands). Per-employee then divides by a
+  // zero denominator, every money figure nulls out, and MoneyFlow's own
+  // `revenue == null && turnover == null` guard silently unmounts the whole
+  // card. Say why instead of leaving a hole.
+  const noHeadcount = perEmployee && !((row.employees ?? 0) > 0);
   const hasPrev = !!(
     prev &&
     (prev.revenue != null ||
@@ -219,41 +239,19 @@ export function CompanyPerYear({
   const yrLab = hasPrev
     ? `${String(year - 1).slice(2)}→${String(year).slice(2)}`
     : String(year);
-  const E = (v: number | null) =>
-    v != null ? `€${Math.round(v).toLocaleString()}` : "–";
-
   const emp = row.employees != null ? Math.round(row.employees) : null;
   const sal = (row.avgSalary ?? 0) > 500 ? Math.round(row.avgSalary!) : null;
   const prevEmp = prev?.employees != null ? Math.round(prev.employees) : null;
   const prevSal = (prev?.avgSalary ?? 0) > 500 ? Math.round(prev!.avgSalary!) : null;
-  const curRevenue = scaleMoney(row.estimatedIncome);
-  const prevRevenue = scaleMoneyPrev(prev?.estimatedIncome);
-  const curTurnover = scaleMoney(row.revenue);
-  const prevTurnover = scaleMoneyPrev(prev?.revenue);
-  const revYoY =
-    curRevenue != null && (prevRevenue ?? 0) > 0 ? curRevenue / prevRevenue! - 1 : null;
-  const turnYoY =
-    curTurnover != null && (prevTurnover ?? 0) > 0
-      ? curTurnover / prevTurnover! - 1
-      : null;
   const empYoY = row.employees != null && (prevEmp ?? 0) > 0;
-  const salYoY = row.avgSalary != null && (prevSal ?? 0) > 0;
+  // Must key off `sal`, not row.avgSalary: sal is null for sub-€500 noise, and
+  // the range text dereferences sal! whenever salYoY is true.
+  const salYoY = sal != null && (prevSal ?? 0) > 0;
 
+  // Revenue and Turnover are already in the money-flow card above — only the
+  // two figures it can't show get their own KPI cards. (Mirrors MarketsView;
+  // the companies path was missed when markets was de-duplicated.)
   const cards: KpiCardData[] = [
-    {
-      label: `${perEmployee ? "Revenue/empl." : "Revenue"} ${yrLab}`,
-      valueText: hasFin ? fmtEur(curRevenue) : "–",
-      changeText: hasFin && revYoY != null ? fmtPct(revYoY) : "—",
-      rangeText:
-        revYoY != null
-          ? `${fmtEur(prevRevenue)} → ${fmtEur(curRevenue)}`
-          : fmtEur(curRevenue),
-      changeCls: revYoY != null ? (revYoY >= 0 ? "pos" : "neg") : "",
-      formula:
-        revYoY != null
-          ? `Year-over-year change in revenue. (${E(curRevenue)} ÷ ${E(prevRevenue)}) − 1.`
-          : undefined,
-    },
     {
       label: `Employees ${yrLab}`,
       valueText: emp != null ? emp.toLocaleString() : "–",
@@ -264,9 +262,40 @@ export function CompanyPerYear({
           ? emp.toLocaleString()
           : "–",
       changeCls: empYoY ? (row.employees! >= prevEmp! ? "pos" : "neg") : "",
-      formula: empYoY
-        ? `Sum of reported headcount in ${year}. YoY = this year ÷ last year − 1.`
-        : undefined,
+      formulas: [
+        {
+          // One company, one filing — no sum or median to take. The figure is
+          // read straight off the year's record.
+          name: "Headcount",
+          math: (
+            <>
+              <V c="HC" />
+              <Op o="=" />
+              <V c="emp" />
+            </>
+          ),
+          vars: [
+            {
+              code: "HC",
+              label: "headcount shown",
+              value: emp != null ? emp.toLocaleString() : undefined,
+            },
+            {
+              code: "emp",
+              label: `${brand}'s reported employees, ${year}`,
+              field: "employees",
+            },
+          ],
+        },
+        ...(empYoY
+          ? [
+              yoy("HC", "headcount", "employees", {
+                cur: emp?.toLocaleString(),
+                prev: prevEmp?.toLocaleString(),
+              }),
+            ]
+          : []),
+      ],
     },
     {
       label: `Median salary ${yrLab}`,
@@ -278,23 +307,38 @@ export function CompanyPerYear({
           ? `€${sal.toLocaleString()}/mo`
           : "–",
       changeCls: salYoY ? (row.avgSalary! >= prevSal! ? "pos" : "neg") : "",
-      formula: salYoY
-        ? `Middle value of the company's average monthly salary in ${year}. YoY = this year ÷ last year − 1.`
-        : undefined,
-    },
-    {
-      label: `${perEmployee ? "Turnover/empl." : "Turnover"} ${yrLab}`,
-      valueText: hasFin ? fmtEur(curTurnover) : "–",
-      changeText: hasFin && turnYoY != null ? fmtPct(turnYoY) : "—",
-      rangeText:
-        turnYoY != null
-          ? `${fmtEur(prevTurnover)} → ${fmtEur(curTurnover)}`
-          : fmtEur(curTurnover),
-      changeCls: turnYoY != null ? (turnYoY >= 0 ? "pos" : "neg") : "",
-      formula:
-        turnYoY != null
-          ? `Year-over-year change in turnover. (${E(curTurnover)} ÷ ${E(prevTurnover)}) − 1.`
-          : undefined,
+      formulas: [
+        {
+          name: "Average monthly salary",
+          math: (
+            <>
+              <V c="SAL" />
+              <Op o="=" />
+              <V c="avg" />
+            </>
+          ),
+          vars: [
+            {
+              code: "SAL",
+              label: "salary shown",
+              value: sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
+            },
+            {
+              code: "avg",
+              label: `${brand}'s average monthly pay, ${year} (only > €500/mo counts)`,
+              field: "avgSalary",
+            },
+          ],
+        },
+        ...(salYoY
+          ? [
+              yoy("SAL", "average salary", "avgSalary", {
+                cur: sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
+                prev: prevSal != null ? `€${prevSal.toLocaleString()}/mo` : undefined,
+              }),
+            ]
+          : []),
+      ],
     },
   ];
 
@@ -302,14 +346,29 @@ export function CompanyPerYear({
     <div>
       {tabs}
       {profileCard}
+      {/* Above the money-flow card, as in MarketsView: the toggle governs both
+          that card and the KPI cards, so it must not sit between them. */}
+      <KpiModeToggle
+        mode={kpiMode}
+        onChange={(m) => {
+          touched.current = true;
+          setKpiMode(m);
+        }}
+      />
       {!hasFin ? (
         // Partial year (2025+): record exists but financials aren't filed yet.
         <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
           {year} financials aren&rsquo;t filed yet — Lithuanian annual reports land ~mid-
           {year + 1}. Showing Sodra headcount &amp; pay only.
         </div>
+      ) : noHeadcount ? (
+        <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
+          {brand} reported no {year} headcount, so per-employee figures can&rsquo;t be
+          computed. Switch the basis to full company to see the {year} financials.
+        </div>
       ) : (
         <MoneyFlow
+          mode={kpiMode}
           turnover={scaleMoney(row.revenue)}
           revenue={scaleMoney(row.estimatedIncome)}
           profit={scaleMoney(row.profit)}
@@ -322,6 +381,23 @@ export function CompanyPerYear({
                 }
               : {}
           }
+          formulas={moneyFormulas({
+            div:
+              perEmployee && (row.employees ?? 0) > 0
+                ? {
+                    code: "HC",
+                    label: "this company's headcount",
+                    value: Math.round(row.employees!).toLocaleString(),
+                  }
+                : null,
+            // The figures as shown on the card, so the fold reads as a worked
+            // example rather than a definition (matches MarketsView).
+            values: {
+              T: fmtEur(scaleMoney(row.revenue)),
+              R: fmtEur(scaleMoney(row.estimatedIncome)),
+              P: fmtEur(scaleMoney(row.profit)),
+            },
+          })}
           rank={perEmployee ? null : turnover}
           tag={
             perEmployee && (row.employees ?? 0) > 0
@@ -331,13 +407,6 @@ export function CompanyPerYear({
         />
       )}
 
-      <KpiModeToggle
-        mode={kpiMode}
-        onChange={(m) => {
-          touched.current = true;
-          setKpiMode(m);
-        }}
-      />
       <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
         {cards.map((card) => (
           <KpiCard key={card.label} card={card} mode={kpiMode} />

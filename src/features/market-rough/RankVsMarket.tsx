@@ -9,7 +9,6 @@ import { EngTag } from "./SegmentChart";
 import { margin, type Rank, rankOf } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
 
-const euro = (v: number) => fmtEur(v);
 const pctText = (v: number) => `${v.toFixed(1)}%`;
 
 /**
@@ -55,9 +54,9 @@ export function RankVsMarket({
     fmt: (v: number) => string;
   };
   const metricDefs: Metric[] = [
-    { label: "Revenue", f: pe((r) => r.estimatedIncome), fmt: euro },
-    { label: "Turnover", f: pe((r) => r.revenue), fmt: euro },
-    { label: "Net profit", f: pe((r) => r.profit), fmt: euro },
+    { label: "Revenue", f: pe((r) => r.estimatedIncome), fmt: fmtEur },
+    { label: "Turnover", f: pe((r) => r.revenue), fmt: fmtEur },
+    { label: "Net profit", f: pe((r) => r.profit), fmt: fmtEur },
     { label: "Profit margin", f: margin, fmt: pctText },
     ...(perEmployee || partialYear
       ? []

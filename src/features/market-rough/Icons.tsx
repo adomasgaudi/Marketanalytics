@@ -68,6 +68,47 @@ export function IconSparkle(p: IconProps) {
   );
 }
 
+/* Basis marks for the bottom bar. Read as a set: one figure = per head, the
+   block = the whole company, many figures = the whole market. */
+
+export function IconBuilding(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M4 20h16M6 20V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15" />
+      <path d="M9.5 8h.01M14.5 8h.01M9.5 12h.01M14.5 12h.01M11 20v-3.5h2V20" />
+    </Svg>
+  );
+}
+
+export function IconPerson(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+    </Svg>
+  );
+}
+
+/* Two figures + a divider bar — "spread across the market", not a globe. */
+export function IconMarket(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M3 20h18" />
+      <path d="M6 20V11M10.5 20V6M15 20v-7M19.5 20V9" />
+    </Svg>
+  );
+}
+
+/* Slashed zero = the mean. Matches the ⌀ it replaces without the font risk. */
+export function IconAverage(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <ellipse cx="12" cy="12" rx="6" ry="8" />
+      <path d="M5.5 19.5 18.5 4.5" />
+    </Svg>
+  );
+}
+
 /* Half-filled disc — the standard "swap colour scheme" mark. */
 export function IconPalette(p: IconProps) {
   return (

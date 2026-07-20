@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { type Formula, FormulaPopover, yoy } from "./Formula";
 import { fmtEur, fmtPct } from "./format";
 import type { Rank } from "./metrics";
 
@@ -19,6 +20,8 @@ type Props = {
   mode?: "value" | "change";
   /** "2024 → 2025" — the span the YoY figures compare. */
   yrLabel?: string;
+  /** Dev-mode formula folds, keyed by legend row. Built by `moneyFormulas`. */
+  formulas?: Partial<Record<"T" | "R" | "P", Formula[]>>;
 };
 
 function Yoy({
@@ -59,6 +62,7 @@ export function MoneyFlow({
   tag,
   mode = "value",
   yrLabel,
+  formulas = {},
 }: Props) {
   if (revenue == null && turnover == null) return null;
   const T = turnover ?? revenue!;
@@ -76,6 +80,18 @@ export function MoneyFlow({
     pass > 0 && { cls: "bg-mf-turn", pct: pctOf(pass) },
   ].filter(Boolean) as { cls: string; pct: number }[];
 
+  // Each row pairs its own definition with the shared YoY formula, and only
+  // shows the latter when there is a prior year to compare against.
+  const folds = (
+    k: "T" | "R" | "P",
+    code: string,
+    label: string,
+    before?: number | null,
+  ) => [
+    ...(formulas[k] ?? []),
+    ...(formulas[k] && before != null && before > 0 ? [yoy(code, label)] : []),
+  ];
+
   const legend = [
     profit != null && {
       dot: "bg-green",
@@ -83,6 +99,7 @@ export function MoneyFlow({
       val: fmtEur(profit),
       cur: profit,
       before: prev.P,
+      formulas: folds("P", "P", "net profit", prev.P),
     },
     revenue != null && {
       dot: "bg-mf-rev",
@@ -90,6 +107,7 @@ export function MoneyFlow({
       val: fmtEur(revenue),
       cur: revenue,
       before: prev.R,
+      formulas: folds("R", "R", "revenue", prev.R),
     },
     {
       dot: "bg-mf-turn",
@@ -97,6 +115,7 @@ export function MoneyFlow({
       val: fmtEur(T),
       cur: turnover,
       before: prev.T,
+      formulas: folds("T", "T", "turnover", prev.T),
       // Turnover is the card's headline now that the title row is gone.
       lead: true,
     },
@@ -106,6 +125,7 @@ export function MoneyFlow({
     val: string;
     cur: number | null;
     before?: number | null;
+    formulas: Formula[];
     lead?: boolean;
   }[];
 
@@ -197,6 +217,9 @@ export function MoneyFlow({
                   </b>
                 )}
               </div>
+              {/* Sits after the figure, not under it: the row is a single
+                  baseline and the popover anchors itself inside the viewport. */}
+              {!!item.formulas.length && <FormulaPopover formulas={item.formulas} />}
             </div>
           ))}
         </div>

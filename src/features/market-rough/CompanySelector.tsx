@@ -51,7 +51,8 @@ const THRESHOLDS: Record<string, [number, string][]> = {
 type MetricKey = keyof typeof THRESHOLDS;
 const METRIC_KEYS = Object.keys(THRESHOLDS) as MetricKey[];
 
-const optCls = "cursor-pointer rounded-[6px] px-2.5 py-1.5 text-[12.5px] hover:bg-panel2";
+const optCls =
+  "cursor-pointer rounded-[6px] px-2.5 py-1.5 text-[12.5px] transition-colors hover:bg-accent/12 hover:text-accent";
 
 /**
  * The legacy company picker: a "Fabula ▾" button opening a dropdown panel with
@@ -72,7 +73,7 @@ const optCls = "cursor-pointer rounded-[6px] px-2.5 py-1.5 text-[12.5px] hover:b
  */
 /* Values live in segments.ts so the colour hooks can import them without a
    cycle back through this module; re-exported here for existing call sites. */
-export { CMP_PAL, CMP_PAL_DARK, CMP_PAL_LIGHT, cmpColor } from "./segments";
+export { cmpColor } from "./segments";
 
 const activeOf = (selected: string[], off: string[]) =>
   selected.filter((b) => !off.includes(b));
@@ -162,20 +163,22 @@ export function CompareChips({
               style={{ background: cmpColor(i) }}
             />
             {b}
-            {/* Remove = the chip's right quarter, not a glyph. Invisible until
-                hovered, then it tints red so the target is the shape itself.
-                Bigger hit area on touch, and no tiny × to aim at. */}
+            {/* Remove: a visible × that still owns the chip's whole right
+                quarter as its hit area, so the target stays thumb-sized on
+                touch while reading as an explicit control. */}
             <span
               role="button"
               tabIndex={-1}
               title="Remove from list"
               aria-label={`Remove ${b}`}
-              className="chip-remove absolute inset-y-0 right-0 w-1/4 rounded-r-[7px]"
+              className="chip-remove text-muted absolute inset-y-0 right-0 flex w-1/4 items-center justify-center rounded-r-[7px] text-[13px] leading-none"
               onClick={(e) => {
                 e.stopPropagation();
                 apply(removeFromPool(b, selected, off, fallbackBrand));
               }}
-            />
+            >
+              ×
+            </span>
           </span>
         );
       })}
@@ -506,10 +509,11 @@ export function CompanySelector({
                   aria-selected={isOn(b)}
                   className={cn(
                     optCls,
-                    isOn(b) && "bg-accent font-semibold text-white",
+                    isOn(b) &&
+                      "bg-accent hover:bg-accent font-semibold text-white hover:text-white",
                     selected.includes(b) &&
                       !isOn(b) &&
-                      "bg-panel2 text-muted border-line border border-dashed font-semibold",
+                      "text-muted border-accent/45 hover:text-muted border border-dashed bg-transparent font-semibold",
                   )}
                   onClick={(e) => {
                     e.stopPropagation();

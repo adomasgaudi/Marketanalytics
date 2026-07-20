@@ -16,209 +16,376 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--tx);
-    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-    padding:40px 20px 80px}
-  .wrap{max-width:1080px;margin:0 auto}
-  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
-  h2{font-size:20px;margin:52px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-  h3{font-size:15px;margin:26px 0 8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
-  p{color:var(--dim);margin:0 0 14px}
-  code{font-family:var(--mono);font-size:.88em;background:var(--panel2);
-    padding:1px 5px;border-radius:4px;color:var(--tx)}
-  .lead{font-size:16px;max-width:70ch}
+    font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 40px}
+  h1{font-size:20px;margin:0;letter-spacing:-.02em;display:inline-block}
+  h1 span{color:var(--dim);font-weight:400;font-size:13px;margin-left:10px}
+  h3{font-size:11px;margin:18px 0 7px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+  p{color:var(--dim);margin:0 0 10px;max-width:78ch}
+  code{font-family:var(--mono);font-size:.87em;background:var(--panel2);
+    padding:1px 4px;border-radius:4px;color:var(--tx)}
+  b{color:var(--tx)}
 
-  /* legend */
-  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 8px}
-  .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);
-    background:var(--panel);border:1px solid var(--line);padding:5px 11px;border-radius:99px}
-  .dot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+  /* tab nav */
+  nav{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 18px;
+    border-bottom:1px solid var(--line);padding-bottom:0}
+  nav button{background:none;border:0;border-bottom:2px solid transparent;
+    color:var(--dim);font:inherit;font-size:13px;padding:8px 12px;cursor:pointer;
+    border-radius:6px 6px 0 0}
+  nav button:hover{color:var(--tx);background:var(--panel)}
+  nav button[aria-selected=true]{color:var(--tx);border-bottom-color:var(--ui);font-weight:600}
+  section{display:none} section.on{display:block;animation:f .18s ease}
+  @keyframes f{from{opacity:0;transform:translateY(3px)}to{opacity:1}}
 
-  /* pipeline flow */
-  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    overflow-x:auto;margin:18px 0}
-  .col{padding:16px 14px;border-right:1px solid var(--line);min-width:190px}
+  /* pipeline */
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    overflow-x:auto;margin:12px 0}
+  .col{padding:12px 11px;border-right:1px solid var(--line);min-width:178px}
   .col:last-child{border-right:0}
-  .col > .hd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--dim);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+  .col > .hd{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
   .node{background:var(--panel2);border:1px solid var(--line);border-left-width:3px;
-    border-radius:8px;padding:8px 10px;margin-bottom:8px;font-family:var(--mono);font-size:12px}
-  .node small{display:block;font-family:inherit;color:var(--dim);font-size:10.5px;
-    margin-top:3px;line-height:1.45;font-family:ui-sans-serif,system-ui,sans-serif}
+    border-radius:7px;padding:6px 9px;margin-bottom:6px;font-family:var(--mono);font-size:11px}
+  .node small{display:block;color:var(--dim);font-size:10px;margin-top:2px;
+    line-height:1.4;font-family:ui-sans-serif,system-ui,sans-serif}
   .n-src{border-left-color:var(--src)} .n-pipe{border-left-color:var(--pipe)}
   .n-load{border-left-color:var(--load)} .n-derive{border-left-color:var(--derive)}
   .n-ui{border-left-color:var(--ui)}
   .dead{opacity:.45;border-left-style:dashed}
 
-  /* route tables */
-  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 4px;
-    display:block;overflow-x:auto;white-space:nowrap}
-  th{text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
-    color:var(--dim);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--line)}
-  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;
+    display:block;overflow-x:auto}
+  th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--dim);font-weight:600;padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim)}
+  td b{color:var(--tx)}
   tbody tr:last-child td{border-bottom:0}
-  td:first-child{font-family:var(--mono);font-size:12px}
-  .f{font-family:var(--mono);font-size:11.5px;color:var(--tx);
-    background:var(--panel2);padding:1px 5px;border-radius:4px;
+  td:first-child{font-family:var(--mono);font-size:11.5px;color:var(--tx);white-space:nowrap}
+  .f{font-family:var(--mono);font-size:11px;color:var(--tx);
+    background:var(--panel2);padding:1px 4px;border-radius:4px;
     display:inline-block;margin:1px 2px 1px 0}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:4px 0;margin:14px 0}
-  .card > h4{margin:14px 18px 2px;font-size:14px;font-family:var(--mono)}
-  .card > .sub{margin:0 18px 10px;font-size:12px;color:var(--dim)}
+  .neg{color:var(--ui)} .pos{color:var(--derive)}
 
-  .rail{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
-  .rail > div{flex:1 1 200px;background:var(--panel);border:1px solid var(--line);
-    border-radius:12px;padding:13px 15px}
-  .rail b{display:block;font-size:12px;margin-bottom:5px;font-family:var(--mono)}
-  .rail span{font-size:12.5px;color:var(--dim)}
+  .rail{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .rail > div{flex:1 1 210px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px}
+  .rail b{display:block;font-size:11.5px;margin-bottom:3px;font-family:var(--mono)}
+  .rail span{font-size:12px;color:var(--dim)}
   .note{border-left:3px solid var(--src);background:var(--panel);
-    padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:13.5px}
-  .arrow{text-align:center;color:var(--dim);font-size:18px;margin:-2px 0 6px}
+    padding:9px 13px;border-radius:0 9px 9px 0;margin:12px 0;font-size:12.5px;color:var(--dim)}
+  .eq{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--derive);
+    border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:12.5px;
+    margin:8px 0;max-width:660px;color:var(--tx)}
+  .eq small{display:block;font-family:ui-sans-serif,system-ui,sans-serif;
+    color:var(--dim);font-size:11px;margin-top:4px;line-height:1.45}
+
+  /* shape diagrams */
+  .shapes{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+  .shape{flex:1 1 340px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:11px 13px}
+  .shape h5{margin:0 0 2px;font-size:12px;font-family:var(--mono)}
+  .shape .cap{font-size:11px;color:var(--dim);margin-bottom:9px;display:block}
+  .grid{display:grid;gap:2px;font-family:var(--mono);font-size:9px}
+  .g8{grid-template-columns:repeat(8,1fr)} .g5{grid-template-columns:repeat(5,1fr)}
+  .cell{padding:3px 2px;text-align:center;border-radius:3px;
+    background:var(--panel2);color:var(--dim);white-space:nowrap;overflow:hidden}
+  .cell.h{background:var(--line);color:var(--tx)}
+  .cell.k{background:color-mix(in srgb,var(--load) 30%,var(--panel2));color:var(--tx)}
+  .cell.v{background:color-mix(in srgb,var(--derive) 26%,var(--panel2));color:var(--tx)}
+  .cell.y{background:color-mix(in srgb,var(--src) 30%,var(--panel2));color:var(--tx)}
+  .shape p{font-size:11px;margin:8px 0 0}
+
+  /* tab map */
+  .tabs{display:grid;grid-template-columns:1fr auto 1fr;gap:0 14px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;margin:10px 0;overflow-x:auto}
+  .tabs .lane{display:flex;flex-direction:column;gap:5px;min-width:195px}
+  .tabs .mid{color:var(--dim);font-size:10px;font-family:var(--mono);text-align:center}
+  .tab{border:1px solid var(--line);border-left-width:3px;border-radius:6px;
+    padding:5px 9px;font-family:var(--mono);font-size:11px;background:var(--panel2)}
+  .tab em{display:block;font-style:normal;font-size:9.5px;color:var(--dim);
+    font-family:ui-sans-serif,system-ui,sans-serif;margin-top:1px}
+  .t-wide{border-left-color:var(--src)} .t-long{border-left-color:var(--load)}
+  .t-out{border-left-color:var(--ui)} .t-dead{border-left-color:var(--dim);opacity:.55}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);
+    background:var(--panel);border:1px solid var(--line);padding:3px 9px;border-radius:99px}
+  .cols2{columns:2;column-gap:22px}
+  @media (max-width:760px){.cols2{columns:1}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<h1>Marketanalytics — Data Flow</h1>
-<p class="lead">Which file holds which data, how it is loaded, and exactly which fields land in which part of the site. Everything below is read from the repo, not assumed.</p>
+<h1>Marketanalytics — Data Flow<span>read from the repo, not assumed</span></h1>
 
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-t="p1">1 · Pipeline</button>
+  <button role="tab" data-t="p2">2 · Source shape</button>
+  <button role="tab" data-t="p3">3 · data.json</button>
+  <button role="tab" data-t="p4">4 · Revenue</button>
+  <button role="tab" data-t="p5">5 · Aggregation</button>
+  <button role="tab" data-t="p6">6 · Routes</button>
+  <button role="tab" data-t="p7">7 · Edges</button>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section id="p1" class="on">
 <div class="legend">
-  <div class="lg"><i class="dot" style="background:var(--src)"></i>Source data</div>
-  <div class="lg"><i class="dot" style="background:var(--pipe)"></i>Build pipeline</div>
+  <div class="lg"><i class="dot" style="background:var(--src)"></i>Source</div>
+  <div class="lg"><i class="dot" style="background:var(--pipe)"></i>Pipeline</div>
   <div class="lg"><i class="dot" style="background:var(--load)"></i>Loader</div>
-  <div class="lg"><i class="dot" style="background:var(--derive)"></i>Derivation</div>
-  <div class="lg"><i class="dot" style="background:var(--ui)"></i>UI surface</div>
+  <div class="lg"><i class="dot" style="background:var(--ui)"></i>Route</div>
 </div>
-
-<h2>1 — The whole pipe, left to right</h2>
-
 <div class="flow">
   <div class="col">
     <div class="hd"><i class="dot" style="background:var(--pipe)"></i>Scrape</div>
-    <div class="node n-pipe">scrape_sodra.py<small>Sodra site → data/sodra/&lt;jarCode&gt;.json</small></div>
+    <div class="node n-pipe">scrape_sodra.py<small>→ data/sodra/&lt;jarCode&gt;.json</small></div>
     <div class="node n-pipe">scrape_company.py<br>parse_company.py<small>Rekvizitai HTML → rek_tabs.json</small></div>
     <div class="node n-pipe">import_rek_companies.py<br>estimate_2025.py<small>→ new rows in data.json</small></div>
-    <div class="node n-pipe">data_events.py<small>Write gateway: diffs old vs new, appends data_events.json</small></div>
+    <div class="node n-pipe">data_events.py<small>Write gateway: diffs old vs new → data_events.json</small></div>
   </div>
   <div class="col">
     <div class="hd"><i class="dot" style="background:var(--src)"></i>Source files</div>
-    <div class="node n-src">data.json<small>906 rows, one per brand×year. The canonical dataset.</small></div>
-    <div class="node n-src">rek_tabs.json<small>117 companies × tabs (Įmonė / Finansai / Darbuotojai / Skolos)</small></div>
-    <div class="node n-src">sodra/*.json<small>Per-company monthly payroll</small></div>
-    <div class="node n-src">sheets_data.json<small>7 raw spreadsheet tabs</small></div>
+    <div class="node n-src">data.json<small>906 rows, brand×year. Canonical.</small></div>
+    <div class="node n-src">rek_tabs.json<small>117 companies × 4 tabs</small></div>
+    <div class="node n-src">sodra/*.json<small>Monthly payroll</small></div>
+    <div class="node n-src">sheets_data.json<small>7 spreadsheet tabs</small></div>
     <div class="node n-src">data_events.json<small>23 audit events</small></div>
   </div>
   <div class="col">
     <div class="hd"><i class="dot" style="background:var(--pipe)"></i>Node transforms</div>
-    <div class="node n-pipe">make-sheets-kv.mjs<small>sheets_data.json → sheets_data_kv.json (rows keyed by company, grouped)</small></div>
-    <div class="node n-pipe">make-sheets-sql.mjs<small>_kv.json → sheets_data.sql (company + company_metric)</small></div>
-    <div class="node n-src dead">sheets_data.sql<small>Generated, read by nothing in src/. Dead end.</small></div>
+    <div class="node n-pipe">make-sheets-kv.mjs<small>sheets_data → _kv.json</small></div>
+    <div class="node n-pipe">make-sheets-sql.mjs<small>_kv → sheets_data.sql</small></div>
+    <div class="node n-src dead">sheets_data.sql<small>Read by nothing in src/</small></div>
   </div>
   <div class="col">
     <div class="hd"><i class="dot" style="background:var(--load)"></i>Loaders</div>
-    <div class="node n-load">loadMarketData()<small>market-rough/data.ts:9 — static import of data.json</small></div>
-    <div class="node n-load">loadProfiles()<small>market-rough/profile.ts:23 — rek_tabs + sheets_data + fs scan of sodra/</small></div>
-    <div class="node n-load">loadRekTabsWithSodra()<small>app/explore/page.tsx:22 — fs read, joins sodra by Įmonės kodas</small></div>
-    <div class="node n-load">direct imports<small>explore components import their JSON straight</small></div>
+    <div class="node n-load">loadMarketData()<small>data.ts:9 — static import</small></div>
+    <div class="node n-load">loadProfiles()<small>profile.ts:23 — rek_tabs + sheets + sodra scan</small></div>
+    <div class="node n-load">loadRekTabsWithSodra()<small>explore/page.tsx:22 — joins on Įmonės kodas</small></div>
   </div>
   <div class="col">
     <div class="hd"><i class="dot" style="background:var(--ui)"></i>Routes</div>
     <div class="node n-ui">/ <small>Market overview</small></div>
-    <div class="node n-ui">/companies<small>Per-company deep dive</small></div>
-    <div class="node n-ui">/explore<small>Raw data inspector</small></div>
-    <div class="node n-ui">/v2<small>iframe of legacy static build</small></div>
+    <div class="node n-ui">/companies<small>Deep dive</small></div>
+    <div class="node n-ui">/explore<small>Raw inspector</small></div>
+    <div class="node n-ui">/v2<small>iframe of legacy build</small></div>
   </div>
 </div>
+<div class="note"><b>One rule explains most of it:</b> <code>data.json</code> is the only dataset the analytical pages touch. rek_tabs, sodra and sheets are narrative metadata for company cards, or raw material shown only on <code>/explore</code>.</div>
+<div class="rail">
+  <div><b>Sodra join, done twice</b><span><code>rek_tabs → tabs["Įmonė"] → "Įmonės kodas"</code> → lookup <code>sodra/&lt;code&gt;.json</code> → attached at load, never on disk. TS in <code>explore/page.tsx:22-43</code>, Python in <code>build_site.py:22-72</code>. Change one, change both.</span></div>
+</div>
+</section>
 
-<div class="note"><b>One rule explains most of it:</b> <code>data.json</code> is the only dataset the analytical pages touch. Everything else — rek_tabs, sodra, sheets — is either narrative metadata for company cards, or raw material shown only on <code>/explore</code>.</div>
+<!-- ============ 2 ============ -->
+<section id="p2">
+<p>Everything descends from one spreadsheet — <code>sheets_data.json</code>, 7 tabs, 1,420 rows. Not one dataset in seven pieces: the <b>same companies in two incompatible shapes</b>, plus leaderboards.</p>
+<div class="shapes">
+  <div class="shape">
+    <h5>WIDE — Įmonės 169×83 · Raw 103×71</h5>
+    <span class="cap">One row per company. Year lives in the column name, so each year widens the sheet.</span>
+    <div class="grid g8">
+      <div class="cell h">Pavadinim.</div><div class="cell h">Kodas</div>
+      <div class="cell h y">Darb.2019</div><div class="cell h y">Darb.2020</div>
+      <div class="cell h y">Darb.2021</div><div class="cell h y">Atlyg.2019</div>
+      <div class="cell h y">Atlyg.2020</div><div class="cell h y">…×83</div>
+      <div class="cell k">Adell</div><div class="cell k">1116…</div>
+      <div class="cell">45</div><div class="cell">41</div><div class="cell">38</div>
+      <div class="cell">2709</div><div class="cell">2811</div><div class="cell">…</div>
+      <div class="cell k">Adverum</div><div class="cell k">3025…</div>
+      <div class="cell">11</div><div class="cell">13</div><div class="cell">14</div>
+      <div class="cell">1861</div><div class="cell">1902</div><div class="cell">…</div>
+    </div>
+    <p>Holds <b>identity</b>: Kodas, PVM kodas, Adresas, Miestas, El. paštas, Telefonas, Svetainė, EVRK v2.</p>
+  </div>
+  <div class="shape">
+    <h5>LONG — Įmonės-analizei 660×26 · Kūryba 170 · PR 120</h5>
+    <span class="cap">One row per company × year. Year is a value. data.json inherits this shape 1:1.</span>
+    <div class="grid g5">
+      <div class="cell h k">Pavadinim.</div><div class="cell h k">Brandas</div><div class="cell h y">Metai</div>
+      <div class="cell h v">Apyvarta</div><div class="cell h v">Spėj.pajamos</div>
+      <div class="cell">6 Loops</div><div class="cell">6 Loops</div><div class="cell">2019</div>
+      <div class="cell">3060</div><div class="cell">3060</div>
+      <div class="cell">6 Loops</div><div class="cell">6 Loops</div><div class="cell">2020</div>
+      <div class="cell">…</div><div class="cell">…</div>
+      <div class="cell">Adverum</div><div class="cell">Adverum</div><div class="cell">2019</div>
+      <div class="cell">667536</div><div class="cell">245652</div>
+    </div>
+    <p>Holds <b>numbers</b>: 8 <code>Veikla (…)</code> Taip/Ne flags, then Darbuotojų skaičius, Atlyginimo vidurkis, DU sąnaudos, Apyvarta, Ne-atlyginimų sąnaudos, Pelnas, Fiks ir pelno mokestis, Spėjamos pajamos — each with its own YoY % column.</p>
+  </div>
+</div>
+<div class="tabs">
+  <div class="lane">
+    <div class="tab t-wide">Įmonės <em>wide · 169 · identity + all years</em></div>
+    <div class="tab t-wide">Raw <em>wide · 103 · pre-cleanup dump</em></div>
+    <div class="tab t-long">Įmonės-analizei <em>long · 660 · master metric table</em></div>
+    <div class="tab t-long">Kūryba <em>long · 170 · Creative subset</em></div>
+    <div class="tab t-long">PR <em>long · 120 · PR subset</em></div>
+    <div class="tab t-dead">Analizė-bendra <em>82 · TOP-40 leaderboard</em></div>
+    <div class="tab t-dead">Analizė-pokyčiai <em>116 · TOP-40 by change</em></div>
+  </div>
+  <div class="mid">──▶<br>reshape<br>+ merge<br>──▶</div>
+  <div class="lane">
+    <div class="tab t-out">data.json <em>906 rows {brand, year} — long shape wins. 12 fields out of ~180 columns.</em></div>
+    <div class="tab t-out">activities[] <em>the 8 Taip/Ne flags collapse to one array</em></div>
+    <div class="tab t-out">estimatedIncome <em>= Spėjamos pajamos. Hand-analysed, never scraped.</em></div>
+    <div class="tab t-dead">nothing <em>Analizė-* are presentation — dropped</em></div>
+  </div>
+</div>
+<div class="note"><b>Three consequences.</b> (1) Wide tabs are the only home for identity — which is why <code>rek_tabs.json</code> was later scraped to replace them. (2) <code>Kūryba</code>/<code>PR</code> are subsets of <code>Įmonės-analizei</code>, each duplicating its metric block under <code>.1</code>-suffixed columns. (3) Every YoY % and leaderboard is recomputed live by <code>metrics.ts</code>, so none was imported.</div>
+</section>
 
-<h2>2 — What data.json actually contains</h2>
-<p>Array of objects, one per <code>{brand, year}</code>. These 12 fields are the entire vocabulary of the analytical UI:</p>
-
+<!-- ============ 3 ============ -->
+<section id="p3">
+<p>Array of objects, one per <code>{brand, year}</code>. 12 fields — the entire vocabulary of the analytical UI.</p>
 <div class="rail">
   <div><b>identity</b><span>company, brand, city, activities[], risk</span></div>
-  <div><b>money</b><span>revenue (= turnover), estimatedIncome (= fee revenue), profit</span></div>
+  <div><b>money</b><span>revenue (=turnover), estimatedIncome (=fee revenue), profit</span></div>
   <div><b>people</b><span>employees, avgSalary, salaryCosts, nonSalaryCosts</span></div>
   <div><b>meta</b><span>year, _provenance (per-field source tag)</span></div>
 </div>
+<div class="note"><b>Naming trap that bites everywhere:</b> <code>revenue</code> displays as <b>Turnover</b>, <code>estimatedIncome</code> displays as <b>Revenue</b>. Every chart does this swap — see <code>RankVsMarket.tsx:42</code>.</div>
 
-<div class="note">Naming trap that bites everywhere: <code>revenue</code> in the JSON is displayed as <b>Turnover</b>, and <code>estimatedIncome</code> is displayed as <b>Revenue</b>. Every chart does this swap — see <code>RankVsMarket.tsx:42</code>.</div>
+<h3>Coverage — 132 brands, 7 years, 906 rows (not a full grid)</h3>
+<table>
+  <thead><tr><th>Year</th><th>rows</th><th>estimatedIncome</th><th>revenue</th><th>profit</th><th>employees / avgSalary</th></tr></thead>
+  <tbody>
+    <tr><td>2019</td><td>117</td><td>98</td><td>116</td><td>117</td><td>117</td></tr>
+    <tr><td>2020</td><td>129</td><td>110</td><td>129</td><td>129</td><td>129</td></tr>
+    <tr><td>2021–23</td><td>132</td><td>113</td><td>132</td><td>132</td><td>132</td></tr>
+    <tr><td>2024</td><td>132</td><td>113</td><td>131</td><td>131</td><td>132</td></tr>
+    <tr><td>2025</td><td>132</td><td>98</td><td>117</td><td>118</td><td>132</td></tr>
+  </tbody>
+</table>
+<p>Only <b>2021–2023</b> are fully populated. 2019 thin at the start, 2025 thin because Rekvizitai lags on turnover/profit.</p>
 
-<h2>3 — Derivation layer between raw and UI</h2>
-<p>Components never read the array directly. Three modules stand between:</p>
-
+<h3>Derivation layer — components never read the array</h3>
 <div class="rail">
   <div><b>data.ts → MarketModel</b><span>rows, byBrand[brand][year], brands, segments, years, last (max year with revenue), finYears</span></div>
-  <div><b>metrics.ts</b><span>marketTotals, cagr, medianSalary (avgSalary&gt;500), rankOf, margin (profit/estimatedIncome, skipped under €50k)</span></div>
-  <div><b>segments.ts</b><span>SEG_COLORS, segName (LT→EN), segMetricVal / segMetricPct with min-company gates</span></div>
+  <div><b>metrics.ts</b><span>marketTotals, cagr, medianSalary, rankOf, margin</span></div>
+  <div><b>segments.ts</b><span>SEG_COLORS, segName (LT→EN), segMetricVal / segMetricPct + min-company gates</span></div>
 </div>
 <p>Selection state lives in the URL via <code>useDashboardParams.ts</code>: <span class="f">year</span><span class="f">mktView</span><span class="f">coView</span><span class="f">basis</span><span class="f">market</span><span class="f">companies[]</span><span class="f">off[]</span><span class="f">segments[]</span></p>
+</section>
 
-<h2>4 — Route by route: field → component</h2>
-
-<div class="card">
-  <h4>/ — Market overview</h4>
-  <div class="sub">Source: <b>data.json only</b>.</div>
-  <table>
-    <thead><tr><th>Component</th><th>Fields consumed</th><th>What it does with them</th></tr></thead>
-    <tbody>
-      <tr><td>TopCards</td><td><span class="f">brand</span><span class="f">activities</span></td><td>Counts of brands and segments</td></tr>
-      <tr><td>MarketPerYear</td><td><span class="f">revenue</span><span class="f">profit</span><span class="f">employees</span><span class="f">estimatedIncome</span><span class="f">avgSalary</span></td><td>marketTotals for the selected year; MoneyFlow gets turnover/revenue/profit</td></tr>
-      <tr><td>Insights</td><td><span class="f">revenue</span><span class="f">profit</span><span class="f">employees</span><span class="f">estimatedIncome</span><span class="f">activities</span></td><td>Verdict cards; 3-year lookback via byBrand[brand][year-3]</td></tr>
-      <tr><td>SegmentChart / SegmentTrends</td><td><span class="f">activities</span> + one of <span class="f">estimatedIncome</span><span class="f">revenue</span><span class="f">profit</span><span class="f">employees</span><span class="f">salaryCosts</span><span class="f">avgSalary</span></td><td>Median / per-employee / total per segment</td></tr>
-      <tr><td>ScatterChart</td><td><span class="f">estimatedIncome</span><span class="f">profit</span><span class="f">employees</span><span class="f">activities</span></td><td>x = income, y = signed-log margin, r = √employees, colour = activities[0]. Filters income &gt; €50k</td></tr>
-      <tr><td>MarketAllTime</td><td><span class="f">revenue</span><span class="f">estimatedIncome</span><span class="f">profit</span></td><td>One row per finYear</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="card">
-  <h4>/companies — Per-company</h4>
-  <div class="sub">Source: <b>data.json</b> (all numbers) + <b>rek_tabs.json / sheets_data.json / sodra dir listing</b> (profile card text only).</div>
-  <table>
-    <thead><tr><th>Component</th><th>Fields consumed</th><th>Origin</th></tr></thead>
-    <tbody>
-      <tr><td>CompanyPicker</td><td><span class="f">activities</span><span class="f">revenue</span><span class="f">estimatedIncome</span><span class="f">employees</span><span class="f">avgSalary</span></td><td>data.json — filter thresholds</td></tr>
-      <tr><td>CompanyProfileCard</td><td><span class="f">ceo</span><span class="f">founded</span><span class="f">website</span><span class="f">description</span><span class="f">rekvizitai</span><span class="f">sodra</span> + <span class="f">activities</span><span class="f">employees</span><span class="f">risk</span></td><td>First six from rek_tabs (Vadovas, Įregistruota, Tinklalapis, Įmonės aprašymas); rest from data.json</td></tr>
-      <tr><td>CompanyPerYear</td><td><span class="f">revenue</span><span class="f">estimatedIncome</span><span class="f">profit</span><span class="f">employees</span><span class="f">avgSalary</span></td><td>byBrand[brand][year] vs [year-1] → YoY deltas + rank</td></tr>
-      <tr><td>RankVsMarket</td><td><span class="f">estimatedIncome</span>→Revenue, <span class="f">revenue</span>→Turnover, <span class="f">profit</span>, <span class="f">employees</span></td><td>rankOf, excludes non-reporters</td></tr>
-      <tr><td>DeepDive / RankingsChart</td><td>the six metrics + <span class="f">margin</span></td><td>Series across finYears</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="card">
-  <h4>/explore — Raw inspector</h4>
-  <div class="sub">The only route that touches <b>every</b> dataset.</div>
-  <table>
-    <thead><tr><th>Panel</th><th>Reads</th><th>Shows</th></tr></thead>
-    <tbody>
-      <tr><td>Coverage</td><td>data.json</td><td>Grid of 7 fields × brand × year: <span class="f">employees</span><span class="f">avgSalary</span><span class="f">salaryCosts</span><span class="f">revenue</span><span class="f">profit</span><span class="f">nonSalaryCosts</span><span class="f">estimatedIncome</span></td></tr>
-      <tr><td>FieldData</td><td>data.json + rek_tabs + sodra</td><td>Three-source merge per field, with <span class="f">_provenance</span> tags. Sodra months become “Darbuotojų skaičius &lt;mo&gt;” / “Atlyginimų vidurkis &lt;mo&gt;”</td></tr>
-      <tr><td>DataChanges</td><td>data_events.json</td><td><span class="f">at</span><span class="f">source</span><span class="f">trigger</span><span class="f">commit</span><span class="f">summary</span><span class="f">stats</span><span class="f">changes[]</span></td></tr>
-      <tr><td>RawSheets</td><td>sheets_data.json</td><td>Įmonės, Įmonės-analizei, Kūryba, PR, Raw — verbatim, money columns formatted</td></tr>
-      <tr><td>RawJson</td><td>data.json, rek_tabs+sodra, data_events, sheets_data_kv</td><td>Four collapsible JSON trees</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<h2>5 — The Sodra join, done twice</h2>
-<p>Both the TS app and the Python legacy build perform the same join independently:</p>
+<!-- ============ 4 ============ -->
+<section id="p4">
+<p>“Revenue” on screen = <code>estimatedIncome</code> — fee income net of pass-through media spend. <b>Never scraped</b>; no registry publishes it. It arrives by three roads.</p>
 <div class="rail">
-  <div><b>rek_tabs.json</b><span>company.tabs["Įmonė"] → row "Įmonės kodas"</span></div>
-  <div><b>↓ lookup</b><span>data/sodra/&lt;that code&gt;.json</span></div>
-  <div><b>→ company.sodra</b><span>attached at load time; never on disk</span></div>
+  <div><b>1 · sheet-entered (2019–24)</b><span>Hand-analysed as <code>Spėjamos pajamos</code>, imported. The bulk.</span></div>
+  <div><b>2 · carried forward (2025)</b><span><code>estimate_2025.py</code>: <code>revenue × feeRatio_brand</code>, feeRatio = mean of brand's own last 3 years of EI/revenue. Fallback 0.60.</span></div>
+  <div><b>3 · absent</b><span>Rekvizitai imports get <code>null</code> and stay null. Nothing back-fills.</span></div>
 </div>
-<p><code>app/explore/page.tsx:22-43</code> in TypeScript, <code>legacy-src/build_site.py:22-72</code> in Python. Change the join logic and you must change both.</p>
+<div class="note"><b>The Events hole.</b> Coverage is per-brand and lands unevenly: BTL 5/5, PA 5/5, Digital media 42/43, Kūryba 30/33 — <b>Renginiai (Events) 1/10</b>. Only Partizanas was in the analysed sheet; the other nine came via <code>import_rek_companies.py</code> as null. Every Events revenue chart plots one company. Market-wide: 19 of 132 brands have no revenue.</div>
 
-<h2>6 — Loose ends</h2>
+<h3>The implicit formula already in the data</h3>
+<p>Reverse-solved over the 554 rows with all inputs, the sheet's numbers fit one rule tightly (IQR 1.325–1.401):</p>
+<div class="eq">estimatedIncome ≈ salaryCosts × 1.39 + profit ÷ 0.84
+<small>salaryCosts = employees × avgSalary × 12 (exact across 2019–24). 0.84 grosses net profit back over the 16% corporate tax — the sheet's own <code>Fiks ir pelno mokestis</code> column.</small></div>
+<p>The proposed formula is the same shape, two adjustments — a 1.0177 payroll-tax uplift, and OPEX 1.39 → 1.43:</p>
+<div class="eq">revenue ≈ (employees × bruto × 12 × 1.0177) × 1.43 + profit ÷ 0.84
+<small>Net effect on existing rows: <b>+3%</b> (1.43 × 1.0177 ÷ 1.39). Reproduces Partizanas 2019–24 within 3–4%. 2025 is the exception: stored €2.85M came from road 2, formula gives €1.36M — headcount fell, turnover didn't.</small></div>
+<p>Fee ratio is <b>company-specific and wide</b> — media resellers ~0.10–0.14 (BPN, Dentsu), creative ~0.59, most non-media 1.00. Hence no market-wide ratio.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="p5">
+<p>Three different reducers, and two of them disagree about nulls.</p>
+<table>
+  <thead><tr><th>Aggregate</th><th>Where</th><th>Rule</th></tr></thead>
+  <tbody>
+    <tr><td>market total</td><td>metrics.ts:16</td><td>Plain sum over the year. <b class="neg">null counts as 0</b> — a market revenue total silently excludes the 19 null brands rather than flagging them.</td></tr>
+    <tr><td>segment total</td><td>segments.ts:146</td><td>Sum of <b>positive values only</b>; nulls dropped, not zeroed. null if no usable row.</td></tr>
+    <tr><td>segment per-company</td><td>segments.ts:145</td><td><b>Median</b>, not mean. With Events, that median is one company.</td></tr>
+    <tr><td>segment per-employee</td><td>segments.ts:141</td><td>Median of value ÷ employees; only rows with <b>&gt;2 employees</b>, only if <b>≥3</b> survive. Else null.</td></tr>
+    <tr><td>segment band</td><td>segments.ts:150</td><td>Percentile per company; <b>&lt;4 companies → null</b>.</td></tr>
+    <tr><td>medianSalary</td><td>metrics.ts:35</td><td>Median <code>avgSalary</code>, ignoring ≤ <b>€500</b> as implausible.</td></tr>
+    <tr><td>margin</td><td>metrics.ts:86</td><td><code>profit / estimatedIncome</code>, suppressed when fee base ≤ <b>€50k</b>.</td></tr>
+    <tr><td>rankOf</td><td>metrics.ts:60</td><td>Non-reporters excluded, not zeroed — “of the 118 who filed”, not “of all 132”.</td></tr>
+    <tr><td>cagr</td><td>metrics.ts:29</td><td>Compound rate between two totals; null if base ≤ 0.</td></tr>
+  </tbody>
+</table>
+<div class="note"><b>Consequence:</b> a segment's <code>total</code> and the market total it rolls into are computed on different denominators. Worth unifying if the formula is applied.</div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="p6">
+<h3>/ — Market overview · data.json only</h3>
+<table>
+  <thead><tr><th>Component</th><th>Fields</th><th>Does</th></tr></thead>
+  <tbody>
+    <tr><td>TopCards</td><td><span class="f">brand</span><span class="f">activities</span></td><td>Counts of brands and segments</td></tr>
+    <tr><td>MarketPerYear</td><td><span class="f">revenue</span><span class="f">profit</span><span class="f">employees</span><span class="f">estimatedIncome</span><span class="f">avgSalary</span></td><td>marketTotals for selected year; MoneyFlow gets turnover/revenue/profit</td></tr>
+    <tr><td>Insights</td><td>+ <span class="f">activities</span></td><td>Verdict cards; 3-year lookback via byBrand[brand][year-3]</td></tr>
+    <tr><td>SegmentChart / Trends</td><td><span class="f">activities</span> + one of 6 metrics</td><td>Median / per-employee / total per segment</td></tr>
+    <tr><td>ScatterChart</td><td><span class="f">estimatedIncome</span><span class="f">profit</span><span class="f">employees</span><span class="f">activities</span></td><td>x=income, y=signed-log margin, r=√employees, colour=activities[0]. Filters income &gt; €50k</td></tr>
+    <tr><td>MarketAllTime</td><td><span class="f">revenue</span><span class="f">estimatedIncome</span><span class="f">profit</span></td><td>One row per finYear</td></tr>
+  </tbody>
+</table>
+<h3>/companies — data.json (numbers) + rek_tabs / sheets / sodra (card text only)</h3>
+<table>
+  <thead><tr><th>Component</th><th>Fields</th><th>Origin</th></tr></thead>
+  <tbody>
+    <tr><td>CompanyPicker</td><td><span class="f">activities</span><span class="f">revenue</span><span class="f">estimatedIncome</span><span class="f">employees</span><span class="f">avgSalary</span></td><td>data.json — filter thresholds</td></tr>
+    <tr><td>CompanyProfileCard</td><td><span class="f">ceo</span><span class="f">founded</span><span class="f">website</span><span class="f">description</span><span class="f">rekvizitai</span><span class="f">sodra</span></td><td>rek_tabs (Vadovas, Įregistruota, Tinklalapis, Įmonės aprašymas); activities/employees/risk from data.json</td></tr>
+    <tr><td>CompanyPerYear</td><td>5 metrics</td><td>byBrand[brand][year] vs [year-1] → YoY + rank</td></tr>
+    <tr><td>RankVsMarket</td><td><span class="f">estimatedIncome</span>→Revenue, <span class="f">revenue</span>→Turnover</td><td>rankOf, excludes non-reporters</td></tr>
+    <tr><td>DeepDive / RankingsChart</td><td>6 metrics + <span class="f">margin</span></td><td>Series across finYears</td></tr>
+  </tbody>
+</table>
+<h3>/explore — the only route touching every dataset</h3>
+<table>
+  <thead><tr><th>Panel</th><th>Reads</th><th>Shows</th></tr></thead>
+  <tbody>
+    <tr><td>Coverage</td><td>data.json</td><td>7 fields × brand × year grid</td></tr>
+    <tr><td>FieldData</td><td>data.json + rek_tabs + sodra</td><td>Three-source merge with <span class="f">_provenance</span>. Sodra months → “Darbuotojų skaičius &lt;mo&gt;”</td></tr>
+    <tr><td>DataChanges</td><td>data_events.json</td><td><span class="f">at</span><span class="f">source</span><span class="f">trigger</span><span class="f">commit</span><span class="f">summary</span><span class="f">stats</span><span class="f">changes[]</span></td></tr>
+    <tr><td>RawSheets</td><td>sheets_data.json</td><td>Įmonės, Įmonės-analizei, Kūryba, PR, Raw — verbatim</td></tr>
+    <tr><td>RawJson</td><td>all four</td><td>Collapsible JSON trees</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="p7">
+<h3>Loose ends</h3>
 <div class="rail">
   <div><b>sheets_data.sql</b><span>Generated by make-sheets-sql.mjs, read by zero files in src/.</span></div>
   <div><b>ExplorerView.tsx</b><span>Full table view, exported but imported nowhere.</span></div>
   <div><b>make-sheets-*.mjs</b><span>Manual only — no package.json script invokes them.</span></div>
-  <div><b>No data APIs</b><span>Only route is /api/design-note. All data is bundled at build time via static imports.</span></div>
+  <div><b>No data APIs</b><span>Only route is /api/design-note. All data bundled at build time via static imports.</span></div>
 </div>
+<h3>Open conflicts</h3>
+<div class="rail">
+  <div><b>Three claims on one field</b><span>estimatedIncome is claimed by the old sheet, the 1.43 formula, and the new reported Turnover/Revenue tables. They disagree by up to 49% (Open Agency), 47% (Inspired Communications), +42% (Arena Media).</span></div>
+  <div><b>Unmatched companies</b><span><code>UAB „coagency"</code> and <code>UAB „Penkiolika minučių iki vidurnakčio"</code> are not in data.json.</span></div>
+  <div><b>Fuzzy name matches</b><span>INK agency (vs Turinio rinkodara, Stebink), Havas Media (vs SOMA Agency (Havas)), Berta And → <code>Berta and, UAB</code>.</span></div>
+  <div><b>Null policy split</b><span>marketTotals zeroes nulls; segment totals drop them. Unify before applying any formula.</span></div>
+</div>
+</section>
 
 </div>
+<script>
+  const btns=[...document.querySelectorAll('nav button')];
+  const show=id=>{
+    document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.t===id));
+    location.hash=id; window.scrollTo(0,0);
+  };
+  btns.forEach(b=>b.onclick=()=>show(b.dataset.t));
+  if(location.hash && document.getElementById(location.hash.slice(1))) show(location.hash.slice(1));
+  addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    const i=btns.findIndex(b=>b.getAttribute('aria-selected')==='true');
+    if(e.key==='ArrowRight'&&i<btns.length-1)show(btns[i+1].dataset.t);
+    if(e.key==='ArrowLeft'&&i>0)show(btns[i-1].dataset.t);
+  });
+</script>
 </body>
 </html>

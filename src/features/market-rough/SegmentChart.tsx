@@ -73,10 +73,15 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const basis: SegBasis =
     market === "avg" ? "company" : market === "emp" ? "emp" : "total";
 
-  const rows = model.segments
-    .map((s) => ({ s, v: segMetricVal(model.rows, s, metric, basis, year) }))
-    .filter((o): o is { s: string; v: number } => o.v != null)
-    .sort((a, b) => b.v - a.v);
+  // Fixed segment order AND fixed length: every segment always occupies its
+  // own slot, reporting years contribute 0. Slices therefore keep both their
+  // position and their colour as the year changes — a segment that starts
+  // reporting (e.g. PA) grows from nothing instead of shoving its neighbours
+  // along. `has` marks the slots with real data, for the legend and bars.
+  const rows = model.segments.map((s) => {
+    const v = segMetricVal(model.rows, s, metric, basis, year);
+    return { s, v: v ?? 0, has: v != null };
+  });
 
   const total = rows.reduce((sum, o) => sum + Math.max(0, o.v), 0) || 1;
   const pct = (i: number) => (Math.max(0, rows[i].v) / total) * 100;
@@ -94,7 +99,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           label="Chart type"
           value={type}
           onChange={setType}
-          btnClassName="px-[11px]"
+          btnClassName="px-2 py-1 text-[11.5px]"
           options={[
             { value: "doughnut", label: "Doughnut" },
             { value: "bars", label: "Bars" },
@@ -104,7 +109,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           label="Metric"
           value={metric}
           onChange={setMetric}
-          btnClassName="px-[11px]"
+          btnClassName="px-2 py-1 text-[11.5px]"
           options={[
             { value: "revenue", label: "Revenue" },
             { value: "turnover", label: "Turnover" },
@@ -115,7 +120,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           label="Show as"
           value={show}
           onChange={setShow}
-          btnClassName="px-[11px]"
+          btnClassName="px-2 py-1 text-[11.5px]"
           options={[
             { value: "pct", label: "%" },
             { value: "eur", label: "€" },
@@ -123,7 +128,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         />
       </div>
 
-      {!rows.length ? (
+      {!rows.some((o) => o.has) ? (
         <p className="text-muted p-6 text-center text-[13px]">
           No companies have reported {year} figures yet.
         </p>
@@ -131,10 +136,9 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         <div className="chartbox relative h-[340px]">
           <EngTag label="Chart.js" />
           <Doughnut
-            // Remount on data-shape changes (full build animation, as the
-            // legacy destroy+rebuild); %/€ relabels update in place.
-            key={`${year}-${metric}-${basis}`}
-            updateMode="none"
+            // Year changes animate in place (arcs grow/shrink); metric/basis
+            // changes are a different quantity, so those still rebuild.
+            key={`${metric}-${basis}`}
             data={{
               labels: rows.map((o) => segName(o.s)),
               datasets: [
@@ -159,16 +163,19 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                       boxWidth: 12,
                       font: { size: 11 },
                       generateLabels: (chart: Chart) =>
-                        (chart.data.labels as string[]).map((lab, i) => ({
-                          text: `${lab} · ${shown(i)}`,
-                          fillStyle: (chart.data.datasets[0].backgroundColor as string[])[
-                            i
-                          ],
-                          strokeStyle: "transparent",
-                          lineWidth: 0,
-                          index: i,
-                          fontColor: cssVar("--color-ink"),
-                        })),
+                        (chart.data.labels as string[])
+                          .map((lab, i) => ({ lab, i }))
+                          .filter(({ i }) => rows[i].has)
+                          .map(({ lab, i }) => ({
+                            text: `${lab} · ${shown(i)}`,
+                            fillStyle: (
+                              chart.data.datasets[0].backgroundColor as string[]
+                            )[i],
+                            strokeStyle: "transparent",
+                            lineWidth: 0,
+                            index: i,
+                            fontColor: cssVar("--color-ink"),
+                          })),
                     },
                   },
                   tooltip: {
@@ -192,11 +199,14 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         <div className="chartbox relative h-[340px]">
           <EngTag label="SVG" />
           <BarsSvg
-            rows={rows.map((o, i) => ({
-              label: segName(o.s),
-              value: show === "pct" ? pct(i) : o.v,
-              color: SEG_COLORS[o.s] ?? "#888",
-            }))}
+            rows={rows
+              .map((o, i) => ({
+                label: segName(o.s),
+                value: show === "pct" ? pct(i) : o.v,
+                color: SEG_COLORS[o.s] ?? "#888",
+                has: o.has,
+              }))
+              .filter((r) => r.has)}
             fmt={show === "pct" ? (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}%` : fmtEur}
             xTitle={
               show === "pct"

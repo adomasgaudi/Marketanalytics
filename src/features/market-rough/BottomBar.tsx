@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { cn } from "@/lib/cn";
+import { IconAverage, IconBuilding, IconMarket, IconPerson } from "./Icons";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
 import { useViewMode } from "./ViewSync";
@@ -25,6 +26,107 @@ const BASIS_LABELS: Record<Basis, string> = {
   emp: "Per employee",
 };
 
+/** Hover copy: what the icon *does*, one line, plainer than the short label
+ *  that names it. Shown in a styled popup instead of the native tooltip. */
+const MARKET_HINTS: Record<MarketMode, string> = {
+  avg: "Divide the market by the number of companies in it",
+  emp: "Divide the market by the total headcount",
+  whole: "Sum every company — the market at full size",
+};
+
+const BASIS_HINTS: Record<Basis, string> = {
+  total: "Company figures as reported, at full size",
+  emp: "Company figures divided by its headcount",
+};
+
+/** Basis/market controls are icon-only in the bar; the words live on the data
+ *  headings above. Tooltip + aria-label carry the meaning. */
+const BASIS_ICONS: Record<Basis, ReactNode> = {
+  total: <IconBuilding size={15} />,
+  emp: <IconPerson size={15} />,
+};
+const MARKET_ICONS: Record<MarketMode, ReactNode> = {
+  avg: <IconAverage size={15} />,
+  emp: <IconPerson size={15} />,
+  whole: <IconMarket size={15} />,
+};
+
+/** Carousel-dot treatment: only the selected year spells itself out, the rest
+ *  shrink to a 2-digit tick. Full label lives in title/aria-label. */
+function yearLabel(year: number, selected: number) {
+  return year === selected ? String(year) : `'${String(year).slice(2)}`;
+}
+
+/** Instagram-carousel drag: press and pull the year track sideways with a
+ *  mouse (touch already pans natively via overflow-x-auto). `moved` lets the
+ *  year buttons ignore the click that ends a drag. */
+function useDragScroll(ref: React.RefObject<HTMLDivElement | null>) {
+  const drag = useRef({ down: false, startX: 0, startLeft: 0, moved: false });
+  return {
+    moved: () => drag.current.moved,
+    handlers: {
+      onPointerDown: (e: React.PointerEvent) => {
+        if (e.pointerType !== "mouse" || !ref.current) return;
+        drag.current = {
+          down: true,
+          startX: e.clientX,
+          startLeft: ref.current.scrollLeft,
+          moved: false,
+        };
+      },
+      onPointerMove: (e: React.PointerEvent) => {
+        const d = drag.current;
+        if (!d.down || !ref.current) return;
+        const dx = e.clientX - d.startX;
+        if (Math.abs(dx) > 4) d.moved = true;
+        ref.current.scrollLeft = d.startLeft - dx;
+      },
+      onPointerUp: () => {
+        drag.current.down = false;
+      },
+      onPointerLeave: () => {
+        drag.current.down = false;
+      },
+    },
+  };
+}
+
+/** Wheel over the year track / segment select steps through the options
+ *  instead of scrolling the page. Trackpads fire many small deltas per flick,
+ *  so accumulate and only step once a threshold is crossed. Attached via
+ *  addEventListener because React's onWheel is passive — it can't
+ *  preventDefault, which is what stops the page scrolling underneath. */
+function useWheelStep(
+  ref: React.RefObject<HTMLElement | null>,
+  step: (dir: 1 | -1) => void,
+) {
+  const stepRef = useRef(step);
+  stepRef.current = step;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let acc = 0;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // Shift+wheel and horizontal trackpad swipes read as deltaX.
+      acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      while (Math.abs(acc) >= 30) {
+        stepRef.current(acc > 0 ? 1 : -1);
+        acc -= acc > 0 ? 30 : -30;
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [ref]);
+}
+
+/** Move `current` by `dir` inside `list`, clamped at both ends. */
+function stepIn<T>(list: readonly T[], current: T, dir: 1 | -1): T {
+  const i = list.indexOf(current);
+  if (i < 0) return current;
+  return list[Math.min(list.length - 1, Math.max(0, i + dir))] ?? current;
+}
+
 /**
  * Legacy .bottom-bar: the year row + basis toggle pinned to the viewport
  * bottom, always reachable while scrolling. One per page view.
@@ -44,6 +146,48 @@ export function BottomBar({
   // screens) and publish --bb-h, which .wrap uses as its bottom padding so
   // the footer is never hidden behind the fixed bar.
   const barRef = useRef<HTMLDivElement>(null);
+  // The basis/market control is icon-only, so confirm each pick in words for a
+  // moment after it's made — otherwise the icons are a guessing game.
+  const [flash, setFlash] = useState<string | null>(null);
+  // Hover/focus explanation for the icon under the pointer. Takes the same
+  // popup slot as the flash, and wins while the pointer is on a button.
+  const [hint, setHint] = useState<string | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showFlash = (label: string) => {
+    setFlash(label);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash(null), 1600);
+  };
+  useEffect(
+    () => () => void (flashTimer.current && clearTimeout(flashTimer.current)),
+    [],
+  );
+  // The year track is capped at a third of the bar and scrolls, so the active
+  // year can sit off-screen. Centre it in the track whenever it changes —
+  // scrolling the track directly rather than via scrollIntoView, which would
+  // also scroll the page ancestors.
+  const trackRef = useRef<HTMLDivElement>(null);
+  const activeYearRef = useRef<HTMLButtonElement>(null);
+  const dragScroll = useDragScroll(trackRef);
+  // Wheel anywhere over the track picks the next/previous year; the centring
+  // effect below then pulls it into view, so the track scrolls as a side effect.
+  useWheelStep(trackRef, (dir) => setParams({ year: stepIn(model.finYears, year, dir) }));
+  // Same gesture on the segment select. "" is the All-segments entry, so it
+  // has to be part of the list the wheel walks.
+  const segmentRef = useRef<HTMLSelectElement>(null);
+  useWheelStep(segmentRef, (dir) =>
+    setParams({ segment: stepIn(["", ...model.segments], segment ?? "", dir) || null }),
+  );
+  useEffect(() => {
+    const track = trackRef.current;
+    const pill = activeYearRef.current;
+    if (!track || !pill) return;
+    track.scrollTo({
+      left: pill.offsetLeft - track.clientWidth / 2 + pill.offsetWidth / 2,
+      behavior: "smooth",
+    });
+  }, [year, view]);
+
   useEffect(() => {
     const bar = barRef.current;
     if (!bar) return;
@@ -63,44 +207,92 @@ export function BottomBar({
       ref={barRef}
       // Padding matches TopNav: folds in the content wrap's px-6 (840+48=792)
       // so the year pills line up with the page content's left edge.
-      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] py-[7px] shadow-[0_-1px_6px_rgba(0,0,0,.14)]"
+      className="border-line bg-panel fixed right-0 bottom-0 left-0 z-[400] border-t px-[max(24px,calc((100%-792px)/2))] pt-1 pb-2.5 shadow-[0_-1px_6px_rgba(0,0,0,.14)] md:pt-2.5 md:pb-4"
     >
-      <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2">
-        {/* The year row only makes sense per-year — all-years mode hides it. */}
-        <div
-          className={cn(
-            "flex min-w-0 flex-1 basis-[200px] [scrollbar-width:none] gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden",
-            view === "all" && "hidden",
-          )}
-        >
-          {model.finYears.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setParams({ year: option })}
-              // bb-pill + data-on are styling hooks for the refined skin; they
-              // have no effect while the skin is set to classic.
-              data-on={option === year}
-              className={cn(
-                "bb-pill border-line flex-none cursor-pointer rounded-md border px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap transition-colors",
-                option === year
-                  ? "border-accent bg-accent text-white"
-                  : "bg-panel2 text-muted hover:text-ink",
-              )}
-            >
-              {option}
-            </button>
-          ))}
+      {/* One line: abbreviated year ticks + icon-only basis leave room for the
+          segment select, so nothing wraps to a second row. On desktop there is
+          spare width, so the three groups spread across the bar. */}
+      <div className="flex flex-nowrap items-center gap-x-2 sm:gap-x-4 md:gap-x-8">
+        {/* The year row only makes sense per-year — all-years mode hides it.
+            Elastic rather than a fixed fraction: the segment select and basis
+            toggle are flex-none, so they claim their natural width first and
+            the track takes whatever is left. That gives it noticeably more room
+            on desktop, and on the company view (no segment select) most of the
+            bar — while still never pushing them off the line. */}
+        {/* `relative`, not a flex column: the bubbles are taken out of flow
+            (below) so this box is exactly as tall as the year track. Otherwise
+            the row's items-center would centre track+bubbles as a unit and the
+            pills would sit higher than the segment select and basis icons. */}
+        <div className={cn("relative min-w-0 flex-1", view === "all" && "hidden")}>
+          <div
+            ref={trackRef}
+            {...dragScroll.handlers}
+            // Ticks stay grouped at the left — spreading them across the free
+            // width read as arbitrary. They just get roomier, not spaced apart.
+            className="flex w-full min-w-0 [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
+          >
+            {model.finYears.map((option) => (
+              <button
+                key={option}
+                type="button"
+                // Abbreviated ticks still announce the full year.
+                title={String(option)}
+                aria-label={String(option)}
+                ref={option === year ? activeYearRef : undefined}
+                // A drag that ends over a pill must not also select that year.
+                onClick={() => {
+                  if (!dragScroll.moved()) setParams({ year: option });
+                }}
+                // bb-pill + data-on are styling hooks for the refined skin; they
+                // have no effect while the skin is set to classic.
+                data-on={option === year}
+                // Carousel falloff: the selected year is full size, the
+                // surrounding ticks shrink and fade back.
+                className={cn(
+                  "bb-pill border-line flex-none cursor-pointer rounded border font-semibold whitespace-nowrap transition-all",
+                  option === year
+                    ? "border-accent bg-accent px-2.5 py-0 text-[12px] leading-[22px] text-white md:px-3 md:text-[13px] md:leading-[28px]"
+                    : "bg-panel2 text-muted hover:text-ink px-2 py-0 text-[10px] leading-[17px] opacity-70 hover:opacity-100 md:px-2.5 md:text-[11px] md:leading-[23px]",
+                )}
+              >
+                {/* Abbreviated ticks only where width is scarce; from md the
+                    bar has room for the full four digits. */}
+                <span className="md:hidden">{yearLabel(option, year)}</span>
+                <span className="hidden md:inline">{option}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Carousel bubbles: one dot per year so the count and the current
+              position stay readable even when the track is scrolled. */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-[calc(100%+3px)] flex items-center justify-center gap-[3px]"
+          >
+            {model.finYears.map((option) => (
+              <span
+                key={option}
+                className={cn(
+                  "h-[3px] rounded-full transition-all",
+                  option === year ? "bg-accent w-2" : "bg-muted w-[3px] opacity-40",
+                )}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Segment scope for the cash-flow panel. A <select> rather than a Seg:
             9 segments as joined buttons would be ~900px wide. */}
         {mode === "market" && (
           <select
+            ref={segmentRef}
             aria-label="Segment scope"
             value={segment}
             onChange={(e) => setParams({ segment: e.target.value || null })}
-            className="border-line bg-panel2 text-muted hover:text-ink max-w-[160px] flex-none cursor-pointer rounded-[8px] border px-2.5 py-1.5 text-[12.5px] font-semibold"
+            // Height matches the basis Seg beside it (py-0.5 + leading-5, then
+            // py-1 + leading-6 from md), so the two controls read as one row
+            // instead of the select sitting short.
+            className="border-line bg-panel2 text-muted hover:text-ink max-w-[104px] flex-none cursor-pointer rounded border px-1.5 py-0.5 text-[11px] leading-5 font-semibold md:max-w-[180px] md:px-2.5 md:py-1 md:text-[12px] md:leading-6"
           >
             <option value="">All segments</option>
             {model.segments.map((s) => (
@@ -114,22 +306,69 @@ export function BottomBar({
         {/* The basis control can't shrink (nowrap labels, ~340px wide), so on a
             phone it used to stretch the flex line and push the year track off
             screen. Its own scroll box keeps the overflow local. */}
-        <div className="max-w-full min-w-0 shrink [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div className="relative max-w-full min-w-0 shrink [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {/* Names the pick just made, then fades. aria-live so it is announced
+              rather than only seen — the buttons themselves are icon-only. */}
+          {(hint ?? flash) && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={cn(
+                "border-line bg-panel pointer-events-none absolute right-0 bottom-[calc(100%+6px)] z-[420] max-w-[240px] rounded-md border px-2.5 py-1 text-[11.5px] shadow-[0_4px_16px_rgba(0,0,0,.22)]",
+                // Explanation wraps and reads quieter; the confirmation is one
+                // short emphatic line.
+                hint
+                  ? "text-muted font-medium"
+                  : "text-ink font-semibold whitespace-nowrap",
+              )}
+            >
+              {hint ?? flash}
+            </div>
+          )}
           {mode === "market" ? (
             <Seg
               label="Market basis"
-              options={MARKET_MODES.map((m) => ({ value: m, label: MARKET_LABELS[m] }))}
+              options={MARKET_MODES.map((m) => ({
+                value: m,
+                // Icon while width is scarce, full name once there's room.
+                label: (
+                  <>
+                    <span className="md:hidden">{MARKET_ICONS[m]}</span>
+                    <span className="hidden md:inline">{MARKET_LABELS[m]}</span>
+                  </>
+                ),
+                title: MARKET_LABELS[m],
+              }))}
               value={market}
-              onChange={(m) => setParams({ market: m })}
+              onChange={(m) => {
+                setParams({ market: m });
+                showFlash(`Now showing: ${MARKET_LABELS[m]}`);
+              }}
+              onHoverChange={(m) => setHint(m && MARKET_HINTS[m])}
               className="flex-none"
+              btnClassName="px-2.5 py-1 text-[13px] leading-[22px] md:px-3.5 md:text-[12.5px] md:leading-[28px]"
             />
           ) : (
             <Seg
               label="Company basis"
-              options={BASES.map((b) => ({ value: b, label: BASIS_LABELS[b] }))}
+              options={BASES.map((b) => ({
+                value: b,
+                label: (
+                  <>
+                    <span className="md:hidden">{BASIS_ICONS[b]}</span>
+                    <span className="hidden md:inline">{BASIS_LABELS[b]}</span>
+                  </>
+                ),
+                title: BASIS_LABELS[b],
+              }))}
               value={basis}
-              onChange={(b) => setParams({ basis: b })}
+              onChange={(b) => {
+                setParams({ basis: b });
+                showFlash(`Now showing: ${BASIS_LABELS[b]}`);
+              }}
+              onHoverChange={(b) => setHint(b && BASIS_HINTS[b])}
               className="flex-none"
+              btnClassName="px-2.5 py-1 text-[13px] leading-[22px] md:px-3.5 md:text-[12.5px] md:leading-[28px]"
             />
           )}
         </div>

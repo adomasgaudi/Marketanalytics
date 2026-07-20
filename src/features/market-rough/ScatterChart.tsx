@@ -112,7 +112,7 @@ export function ScatterChart({ model }: { model: MarketModel }) {
       {/* Height is set per breakpoint, not fixed: the canvas is ~310px wide on
           a phone and ~790px on desktop, so a single height reads as cramped on
           one and absurdly tall on the other. iPad is the reference shape. */}
-      <div className="chartbox tall relative h-[1300px] md:h-[820px] lg:h-[700px]">
+      <div className="chartbox tall relative h-[450px] md:h-[210px] lg:h-[90px]">
         <span className="text-muted absolute top-0 left-0 z-1 text-[10px] opacity-60">
           Chart.js
         </span>

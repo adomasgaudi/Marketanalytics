@@ -17,10 +17,8 @@
   --color-red: #dc4d4d;
   --color-amber: #d08a1f;
   --color-purple: #7c5cf0;
-  --color-cost: #aab2c2;
   /* Fabula's identity colour — gold marks "my company" everywhere. */
   --color-gold: #c79410;
-  --color-gold-bar: #a67c08;
   /* vs-market top-half bars: regular gold in light, bar-gold in dark (legacy --gold-rank). */
   --color-gold-rank: #c79410;
   --color-grid: #e6e9ef;
@@ -36,7 +34,6 @@
   --radius-lg: 10px;
 
   /* Layout cap — dashboard is a centred column; the explorer opts out. */
-  --spacing-app: 840px;
 
   --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
@@ -58,9 +55,7 @@
   --color-red: #f06a6a;
   --color-amber: #f0b04f;
   --color-purple: #a78bfa;
-  --color-cost: #566179;
   --color-gold: #f4c542;
-  --color-gold-bar: #c9a020;
   --color-gold-rank: #c9a020;
   --color-grid: #2e3648;
   --color-chart-bg: #171b24;
@@ -76,7 +71,6 @@
   --color-amber: #c98a28;
   --color-purple: #6b7fd4;
   --color-gold: #b8860b;
-  --color-gold-bar: #946f00;
   --color-gold-rank: #b8860b;
 }
 
@@ -87,7 +81,6 @@
   --color-amber: #e8b04f;
   --color-purple: #9aa8f0;
   --color-gold: #d9b84a;
-  --color-gold-bar: #b8942e;
   --color-gold-rank: #b8942e;
 }
 
@@ -99,6 +92,14 @@
 html,
 body {
   overflow-x: clip;
+}
+
+/* Text selection in the app's own accent rather than the browser's stock blue,
+   which clashes once the palette is cycled off classic. A tint (not a solid
+   fill) keeps the ink readable through it in both themes. */
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 26%, transparent);
+  color: var(--color-ink);
 }
 
 /* The explore page's tall scroll panes (coverage grid, sheet tables, raw JSON)
@@ -116,10 +117,16 @@ body {
    markup changed for both skins, so this has to hold in either. */
 .chip-remove {
   background: transparent;
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.5;
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .chip-remove:hover {
   background: color-mix(in srgb, var(--color-red) 24%, transparent);
+  color: var(--color-red);
+  opacity: 1;
 }
 .chip-remove:active {
   background: color-mix(in srgb, var(--color-red) 38%, transparent);
@@ -149,9 +156,7 @@ body {
   --color-red: #d94a4a;
   --color-amber: #c4871c;
   --color-purple: #7c5cf0;
-  --color-cost: #a9b1c1;
   --color-gold: #bd8f16;
-  --color-gold-bar: #9a7208;
   --color-gold-rank: #bd8f16;
   --color-grid: #e9ecf2;
   --color-chart-bg: #ffffff;
@@ -174,9 +179,7 @@ body {
   --color-red: #f76d6d;
   --color-amber: #f2b34d;
   --color-purple: #a78bfa;
-  --color-cost: #4e586d;
   --color-gold: #f2c44f;
-  --color-gold-bar: #c9a132;
   --color-gold-rank: #c9a132;
   --color-grid: #1d2330;
   --color-chart-bg: #0a0c11;
@@ -194,7 +197,6 @@ body {
   --color-amber: #bf8420;
   --color-purple: #5f74cc;
   --color-gold: #b0850f;
-  --color-gold-bar: #8d6a05;
   --color-gold-rank: #b0850f;
 }
 
@@ -206,7 +208,6 @@ body {
   --color-amber: #e9b355;
   --color-purple: #93a4f5;
   --color-gold: #dcbb52;
-  --color-gold-bar: #b89733;
   --color-gold-rank: #b89733;
 }
 
@@ -297,6 +298,12 @@ html[data-mode="default"] [data-devcorner] {
   }
   .chartbox {
     height: 300px;
+  }
+  /* ...but NOT the tall ones (scatter): this unlayered rule beats the utility
+     classes, so it was silently clamping the scatter to 300px on every phone
+     regardless of what ScatterChart asked for. */
+  .chartbox.tall {
+    height: 450px;
   }
 }
 

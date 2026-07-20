@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
 import { IconMoon, IconPalette, IconSettings, IconSparkle, IconSun } from "./Icons";
+import type { SegPalette } from "./segments";
 import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
@@ -38,6 +39,9 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   // [data-skin="refined"] — flipping this back to "classic" restores the
   // pre-polish design exactly, which is the kill switch for other devices.
   const [skin, setSkin] = useState<"classic" | "refined">("refined");
+  // Doughnut/bars segment colours. "harmony" (default) is the muted validated
+  // set; "spectral" restores the original saturated one. See segments.ts.
+  const [segPalette, setSegPalette] = useState<SegPalette>("harmony");
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -52,6 +56,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       if (saved && (PALETTES as readonly string[]).includes(saved))
         setPalette(saved as Palette);
       if (localStorage.getItem("skin") === "classic") setSkin("classic");
+      if (localStorage.getItem("segPalette") === "spectral") setSegPalette("spectral");
       if (localStorage.getItem("viewMode") === "dev") setMode("dev");
       if (localStorage.getItem("graphPan") === "on") setGraphPan(true);
     } catch {}
@@ -65,14 +70,18 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     else root.removeAttribute("data-palette");
     root.setAttribute("data-mode", mode);
     root.setAttribute("data-skin", skin);
+    // Absent attribute means "harmony" — only the opt-out is written.
+    if (segPalette === "spectral") root.setAttribute("data-seg-palette", "spectral");
+    else root.removeAttribute("data-seg-palette");
     try {
+      localStorage.setItem("segPalette", segPalette);
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
       localStorage.setItem("viewMode", mode);
       localStorage.setItem("skin", skin);
       localStorage.setItem("graphPan", graphPan ? "on" : "off");
     } catch {}
-  }, [theme, palette, mode, graphPan, skin]);
+  }, [theme, palette, mode, graphPan, skin, segPalette]);
 
   useEffect(() => {
     if (!open) return;
@@ -112,7 +121,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         title="Dashboard · click to toggle per-year / all-years"
         onClick={onLogo}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onLogo()}
-        className="hover:text-accent focus-visible:text-accent mr-6 inline-flex flex-shrink-0 cursor-pointer items-center text-[15px] leading-[1.1] font-extrabold whitespace-nowrap transition-colors focus-visible:outline-none max-sm:mr-2 max-sm:text-[13px]"
+        className="hover:text-accent focus-visible:text-accent mr-6 inline-flex flex-shrink-0 cursor-pointer items-center text-[15px] leading-[1.1] font-extrabold whitespace-nowrap transition-colors select-none focus-visible:outline-none max-sm:mr-2 max-sm:text-[13px]"
       >
         {/* Back chevron: always occupies space so the title never shifts;
             invisible on the dashboard (legacy .home-ic). */}
@@ -141,7 +150,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             setCoView(coView === "year" ? "all" : "year");
           }
         }}
-        className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
+        className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors select-none max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
           active === "companies"
             ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
             : // Same resting/hover colours as the Market Analytics logo, so the
@@ -232,6 +241,17 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             >
               <IconSparkle size={15} />
               {skin === "refined" ? "Skin: refined" : "Skin: classic"}
+            </button>
+            {/* Segment chart colours; "spectral" restores the pre-v3.41 set. */}
+            <button
+              type="button"
+              className={menuItem}
+              onClick={() =>
+                setSegPalette(segPalette === "harmony" ? "spectral" : "harmony")
+              }
+            >
+              <IconPalette size={15} />
+              {segPalette === "harmony" ? "Segments: harmony" : "Segments: spectral"}
             </button>
             {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
             {mode === "dev" && (

@@ -1,5 +1,13 @@
 import type { CompanyYear, MarketModel } from "./types";
 
+/** The brand the Financials tabs open on when the URL names none. Fabula is
+ *  the owner's own agency, so it's the useful starting point rather than
+ *  whichever brand happens to sort first. Falls back to the first brand if it
+ *  ever drops out of the dataset. */
+export function defaultBrand(model: MarketModel) {
+  return model.brands.includes("Fabula") ? "Fabula" : model.brands[0];
+}
+
 /** Whole-market totals for one year (the legacy's marketAgg). */
 export type MarketTotals = {
   revenue: number;
@@ -23,12 +31,6 @@ export function marketTotals(rows: CompanyYear[], year: number): MarketTotals {
     estimatedIncome: inYear.reduce((sum, row) => add(sum, row.estimatedIncome), 0),
     count: inYear.length,
   };
-}
-
-/** Compound annual growth rate between two totals, over `years` years. */
-export function cagr(from: number, to: number, years: number): number | null {
-  if (from <= 0 || years <= 0) return null;
-  return (to / from) ** (1 / years) - 1;
 }
 
 /** Median salary that year, ignoring implausibly low figures (legacy: >500). */
@@ -86,16 +88,4 @@ export function rankOf(
 export function margin(row: CompanyYear): number | null {
   if (row.profit == null || (row.estimatedIncome ?? 0) <= 50_000) return null;
   return (row.profit / (row.estimatedIncome as number)) * 100;
-}
-
-/** Market-wide revenue growth across the whole tracked period. */
-export function marketCagr(model: MarketModel): number | null {
-  const firstYear = model.years[0];
-  const span = model.last - firstYear;
-
-  return cagr(
-    marketTotals(model.rows, firstYear).revenue,
-    marketTotals(model.rows, model.last).revenue,
-    span,
-  );
 }

@@ -9,6 +9,12 @@ export type VersionEntry = {
 /** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.40.1",
+    date: "2026-07-20",
+    title: "Halve scatter height",
+    desc: "Reduced the mobile size-versus-profitability chart height from 900px to 450px.",
+  },
+  {
     v: "v3.39.0",
     date: "2026-07-20",
     sp: 5,

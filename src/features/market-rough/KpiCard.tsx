@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
+import { type Formula, FormulaPopover } from "./Formula";
 
 export type KpiMode = "value" | "change";
 
@@ -12,7 +13,9 @@ export type KpiCardData = {
   /** "€760k → €714k" — shown as the sub line in % mode. */
   rangeText: string;
   changeCls: "pos" | "neg" | "";
-  formula?: string;
+  /** One entry per distinct formula — a compound explanation ("X ÷ N. YoY =
+      …") is two formulas, not one sentence. */
+  formulas?: Formula[];
 };
 
 export function KpiCard({ card, mode }: { card: KpiCardData; mode: KpiMode }) {
@@ -35,18 +38,7 @@ export function KpiCard({ card, mode }: { card: KpiCardData; mode: KpiMode }) {
       >
         {sub}
       </div>
-      {card.formula && (
-        <details className="kpi-f group mt-[7px]">
-          <summary className="text-muted group-open:text-ink inline-flex cursor-pointer list-none items-center gap-1 text-[10.5px] [&::-webkit-details-marker]:hidden">
-            <span className="font-bold italic">ƒ</span> formula
-            <span className="text-[9px] group-open:hidden">▸</span>
-            <span className="hidden text-[9px] group-open:inline">▾</span>
-          </summary>
-          <div className="text-muted mt-[5px] text-[11px] leading-[1.45]">
-            {card.formula}
-          </div>
-        </details>
-      )}
+      {!!card.formulas?.length && <FormulaPopover formulas={card.formulas} />}
     </article>
   );
 }

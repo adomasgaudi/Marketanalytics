@@ -1,7 +1,13 @@
 import type { CompanyYear } from "./types";
 
 /**
- * Segment colours, keyed by the LT data keys.
+ * Segment colours, keyed by the LT data keys. TWO sets ship, switched by the
+ * "Segment colours" item in the settings menu (see useSegColors):
+ *
+ *   "harmony" (default) — HARMONY_* below, the muted validated set.
+ *   "spectral"          — SEG_COLORS_* below, the original beauty-first set.
+ *
+ * ---- SPECTRAL (the original; still selectable, so it stays as written) ----
  *
  * BEAUTY-FIRST palette, chosen deliberately over a maximally-separable one at
  * the owner's direction. Nine hues evenly spaced around the wheel at constant
@@ -41,8 +47,56 @@ export const SEG_COLORS_DARK: Record<string, string> = {
   Renginiai: "#e879f9",
 };
 
+/**
+ * ---- HARMONY (the default) ----
+ *
+ * Same nine slots, same hue families (Media still reads purple, Kūryba still
+ * blue-teal), but generated in OKLCH at a single low chroma (0.11) so the set
+ * reads as one muted, editorial family rather than nine saturated primaries.
+ *
+ * The trick that buys separation back while the hues sit closer together:
+ * lightness ZIGZAGS by slot (L 0.53/0.67 alternating, dark 0.52/0.66). Adjacent
+ * slices therefore differ in value, not hue alone — which is also what makes it
+ * survive colour-blind simulation where the spectral set does not.
+ *
+ * MEASURED, not eyeballed — dataviz validate_palette.js, against the real
+ * surfaces (#ffffff light, #0a0c11 dark), both sets ok=true:
+ *   light: CVD ΔE 12.1 (target 8) · normal-vision 15.8 (floor 15)
+ *   dark:  CVD ΔE 12.1 · normal-vision 15.8 · all 9 clear 3:1 contrast
+ * Light has two slots under 3:1 vs white (#1baaaa 2.85, #939d48 2.93) — that is
+ * the documented conditional relax, discharged by the legend + on-slice labels
+ * this chart already draws. Do not drop those labels without re-checking.
+ *
+ * Re-run before editing any value here; the zigzag makes the set easy to break:
+ *   node scripts/validate_palette.js "<the nine hexes>" --mode light
+ */
+export const SEG_COLORS_HARMONY_LIGHT: Record<string, string> = {
+  Media: "#845797", // purple
+  "Digital media": "#828fd9", // periwinkle
+  Kūryba: "#0975a2", // deep blue
+  PR: "#1baaaa", // teal
+  "Production house": "#2a7e4f", // green
+  BTL: "#939d48", // olive
+  PA: "#906106", // bronze
+  Konsultantai: "#cf7b66", // terracotta
+  Renginiai: "#9c4e6f", // plum
+};
+
+export const SEG_COLORS_HARMONY_DARK: Record<string, string> = {
+  Media: "#815494",
+  "Digital media": "#7f8cd5",
+  Kūryba: "#01729f",
+  PR: "#12a7a7",
+  "Production house": "#267b4c",
+  BTL: "#909a45",
+  PA: "#8d5e00",
+  Konsultantai: "#cc7863",
+  Renginiai: "#994b6c",
+};
+
+export type SegPalette = "harmony" | "spectral";
+
 /** Light set is the SSR/default export — see useSegColors() for live theming. */
-export const SEG_COLORS = SEG_COLORS_LIGHT;
 
 /**
  * Compare palette (chips / tabs / grouped bars) — the same beauty-first
@@ -74,7 +128,6 @@ export const CMP_PAL_DARK = [
   "#fb7185",
   "#e879f9",
 ];
-export const CMP_PAL = CMP_PAL_LIGHT;
 /** Static, light-only. Prefer useCmpColor() in components. */
 export const cmpColor = (i: number) => CMP_PAL_LIGHT[i % CMP_PAL_LIGHT.length];
 

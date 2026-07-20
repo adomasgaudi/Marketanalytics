@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pill, PillRow } from "@/components/ui/pills";
 import { type BarRow, BarsSvg } from "./BarsSvg";
+import { fmtEurFull, fmtInt } from "./format";
 import { margin } from "./metrics";
 import { EngTag } from "./SegmentChart";
 import { segName } from "./segments";
@@ -50,11 +51,11 @@ export function RankingsChart({ model }: { model: MarketModel }) {
   const tfmt = (v: number) =>
     metric.money
       ? perEmp
-        ? `€${Math.round(v).toLocaleString()}`
+        ? fmtEurFull(v)
         : `€${v.toFixed(2)}M`
       : metricKey === "margin"
         ? `${v.toFixed(1)}%`
-        : Math.round(v).toLocaleString();
+        : fmtInt(v);
 
   let rows: Row[] = model.rows
     .filter((r) => r.year === year && r.activities.some((a) => segs.has(a)))

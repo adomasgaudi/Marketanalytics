@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
@@ -14,14 +15,20 @@ export function Seg<T extends string>({
   label,
   className,
   btnClassName,
+  onHoverChange,
 }: {
-  options: { value: T; label: string }[];
+  /** `title` doubles as the tooltip + accessible name when `label` is an icon. */
+  options: { value: T; label: ReactNode; title?: string }[];
   value: T;
   onChange: (value: T) => void;
   label: string;
   className?: string;
   /** Override button padding (legacy .seg-row segs are denser: 6px 11px). */
   btnClassName?: string;
+  /** Fires with the hovered/focused option (null on leave). Supplied when the
+   *  caller renders its own explanation popup — the native `title` tooltip is
+   *  then suppressed so the two don't stack. */
+  onHoverChange?: (value: T | null) => void;
 }) {
   return (
     <div
@@ -36,7 +43,13 @@ export function Seg<T extends string>({
         <button
           key={option.value}
           type="button"
+          title={onHoverChange ? undefined : option.title}
+          aria-label={option.title}
           onClick={() => onChange(option.value)}
+          onPointerEnter={() => onHoverChange?.(option.value)}
+          onPointerLeave={() => onHoverChange?.(null)}
+          onFocus={() => onHoverChange?.(option.value)}
+          onBlur={() => onHoverChange?.(null)}
           data-on={option.value === value}
           className={cn(
             "seg-btn border-line cursor-pointer border-r px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors last:border-r-0",

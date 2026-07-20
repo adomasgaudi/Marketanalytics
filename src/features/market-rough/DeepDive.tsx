@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Pill, PillRow } from "@/components/ui/pills";
-import { fmtEur, fmtInt } from "./format";
+import { fmtEur, fmtEurFull, fmtInt } from "./format";
 import { LineChart } from "./LineChart";
+import { defaultBrand } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
@@ -47,7 +48,7 @@ const DD_METRICS: {
     label: "Avg salary",
     title: "Average monthly salary over time",
     f: (r) => ((r.avgSalary ?? 0) > 500 ? r.avgSalary : null),
-    fmt: (v) => `€${Math.round(v).toLocaleString()}`,
+    fmt: fmtEurFull,
   },
   {
     key: "ddWages",
@@ -64,7 +65,7 @@ export function DeepDive({ model, title }: { model: MarketModel; title?: string 
   const [{ companies }] = useDashboardParams(model.last);
   const [metricKey, setMetricKey] = useState("ddRev");
 
-  const brand = companies[0] ?? model.brands[0];
+  const brand = companies[0] ?? defaultBrand(model);
   const metric = DD_METRICS.find((m) => m.key === metricKey) ?? DD_METRICS[0];
 
   const data = model.years

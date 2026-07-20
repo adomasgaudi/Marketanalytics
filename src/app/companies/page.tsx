@@ -34,13 +34,13 @@ export default function CompaniesPage() {
             opacity={16}
             className="-top-24 -left-[20vw] h-[380px] w-[80vw]"
           />
+          {/* Eyebrow above the title, same treatment as the Markets page. */}
+          <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
+            Profiles, rankings &amp; deep-dives · {model.brands.length} tracked agencies
+          </p>
           <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
             Companies <ViewWord scope="co" />
           </h1>
-          <p className="text-muted mt-3 text-[13.5px]">
-            Profiles, rankings &amp; deep-dives for the {model.brands.length} tracked
-            agencies
-          </p>
           <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
         </header>
 

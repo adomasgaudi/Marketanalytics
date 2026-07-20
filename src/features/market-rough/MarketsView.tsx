@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { fmtEur, fmtInt, fmtPct } from "./format";
+import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
+import { Frac, moneyFormulas, Op, V, yoy } from "./Formula";
 import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
@@ -14,20 +15,6 @@ import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
-
-/** Tab label for the per-year panel: "Market 2024→2025 · average / company". */
-export function marketTabLabel(
-  model: MarketModel,
-  year: number,
-  market: string,
-  segment?: string,
-) {
-  const yrLabel = year - 1 >= model.years[0] ? `${year - 1}→${year}` : String(year);
-  const suffix =
-    market === "avg" ? " · average / company" : market === "emp" ? " · per employee" : "";
-  const scope = segment ? ` · ${segName(segment)}` : "";
-  return `Cash flow ${yrLabel}${scope}${suffix}`;
-}
 
 /** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
 export function MarketPerYear({ model }: { model: MarketModel }) {
@@ -59,12 +46,6 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
   // "24→25" range label, as the legacy cards title themselves.
   const y2 = String(year).slice(2);
   const yrLabel = hasPrev ? `${String(year - 1).slice(2)}→${y2}` : String(year);
-  const basisNote =
-    market === "avg"
-      ? ` ÷ ${cur.count} companies`
-      : market === "emp"
-        ? ` ÷ ${Math.round(cur.employees).toLocaleString()} employees`
-        : " (whole-market total)";
 
   const yoyCard = (
     label: string,
@@ -80,15 +61,20 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
       changeText: ratio == null ? "—" : fmtPct(ratio),
       rangeText: hasPrev ? `${fmt(prevVal)} → ${fmt(curVal)}` : fmt(curVal),
       changeCls: ratio != null && ratio < 0 ? "neg" : "pos",
-      formula: !hasPrev
-        ? `No prior year before ${year} in the data.`
-        : `(${fmt(curVal)} ÷ ${fmt(prevVal)}) − 1 = change from ${year - 1} to ${year}. ${formulaName}${basisNote}.`,
+      formulas: hasPrev
+        ? [
+            yoy(formulaName, formulaName.toLowerCase(), undefined, {
+              cur: fmt(curVal),
+              prev: fmt(prevVal),
+            }),
+          ]
+        : [],
     };
   };
 
   const salary = medianSalary(rows, year) ?? 0;
   const salaryPrev = medianSalary(rows, year - 1) ?? 0;
-  const salaryFmt = (v: number) => `€${Math.round(v).toLocaleString()}/mo`;
+  const salaryFmt = (v: number) => `${fmtEurFull(v)}/mo`;
 
   const empCur =
     market === "avg" ? (cur.count ? cur.employees / cur.count : 0) : cur.employees;
@@ -107,14 +93,107 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
         empFmt,
         "Employees",
       ),
-      formula:
-        (market === "avg"
-          ? `Total headcount ÷ ${cur.count} companies`
-          : "Sum of reported headcount") + ". YoY = this year ÷ last year − 1.",
+      // Two distinct formulas, not one sentence: how the figure is built, then
+      // how the change on it is measured.
+      formulas: [
+        market === "avg"
+          ? {
+              name: "Average employees per company",
+              math: (
+                <>
+                  <V c="AE" />
+                  <Op o="=" />
+                  <Frac num={<V c="HC" />} den={<V c="CO" />} />
+                </>
+              ),
+              vars: [
+                {
+                  code: "AE",
+                  label: "average employees per company",
+                  value: empFmt(empCur),
+                },
+                {
+                  code: "HC",
+                  label: "total market headcount",
+                  field: "employees",
+                  value: fmtInt(cur.employees),
+                },
+                {
+                  code: "CO",
+                  label: "companies filing this year",
+                  value: String(cur.count),
+                },
+              ],
+            }
+          : {
+              name: "Total employees",
+              math: (
+                <>
+                  <V c="HC" />
+                  <Op o="=" />
+                  <mo largeop="true">∑</mo>
+                  <V c="emp" sub="i" />
+                </>
+              ),
+              vars: [
+                {
+                  code: "HC",
+                  label: "total market headcount",
+                  field: "employees",
+                  value: fmtInt(cur.employees),
+                },
+                { code: "empᵢ", label: "one company's headcount", field: "employees" },
+              ],
+            },
+        ...(hasPrev
+          ? [
+              yoy(
+                market === "avg" ? "AE" : "HC",
+                market === "avg" ? "average employees" : "total headcount",
+                "employees",
+                { cur: empFmt(empCur), prev: empFmt(empPrev) },
+              ),
+            ]
+          : []),
+      ],
     },
     {
       ...yoyCard("Median salary", salary, salaryPrev, salaryFmt, "Median salary"),
-      formula: `Middle value of every company's average monthly salary in ${year} (only companies reporting > €500/mo). YoY = this ÷ ${year - 1} − 1.`,
+      formulas: [
+        {
+          name: "Median salary",
+          math: (
+            <>
+              <V c="SAL" />
+              <Op o="=" />
+              <mi>median</mi>
+              <mo>(</mo>
+              <V c="avg" sub="i" />
+              <mo>)</mo>
+            </>
+          ),
+          vars: [
+            {
+              code: "SAL",
+              label: "market median monthly salary",
+              value: salaryFmt(salary),
+            },
+            {
+              code: "avgᵢ",
+              label: "one company's average monthly pay (only > €500/mo counts)",
+              field: "avgSalary",
+            },
+          ],
+        },
+        ...(hasPrev
+          ? [
+              yoy("SAL", "median salary", "avgSalary", {
+                cur: salaryFmt(salary),
+                prev: salaryFmt(salaryPrev),
+              }),
+            ]
+          : []),
+      ],
     },
   ];
 
@@ -127,6 +206,30 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
           <MoneyFlow
             mode={shownMode}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
+            formulas={moneyFormulas({
+              sum: true,
+              div:
+                market === "avg"
+                  ? {
+                      code: "CO",
+                      label: "companies filing this year",
+                      value: String(cur.count),
+                    }
+                  : market === "emp"
+                    ? {
+                        code: "HC",
+                        label: "total market headcount",
+                        value: fmtInt(cur.employees),
+                      }
+                    : null,
+              // The figures as shown on the card, so the fold reads as a worked
+              // example rather than a definition.
+              values: {
+                T: fmtEur(scale(cur.revenue)),
+                R: fmtEur(scale(cur.estimatedIncome)),
+                P: fmtEur(scale(cur.profit)),
+              },
+            })}
             turnover={scale(cur.revenue)}
             revenue={scale(cur.estimatedIncome)}
             profit={scale(cur.profit)}
