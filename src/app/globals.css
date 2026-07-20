@@ -91,6 +91,26 @@
   --color-gold-rank: #b8942e;
 }
 
+/* The decorative Bloom gradients are deliberately wider than the viewport
+   (-left-[20vw], w-[80vw]), which otherwise gives the page a sideways scroll on
+   phones and drags the fixed bottom bar out of bounds with it. `clip` rather
+   than `hidden` — hidden would make this a scroll container and break the
+   sticky compare pills inside. */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* The explore page's tall scroll panes (coverage grid, sheet tables, raw JSON)
+   run the full column width, so on a phone every vertical swipe scrolls the
+   PANE and the page underneath never moves. Leaving a gutter on the right
+   guarantees there is always page background to drag. */
+@media (max-width: 640px) {
+  .scroll-pane {
+    margin-right: 44px;
+  }
+}
+
 /* Compare-chip remove zone: the chip's right quarter, transparent at rest and
    tinting red on hover, replacing the old × glyph. NOT skin-scoped — the
    markup changed for both skins, so this has to hold in either. */

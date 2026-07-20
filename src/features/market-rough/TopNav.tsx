@@ -144,7 +144,9 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
           active === "companies"
             ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
-            : "text-muted hover:text-ink"
+            : // Same resting/hover colours as the Market Analytics logo, so the
+              // two nav items read as equal peers rather than title + sub-link.
+              "text-ink hover:text-accent"
         }`}
       >
         <span>Companies</span>

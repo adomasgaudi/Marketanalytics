@@ -151,20 +151,24 @@ function EventRow({ ev }: { ev: ChgEvent }) {
             toggle();
           }
         }}
-        className="hover:bg-panel flex cursor-pointer flex-wrap items-start gap-2.5 px-3 py-2.5"
+        // Phone: date + badge on their own line, summary below at full width.
+        // From sm: the original single wrapping row.
+        className="hover:bg-panel flex cursor-pointer flex-col gap-1.5 px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-start sm:gap-2.5"
       >
-        <span className="text-muted min-w-[88px] text-[11px] whitespace-nowrap">
-          {fmtChgDate(ev.at)}
-        </span>
-        <span
-          className={cn(
-            "rounded-[10px] px-2 py-0.5 text-[10px] font-bold tracking-[.04em] whitespace-nowrap uppercase",
-            SRC_CLS[src] || SRC_CLS.mixed,
-          )}
-        >
-          {src}
-        </span>
-        <span className="text-ink min-w-[120px] flex-1 text-[13px]">
+        <div className="flex items-center gap-2 sm:contents">
+          <span className="text-muted text-[11px] whitespace-nowrap sm:min-w-[88px]">
+            {fmtChgDate(ev.at)}
+          </span>
+          <span
+            className={cn(
+              "rounded-[10px] px-2 py-0.5 text-[10px] font-bold tracking-[.04em] whitespace-nowrap uppercase",
+              SRC_CLS[src] || SRC_CLS.mixed,
+            )}
+          >
+            {src}
+          </span>
+        </div>
+        <span className="text-ink text-[13px] sm:min-w-[120px] sm:flex-1">
           {ev.summary || ""}
         </span>
         <span className="text-muted text-[11px]">{meta}</span>
@@ -172,52 +176,56 @@ function EventRow({ ev }: { ev: ChgEvent }) {
       {open && (
         <div className="border-line border-t px-3 pt-2 pb-3 text-[12px]">
           {chRows.length ? (
-            <table className="w-full border-collapse text-[12px]">
-              <thead>
-                <tr>
-                  {["Company", "Change", "Detail"].map((h) => (
-                    <th
-                      key={h}
-                      className="border-line text-muted border-b px-2 py-[5px] text-left align-top text-[10px] tracking-[.04em] uppercase"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {chRows.map((ch, i) => {
-                  const det = chgDetailRows(ch);
-                  const kind = ch.kind || "changed";
-                  return (
-                    <tr key={i}>
-                      <td className="border-line border-b px-2 py-[5px] align-top">
-                        {chgLabel(ch)}
-                      </td>
-                      <td className="border-line border-b px-2 py-[5px] align-top">
-                        <span
-                          className={cn(
-                            "text-[10px] font-semibold uppercase",
-                            kind === "added"
-                              ? "text-green"
-                              : kind === "changed"
-                                ? "text-amber"
-                                : "text-muted",
-                          )}
-                        >
-                          {kind}
-                        </span>
-                      </td>
-                      <td className="border-line border-b px-2 py-[5px] align-top">
-                        {det.length
-                          ? det.map((r, j) => <div key={j}>{`${r[0]}: ${r[1]}`}</div>)
-                          : "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            // 3 columns won't fit ~280px of phone width — let the table keep its
+            // own minimum and scroll sideways inside the card instead.
+            <div className="-mx-1 overflow-x-auto px-1">
+              <table className="w-full min-w-[420px] border-collapse text-[12px]">
+                <thead>
+                  <tr>
+                    {["Company", "Change", "Detail"].map((h) => (
+                      <th
+                        key={h}
+                        className="border-line text-muted border-b px-2 py-[5px] text-left align-top text-[10px] tracking-[.04em] uppercase"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {chRows.map((ch, i) => {
+                    const det = chgDetailRows(ch);
+                    const kind = ch.kind || "changed";
+                    return (
+                      <tr key={i}>
+                        <td className="border-line border-b px-2 py-[5px] align-top">
+                          {chgLabel(ch)}
+                        </td>
+                        <td className="border-line border-b px-2 py-[5px] align-top">
+                          <span
+                            className={cn(
+                              "text-[10px] font-semibold uppercase",
+                              kind === "added"
+                                ? "text-green"
+                                : kind === "changed"
+                                  ? "text-amber"
+                                  : "text-muted",
+                            )}
+                          >
+                            {kind}
+                          </span>
+                        </td>
+                        <td className="border-line border-b px-2 py-[5px] align-top">
+                          {det.length
+                            ? det.map((r, j) => <div key={j}>{`${r[0]}: ${r[1]}`}</div>)
+                            : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           ) : ev.trigger === "git-backfill" ? (
             <div className="text-muted text-[12px]">
               Historical commit — file counts only (no field-level diff saved).
@@ -297,7 +305,7 @@ export function DataChanges() {
             className="border-line bg-panel2 text-ink min-w-[170px] rounded-lg border px-3 py-1.5 text-[13px]"
           />
         </div>
-        <div className="flex max-h-[70vh] flex-col gap-2 overflow-auto">
+        <div className="scroll-pane flex max-h-[70vh] flex-col gap-2 overflow-auto">
           {filtered.length ? (
             filtered.map((ev) => <EventRow key={ev.id} ev={ev} />)
           ) : (

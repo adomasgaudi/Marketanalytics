@@ -43,5 +43,7 @@ export function useDashboardParams(defaultYear: number) {
     off: parseAsArrayOf(parseAsString).withDefault([]),
     /** Segment filter; empty means no filter (all segments). */
     segments: parseAsArrayOf(parseAsString).withDefault([]),
+    /** Scopes the cash-flow panel to one service segment; "" = whole market. */
+    segment: parseAsString.withDefault(""),
   });
 }

@@ -21,13 +21,16 @@ export function ViewWord({ scope }: { scope: ViewScope }) {
   const [view, set] = useViewMode(scope);
   const toggle = () => set(view === "year" ? "all" : "year");
   return (
+    // Hover reads as "this is a control" by the dotted rule going solid —
+    // enough of a change to notice without decorating the hero.
     <span
       role="button"
       tabIndex={0}
+      aria-label={`Switch to ${view === "year" ? "all years" : "per year"}`}
       title="Tap to switch per-year / all-time"
       onClick={toggle}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle()}
-      className="text-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] hover:opacity-[.82]"
+      className="text-accent focus-visible:outline-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] transition-colors duration-150 hover:decoration-solid focus-visible:outline-2 focus-visible:outline-offset-2"
     >
       {view === "year" ? "per year" : "all years"}
     </span>

@@ -110,7 +110,7 @@ export function Coverage({ model }: { model: MarketModel }) {
             </span>
           </span>
         </div>
-        <div className="border-line max-h-[88vh] overflow-auto rounded-lg border">
+        <div className="scroll-pane border-line max-h-[88vh] overflow-auto rounded-lg border">
           <div
             className="grid min-w-[380px] text-[12px]"
             style={{

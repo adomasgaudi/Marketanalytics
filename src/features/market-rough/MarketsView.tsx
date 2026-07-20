@@ -9,29 +9,42 @@ import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
 import { ScatterScrub } from "./ScatterScrub";
+import { segName } from "./segments";
 import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
 /** Tab label for the per-year panel: "Market 2024→2025 · average / company". */
-export function marketTabLabel(model: MarketModel, year: number, market: string) {
+export function marketTabLabel(
+  model: MarketModel,
+  year: number,
+  market: string,
+  segment?: string,
+) {
   const yrLabel = year - 1 >= model.years[0] ? `${year - 1}→${year}` : String(year);
   const suffix =
     market === "avg" ? " · average / company" : market === "emp" ? " · per employee" : "";
-  return `Market data ${yrLabel}${suffix}`;
+  const scope = segment ? ` · ${segName(segment)}` : "";
+  return `Cash flow ${yrLabel}${scope}${suffix}`;
 }
 
 /** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
 export function MarketPerYear({ model }: { model: MarketModel }) {
-  const [{ year, market }] = useDashboardParams(model.last);
+  const [{ year, market, segment }] = useDashboardParams(model.last);
   // €/% is ephemeral UI, not page identity — it stays out of the URL.
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
 
+  // The bottom-bar segment scope narrows the row set every figure on this
+  // panel is derived from — totals, salary and the money-flow alike.
+  const rows = segment
+    ? model.rows.filter((row) => row.activities.includes(segment))
+    : model.rows;
+
   // Derived from the selected year, never stored: React recomputes these on
   // render, so there is no cached aggregate that can fall out of sync.
-  const cur = marketTotals(model.rows, year);
-  const prev = marketTotals(model.rows, year - 1);
+  const cur = marketTotals(rows, year);
+  const prev = marketTotals(rows, year - 1);
   const hasPrev = prev.count > 0;
   // The first year has nothing to compare against, so % is force-reverted to €
   // rather than left showing a grid of em-dashes.
@@ -73,8 +86,8 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
     };
   };
 
-  const salary = medianSalary(model.rows, year) ?? 0;
-  const salaryPrev = medianSalary(model.rows, year - 1) ?? 0;
+  const salary = medianSalary(rows, year) ?? 0;
+  const salaryPrev = medianSalary(rows, year - 1) ?? 0;
   const salaryFmt = (v: number) => `€${Math.round(v).toLocaleString()}/mo`;
 
   const empCur =
@@ -144,14 +157,17 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
 
 /** The "Market all time" panel: money-flow by year, segment trends, scrubber. */
 export function MarketAllTime({ model }: { model: MarketModel }) {
-  const [{ market }] = useDashboardParams(model.last);
+  const [{ market, segment }] = useDashboardParams(model.last);
+  const rows = segment
+    ? model.rows.filter((row) => row.activities.includes(segment))
+    : model.rows;
 
   return (
     <div>
       <MoneyFlowByYear
-        title={`Total market money-flow by year (${model.finYears[0]}–${model.finYears[model.finYears.length - 1]})`}
+        title={`${segment ? segName(segment) : "Total market"} money-flow by year (${model.finYears[0]}–${model.finYears[model.finYears.length - 1]})`}
         rows={model.finYears.map((fy) => {
-          const t = marketTotals(model.rows, fy);
+          const t = marketTotals(rows, fy);
           const d = market === "avg" ? t.count : market === "emp" ? t.employees : 1;
           const dv = (v: number) => (d > 0 ? v / d : 0);
           return {

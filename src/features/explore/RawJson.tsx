@@ -61,7 +61,7 @@ function JsonSection({
       </summary>
       <div className="px-3.5 pb-3.5">
         {opened && (
-          <div className="border-line bg-panel2 max-h-[80vh] overflow-auto rounded-lg border p-2">
+          <div className="scroll-pane border-line bg-panel2 max-h-[80vh] overflow-auto rounded-lg border p-2">
             <JsonTree value={value as never} rootLabel={root} />
           </div>
         )}

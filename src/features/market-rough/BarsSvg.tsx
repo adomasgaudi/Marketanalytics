@@ -10,6 +10,9 @@ export type BarRow = {
   heading?: string;
   /** Empty gap row between metric groups (legacy {spacer}). */
   spacer?: boolean;
+  /** Overrides the end-of-bar label, so a bar can be scaled on one unit
+   *  (percentile) but read out in another (€, %, headcount). Ticks keep `fmt`. */
+  valueText?: string;
 };
 
 type View = { vMin: number; vMax: number; iMin: number; iMax: number };
@@ -302,7 +305,7 @@ export function BarsSvg({
                   textAnchor={x1 >= base ? "start" : "end"}
                   fill="var(--color-muted)"
                 >
-                  {fmt(r.value)}
+                  {r.valueText ?? fmt(r.value)}
                 </text>
               </g>
             );

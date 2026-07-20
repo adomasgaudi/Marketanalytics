@@ -423,7 +423,7 @@ export function SheetExplorer({ order }: { order?: string[] }) {
       </div>
 
       {/* table */}
-      <div className="border-line max-h-[70vh] overflow-auto rounded-lg border">
+      <div className="scroll-pane border-line max-h-[70vh] overflow-auto rounded-lg border">
         <table className="w-full border-separate border-spacing-0 text-[13px]">
           <thead className="sticky top-0 z-2">
             <tr>

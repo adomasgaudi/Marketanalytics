@@ -1,10 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { type BarRow, BarsSvg } from "./BarsSvg";
 import { cmpColor } from "./CompanySelector";
+import { fmtEur, fmtInt } from "./format";
+import { type KpiMode, KpiModeToggle } from "./KpiCard";
 import { EngTag } from "./SegmentChart";
 import { margin, type Rank, rankOf } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
+
+const euro = (v: number) => fmtEur(v);
+const pctText = (v: number) => `${v.toFixed(1)}%`;
 
 /**
  * "{brand} vs the market" percentile chart on the drawBarsSvg engine (legacy):
@@ -28,6 +34,9 @@ export function RankVsMarket({
   year: number;
   perEmployee: boolean;
 }) {
+  // "value" = read the real €/%/headcount figure; "change" = the percentile.
+  // Bar LENGTH is the percentile either way — the metrics share no unit.
+  const [mode, setMode] = useState<KpiMode>("change");
   const pool = brands?.length ? brands : [brand];
   const grouped = pool.length > 1;
   const partialYear = year > model.last;
@@ -38,20 +47,28 @@ export function RankVsMarket({
     const staff = candidate.employees ?? 0;
     return value != null && staff > 0 ? value / staff : null;
   };
-  const metricDefs: { label: string; f: (r: CompanyYear) => number | null }[] = [
-    { label: "Revenue", f: pe((r) => r.estimatedIncome) },
-    { label: "Turnover", f: pe((r) => r.revenue) },
-    { label: "Net profit", f: pe((r) => r.profit) },
-    { label: "Profit margin", f: margin },
+  // `fmt` is each metric's own unit — the bar is always percentile-scaled, but
+  // the € view reads the real figure out at the end of the bar.
+  type Metric = {
+    label: string;
+    f: (r: CompanyYear) => number | null;
+    fmt: (v: number) => string;
+  };
+  const metricDefs: Metric[] = [
+    { label: "Revenue", f: pe((r) => r.estimatedIncome), fmt: euro },
+    { label: "Turnover", f: pe((r) => r.revenue), fmt: euro },
+    { label: "Net profit", f: pe((r) => r.profit), fmt: euro },
+    { label: "Profit margin", f: margin, fmt: pctText },
     ...(perEmployee || partialYear
       ? []
-      : [{ label: "Employees", f: (r: CompanyYear) => r.employees }]),
+      : [{ label: "Employees", f: (r: CompanyYear) => r.employees, fmt: fmtInt }]),
     ...(partialYear
       ? []
       : [
           {
             label: "Avg salary",
             f: (r: CompanyYear) => ((r.avgSalary ?? 0) > 500 ? r.avgSalary : null),
+            fmt: (v: number) => `€${Math.round(v).toLocaleString()}/mo`,
           },
         ]),
   ];
@@ -62,15 +79,19 @@ export function RankVsMarket({
   // gap), then one bar per company labelled with just the company name — its
   // chip colour identifies it (legacy v0.2.89). Tooltip still names the metric.
   const bars: BarRow[] = [];
-  const meta: ({ metric: string; rank: Rank } | null)[] = [];
+  const meta: ({ metric: string; rank: Rank; realText: string } | null)[] = [];
   metricDefs.forEach((m, gi) => {
     const cells = (grouped ? pool : [brand]).flatMap((b) => {
       const rank = rankFor(b, m.f);
       if (!rank) return [];
+      const cy = model.byBrand[b]?.[year];
+      const real = cy ? m.f(cy) : null;
+      const realText = real == null ? "—" : m.fmt(real);
       return {
         row: {
           label: grouped ? b : m.label,
           value: rank.pct,
+          valueText: mode === "value" ? realText : undefined,
           color: grouped
             ? cmpColor((colorPool ?? pool).indexOf(b))
             : rank.pct >= 50
@@ -78,6 +99,7 @@ export function RankVsMarket({
               : "var(--color-muted)",
         },
         rank,
+        realText,
       };
     });
     if (!cells.length) return;
@@ -91,7 +113,7 @@ export function RankVsMarket({
     }
     cells.forEach((c) => {
       bars.push(c.row);
-      meta.push({ metric: m.label, rank: c.rank });
+      meta.push({ metric: m.label, rank: c.rank, realText: c.realText });
     });
   });
   if (!meta.some(Boolean)) return null;
@@ -101,10 +123,13 @@ export function RankVsMarket({
 
   return (
     <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
-      <h3 className="mb-2 text-[15px] font-semibold">
-        {grouped ? "Selected companies" : brand} vs the market ({year}
-        {perEmployee ? ", per employee" : ""})
-      </h3>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <h3 className="text-[15px] font-semibold">
+          {grouped ? "Selected companies" : brand} vs the market ({year}
+          {perEmployee ? ", per employee" : ""})
+        </h3>
+        <KpiModeToggle mode={mode} onChange={setMode} />
+      </div>
       <div className="chartbox relative" style={{ height }}>
         <EngTag label="SVG" />
         <BarsSvg
@@ -115,7 +140,8 @@ export function RankVsMarket({
             const m = meta[i];
             if (!m) return "";
             const name = grouped ? `${m.metric} — ${bar.label}` : bar.label;
-            return `<b>${name}</b>: ${Math.round(bar.value)}th percentile · #${m.rank.pos} of ${m.rank.total}`;
+            // Tooltip always carries both readings, whichever the bars show.
+            return `<b>${name}</b>: ${m.realText} · ${Math.round(bar.value)}th percentile · #${m.rank.pos} of ${m.rank.total}`;
           }}
         />
       </div>

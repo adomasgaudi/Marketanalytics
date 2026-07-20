@@ -73,7 +73,7 @@ export default function MarketsPage() {
             className="-top-20 -left-[10vw] h-[420px] w-[70vw]"
           />
           <ViewGroupCard
-            title="Market data"
+            title="Cash flow"
             scope="mkt"
             tabs={[
               { label: `Market ${model.last}`, content: <MarketPerYear model={model} /> },
