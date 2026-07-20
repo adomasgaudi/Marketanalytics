@@ -50,9 +50,9 @@ export const SEG_COLORS_DARK: Record<string, string> = {
 /**
  * ---- HARMONY (the default) ----
  *
- * The nine slots live in the app's blue–indigo–teal theme, moving through rich
- * jewel tones rather than faded neutrals. Value and small hue shifts preserve
- * a tonal hierarchy without turning the charts into a full colour wheel.
+ * The nine slots are a single blue–violet tonal gradient derived from the dark
+ * page bloom and its electric-blue accent. Value carries most of the hierarchy;
+ * the slight violet turn at either end keeps the tones from becoming one colour.
  *
  * The trick that buys separation back while the hues sit closer together:
  * lightness ZIGZAGS by slot (L 0.53/0.67 alternating, dark 0.52/0.66). Adjacent
@@ -63,27 +63,27 @@ export const SEG_COLORS_DARK: Record<string, string> = {
  * and visual beauty before maximum categorical separation.
  */
 export const SEG_COLORS_HARMONY_LIGHT: Record<string, string> = {
-  Media: "#6f47d6", // royal violet
-  "Digital media": "#514bd9", // indigo
-  Kūryba: "#3569e0", // cobalt
-  PR: "#248dc8", // cerulean
-  "Production house": "#1d9d9d", // teal
-  BTL: "#1f9a77", // jade
-  PA: "#367bad", // steel blue
-  Konsultantai: "#8d4cc4", // orchid
-  Renginiai: "#a14fc0", // magenta violet
+  Media: "#7352c7", // violet blue
+  "Digital media": "#5a69c8", // indigo blue
+  Kūryba: "#3f7ec9", // cobalt
+  PR: "#278cc0", // clear blue
+  "Production house": "#2488ae", // blue teal
+  BTL: "#3b79a4", // azure slate
+  PA: "#536e98", // steel blue
+  Konsultantai: "#6b5eaa", // blue violet
+  Renginiai: "#8a55bb", // electric violet
 };
 
 export const SEG_COLORS_HARMONY_DARK: Record<string, string> = {
-  Media: "#aa8bff",
-  "Digital media": "#8c8aff",
-  Kūryba: "#78a6ff",
-  PR: "#57b7ed",
-  "Production house": "#4dccc4",
-  BTL: "#4dcc9d",
-  PA: "#6daedb",
-  Konsultantai: "#c783ee",
-  Renginiai: "#df82ef",
+  Media: "#c2b5ff",
+  "Digital media": "#a2adff",
+  Kūryba: "#82a7ff",
+  PR: "#62a5f2",
+  "Production house": "#4f9add",
+  BTL: "#5c89c7",
+  PA: "#6377af",
+  Konsultantai: "#7669b7",
+  Renginiai: "#976bc8",
 };
 
 export type SegPalette = "harmony" | "spectral";
