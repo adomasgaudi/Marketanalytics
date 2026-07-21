@@ -273,14 +273,10 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
                 <button
                   type="button"
                   className={`${menuItem} cursor-default opacity-50`}
-                  title="Sodra scraping runs from the legacy app"
+                  title="Sodra scraping runs in CI (refresh-sodra workflow)"
                 >
                   🔄 Refresh Sodra
                 </button>
-                {/* Renamed port button: opens the previous-generation dashboard. */}
-                <Link href="/v2" className={menuItem} onClick={() => setOpen(false)}>
-                  ⏭️ v2
-                </Link>
               </>
             )}
           </div>

@@ -27,8 +27,7 @@ export default function RootLayout({
           <NuqsAdapter>{children}</NuqsAdapter>
         </Suspense>
         {/* Dev overlay — the Pepper dev corner (src/dev): edit/view trays,
-            x-ray, depth experiments, version history. Dev mode only; the
-            legacy iframe keeps its own /devtools.js copy. */}
+            x-ray, depth experiments, version history. Dev mode only. */}
         <DevCornerMount />
       </body>
     </html>

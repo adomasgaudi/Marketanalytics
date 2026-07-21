@@ -8,7 +8,8 @@ name: Refresh Sodra data
 on:
   workflow_dispatch:
 
-# The job rewrites data/sodra/*.json and the generated index.html, so it needs to push.
+# The job rewrites data/sodra/*.json, so it needs to push. Pushing to main is what
+# publishes: deploy-pages.yml rebuilds the Next app, which reads data/ at build time.
 permissions:
   contents: write
 
@@ -30,24 +31,19 @@ jobs:
       # headless Chromium, which renders a JSON response as an empty body — every
       # company failed while the job stayed green.
       - name: Scrape every company
-        run: python scripts/scrape_sodra.py --all
-
-      # index.html is generated (BULD-01) — never hand-edited. Rebuilding is what
-      # actually puts the new Sodra numbers on the live page (live-deploy rule).
-      - name: Rebuild index.html
-        run: python src/build_site.py
+        run: python legacy-scripts/scrape_sodra.py --all
 
       - name: Commit if data changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- data/sodra index.html data/data_events.json; then
+          if git diff --quiet -- data/sodra data/data_events.json; then
             echo "Sodra data unchanged — nothing to commit."
             exit 0
           fi
           # v0 = data-only refresh, no site version bump (BULD-02 counts human changes).
           # Subject still satisfies the GIT-01 regex enforced by .githooks/commit-msg.
           n=$(git diff --name-only -- data/sodra | wc -l)
-          git add data/sodra data/data_events.json index.html
+          git add data/sodra data/data_events.json
           git commit -m "v0 DATA-46 | refresh Sodra data ($n companies changed) | 0 sp"
           git push

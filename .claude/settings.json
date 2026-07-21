@@ -59,12 +59,6 @@
             "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/format_after_edit.py\"",
             "timeout": 25,
             "statusMessage": "prettier"
-          },
-          {
-            "type": "command",
-            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/version_reminder.py\"",
-            "timeout": 10,
-            "statusMessage": "version-badge reminder"
           }
         ]
       }

@@ -2,7 +2,7 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.40.11
+> v3.41.0
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -72,18 +72,13 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |- package.json                 Next.js app | pnpm dev  (pnpm only - no npm/yarn)
 |- next.config.ts
 |
-|- src/                         NEXT.JS APP - the active track (was next-app/, hoisted to root)
+|- src/                         NEXT.JS APP - the only app track
 |  |- app/                      App Router: layout, globals.css, routes
-|  |- features/                 Feature modules (market-rough, ...)
+|  |- features/                 Feature modules (market-rough, explore)
+|  |- components/ui/            Shared primitives (seg, pills, group, ...)
 |  |- lib/                      Shared utils (cn, ...)
 |  `- app-version.ts            GENERATED from package.json - never hand-edit
-|- public/                      Next static assets
-|
-|- legacy-src/                  PREVIOUS dashboard - still what main ships
-|  |- template.html             Dashboard source: views, global state, charts
-|  `- build_site.py             Injects JSON data into the generated dashboard
-|- legacy-index.html            Generated static dashboard viewed by users
-|- CNAME                        Custom domain for the deployed (legacy) site
+|- public/                      Next static assets (incl. CNAME -> custom domain)
 |
 |- data/
 |  |- data.json                 Canonical annual company financial dataset
@@ -92,30 +87,23 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- data_events.json          Data-change audit log
 |  `- sodra/                    Per-company payroll source files
 |
-|- legacy-scripts/              Py Scraping, parsing, estimates, and data-event tools
-|- scripts/                     Node tooling (write-version.mjs)
+|- legacy-scripts/              Py scraping, parsing, estimates, data-event tools.
+|                               "legacy" is a misnomer - this is the LIVE data pipeline.
+|- scripts/                     Node tooling (write-version.mjs, lan-qr.mjs)
 |
-|- docs/
-|  |- ai-x                      Harness space (only parts exist)
-|  |- pr-x                      Project space (only parts exist)
-|  |
-|  |- ai-obs/                   Observation layer - fails, verify, context, ifs, tokens, tracking, logging.
-|  |- ai-harness/               Skills, rules, ect.
-|  |-
-|  |- pr-architecture/
-|  |- pr-design/
-|  |- pr-project-state/
+|- docs/                        Every doc lives in one of these - nothing loose at docs/ root
+|  |- ai-harness/               Harness space: skills, rules, startprompt, old-agents
+|  |- ai-obs/                   Observation layer - fails, verify, context, tokens, handoffs
+|  |- pr-architecture/          Architecture.md (env snippet), full architecture, data-flow
+|  |- pr-design/                UI.md
+|  |- pr-project-state/         Version history, key decisions
 |  |- pr-scrape/                Scraping how-to + missing slugs
-|  `- research/                 Suplementary research summaries
-|  |- Architecture.md           Project environment snippet
-|  |- old-agents.md             previous details badly categorised
+|  `- research/                 Supplementary research summaries
 |
-|- .github/workflows/           CI. Runs on MAIN, against main's OLD layout
-|                               (src/build_site.py, index.html). Repoint these to
-|                               legacy-src/ + legacy-scripts/ WHEN this branch merges.
+|- .github/workflows/           deploy-pages (Next static export -> Pages)
+|                               refresh-sodra (legacy-scripts/scrape_sodra.py -> data/)
 |- .claude/                     Agent settings (hooks + settings.json)
-|- .githooks/                   Repository hooks (commit-msg format)
-`- graphify-out/                Knowledge graph (generated)
+`- .githooks/                   Repository hooks (commit-msg format)
 ```
 
 This file is very valuable context. All edit here must be vital. If this file gets too big it will loose its purpose.

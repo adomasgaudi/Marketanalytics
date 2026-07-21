@@ -1,6 +1,6 @@
 # Builds the Next.js app as a static export and publishes it to GitHub Pages
-# (marketanalytics.lt). The legacy Python dashboard is still built as part of
-# `pnpm build` and ships alongside it at /legacy/.
+# (marketanalytics.lt). The custom domain comes from public/CNAME, which the
+# static export copies into out/.
 name: Deploy site
 
 on:
@@ -28,10 +28,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      # build_site.py regenerates the legacy dashboard into public/legacy/.
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3

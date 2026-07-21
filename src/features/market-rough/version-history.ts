@@ -6,8 +6,16 @@ export type VersionEntry = {
   desc?: string;
 };
 
-/** Next.js-era history (newest first). The full legacy changelog lives in /ugly. */
+/** Next.js-era history (newest first). The legacy dashboard and its changelog were
+ *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
+  {
+    v: "v3.41.0",
+    date: "2026-07-21",
+    sp: 2,
+    title: "Legacy dashboard removed",
+    desc: "Deleted the generated legacy HTML dashboard, its Python builder, the /v2 route and menu link; the build is now plain `next build`.",
+  },
   {
     v: "v3.40.11",
     date: "2026-07-20",

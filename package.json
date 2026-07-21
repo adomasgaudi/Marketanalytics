@@ -1,15 +1,13 @@
 {
   "name": "marketanalytics",
-  "version": "3.40.11",
+  "version": "3.41.0",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "version:write": "node scripts/write-version.mjs",
-    "legacy:build": "node scripts/build-legacy.mjs",
-    "legacy:watch": "node scripts/watch-legacy.mjs",
-    "dev": "node scripts/dev.mjs",
+    "dev": "next dev -H 0.0.0.0",
     "lan": "node scripts/lan-qr.mjs",
-    "build": "pnpm run legacy:build && next build",
+    "build": "next build",
     "start": "next start",
     "version": "pnpm run version:write",
     "lint": "eslint",
