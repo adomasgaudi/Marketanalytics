@@ -2,13 +2,13 @@
 """Batch-scrape many rekvizitai.vz.lt companies in one run. Built to scale to 100+.
 
     # by company name(s) — resolves the slug via rekvizitai's search API:
-    python3 scripts/scrape_batch.py "Adface, UAB" "Adverum, UAB" "ALL CAPS, UAB"
+    python3 scripts/data/scrape_batch.py "Adface, UAB" "Adverum, UAB" "ALL CAPS, UAB"
 
     # or from a file (one company name OR slug per line, '#' comments allowed):
-    python3 scripts/scrape_batch.py --file data/companies.txt
+    python3 scripts/data/scrape_batch.py --file data/companies.txt
 
     # already know the slugs? skip resolution:
-    python3 scripts/scrape_batch.py --slugs adface ad_verum all_caps
+    python3 scripts/data/scrape_batch.py --slugs adface ad_verum all_caps
 
 Pipeline per run (one browser for everything):
   1. resolve each name -> slug via GET /api/public/text-search/<name>

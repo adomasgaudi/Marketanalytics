@@ -87,9 +87,10 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- data_events.json          Data-change audit log
 |  `- sodra/                    Per-company payroll source files
 |
-|- legacy-scripts/              Py scraping, parsing, estimates, data-event tools.
-|                               "legacy" is a misnomer - this is the LIVE data pipeline.
-|- scripts/                     Node tooling (write-version.mjs, lan-qr.mjs)
+|- scripts/                     Split by WHAT THEY ACT ON, not by language
+|  |- app/                      Acts on the app: write-version, lan-qr (run per build/dev)
+|  `- data/                     Acts on data/: the LIVE Py scrape+parse+estimate
+|                               pipeline, plus the make-sheets .mjs one-offs
 |
 |- docs/                        Every doc lives in one of these - nothing loose at docs/ root
 |  |- ai-harness/               Harness space: skills, rules, startprompt, old-agents
@@ -101,7 +102,7 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  `- research/                 Supplementary research summaries
 |
 |- .github/workflows/           deploy-pages (Next static export -> Pages)
-|                               refresh-sodra (legacy-scripts/scrape_sodra.py -> data/)
+|                               refresh-sodra (scripts/data/scrape_sodra.py -> data/)
 |- .claude/                     Agent settings (hooks + settings.json)
 `- .githooks/                   Repository hooks (commit-msg format)
 ```

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fetch Sodra monthly data for companies from atvira.sodra.lt's open REST API.
 
-    python3 scripts/scrape_sodra.py <jarCode> [<jarCode> ...]
-    e.g. python3 scripts/scrape_sodra.py 304405052
-    python3 scripts/scrape_sodra.py --all   # every company code in rek_tabs.json
+    python3 scripts/data/scrape_sodra.py <jarCode> [<jarCode> ...]
+    e.g. python3 scripts/data/scrape_sodra.py 304405052
+    python3 scripts/data/scrape_sodra.py --all   # every company code in rek_tabs.json
 
 <jarCode> is the Juridinių asmenų registras (company) code — the same code the
 rekvizitai scrape already captures as "Įmonės kodas". For each company we:
@@ -39,7 +39,7 @@ except Exception:
     pass
 
 API = "https://atvira.sodra.lt/imones-rest"
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT_DIR = os.path.join(ROOT, "data", "sodra")
 REK = os.path.join(ROOT, "data", "rek_tabs.json")
 
@@ -156,7 +156,7 @@ def main(jars):
 if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
-        sys.exit("usage: python3 scripts/scrape_sodra.py <jarCode> [...] | --all")
+        sys.exit("usage: python3 scripts/data/scrape_sodra.py <jarCode> [...] | --all")
     if "--all" in args:
         args = all_jar_codes()
         print(f"--all: {len(args)} company codes from rek_tabs.json")

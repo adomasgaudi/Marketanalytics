@@ -15,8 +15,8 @@
 ## The one command (auto-scrape)
 
 ```bash
-python3 scripts/autoscrape.py --dry-run   # list brands with no scraped block
-python3 scripts/autoscrape.py             # resolve slugs, scrape, parse, write
+python3 scripts/data/autoscrape.py --dry-run   # list brands with no scraped block
+python3 scripts/data/autoscrape.py             # resolve slugs, scrape, parse, write
 python3 src/build_site.py                 # then rebuild the site
 ```
 
@@ -44,7 +44,7 @@ playwright install chromium
 ### 2. Scrape all tabs
 
 ```bash
-python3 scripts/scrape_company.py <slug>          # e.g. adell_reklama
+python3 scripts/data/scrape_company.py <slug>          # e.g. adell_reklama
 ```
 
 Saves one HTML file per tab to `data/raw/<slug>_<tab>.html` (gitignored — multi-MB intermediates).
@@ -52,7 +52,7 @@ Saves one HTML file per tab to `data/raw/<slug>_<tab>.html` (gitignored — mult
 ### 3. Parse → combined JSON
 
 ```bash
-python3 scripts/parse_company.py <slug>           # add --brand "Name" to override
+python3 scripts/data/parse_company.py <slug>           # add --brand "Name" to override
 ```
 
 `scripts/parse_company.py`:

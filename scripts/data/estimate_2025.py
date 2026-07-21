@@ -30,7 +30,7 @@ import json, os, statistics, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
 from data_events import load_data, set_provenance, write_data_json
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = os.path.join(ROOT, "data", "data.json")
 FALLBACK_FEE_RATIO = 0.60
 TARGET_YEAR = 2025

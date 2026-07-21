@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import QRCode from "qrcode";
 
 const PORT = process.env.PORT ?? 3000;
-const OUT = path.resolve(fileURLToPath(new URL("../.next/lan-qr.png", import.meta.url)));
+const OUT = path.resolve(fileURLToPath(new URL("../../.next/lan-qr.png", import.meta.url)));
 
 // Prefer a real Wi-Fi/Ethernet adapter. Hyper-V / VirtualBox / WSL host adapters
 // (172.x "Default Switch", 192.168.56.x) are reachable only from VMs, not phones.

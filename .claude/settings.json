@@ -62,16 +62,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/save_reminder.py\""
-          }
-        ]
-      }
     ]
   }
 }

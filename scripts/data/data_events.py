@@ -10,7 +10,7 @@ import subprocess
 import uuid
 from datetime import datetime, timezone
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 EVENTS_PATH = os.path.join(ROOT, "data", "data_events.json")
 REK_PATH = os.path.join(ROOT, "data", "rek_tabs.json")
 DATA_PATH = os.path.join(ROOT, "data", "data.json")

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Parse one scraped rekvizitai company into data/rek_tabs.json.
 
-    python3 scripts/parse_company.py <slug> [--brand "<data.json brand>"]
-    e.g. python3 scripts/parse_company.py adell_reklama --brand Ogilvy
+    python3 scripts/data/parse_company.py <slug> [--brand "<data.json brand>"]
+    e.g. python3 scripts/data/parse_company.py adell_reklama --brand Ogilvy
 
 Reads data/raw/<slug>_<tab>.html (from scrape_company.py) and upserts a company
 block into the combined data/rek_tabs.json:
@@ -34,7 +34,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 from bs4 import BeautifulSoup
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 RAW_DIR = os.path.join(ROOT, "data", "raw")
 REK_TABS_JSON = os.path.join(ROOT, "data", "rek_tabs.json")
 SHEETS_JSON = os.path.join(ROOT, "data", "sheets_data.json")
@@ -382,7 +382,7 @@ def parse_one(slug, brand_override=None, quiet=False):
 def main():
     args = sys.argv[1:]
     if not args:
-        sys.exit("usage: python3 scripts/parse_company.py <slug> [--brand NAME]")
+        sys.exit("usage: python3 scripts/data/parse_company.py <slug> [--brand NAME]")
     slug = args[0]
     brand_override = args[args.index("--brand") + 1] if "--brand" in args else None
 

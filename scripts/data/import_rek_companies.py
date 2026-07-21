@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from data_events import load_data, set_provenance, write_data_json, write_rek_payload
 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 REK_JSON = os.path.join(ROOT, "data", "rek_tabs.json")
 DATA_JSON = os.path.join(ROOT, "data", "data.json")
 SODRA_DIR = os.path.join(ROOT, "data", "sodra")

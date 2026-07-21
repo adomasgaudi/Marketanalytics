@@ -31,7 +31,7 @@ jobs:
       # headless Chromium, which renders a JSON response as an empty body — every
       # company failed while the job stayed green.
       - name: Scrape every company
-        run: python legacy-scripts/scrape_sodra.py --all
+        run: python scripts/data/scrape_sodra.py --all
 
       - name: Commit if data changed
         run: |

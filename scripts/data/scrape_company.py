@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Scrape rekvizitai.vz.lt companies — all data tabs. Fast, reusable, batchable.
 
-    python3 scripts/scrape_company.py <slug> [<slug> ...]
-    e.g. python3 scripts/scrape_company.py adface ad_verum all_caps
+    python3 scripts/data/scrape_company.py <slug> [<slug> ...]
+    e.g. python3 scripts/data/scrape_company.py adface ad_verum all_caps
 
 <slug> is the path segment in https://rekvizitai.vz.lt/imone/<slug>/. Each
 company page is split across separate tab URLs (not in-page panels); we visit
@@ -138,7 +138,7 @@ async def scrape_many(slugs, company_workers=2):
 if __name__ == "__main__":
     slugs = sys.argv[1:]
     if not slugs:
-        sys.exit("usage: python3 scripts/scrape_company.py <slug> [<slug> ...]")
+        sys.exit("usage: python3 scripts/data/scrape_company.py <slug> [<slug> ...]")
     done = asyncio.run(scrape_many(slugs))
     print(f"\n=== Scraped {len(done)}/{len(slugs)}. "
-          f"Next: python3 scripts/parse_company.py <slug> (or use scrape_batch.py) ===")
+          f"Next: python3 scripts/data/parse_company.py <slug> (or use scrape_batch.py) ===")

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Auto-scrape: bring data/rek_tabs.json up to parity with data/data.json.
 
-    python3 scripts/autoscrape.py            # scrape every brand that has no block
-    python3 scripts/autoscrape.py --dry-run  # just list what is missing
-    python3 scripts/autoscrape.py --only Convo "PR service"
+    python3 scripts/data/autoscrape.py            # scrape every brand that has no block
+    python3 scripts/data/autoscrape.py --dry-run  # just list what is missing
+    python3 scripts/data/autoscrape.py --only Convo "PR service"
 
 The dashboard's brand list (data/data.json) is the source of truth for *which*
 companies exist; rek_tabs.json is the scraped detail for each. Adding a brand
@@ -30,7 +30,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 
 import browser_session as BS
 import parse_company as PC

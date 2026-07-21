@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """One-time (re-runnable) backfill of data/data_events.json from git history.
 
-    python3 scripts/backfill_data_events.py
-    python3 scripts/backfill_data_events.py --force   # replace backfill events
+    python3 scripts/data/backfill_data_events.py
+    python3 scripts/data/backfill_data_events.py --force   # replace backfill events
 
 Walks `git log -- data/` and creates summary events (no field-level diffs for
 old commits — those only exist for future scrapes).
@@ -14,7 +14,7 @@ import re
 import subprocess
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from data_events import EVENTS_PATH, append_event, load_events, save_events
 

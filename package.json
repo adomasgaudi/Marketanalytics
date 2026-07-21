@@ -4,9 +4,9 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "version:write": "node scripts/write-version.mjs",
+    "version:write": "node scripts/app/write-version.mjs",
     "dev": "next dev -H 0.0.0.0",
-    "lan": "node scripts/lan-qr.mjs",
+    "lan": "node scripts/app/lan-qr.mjs",
     "build": "next build",
     "start": "next start",
     "version": "pnpm run version:write",

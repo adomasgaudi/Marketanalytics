@@ -25,7 +25,7 @@ import os
 
 from playwright.async_api import async_playwright
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROFILE_DIR = os.environ.get("REK_PROFILE") or os.path.join(ROOT, "data", ".pwprofile")
 
 BASE = "https://rekvizitai.vz.lt"
