@@ -1,0 +1,4489 @@
+{
+ "source": "rekvizitai.lt company pages (Finansai tab), via data/rek_tabs.json",
+ "note": "Scrape dates are reconstructed from git history — rek_tabs.json stores no timestamp of its own.",
+ "scrapes": [
+  {
+   "instance": 1,
+   "date": "2026-06-21",
+   "companies": 15
+  },
+  {
+   "instance": 2,
+   "date": "2026-06-25",
+   "companies": 83
+  },
+  {
+   "instance": 3,
+   "date": "2026-07-03",
+   "companies": 19
+  }
+ ],
+ "companies": [
+  {
+   "slug": "100_aciu",
+   "brand": "100 ačiū",
+   "jarCode": "304065386",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 82887,
+     "pretax": -29378,
+     "profit": -29378
+    },
+    {
+     "year": 2024,
+     "turnover": 212585,
+     "pretax": 29274,
+     "profit": 27478
+    },
+    {
+     "year": 2023,
+     "turnover": 249885,
+     "pretax": 1276,
+     "profit": 272
+    },
+    {
+     "year": 2022,
+     "turnover": 328212,
+     "pretax": 95269,
+     "profit": 80738
+    },
+    {
+     "year": 2021,
+     "turnover": 133934,
+     "pretax": null,
+     "profit": 23357
+    }
+   ]
+  },
+  {
+   "slug": "360_sportas",
+   "brand": "360 Sportas",
+   "jarCode": "303225934",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": null,
+     "pretax": 68579,
+     "profit": 56255
+    },
+    {
+     "year": 2024,
+     "turnover": null,
+     "pretax": 55804,
+     "profit": 47433
+    },
+    {
+     "year": 2023,
+     "turnover": null,
+     "pretax": 3779,
+     "profit": 3163
+    },
+    {
+     "year": 2022,
+     "turnover": null,
+     "pretax": 4668,
+     "profit": 3968
+    }
+   ]
+  },
+  {
+   "slug": "6_vijos",
+   "brand": "6 Loops",
+   "jarCode": "304405052",
+   "scrapedAt": "2026-06-21T19:13:38+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 123706,
+     "pretax": 65157,
+     "profit": 60309
+    },
+    {
+     "year": 2024,
+     "turnover": 60840,
+     "pretax": 32936,
+     "profit": 31289
+    },
+    {
+     "year": 2023,
+     "turnover": 23740,
+     "pretax": 19584,
+     "profit": 18605
+    },
+    {
+     "year": 2022,
+     "turnover": 0,
+     "pretax": 0,
+     "profit": 0
+    },
+    {
+     "year": 2021,
+     "turnover": null,
+     "pretax": 0,
+     "profit": 0
+    }
+   ]
+  },
+  {
+   "slug": "7_sprendimai",
+   "brand": "BE1ST Agency",
+   "jarCode": "304823347",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": []
+  },
+  {
+   "slug": "adell_reklama",
+   "brand": "Ogilvy",
+   "jarCode": "110771682",
+   "scrapedAt": "2026-06-21T19:13:38+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 8169695,
+     "pretax": 953870,
+     "profit": 769221
+    },
+    {
+     "year": 2024,
+     "turnover": 7456879,
+     "pretax": 590389,
+     "profit": 493389
+    },
+    {
+     "year": 2023,
+     "turnover": 7661419,
+     "pretax": 807470,
+     "profit": 625927
+    },
+    {
+     "year": 2022,
+     "turnover": 8435901,
+     "pretax": 1532567,
+     "profit": 1148871
+    },
+    {
+     "year": 2021,
+     "turnover": 7010847,
+     "pretax": 947149,
+     "profit": 689700
+    }
+   ]
+  },
+  {
+   "slug": "adface",
+   "brand": "Adface",
+   "jarCode": "301734377",
+   "scrapedAt": "2026-06-21T19:45:46+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 124853,
+     "pretax": -27350,
+     "profit": -27350
+    },
+    {
+     "year": 2024,
+     "turnover": 212639,
+     "pretax": 5057,
+     "profit": 4687
+    },
+    {
+     "year": 2023,
+     "turnover": 233594,
+     "pretax": 21037,
+     "profit": 19870
+    },
+    {
+     "year": 2022,
+     "turnover": 175245,
+     "pretax": 36707,
+     "profit": 34783
+    },
+    {
+     "year": 2021,
+     "turnover": 162654,
+     "pretax": 40007,
+     "profit": 37970
+    }
+   ]
+  },
+  {
+   "slug": "ad_verum",
+   "brand": "Adverum",
+   "jarCode": "300003647",
+   "scrapedAt": "2026-06-21T19:45:46+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1231054,
+     "pretax": 153401,
+     "profit": 129065
+    },
+    {
+     "year": 2024,
+     "turnover": 1193265,
+     "pretax": 137313,
+     "profit": 119988
+    },
+    {
+     "year": 2023,
+     "turnover": 1505000,
+     "pretax": 377545,
+     "profit": 318511
+    },
+    {
+     "year": 2022,
+     "turnover": 1251440,
+     "pretax": 237877,
+     "profit": 201023
+    },
+    {
+     "year": 2021,
+     "turnover": 1468239,
+     "pretax": 307069,
+     "profit": 259227
+    }
+   ]
+  },
+  {
+   "slug": "agency_up",
+   "brand": "AgencyUP",
+   "jarCode": "301321574",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1004702,
+     "pretax": 2096,
+     "profit": 782
+    },
+    {
+     "year": 2024,
+     "turnover": 1582645,
+     "pretax": 121859,
+     "profit": 102053
+    },
+    {
+     "year": 2023,
+     "turnover": 1743059,
+     "pretax": 102306,
+     "profit": 84750
+    },
+    {
+     "year": 2022,
+     "turnover": 1195377,
+     "pretax": 95691,
+     "profit": 81253
+    },
+    {
+     "year": 2021,
+     "turnover": 1107731,
+     "pretax": 183094,
+     "profit": 154833
+    }
+   ]
+  },
+  {
+   "slug": "all_caps",
+   "brand": "ALL CAPS",
+   "jarCode": "125763054",
+   "scrapedAt": "2026-06-21T19:45:46+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1944683,
+     "pretax": 40591,
+     "profit": 33795
+    },
+    {
+     "year": 2024,
+     "turnover": 1908884,
+     "pretax": 37236,
+     "profit": 31004
+    },
+    {
+     "year": 2023,
+     "turnover": 1869162,
+     "pretax": 145042,
+     "profit": 122873
+    },
+    {
+     "year": 2022,
+     "turnover": 1860439,
+     "pretax": 118892,
+     "profit": 100807
+    },
+    {
+     "year": 2021,
+     "turnover": 1603371,
+     "pretax": 5594,
+     "profit": 3715
+    }
+   ]
+  },
+  {
+   "slug": "andstudio",
+   "brand": "Andstudio",
+   "jarCode": "305290966",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 739789,
+     "pretax": 164345,
+     "profit": 137541
+    },
+    {
+     "year": 2024,
+     "turnover": 587545,
+     "pretax": 153737,
+     "profit": 129775
+    },
+    {
+     "year": 2023,
+     "turnover": 561828,
+     "pretax": 123415,
+     "profit": 103987
+    },
+    {
+     "year": 2022,
+     "turnover": 427067,
+     "pretax": null,
+     "profit": 75025
+    },
+    {
+     "year": 2021,
+     "turnover": 304442,
+     "pretax": null,
+     "profit": 61052
+    }
+   ]
+  },
+  {
+   "slug": "apg_media",
+   "brand": "APG media",
+   "jarCode": "305005890",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1202065,
+     "pretax": 249714,
+     "profit": 209067
+    },
+    {
+     "year": 2024,
+     "turnover": 1136845,
+     "pretax": 105658,
+     "profit": 91430
+    },
+    {
+     "year": 2023,
+     "turnover": 1760945,
+     "pretax": 11449,
+     "profit": 8415
+    },
+    {
+     "year": 2022,
+     "turnover": 2036569,
+     "pretax": 62313,
+     "profit": 50291
+    },
+    {
+     "year": 2021,
+     "turnover": 1699462,
+     "pretax": 38423,
+     "profit": 29804
+    }
+   ]
+  },
+  {
+   "slug": "adcom",
+   "brand": "Arena Media",
+   "jarCode": "300597228",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 11978555,
+     "pretax": 420523,
+     "profit": 349411
+    },
+    {
+     "year": 2024,
+     "turnover": 10772482,
+     "pretax": 95523,
+     "profit": 78192
+    },
+    {
+     "year": 2023,
+     "turnover": 13076706,
+     "pretax": 450164,
+     "profit": 376803
+    },
+    {
+     "year": 2022,
+     "turnover": 14637212,
+     "pretax": 569344,
+     "profit": 480070
+    },
+    {
+     "year": 2021,
+     "turnover": 13416624,
+     "pretax": 415500,
+     "profit": 351536
+    }
+   ]
+  },
+  {
+   "slug": "astos_dizainas",
+   "brand": "TRUTH.",
+   "jarCode": "123932858",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2420458,
+     "pretax": 74999,
+     "profit": 59824
+    },
+    {
+     "year": 2024,
+     "turnover": 2697617,
+     "pretax": 15238,
+     "profit": 6319
+    },
+    {
+     "year": 2023,
+     "turnover": 3544704,
+     "pretax": 313008,
+     "profit": 262086
+    },
+    {
+     "year": 2022,
+     "turnover": 2365263,
+     "pretax": -6051,
+     "profit": -8181
+    },
+    {
+     "year": 2021,
+     "turnover": 2310000,
+     "pretax": 54362,
+     "profit": 44571
+    }
+   ]
+  },
+  {
+   "slug": "ave_media",
+   "brand": "Ave Media Agentūra",
+   "jarCode": "304686507",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 96795,
+     "pretax": 10649,
+     "profit": 10010
+    },
+    {
+     "year": 2024,
+     "turnover": 86746,
+     "pretax": 7908,
+     "profit": 7310
+    },
+    {
+     "year": 2023,
+     "turnover": 77893,
+     "pretax": -802,
+     "profit": -812
+    },
+    {
+     "year": 2022,
+     "turnover": 56054,
+     "pretax": 2059,
+     "profit": 2003
+    },
+    {
+     "year": 2021,
+     "turnover": 42347,
+     "pretax": 1180,
+     "profit": 1180
+    }
+   ]
+  },
+  {
+   "slug": "bemedija",
+   "brand": "BeeMarketing",
+   "jarCode": "303139606",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 828607,
+     "pretax": 279734,
+     "profit": 234466
+    },
+    {
+     "year": 2024,
+     "turnover": 456627,
+     "pretax": 69314,
+     "profit": 58893
+    },
+    {
+     "year": 2023,
+     "turnover": 682575,
+     "pretax": 77969,
+     "profit": 66010
+    },
+    {
+     "year": 2022,
+     "turnover": 702426,
+     "pretax": 89368,
+     "profit": 75777
+    },
+    {
+     "year": 2021,
+     "turnover": 924135,
+     "pretax": 207371,
+     "profit": 176024
+    }
+   ]
+  },
+  {
+   "slug": "bpn_lt",
+   "brand": "BPN",
+   "jarCode": "304067387",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 33028692,
+     "pretax": 612959,
+     "profit": 511062
+    },
+    {
+     "year": 2024,
+     "turnover": 36438837,
+     "pretax": 613969,
+     "profit": 519321
+    },
+    {
+     "year": 2023,
+     "turnover": 25811839,
+     "pretax": 483007,
+     "profit": 405824
+    },
+    {
+     "year": 2022,
+     "turnover": 21224833,
+     "pretax": 479324,
+     "profit": 425795
+    },
+    {
+     "year": 2021,
+     "turnover": 16776261,
+     "pretax": 495817,
+     "profit": 416821
+    }
+   ]
+  },
+  {
+   "slug": "caption",
+   "brand": "Caption",
+   "jarCode": "304844761",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1598862,
+     "pretax": 220751,
+     "profit": 182602
+    },
+    {
+     "year": 2024,
+     "turnover": 1258533,
+     "pretax": 10028,
+     "profit": 4983
+    },
+    {
+     "year": 2023,
+     "turnover": 1278169,
+     "pretax": 166211,
+     "profit": 155781
+    },
+    {
+     "year": 2022,
+     "turnover": 1061361,
+     "pretax": 212300,
+     "profit": 203255
+    },
+    {
+     "year": 2021,
+     "turnover": 716566,
+     "pretax": 77959,
+     "profit": 74330
+    }
+   ]
+  },
+  {
+   "slug": "uab_ciklopas_fotografijos_studija",
+   "brand": "Cyclopes",
+   "jarCode": "300013463",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1146200,
+     "pretax": 67870,
+     "profit": 56366
+    },
+    {
+     "year": 2024,
+     "turnover": 848557,
+     "pretax": 47896,
+     "profit": 40206
+    },
+    {
+     "year": 2023,
+     "turnover": 1069493,
+     "pretax": 73143,
+     "profit": 60954
+    },
+    {
+     "year": 2022,
+     "turnover": 1186957,
+     "pretax": 60471,
+     "profit": 48406
+    },
+    {
+     "year": 2021,
+     "turnover": 1539976,
+     "pretax": 55436,
+     "profit": 46408
+    }
+   ]
+  },
+  {
+   "slug": "dear_problem",
+   "brand": "Dear problem",
+   "jarCode": "302651984",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 594931,
+     "pretax": 21791,
+     "profit": 19092
+    },
+    {
+     "year": 2024,
+     "turnover": 532524,
+     "pretax": 22776,
+     "profit": 19852
+    },
+    {
+     "year": 2023,
+     "turnover": 546169,
+     "pretax": 35444,
+     "profit": 30482
+    },
+    {
+     "year": 2022,
+     "turnover": 569288,
+     "pretax": 5982,
+     "profit": 4081
+    },
+    {
+     "year": 2021,
+     "turnover": 422449,
+     "pretax": 78106,
+     "profit": 66118
+    }
+   ]
+  },
+  {
+   "slug": "dentsu_lithuania",
+   "brand": "Dentsu",
+   "jarCode": "124216438",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 21045603,
+     "pretax": 464998,
+     "profit": 389647
+    },
+    {
+     "year": 2024,
+     "turnover": 36638811,
+     "pretax": 2226552,
+     "profit": 1889619
+    },
+    {
+     "year": 2023,
+     "turnover": 31485566,
+     "pretax": 598250,
+     "profit": 504281
+    },
+    {
+     "year": 2022,
+     "turnover": 29179075,
+     "pretax": 471267,
+     "profit": 395590
+    },
+    {
+     "year": 2021,
+     "turnover": 8730690,
+     "pretax": 133193,
+     "profit": 111387
+    }
+   ]
+  },
+  {
+   "slug": "digital_matter",
+   "brand": "Digital Matter",
+   "jarCode": "302653711",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3044965,
+     "pretax": -1859,
+     "profit": 2886
+    },
+    {
+     "year": 2024,
+     "turnover": 3893452,
+     "pretax": -241361,
+     "profit": -215562
+    },
+    {
+     "year": 2023,
+     "turnover": 5004244,
+     "pretax": 89639,
+     "profit": 73670
+    },
+    {
+     "year": 2022,
+     "turnover": 7618331,
+     "pretax": 304885,
+     "profit": 257944
+    },
+    {
+     "year": 2021,
+     "turnover": 4915295,
+     "pretax": 203724,
+     "profit": 173096
+    }
+   ]
+  },
+  {
+   "slug": "uab_du_dvylika",
+   "brand": "Clinic212",
+   "jarCode": "302535912",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 916576,
+     "pretax": 53070,
+     "profit": 43424
+    },
+    {
+     "year": 2024,
+     "turnover": 970809,
+     "pretax": 47747,
+     "profit": 45410
+    },
+    {
+     "year": 2023,
+     "turnover": 1023984,
+     "pretax": -237451,
+     "profit": -237451
+    },
+    {
+     "year": 2022,
+     "turnover": 1401240,
+     "pretax": 47422,
+     "profit": 44835
+    },
+    {
+     "year": 2021,
+     "turnover": 1573797,
+     "pretax": 93179,
+     "profit": 89068
+    }
+   ]
+  },
+  {
+   "slug": "efcom",
+   "brand": "Efcom",
+   "jarCode": "300132599",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 9076,
+     "pretax": -4134,
+     "profit": -4134
+    },
+    {
+     "year": 2024,
+     "turnover": 16127,
+     "pretax": -1197,
+     "profit": -1197
+    },
+    {
+     "year": 2023,
+     "turnover": 25807,
+     "pretax": 1695,
+     "profit": 1644
+    },
+    {
+     "year": 2022,
+     "turnover": 36262,
+     "pretax": -1098,
+     "profit": -1098
+    },
+    {
+     "year": 2021,
+     "turnover": 31519,
+     "pretax": 11733,
+     "profit": 11349
+    }
+   ]
+  },
+  {
+   "slug": "enter_agency",
+   "brand": "ENTER",
+   "jarCode": "304719793",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 16700,
+     "pretax": 3810,
+     "profit": 3200
+    },
+    {
+     "year": 2024,
+     "turnover": 46405,
+     "pretax": -48434,
+     "profit": -48434
+    },
+    {
+     "year": 2023,
+     "turnover": 197038,
+     "pretax": 1548,
+     "profit": 1478
+    },
+    {
+     "year": 2022,
+     "turnover": 265483,
+     "pretax": 1543,
+     "profit": 1474
+    },
+    {
+     "year": 2021,
+     "turnover": 416339,
+     "pretax": 8722,
+     "profit": 8338
+    }
+   ]
+  },
+  {
+   "slug": "etikete",
+   "brand": "Etiquette",
+   "jarCode": "303472482",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 586017,
+     "pretax": -30818,
+     "profit": -30818
+    },
+    {
+     "year": 2024,
+     "turnover": 646857,
+     "pretax": 16985,
+     "profit": 13518
+    },
+    {
+     "year": 2023,
+     "turnover": 735070,
+     "pretax": 108461,
+     "profit": 91437
+    },
+    {
+     "year": 2022,
+     "turnover": 596756,
+     "pretax": 47865,
+     "profit": 39767
+    },
+    {
+     "year": 2021,
+     "turnover": 632057,
+     "pretax": 54132,
+     "profit": 44958
+    }
+   ]
+  },
+  {
+   "slug": "evolvery",
+   "brand": "Evolvery",
+   "jarCode": "302542497",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 1029834,
+     "pretax": 35004,
+     "profit": 26939
+    },
+    {
+     "year": 2023,
+     "turnover": 988791,
+     "pretax": 89756,
+     "profit": 74922
+    },
+    {
+     "year": 2022,
+     "turnover": 1266138,
+     "pretax": 14238,
+     "profit": 10305
+    },
+    {
+     "year": 2021,
+     "turnover": 1618267,
+     "pretax": 39631,
+     "profit": 33646
+    },
+    {
+     "year": 2020,
+     "turnover": 1227723,
+     "pretax": 123822,
+     "profit": 117770
+    }
+   ]
+  },
+  {
+   "slug": "viesuju_rysiu_partneriai",
+   "brand": "Fabula",
+   "jarCode": "124099127",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5190238,
+     "pretax": 122428,
+     "profit": 98186
+    },
+    {
+     "year": 2024,
+     "turnover": 5231622,
+     "pretax": 392552,
+     "profit": 329162
+    },
+    {
+     "year": 2023,
+     "turnover": 4517735,
+     "pretax": 375551,
+     "profit": 316849
+    },
+    {
+     "year": 2022,
+     "turnover": 3936974,
+     "pretax": 322278,
+     "profit": 269786
+    },
+    {
+     "year": 2021,
+     "turnover": 3502499,
+     "pretax": 361069,
+     "profit": 294912
+    }
+   ]
+  },
+  {
+   "slug": "uab_publicum_financial_communications",
+   "brand": "Fcomm",
+   "jarCode": "301790575",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 365528,
+     "pretax": 11196,
+     "profit": 9286
+    },
+    {
+     "year": 2024,
+     "turnover": 414461,
+     "pretax": 41398,
+     "profit": 35096
+    },
+    {
+     "year": 2023,
+     "turnover": 433669,
+     "pretax": 77956,
+     "profit": 65470
+    },
+    {
+     "year": 2022,
+     "turnover": 335808,
+     "pretax": 59389,
+     "profit": 50220
+    },
+    {
+     "year": 2021,
+     "turnover": 237230,
+     "pretax": 13015,
+     "profit": 12344
+    }
+   ]
+  },
+  {
+   "slug": "gaumina",
+   "brand": "Mediapark",
+   "jarCode": "224497630",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": null,
+     "pretax": null,
+     "profit": 15734
+    },
+    {
+     "year": 2023,
+     "turnover": null,
+     "pretax": null,
+     "profit": 25837
+    },
+    {
+     "year": 2022,
+     "turnover": 460101,
+     "pretax": null,
+     "profit": 246126
+    },
+    {
+     "year": 2021,
+     "turnover": 378329,
+     "pretax": null,
+     "profit": 41669
+    },
+    {
+     "year": 2020,
+     "turnover": 447495,
+     "pretax": null,
+     "profit": -81138
+    }
+   ]
+  },
+  {
+   "slug": "gideas",
+   "brand": "Gideas",
+   "jarCode": "303020484",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 52265,
+     "pretax": 5308,
+     "profit": 4955
+    },
+    {
+     "year": 2024,
+     "turnover": 41486,
+     "pretax": null,
+     "profit": 436
+    },
+    {
+     "year": 2023,
+     "turnover": 50177,
+     "pretax": null,
+     "profit": 2050
+    },
+    {
+     "year": 2022,
+     "turnover": 64112,
+     "pretax": null,
+     "profit": 1818
+    },
+    {
+     "year": 2021,
+     "turnover": 31688,
+     "pretax": 1458,
+     "profit": 1376
+    }
+   ]
+  },
+  {
+   "slug": "good_one_uab",
+   "brand": "Good one",
+   "jarCode": "302417999",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 11534632,
+     "pretax": 107273,
+     "profit": 78289
+    },
+    {
+     "year": 2024,
+     "turnover": 10097522,
+     "pretax": 295515,
+     "profit": 244402
+    },
+    {
+     "year": 2023,
+     "turnover": 9198605,
+     "pretax": 296185,
+     "profit": 244322
+    },
+    {
+     "year": 2022,
+     "turnover": 9116200,
+     "pretax": 368084,
+     "profit": 306081
+    },
+    {
+     "year": 2021,
+     "turnover": 10390945,
+     "pretax": 547427,
+     "profit": 469190
+    }
+   ]
+  },
+  {
+   "slug": "uab_mpg_idea",
+   "brand": "Havas Media",
+   "jarCode": "302344394",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 10209457,
+     "pretax": 403823,
+     "profit": 331983
+    },
+    {
+     "year": 2024,
+     "turnover": 10632287,
+     "pretax": 296995,
+     "profit": 248039
+    },
+    {
+     "year": 2023,
+     "turnover": 10925676,
+     "pretax": 152022,
+     "profit": 123945
+    },
+    {
+     "year": 2022,
+     "turnover": 9608231,
+     "pretax": 157615,
+     "profit": 134980
+    },
+    {
+     "year": 2021,
+     "turnover": 9433509,
+     "pretax": 382892,
+     "profit": 322559
+    }
+   ]
+  },
+  {
+   "slug": "headline_agency",
+   "brand": "Headline",
+   "jarCode": "301163601",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1619351,
+     "pretax": 14589,
+     "profit": 9731
+    },
+    {
+     "year": 2024,
+     "turnover": 1572640,
+     "pretax": 55414,
+     "profit": 45107
+    },
+    {
+     "year": 2023,
+     "turnover": 1844085,
+     "pretax": 250630,
+     "profit": 208473
+    },
+    {
+     "year": 2022,
+     "turnover": 1212715,
+     "pretax": 52672,
+     "profit": 42675
+    },
+    {
+     "year": 2021,
+     "turnover": 1200820,
+     "pretax": 190743,
+     "profit": 160993
+    }
+   ]
+  },
+  {
+   "slug": "ic_baltic",
+   "brand": "Impact Advisory / Flow",
+   "jarCode": "300016915",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 276442,
+     "pretax": null,
+     "profit": -6269
+    },
+    {
+     "year": 2024,
+     "turnover": 339411,
+     "pretax": null,
+     "profit": 789
+    },
+    {
+     "year": 2023,
+     "turnover": 463961,
+     "pretax": null,
+     "profit": 1304
+    },
+    {
+     "year": 2022,
+     "turnover": 308709,
+     "pretax": null,
+     "profit": -48
+    },
+    {
+     "year": 2021,
+     "turnover": 204229,
+     "pretax": null,
+     "profit": 5655
+    }
+   ]
+  },
+  {
+   "slug": "idea_prima",
+   "brand": "IdeaPrima",
+   "jarCode": "126093354",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3169223,
+     "pretax": 111417,
+     "profit": 92687
+    },
+    {
+     "year": 2024,
+     "turnover": 2912372,
+     "pretax": 38768,
+     "profit": 31793
+    },
+    {
+     "year": 2023,
+     "turnover": 3033004,
+     "pretax": 146054,
+     "profit": 119309
+    },
+    {
+     "year": 2022,
+     "turnover": 2603242,
+     "pretax": 203790,
+     "profit": 172279
+    },
+    {
+     "year": 2021,
+     "turnover": 2384972,
+     "pretax": 171035,
+     "profit": 143615
+    }
+   ]
+  },
+  {
+   "slug": "uab_idee_fixe_vilnius",
+   "brand": "Idee fixe",
+   "jarCode": "301899560",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1303976,
+     "pretax": 44037,
+     "profit": 36875
+    },
+    {
+     "year": 2024,
+     "turnover": 786302,
+     "pretax": 43865,
+     "profit": 37146
+    },
+    {
+     "year": 2023,
+     "turnover": 1321169,
+     "pretax": 125084,
+     "profit": 105851
+    },
+    {
+     "year": 2022,
+     "turnover": 1174594,
+     "pretax": 2726,
+     "profit": 2190
+    },
+    {
+     "year": 2021,
+     "turnover": 1406758,
+     "pretax": 208394,
+     "profit": 176626
+    }
+   ]
+  },
+  {
+   "slug": "ink_agency",
+   "brand": "INK",
+   "jarCode": "300122046",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2722403,
+     "pretax": 174143,
+     "profit": 144769
+    },
+    {
+     "year": 2024,
+     "turnover": 2822488,
+     "pretax": 158502,
+     "profit": 134463
+    },
+    {
+     "year": 2023,
+     "turnover": 2356412,
+     "pretax": 203200,
+     "profit": 171879
+    },
+    {
+     "year": 2022,
+     "turnover": 2505905,
+     "pretax": 198032,
+     "profit": 169053
+    },
+    {
+     "year": 2021,
+     "turnover": 2138268,
+     "pretax": 110839,
+     "profit": 92031
+    }
+   ]
+  },
+  {
+   "slug": "inspired_communications",
+   "brand": "Inspired UM",
+   "jarCode": "300642933",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 21603925,
+     "pretax": 528668,
+     "profit": 436486
+    },
+    {
+     "year": 2024,
+     "turnover": 21601990,
+     "pretax": 352148,
+     "profit": 294872
+    },
+    {
+     "year": 2023,
+     "turnover": 26945192,
+     "pretax": 754721,
+     "profit": 658350
+    },
+    {
+     "year": 2022,
+     "turnover": 17453957,
+     "pretax": 550708,
+     "profit": 490845
+    },
+    {
+     "year": 2021,
+     "turnover": 19713947,
+     "pretax": 685310,
+     "profit": 601013
+    }
+   ]
+  },
+  {
+   "slug": "integrity_pr",
+   "brand": "Integrity PR",
+   "jarCode": "111688780",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2533172,
+     "pretax": 159442,
+     "profit": 131686
+    },
+    {
+     "year": 2024,
+     "turnover": 2679018,
+     "pretax": 270519,
+     "profit": 229286
+    },
+    {
+     "year": 2023,
+     "turnover": 2714172,
+     "pretax": 278862,
+     "profit": 236314
+    },
+    {
+     "year": 2022,
+     "turnover": 2555494,
+     "pretax": 284679,
+     "profit": 240546
+    },
+    {
+     "year": 2021,
+     "turnover": 2400631,
+     "pretax": 199711,
+     "profit": 168857
+    }
+   ]
+  },
+  {
+   "slug": "komunikacija_ir_konsultantai",
+   "brand": "KOKO PR",
+   "jarCode": "124130081",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 187605,
+     "pretax": 9858,
+     "profit": 9123
+    },
+    {
+     "year": 2024,
+     "turnover": 193289,
+     "pretax": 10482,
+     "profit": 9873
+    },
+    {
+     "year": 2023,
+     "turnover": 177479,
+     "pretax": 6953,
+     "profit": 6521
+    },
+    {
+     "year": 2022,
+     "turnover": 167838,
+     "pretax": -4052,
+     "profit": -4052
+    },
+    {
+     "year": 2021,
+     "turnover": 159105,
+     "pretax": 2741,
+     "profit": 2492
+    }
+   ]
+  },
+  {
+   "slug": "kvadratai",
+   "brand": "Scuare",
+   "jarCode": "304824716",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 763796,
+     "pretax": 3233,
+     "profit": 1700
+    },
+    {
+     "year": 2024,
+     "turnover": 891608,
+     "pretax": 150923,
+     "profit": 126884
+    },
+    {
+     "year": 2023,
+     "turnover": 491988,
+     "pretax": 96207,
+     "profit": 81254
+    },
+    {
+     "year": 2022,
+     "turnover": 291190,
+     "pretax": 23739,
+     "profit": 22344
+    },
+    {
+     "year": 2021,
+     "turnover": 447002,
+     "pretax": 62634,
+     "profit": 59375
+    }
+   ]
+  },
+  {
+   "slug": "kurybiniai_komunikacijos_sprendimai",
+   "brand": "autoriai.lt",
+   "jarCode": "303119589",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 381320,
+     "pretax": 29074,
+     "profit": 23714
+    },
+    {
+     "year": 2024,
+     "turnover": 477010,
+     "pretax": 25725,
+     "profit": 21248
+    },
+    {
+     "year": 2023,
+     "turnover": 451779,
+     "pretax": null,
+     "profit": 583
+    },
+    {
+     "year": 2022,
+     "turnover": 410820,
+     "pretax": null,
+     "profit": 16785
+    },
+    {
+     "year": 2021,
+     "turnover": 690337,
+     "pretax": null,
+     "profit": 70891
+    }
+   ]
+  },
+  {
+   "slug": "star_communications_worldwide",
+   "brand": "Publicis groupe",
+   "jarCode": "111794310",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 20721932,
+     "pretax": 351215,
+     "profit": 290888
+    },
+    {
+     "year": 2023,
+     "turnover": 17409970,
+     "pretax": 317131,
+     "profit": 260117
+    },
+    {
+     "year": 2022,
+     "turnover": 11936797,
+     "pretax": 318206,
+     "profit": 262999
+    },
+    {
+     "year": 2021,
+     "turnover": 14985680,
+     "pretax": 543804,
+     "profit": 458464
+    },
+    {
+     "year": 2020,
+     "turnover": 7980395,
+     "pretax": 410352,
+     "profit": 347250
+    }
+   ]
+  },
+  {
+   "slug": "rapid_informatic_media_and_communication_services",
+   "brand": "Rapid Media",
+   "jarCode": "305758742",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 101083,
+     "pretax": 34519,
+     "profit": 32429
+    },
+    {
+     "year": 2024,
+     "turnover": 44366,
+     "pretax": null,
+     "profit": 4534
+    },
+    {
+     "year": 2023,
+     "turnover": 48292,
+     "pretax": 7334,
+     "profit": 7197
+    },
+    {
+     "year": 2022,
+     "turnover": 135073,
+     "pretax": -4806,
+     "profit": -4806
+    },
+    {
+     "year": 2021,
+     "turnover": 92781,
+     "pretax": 11295,
+     "profit": 10703
+    }
+   ]
+  },
+  {
+   "slug": "magnus_advisory",
+   "brand": "Magnus advisory",
+   "jarCode": "305709318",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 160750,
+     "pretax": 157990,
+     "profit": 148510
+    },
+    {
+     "year": 2024,
+     "turnover": 95209,
+     "pretax": 84260,
+     "profit": 80047
+    },
+    {
+     "year": 2023,
+     "turnover": 49395,
+     "pretax": 47573,
+     "profit": 45194
+    },
+    {
+     "year": 2022,
+     "turnover": 73400,
+     "pretax": 72675,
+     "profit": 69041
+    },
+    {
+     "year": 2021,
+     "turnover": 57701,
+     "pretax": 57313,
+     "profit": 57313
+    }
+   ]
+  },
+  {
+   "slug": "marios_agency",
+   "brand": "Marios Agency",
+   "jarCode": "305611450",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 391937,
+     "pretax": 73019,
+     "profit": 61336
+    },
+    {
+     "year": 2024,
+     "turnover": 390217,
+     "pretax": 108256,
+     "profit": 92018
+    },
+    {
+     "year": 2023,
+     "turnover": 373656,
+     "pretax": 58965,
+     "profit": 50120
+    },
+    {
+     "year": 2022,
+     "turnover": 335052,
+     "pretax": 62713,
+     "profit": 53306
+    },
+    {
+     "year": 2021,
+     "turnover": 212369,
+     "pretax": 29230,
+     "profit": 27768
+    }
+   ]
+  },
+  {
+   "slug": "market_rats",
+   "brand": "Market ratss",
+   "jarCode": "302561024",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1500581,
+     "pretax": 124856,
+     "profit": 105787
+    },
+    {
+     "year": 2024,
+     "turnover": 1427828,
+     "pretax": 147428,
+     "profit": 125310
+    },
+    {
+     "year": 2023,
+     "turnover": 1656998,
+     "pretax": 211658,
+     "profit": 183233
+    },
+    {
+     "year": 2022,
+     "turnover": 1378217,
+     "pretax": 177266,
+     "profit": 152887
+    },
+    {
+     "year": 2021,
+     "turnover": 989434,
+     "pretax": 102093,
+     "profit": 86318
+    }
+   ]
+  },
+  {
+   "slug": "vienas_paspaudimas",
+   "brand": "Oneclick.lt",
+   "jarCode": "304859756",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 370788,
+     "pretax": 90164,
+     "profit": 79048
+    },
+    {
+     "year": 2024,
+     "turnover": 542041,
+     "pretax": 103367,
+     "profit": 89946
+    },
+    {
+     "year": 2023,
+     "turnover": 663263,
+     "pretax": 115895,
+     "profit": 100252
+    },
+    {
+     "year": 2022,
+     "turnover": 557757,
+     "pretax": 97810,
+     "profit": 88738
+    },
+    {
+     "year": 2021,
+     "turnover": 334901,
+     "pretax": 72641,
+     "profit": 66634
+    }
+   ]
+  },
+  {
+   "slug": "omd",
+   "brand": "OMD",
+   "jarCode": "300631883",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5585201,
+     "pretax": 79694,
+     "profit": 75814
+    },
+    {
+     "year": 2024,
+     "turnover": 6217756,
+     "pretax": 320956,
+     "profit": 306407
+    },
+    {
+     "year": 2023,
+     "turnover": 6334148,
+     "pretax": 25743,
+     "profit": 24510
+    },
+    {
+     "year": 2022,
+     "turnover": 4983361,
+     "pretax": -289587,
+     "profit": -289574
+    },
+    {
+     "year": 2021,
+     "turnover": 6299018,
+     "pretax": 34259,
+     "profit": 32619
+    }
+   ]
+  },
+  {
+   "slug": "media_house",
+   "brand": "Media House",
+   "jarCode": "111707070",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 24713263,
+     "pretax": 412647,
+     "profit": 348051
+    },
+    {
+     "year": 2024,
+     "turnover": 15451756,
+     "pretax": 289275,
+     "profit": 244146
+    },
+    {
+     "year": 2023,
+     "turnover": 19737855,
+     "pretax": 458561,
+     "profit": 385809
+    },
+    {
+     "year": 2022,
+     "turnover": 14993931,
+     "pretax": 349970,
+     "profit": 294380
+    },
+    {
+     "year": 2021,
+     "turnover": 13680319,
+     "pretax": 464809,
+     "profit": 391733
+    }
+   ]
+  },
+  {
+   "slug": "omnicom_media_group",
+   "brand": "Omnicom",
+   "jarCode": "111632739",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 8266360,
+     "pretax": 311670,
+     "profit": 258765
+    },
+    {
+     "year": 2024,
+     "turnover": 7514559,
+     "pretax": 89290,
+     "profit": 72943
+    },
+    {
+     "year": 2023,
+     "turnover": 7342686,
+     "pretax": 112995,
+     "profit": 96617
+    },
+    {
+     "year": 2022,
+     "turnover": 7425733,
+     "pretax": 265175,
+     "profit": 253547
+    },
+    {
+     "year": 2021,
+     "turnover": 8885368,
+     "pretax": 386706,
+     "profit": 358969
+    }
+   ]
+  },
+  {
+   "slug": "uab_lamco",
+   "brand": "Meta",
+   "jarCode": "302837871",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 727180,
+     "pretax": null,
+     "profit": 352941
+    },
+    {
+     "year": 2024,
+     "turnover": 595916,
+     "pretax": null,
+     "profit": 260652
+    },
+    {
+     "year": 2023,
+     "turnover": 565400,
+     "pretax": null,
+     "profit": 280533
+    },
+    {
+     "year": 2022,
+     "turnover": 437017,
+     "pretax": null,
+     "profit": 196417
+    },
+    {
+     "year": 2021,
+     "turnover": 438095,
+     "pretax": null,
+     "profit": 205405
+    }
+   ]
+  },
+  {
+   "slug": "milk_agency",
+   "brand": "Milk Vilnius",
+   "jarCode": "300634324",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1782156,
+     "pretax": 19734,
+     "profit": 17890
+    },
+    {
+     "year": 2024,
+     "turnover": 1696197,
+     "pretax": -65019,
+     "profit": -65019
+    },
+    {
+     "year": 2023,
+     "turnover": 2020450,
+     "pretax": 31921,
+     "profit": 30160
+    },
+    {
+     "year": 2022,
+     "turnover": 2039056,
+     "pretax": 23858,
+     "profit": 22439
+    },
+    {
+     "year": 2021,
+     "turnover": 1476904,
+     "pretax": 23690,
+     "profit": 22379
+    }
+   ]
+  },
+  {
+   "slug": "momento_lt",
+   "brand": "Momento LT",
+   "jarCode": "306107243",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 290796,
+     "pretax": 24624,
+     "profit": 24624
+    },
+    {
+     "year": 2024,
+     "turnover": 116742,
+     "pretax": -14559,
+     "profit": -14559
+    },
+    {
+     "year": 2023,
+     "turnover": 50501,
+     "pretax": null,
+     "profit": 369
+    },
+    {
+     "year": 2022,
+     "turnover": null,
+     "pretax": null,
+     "profit": 0
+    }
+   ]
+  },
+  {
+   "slug": "not_perfect",
+   "brand": "Not Perfect",
+   "jarCode": "300529266",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 4719914,
+     "pretax": 205840,
+     "profit": 174506
+    },
+    {
+     "year": 2024,
+     "turnover": 3158150,
+     "pretax": -73517,
+     "profit": -73517
+    },
+    {
+     "year": 2023,
+     "turnover": 4214370,
+     "pretax": 59993,
+     "profit": 50994
+    },
+    {
+     "year": 2022,
+     "turnover": 3253190,
+     "pretax": 148306,
+     "profit": 130725
+    },
+    {
+     "year": 2021,
+     "turnover": 3406485,
+     "pretax": 262157,
+     "profit": 225233
+    }
+   ]
+  },
+  {
+   "slug": "magnet_lt",
+   "brand": "Nuostabu",
+   "jarCode": "304557170",
+   "scrapedAt": "2026-06-25T11:52:59+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1276910,
+     "pretax": 52080,
+     "profit": 43223
+    },
+    {
+     "year": 2024,
+     "turnover": 1247369,
+     "pretax": 16129,
+     "profit": 12524
+    },
+    {
+     "year": 2023,
+     "turnover": 2316830,
+     "pretax": 144739,
+     "profit": 119887
+    },
+    {
+     "year": 2022,
+     "turnover": 2096869,
+     "pretax": 167690,
+     "profit": 142133
+    },
+    {
+     "year": 2021,
+     "turnover": 1676343,
+     "pretax": 133644,
+     "profit": 112474
+    }
+   ]
+  },
+  {
+   "slug": "one_event",
+   "brand": "One event",
+   "jarCode": "306835832",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 587388,
+     "pretax": 36489,
+     "profit": 30651
+    },
+    {
+     "year": 2024,
+     "turnover": 157570,
+     "pretax": 11187,
+     "profit": 11187
+    }
+   ]
+  },
+  {
+   "slug": "open_agency",
+   "brand": "Open Agency",
+   "jarCode": "302414298",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 17258623,
+     "pretax": 463237,
+     "profit": 435224
+    },
+    {
+     "year": 2024,
+     "turnover": 16809406,
+     "pretax": 538334,
+     "profit": 478689
+    },
+    {
+     "year": 2023,
+     "turnover": 15193407,
+     "pretax": 431779,
+     "profit": 411549
+    },
+    {
+     "year": 2022,
+     "turnover": 15673573,
+     "pretax": 492090,
+     "profit": 441594
+    },
+    {
+     "year": 2021,
+     "turnover": 16083759,
+     "pretax": 600841,
+     "profit": 501734
+    }
+   ]
+  },
+  {
+   "slug": "panama_agency",
+   "brand": "Panama Agency",
+   "jarCode": "305678883",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 617824,
+     "pretax": 56387,
+     "profit": 47110
+    },
+    {
+     "year": 2024,
+     "turnover": 407865,
+     "pretax": 72281,
+     "profit": 60868
+    },
+    {
+     "year": 2023,
+     "turnover": 239698,
+     "pretax": 13881,
+     "profit": 12907
+    },
+    {
+     "year": 2022,
+     "turnover": 187499,
+     "pretax": 37989,
+     "profit": 36059
+    },
+    {
+     "year": 2021,
+     "turnover": 71239,
+     "pretax": 8688,
+     "profit": 8688
+    }
+   ]
+  },
+  {
+   "slug": "pantomima",
+   "brand": "Pantomima",
+   "jarCode": "304955338",
+   "scrapedAt": "2026-06-25T11:52:59+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 57678,
+     "pretax": 5203,
+     "profit": 4891
+    },
+    {
+     "year": 2024,
+     "turnover": 165035,
+     "pretax": 2376,
+     "profit": 2248
+    },
+    {
+     "year": 2023,
+     "turnover": 511114,
+     "pretax": 7436,
+     "profit": 6299
+    },
+    {
+     "year": 2022,
+     "turnover": 224635,
+     "pretax": 13409,
+     "profit": 12731
+    },
+    {
+     "year": 2021,
+     "turnover": 186316,
+     "pretax": 3239,
+     "profit": 3076
+    }
+   ]
+  },
+  {
+   "slug": "perception_lab",
+   "brand": "Particle PR",
+   "jarCode": "306313364",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 615600,
+     "pretax": 77748,
+     "profit": 64805
+    },
+    {
+     "year": 2024,
+     "turnover": 474855,
+     "pretax": 87546,
+     "profit": 74154
+    },
+    {
+     "year": 2023,
+     "turnover": 133678,
+     "pretax": 32566,
+     "profit": 30861
+    }
+   ]
+  },
+  {
+   "slug": "partizanas",
+   "brand": "Partizanas",
+   "jarCode": "300065271",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5336559,
+     "pretax": 188296,
+     "profit": 152661
+    },
+    {
+     "year": 2024,
+     "turnover": 4789830,
+     "pretax": 142460,
+     "profit": 132820
+    },
+    {
+     "year": 2023,
+     "turnover": 5838294,
+     "pretax": 381668,
+     "profit": 365605
+    },
+    {
+     "year": 2022,
+     "turnover": 4774281,
+     "pretax": 380272,
+     "profit": 318475
+    },
+    {
+     "year": 2021,
+     "turnover": 3042658,
+     "pretax": 252991,
+     "profit": 219867
+    }
+   ]
+  },
+  {
+   "slug": "pirmoji_kava",
+   "brand": "Pirmoji Kava",
+   "jarCode": "225293310",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": null,
+     "pretax": 74617,
+     "profit": 57712
+    },
+    {
+     "year": 2024,
+     "turnover": null,
+     "pretax": 47197,
+     "profit": 37578
+    },
+    {
+     "year": 2023,
+     "turnover": null,
+     "pretax": 250833,
+     "profit": 210144
+    },
+    {
+     "year": 2022,
+     "turnover": null,
+     "pretax": 202080,
+     "profit": 168696
+    }
+   ]
+  },
+  {
+   "slug": "pr_ace_agency",
+   "brand": "PR Ace",
+   "jarCode": "306725040",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 615944,
+     "pretax": 13335,
+     "profit": 9880
+    },
+    {
+     "year": 2024,
+     "turnover": 168267,
+     "pretax": 66604,
+     "profit": 66604
+    }
+   ]
+  },
+  {
+   "slug": "piar",
+   "brand": null,
+   "jarCode": "226018840",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 484090,
+     "pretax": -15658,
+     "profit": -15658
+    },
+    {
+     "year": 2023,
+     "turnover": 698509,
+     "pretax": 24771,
+     "profit": 20193
+    },
+    {
+     "year": 2022,
+     "turnover": 363458,
+     "pretax": 22571,
+     "profit": 18163
+    },
+    {
+     "year": 2021,
+     "turnover": 394946,
+     "pretax": 3272,
+     "profit": 2218
+    },
+    {
+     "year": 2020,
+     "turnover": 339047,
+     "pretax": 11516,
+     "profit": 8555
+    }
+   ]
+  },
+  {
+   "slug": "propeller",
+   "brand": "Propeller",
+   "jarCode": "300091483",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5468701,
+     "pretax": 357241,
+     "profit": 294232
+    },
+    {
+     "year": 2024,
+     "turnover": 4151193,
+     "pretax": 257537,
+     "profit": 209600
+    },
+    {
+     "year": 2023,
+     "turnover": 2768093,
+     "pretax": 201124,
+     "profit": 164733
+    },
+    {
+     "year": 2022,
+     "turnover": 2455335,
+     "pretax": 158608,
+     "profit": 129580
+    },
+    {
+     "year": 2021,
+     "turnover": 1609187,
+     "pretax": 144190,
+     "profit": 118510
+    }
+   ]
+  },
+  {
+   "slug": "protingi_sprendimai",
+   "brand": "Smarts",
+   "jarCode": "126327871",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 945023,
+     "pretax": 87457,
+     "profit": 72392
+    },
+    {
+     "year": 2024,
+     "turnover": 850562,
+     "pretax": 82686,
+     "profit": 69004
+    },
+    {
+     "year": 2023,
+     "turnover": 769072,
+     "pretax": 80841,
+     "profit": 67259
+    },
+    {
+     "year": 2022,
+     "turnover": 838212,
+     "pretax": 98952,
+     "profit": 83201
+    },
+    {
+     "year": 2021,
+     "turnover": 762011,
+     "pretax": 92007,
+     "profit": 77632
+    }
+   ]
+  },
+  {
+   "slug": "publicum",
+   "brand": "Publicum",
+   "jarCode": "125671759",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5126495,
+     "pretax": 533032,
+     "profit": 440443
+    },
+    {
+     "year": 2024,
+     "turnover": 4743413,
+     "pretax": 812137,
+     "profit": 684359
+    },
+    {
+     "year": 2023,
+     "turnover": 4315944,
+     "pretax": 982782,
+     "profit": 828689
+    },
+    {
+     "year": 2022,
+     "turnover": 4312150,
+     "pretax": 900877,
+     "profit": 759242
+    },
+    {
+     "year": 2021,
+     "turnover": 4312296,
+     "pretax": 861894,
+     "profit": 728377
+    }
+   ]
+  },
+  {
+   "slug": "advision_uab_reklamos_vizija",
+   "brand": "Advision",
+   "jarCode": "135970471",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 429549,
+     "pretax": -23250,
+     "profit": -23250
+    },
+    {
+     "year": 2024,
+     "turnover": 415142,
+     "pretax": -14767,
+     "profit": -14767
+    },
+    {
+     "year": 2023,
+     "turnover": 434990,
+     "pretax": -21194,
+     "profit": -21194
+    },
+    {
+     "year": 2022,
+     "turnover": 468548,
+     "pretax": -14679,
+     "profit": -14679
+    },
+    {
+     "year": 2021,
+     "turnover": 399199,
+     "pretax": -14547,
+     "profit": -14547
+    }
+   ]
+  },
+  {
+   "slug": "brainhouse",
+   "brand": "Brainhouse",
+   "jarCode": "302644331",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1961713,
+     "pretax": 14146,
+     "profit": 8833
+    },
+    {
+     "year": 2024,
+     "turnover": 2543777,
+     "pretax": 125734,
+     "profit": 99925
+    },
+    {
+     "year": 2023,
+     "turnover": 1981482,
+     "pretax": -5987,
+     "profit": -9632
+    },
+    {
+     "year": 2022,
+     "turnover": 1661151,
+     "pretax": 140002,
+     "profit": 115891
+    },
+    {
+     "year": 2021,
+     "turnover": 469349,
+     "pretax": 90905,
+     "profit": 75884
+    }
+   ]
+  },
+  {
+   "slug": "renginio_efektas",
+   "brand": "Renginio efektas",
+   "jarCode": "305210105",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 547197,
+     "pretax": 15258,
+     "profit": 15258
+    },
+    {
+     "year": 2024,
+     "turnover": 414804,
+     "pretax": 52158,
+     "profit": 52158
+    },
+    {
+     "year": 2023,
+     "turnover": 338235,
+     "pretax": -15659,
+     "profit": -15659
+    },
+    {
+     "year": 2022,
+     "turnover": 328583,
+     "pretax": -11338,
+     "profit": -11338
+    },
+    {
+     "year": 2020,
+     "turnover": 69463,
+     "pretax": 3693,
+     "profit": 3693
+    }
+   ]
+  },
+  {
+   "slug": "reprise_media",
+   "brand": "Reprise",
+   "jarCode": "304737161",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 13183245,
+     "pretax": 641091,
+     "profit": 536671
+    },
+    {
+     "year": 2024,
+     "turnover": 11526712,
+     "pretax": 113044,
+     "profit": 95363
+    },
+    {
+     "year": 2023,
+     "turnover": 19745738,
+     "pretax": 415124,
+     "profit": 345373
+    },
+    {
+     "year": 2022,
+     "turnover": 11433659,
+     "pretax": 692244,
+     "profit": 587419
+    },
+    {
+     "year": 2021,
+     "turnover": 7175635,
+     "pretax": 552359,
+     "profit": 468860
+    }
+   ]
+  },
+  {
+   "slug": "uab_ric_creative",
+   "brand": "Ric Creative",
+   "jarCode": "302466583",
+   "scrapedAt": "2026-06-25T11:52:59+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 514641,
+     "pretax": -67081,
+     "profit": -67081
+    },
+    {
+     "year": 2024,
+     "turnover": 645958,
+     "pretax": 3413,
+     "profit": 1994
+    },
+    {
+     "year": 2023,
+     "turnover": 596611,
+     "pretax": 8174,
+     "profit": 6353
+    },
+    {
+     "year": 2022,
+     "turnover": 680849,
+     "pretax": 72395,
+     "profit": 59054
+    },
+    {
+     "year": 2021,
+     "turnover": 434920,
+     "pretax": 86441,
+     "profit": 73525
+    }
+   ]
+  },
+  {
+   "slug": "salve_agency",
+   "brand": "Salve Agency",
+   "jarCode": "303374383",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 318185,
+     "pretax": 36820,
+     "profit": 30402
+    },
+    {
+     "year": 2024,
+     "turnover": 360932,
+     "pretax": 42719,
+     "profit": 36217
+    },
+    {
+     "year": 2023,
+     "turnover": 362646,
+     "pretax": 41313,
+     "profit": 34871
+    },
+    {
+     "year": 2022,
+     "turnover": 394767,
+     "pretax": 40435,
+     "profit": 34996
+    },
+    {
+     "year": 2021,
+     "turnover": 299093,
+     "pretax": 39136,
+     "profit": 32678
+    }
+   ]
+  },
+  {
+   "slug": "verslo_vystymas",
+   "brand": "Seo Spiders on the web",
+   "jarCode": "302928919",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 760275,
+     "pretax": 46976,
+     "profit": 39018
+    },
+    {
+     "year": 2024,
+     "turnover": 770285,
+     "pretax": 103324,
+     "profit": 86675
+    },
+    {
+     "year": 2023,
+     "turnover": 645494,
+     "pretax": 73150,
+     "profit": 61795
+    },
+    {
+     "year": 2022,
+     "turnover": 628198,
+     "pretax": 101427,
+     "profit": 85709
+    },
+    {
+     "year": 2021,
+     "turnover": 377769,
+     "pretax": 52209,
+     "profit": 44305
+    }
+   ]
+  },
+  {
+   "slug": "skaitmenine_reklama",
+   "brand": "Skaitmeninė reklama",
+   "jarCode": "304009850",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2577484,
+     "pretax": 81193,
+     "profit": 65470
+    },
+    {
+     "year": 2024,
+     "turnover": 2521409,
+     "pretax": 95376,
+     "profit": 80127
+    },
+    {
+     "year": 2023,
+     "turnover": 2655646,
+     "pretax": 38724,
+     "profit": 32475
+    },
+    {
+     "year": 2022,
+     "turnover": 1988223,
+     "pretax": 104045,
+     "profit": 87884
+    },
+    {
+     "year": 2021,
+     "turnover": 1341762,
+     "pretax": null,
+     "profit": 47495
+    }
+   ]
+  },
+  {
+   "slug": "socium_agency",
+   "brand": "Socium Agency",
+   "jarCode": "305678310",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 294685,
+     "pretax": null,
+     "profit": 82486
+    },
+    {
+     "year": 2024,
+     "turnover": 201743,
+     "pretax": null,
+     "profit": 93993
+    },
+    {
+     "year": 2023,
+     "turnover": 235676,
+     "pretax": null,
+     "profit": 105197
+    },
+    {
+     "year": 2022,
+     "turnover": 129939,
+     "pretax": null,
+     "profit": 50125
+    },
+    {
+     "year": 2021,
+     "turnover": 56983,
+     "pretax": null,
+     "profit": 40177
+    }
+   ]
+  },
+  {
+   "slug": "ddb_vilnius",
+   "brand": "Sons & Daughters",
+   "jarCode": "111621671",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1717484,
+     "pretax": 32849,
+     "profit": 24173
+    },
+    {
+     "year": 2024,
+     "turnover": 1795590,
+     "pretax": 20980,
+     "profit": 14732
+    },
+    {
+     "year": 2023,
+     "turnover": 1885334,
+     "pretax": 47479,
+     "profit": 41716
+    },
+    {
+     "year": 2022,
+     "turnover": 1895806,
+     "pretax": 44330,
+     "profit": 39446
+    },
+    {
+     "year": 2021,
+     "turnover": 641943,
+     "pretax": -69609,
+     "profit": -69609
+    }
+   ]
+  },
+  {
+   "slug": "spark_lt",
+   "brand": "Spark Agency",
+   "jarCode": "304139541",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 791627,
+     "pretax": 11,
+     "profit": -1334
+    },
+    {
+     "year": 2024,
+     "turnover": 671087,
+     "pretax": -10511,
+     "profit": -10732
+    },
+    {
+     "year": 2023,
+     "turnover": 764293,
+     "pretax": -17202,
+     "profit": -17506
+    },
+    {
+     "year": 2022,
+     "turnover": 648818,
+     "pretax": -45155,
+     "profit": -44496
+    },
+    {
+     "year": 2021,
+     "turnover": 677713,
+     "pretax": 114718,
+     "profit": 96906
+    }
+   ]
+  },
+  {
+   "slug": "stebink",
+   "brand": "Stebink",
+   "jarCode": "303129487",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 353509,
+     "pretax": 18117,
+     "profit": 15039
+    },
+    {
+     "year": 2024,
+     "turnover": 378983,
+     "pretax": 28876,
+     "profit": 24220
+    },
+    {
+     "year": 2023,
+     "turnover": 431896,
+     "pretax": 15164,
+     "profit": 12729
+    },
+    {
+     "year": 2022,
+     "turnover": 423499,
+     "pretax": 16002,
+     "profit": 13843
+    },
+    {
+     "year": 2021,
+     "turnover": 408182,
+     "pretax": -7478,
+     "profit": -7478
+    }
+   ]
+  },
+  {
+   "slug": "the_xx",
+   "brand": "SuperYou",
+   "jarCode": "302705193",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3471095,
+     "pretax": 98571,
+     "profit": 76802
+    },
+    {
+     "year": 2024,
+     "turnover": 3457966,
+     "pretax": 15842,
+     "profit": 10004
+    },
+    {
+     "year": 2023,
+     "turnover": 3156815,
+     "pretax": 13572,
+     "profit": 8499
+    },
+    {
+     "year": 2022,
+     "turnover": 3189523,
+     "pretax": 58041,
+     "profit": 44871
+    },
+    {
+     "year": 2021,
+     "turnover": 2745328,
+     "pretax": 37905,
+     "profit": 28066
+    }
+   ]
+  },
+  {
+   "slug": "synthesis_consulting_group",
+   "brand": "SynthesisCG",
+   "jarCode": "304229686",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1793025,
+     "pretax": 651847,
+     "profit": 574851
+    },
+    {
+     "year": 2024,
+     "turnover": 1415385,
+     "pretax": 598000,
+     "profit": 518099
+    },
+    {
+     "year": 2023,
+     "turnover": 1054535,
+     "pretax": 523485,
+     "profit": 486355
+    },
+    {
+     "year": 2022,
+     "turnover": 766536,
+     "pretax": 428597,
+     "profit": 365575
+    },
+    {
+     "year": 2021,
+     "turnover": 614560,
+     "pretax": null,
+     "profit": 293105
+    }
+   ]
+  },
+  {
+   "slug": "tarela",
+   "brand": "Tarela",
+   "jarCode": "124257787",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 411859,
+     "pretax": null,
+     "profit": 1304
+    },
+    {
+     "year": 2024,
+     "turnover": 316507,
+     "pretax": null,
+     "profit": -2233
+    },
+    {
+     "year": 2023,
+     "turnover": 684432,
+     "pretax": null,
+     "profit": 59173
+    },
+    {
+     "year": 2022,
+     "turnover": 322775,
+     "pretax": null,
+     "profit": -7985
+    },
+    {
+     "year": 2021,
+     "turnover": 351527,
+     "pretax": null,
+     "profit": 17604
+    }
+   ]
+  },
+  {
+   "slug": "tekvila",
+   "brand": "Eventum Group",
+   "jarCode": "302248937",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1284329,
+     "pretax": 16680,
+     "profit": 14206
+    },
+    {
+     "year": 2024,
+     "turnover": 1063817,
+     "pretax": 32505,
+     "profit": 28207
+    },
+    {
+     "year": 2023,
+     "turnover": 1249338,
+     "pretax": 49300,
+     "profit": 42400
+    },
+    {
+     "year": 2022,
+     "turnover": 1249429,
+     "pretax": 39114,
+     "profit": 32892
+    },
+    {
+     "year": 2021,
+     "turnover": 930793,
+     "pretax": 109018,
+     "profit": 92764
+    }
+   ]
+  },
+  {
+   "slug": "dizaino_agentura",
+   "brand": "The Critical",
+   "jarCode": "304562858",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2383957,
+     "pretax": 18073,
+     "profit": 12268
+    },
+    {
+     "year": 2024,
+     "turnover": 2631602,
+     "pretax": 100039,
+     "profit": 82652
+    },
+    {
+     "year": 2023,
+     "turnover": 1905999,
+     "pretax": -91002,
+     "profit": -91002
+    },
+    {
+     "year": 2022,
+     "turnover": 1813270,
+     "pretax": 20015,
+     "profit": 15289
+    },
+    {
+     "year": 2021,
+     "turnover": 1618544,
+     "pretax": 116963,
+     "profit": 99221
+    }
+   ]
+  },
+  {
+   "slug": "menrida",
+   "brand": "The Magic",
+   "jarCode": "302693428",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 4454509,
+     "pretax": 27004,
+     "profit": 18632
+    },
+    {
+     "year": 2024,
+     "turnover": 3460546,
+     "pretax": 52265,
+     "profit": 41864
+    },
+    {
+     "year": 2023,
+     "turnover": 4211531,
+     "pretax": 82105,
+     "profit": 66767
+    },
+    {
+     "year": 2022,
+     "turnover": 3145057,
+     "pretax": 115335,
+     "profit": 96919
+    },
+    {
+     "year": 2021,
+     "turnover": 3051791,
+     "pretax": 211940,
+     "profit": 178555
+    }
+   ]
+  },
+  {
+   "slug": "totem_promo",
+   "brand": "TOTEM agency",
+   "jarCode": "302652310",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2228425,
+     "pretax": 171345,
+     "profit": 141344
+    },
+    {
+     "year": 2024,
+     "turnover": 1851227,
+     "pretax": 146230,
+     "profit": 120628
+    },
+    {
+     "year": 2023,
+     "turnover": 1503595,
+     "pretax": 126766,
+     "profit": 106616
+    },
+    {
+     "year": 2022,
+     "turnover": 1167788,
+     "pretax": 143753,
+     "profit": 120018
+    },
+    {
+     "year": 2021,
+     "turnover": 917347,
+     "pretax": 121895,
+     "profit": 103099
+    }
+   ]
+  },
+  {
+   "slug": "trendmark",
+   "brand": "Mediacom",
+   "jarCode": "300021385",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 7481139,
+     "pretax": 118708,
+     "profit": 98365
+    },
+    {
+     "year": 2024,
+     "turnover": 8271381,
+     "pretax": 156489,
+     "profit": 131476
+    },
+    {
+     "year": 2023,
+     "turnover": 7543028,
+     "pretax": 81008,
+     "profit": 66752
+    },
+    {
+     "year": 2022,
+     "turnover": 7598409,
+     "pretax": 117826,
+     "profit": 99335
+    },
+    {
+     "year": 2021,
+     "turnover": 7141593,
+     "pretax": 402216,
+     "profit": 340088
+    }
+   ]
+  },
+  {
+   "slug": "turinio_rinkodara",
+   "brand": "Choco agency",
+   "jarCode": "304170889",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2942759,
+     "pretax": 169829,
+     "profit": 141720
+    },
+    {
+     "year": 2024,
+     "turnover": 3855674,
+     "pretax": 205391,
+     "profit": 181329
+    },
+    {
+     "year": 2023,
+     "turnover": 3630118,
+     "pretax": 227974,
+     "profit": 185256
+    },
+    {
+     "year": 2022,
+     "turnover": 3091351,
+     "pretax": 200309,
+     "profit": 170223
+    },
+    {
+     "year": 2021,
+     "turnover": 2308986,
+     "pretax": 180389,
+     "profit": 152342
+    }
+   ]
+  },
+  {
+   "slug": "uab_dansu",
+   "brand": "Dansu",
+   "jarCode": "301732159",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3349748,
+     "pretax": 141543,
+     "profit": 116799
+    },
+    {
+     "year": 2024,
+     "turnover": 6566337,
+     "pretax": 406547,
+     "profit": 364854
+    },
+    {
+     "year": 2023,
+     "turnover": 1037356,
+     "pretax": -167494,
+     "profit": -167494
+    },
+    {
+     "year": 2022,
+     "turnover": 3344864,
+     "pretax": 54924,
+     "profit": 45750
+    },
+    {
+     "year": 2021,
+     "turnover": 4099596,
+     "pretax": 206011,
+     "profit": 179729
+    }
+   ]
+  },
+  {
+   "slug": "elitaz_grupe",
+   "brand": "ELITAZ Grupė",
+   "jarCode": "302932166",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2836397,
+     "pretax": 1761,
+     "profit": 937
+    },
+    {
+     "year": 2024,
+     "turnover": 3378877,
+     "pretax": 195248,
+     "profit": 165961
+    },
+    {
+     "year": 2023,
+     "turnover": 2346897,
+     "pretax": 28595,
+     "profit": 24292
+    },
+    {
+     "year": 2022,
+     "turnover": 2451795,
+     "pretax": 25371,
+     "profit": 21565
+    },
+    {
+     "year": 2021,
+     "turnover": 1630187,
+     "pretax": 93428,
+     "profit": 79397
+    }
+   ]
+  },
+  {
+   "slug": "uab_evo_media",
+   "brand": "Evo media",
+   "jarCode": "302478991",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 920649,
+     "pretax": 265464,
+     "profit": 221092
+    },
+    {
+     "year": 2024,
+     "turnover": 712632,
+     "pretax": 164595,
+     "profit": 139519
+    },
+    {
+     "year": 2023,
+     "turnover": 634289,
+     "pretax": 62916,
+     "profit": 52882
+    },
+    {
+     "year": 2022,
+     "turnover": 342212,
+     "pretax": 1151,
+     "profit": 777
+    },
+    {
+     "year": 2021,
+     "turnover": 382359,
+     "pretax": 35501,
+     "profit": 29979
+    }
+   ]
+  },
+  {
+   "slug": "full_screen",
+   "brand": "FULL SCREEN",
+   "jarCode": "302625352",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1077029,
+     "pretax": 5536,
+     "profit": 4309
+    },
+    {
+     "year": 2024,
+     "turnover": 1701810,
+     "pretax": 278988,
+     "profit": 236581
+    },
+    {
+     "year": 2023,
+     "turnover": 1766252,
+     "pretax": 139834,
+     "profit": 118414
+    },
+    {
+     "year": 2022,
+     "turnover": 1056808,
+     "pretax": 98872,
+     "profit": 83818
+    },
+    {
+     "year": 2021,
+     "turnover": 998313,
+     "pretax": 18243,
+     "profit": 14617
+    }
+   ]
+  },
+  {
+   "slug": "galley_group_reklamos_agentura_uab_galegrus",
+   "brand": "Galley group",
+   "jarCode": "126286061",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2591954,
+     "pretax": 167236,
+     "profit": 144597
+    },
+    {
+     "year": 2024,
+     "turnover": 1984708,
+     "pretax": 107432,
+     "profit": 93394
+    },
+    {
+     "year": 2023,
+     "turnover": 1357188,
+     "pretax": 22787,
+     "profit": 18707
+    },
+    {
+     "year": 2022,
+     "turnover": 790127,
+     "pretax": 1775,
+     "profit": 1370
+    },
+    {
+     "year": 2021,
+     "turnover": 621316,
+     "pretax": 116,
+     "profit": 51
+    }
+   ]
+  },
+  {
+   "slug": "indiana_lt",
+   "brand": "Indiana",
+   "jarCode": "302641591",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3441554,
+     "pretax": 140976,
+     "profit": 116559
+    },
+    {
+     "year": 2024,
+     "turnover": 3604605,
+     "pretax": 164040,
+     "profit": 137745
+    },
+    {
+     "year": 2023,
+     "turnover": 3334151,
+     "pretax": 129756,
+     "profit": 108369
+    },
+    {
+     "year": 2022,
+     "turnover": 3769383,
+     "pretax": 333116,
+     "profit": 276915
+    },
+    {
+     "year": 2021,
+     "turnover": 2392327,
+     "pretax": 225201,
+     "profit": 193375
+    }
+   ]
+  },
+  {
+   "slug": "uab_kubrik",
+   "brand": "Kubrik",
+   "jarCode": "301542341",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 160469,
+     "pretax": -94970,
+     "profit": -94970
+    },
+    {
+     "year": 2024,
+     "turnover": 299800,
+     "pretax": 14455,
+     "profit": 12287
+    },
+    {
+     "year": 2023,
+     "turnover": 294768,
+     "pretax": 32017,
+     "profit": 30860
+    },
+    {
+     "year": 2022,
+     "turnover": 276081,
+     "pretax": -8884,
+     "profit": -8884
+    },
+    {
+     "year": 2021,
+     "turnover": 299630,
+     "pretax": 16015,
+     "profit": 15117
+    }
+   ]
+  },
+  {
+   "slug": "new_agency",
+   "brand": "NEW!",
+   "jarCode": "302704981",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2344987,
+     "pretax": 4623,
+     "profit": 937
+    },
+    {
+     "year": 2024,
+     "turnover": 3272793,
+     "pretax": 34561,
+     "profit": 30560
+    },
+    {
+     "year": 2023,
+     "turnover": 3034911,
+     "pretax": -30674,
+     "profit": -30674
+    },
+    {
+     "year": 2022,
+     "turnover": 2854292,
+     "pretax": 75883,
+     "profit": 68130
+    },
+    {
+     "year": 2021,
+     "turnover": 2012184,
+     "pretax": -93219,
+     "profit": -93219
+    }
+   ]
+  },
+  {
+   "slug": "petraitis_ir_puras",
+   "brand": "Black Florence",
+   "jarCode": "302979365",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 190073,
+     "pretax": null,
+     "profit": 88430
+    },
+    {
+     "year": 2024,
+     "turnover": 220696,
+     "pretax": null,
+     "profit": 133481
+    },
+    {
+     "year": 2023,
+     "turnover": 204198,
+     "pretax": null,
+     "profit": 120581
+    },
+    {
+     "year": 2022,
+     "turnover": 154432,
+     "pretax": null,
+     "profit": 84480
+    },
+    {
+     "year": 2021,
+     "turnover": 188202,
+     "pretax": null,
+     "profit": 126585
+    }
+   ]
+  },
+  {
+   "slug": "some_films",
+   "brand": "Some Films",
+   "jarCode": "302735546",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 1582631,
+     "pretax": 3948,
+     "profit": 2290
+    },
+    {
+     "year": 2023,
+     "turnover": 1741263,
+     "pretax": 66243,
+     "profit": 53987
+    },
+    {
+     "year": 2022,
+     "turnover": 1560444,
+     "pretax": 75055,
+     "profit": 62888
+    },
+    {
+     "year": 2021,
+     "turnover": 1457975,
+     "pretax": 87442,
+     "profit": 72955
+    },
+    {
+     "year": 2020,
+     "turnover": 1539395,
+     "pretax": 129624,
+     "profit": 109993
+    }
+   ]
+  },
+  {
+   "slug": "spotlight_lt",
+   "brand": "Spotlight",
+   "jarCode": "302930418",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1066296,
+     "pretax": 50894,
+     "profit": 40776
+    },
+    {
+     "year": 2024,
+     "turnover": 1064448,
+     "pretax": 87420,
+     "profit": 83018
+    },
+    {
+     "year": 2023,
+     "turnover": 1228001,
+     "pretax": 185671,
+     "profit": 156397
+    },
+    {
+     "year": 2022,
+     "turnover": 928031,
+     "pretax": 183392,
+     "profit": 155375
+    },
+    {
+     "year": 2021,
+     "turnover": 399946,
+     "pretax": 24249,
+     "profit": 19717
+    }
+   ]
+  },
+  {
+   "slug": "wide_wings",
+   "brand": "Wide wings",
+   "jarCode": "302988072",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 808733,
+     "pretax": 21444,
+     "profit": 21444
+    },
+    {
+     "year": 2023,
+     "turnover": 670301,
+     "pretax": 19561,
+     "profit": 19561
+    },
+    {
+     "year": 2022,
+     "turnover": 684723,
+     "pretax": 30056,
+     "profit": 30056
+    },
+    {
+     "year": 2021,
+     "turnover": 752783,
+     "pretax": 49223,
+     "profit": 49223
+    },
+    {
+     "year": 2020,
+     "turnover": 658028,
+     "pretax": 91256,
+     "profit": 91256
+    }
+   ]
+  },
+  {
+   "slug": "uab_enternet",
+   "brand": "Enternet",
+   "jarCode": "302686095",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1296894,
+     "pretax": 73036,
+     "profit": 60438
+    },
+    {
+     "year": 2024,
+     "turnover": 1100235,
+     "pretax": 10161,
+     "profit": 7093
+    },
+    {
+     "year": 2023,
+     "turnover": 971641,
+     "pretax": 9430,
+     "profit": 7010
+    },
+    {
+     "year": 2022,
+     "turnover": 831603,
+     "pretax": 7872,
+     "profit": 5052
+    },
+    {
+     "year": 2021,
+     "turnover": 784600,
+     "pretax": 12110,
+     "profit": 9400
+    }
+   ]
+  },
+  {
+   "slug": "uab_bosanova",
+   "brand": "Bosanova",
+   "jarCode": "302448012",
+   "scrapedAt": "2026-06-21T21:59:03+03:00",
+   "scrapeInstance": 1,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1447186,
+     "pretax": 235285,
+     "profit": 198956
+    },
+    {
+     "year": 2024,
+     "turnover": 1566507,
+     "pretax": 118731,
+     "profit": 103845
+    },
+    {
+     "year": 2023,
+     "turnover": 1018276,
+     "pretax": 70970,
+     "profit": 63393
+    },
+    {
+     "year": 2022,
+     "turnover": 922751,
+     "pretax": -22601,
+     "profit": -22601
+    },
+    {
+     "year": 2021,
+     "turnover": 620813,
+     "pretax": 115696,
+     "profit": 97262
+    }
+   ]
+  },
+  {
+   "slug": "uab_nova_media_lt",
+   "brand": "Nova media",
+   "jarCode": "301673262",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 448360,
+     "pretax": null,
+     "profit": 74489
+    },
+    {
+     "year": 2024,
+     "turnover": 456070,
+     "pretax": 112099,
+     "profit": 95284
+    },
+    {
+     "year": 2023,
+     "turnover": 318679,
+     "pretax": null,
+     "profit": 56167
+    },
+    {
+     "year": 2022,
+     "turnover": 294185,
+     "pretax": null,
+     "profit": 55916
+    },
+    {
+     "year": 2021,
+     "turnover": 390923,
+     "pretax": null,
+     "profit": 45383
+    }
+   ]
+  },
+  {
+   "slug": "vaizdo_skonis",
+   "brand": "Zest production house",
+   "jarCode": "303193931",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1368804,
+     "pretax": null,
+     "profit": 63128
+    },
+    {
+     "year": 2024,
+     "turnover": 1713642,
+     "pretax": null,
+     "profit": 58387
+    },
+    {
+     "year": 2023,
+     "turnover": 1946579,
+     "pretax": null,
+     "profit": 187358
+    },
+    {
+     "year": 2022,
+     "turnover": 1040136,
+     "pretax": null,
+     "profit": 40347
+    },
+    {
+     "year": 2021,
+     "turnover": 882594,
+     "pretax": 45784,
+     "profit": 38215
+    }
+   ]
+  },
+  {
+   "slug": "uab_vento_nuovo",
+   "brand": "Vento Nuovo",
+   "jarCode": "301793500",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 283336,
+     "pretax": null,
+     "profit": 81053
+    },
+    {
+     "year": 2024,
+     "turnover": 299712,
+     "pretax": null,
+     "profit": 93548
+    },
+    {
+     "year": 2023,
+     "turnover": 299971,
+     "pretax": null,
+     "profit": 61467
+    },
+    {
+     "year": 2022,
+     "turnover": 266892,
+     "pretax": null,
+     "profit": 56020
+    },
+    {
+     "year": 2021,
+     "turnover": 232351,
+     "pretax": null,
+     "profit": 37207
+    }
+   ]
+  },
+  {
+   "slug": "verslo_ideju_partneriai",
+   "brand": "Google partner",
+   "jarCode": "300940673",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2195915,
+     "pretax": 77628,
+     "profit": 64516
+    },
+    {
+     "year": 2024,
+     "turnover": 2179847,
+     "pretax": 50814,
+     "profit": 42493
+    },
+    {
+     "year": 2023,
+     "turnover": 2135316,
+     "pretax": 157063,
+     "profit": 132927
+    },
+    {
+     "year": 2022,
+     "turnover": 2060853,
+     "pretax": 76348,
+     "profit": 63883
+    },
+    {
+     "year": 2021,
+     "turnover": 1951484,
+     "pretax": 77107,
+     "profit": 64808
+    }
+   ]
+  },
+  {
+   "slug": "via_media",
+   "brand": "Via Media",
+   "jarCode": "111625698",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 10440321,
+     "pretax": 275532,
+     "profit": 229960
+    },
+    {
+     "year": 2024,
+     "turnover": 8837519,
+     "pretax": 267107,
+     "profit": 225361
+    },
+    {
+     "year": 2023,
+     "turnover": 8389454,
+     "pretax": 205168,
+     "profit": 172710
+    },
+    {
+     "year": 2022,
+     "turnover": 10013897,
+     "pretax": 220885,
+     "profit": 186159
+    },
+    {
+     "year": 2021,
+     "turnover": 9494507,
+     "pretax": 228423,
+     "profit": 191943
+    }
+   ]
+  },
+  {
+   "slug": "videoprojektu_sprendimai",
+   "brand": "Pick a Story",
+   "jarCode": "304300090",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 91357,
+     "pretax": 5730,
+     "profit": 5730
+    },
+    {
+     "year": 2024,
+     "turnover": 122111,
+     "pretax": -20529,
+     "profit": -20529
+    },
+    {
+     "year": 2023,
+     "turnover": 177910,
+     "pretax": 44424,
+     "profit": 42203
+    },
+    {
+     "year": 2022,
+     "turnover": 200535,
+     "pretax": 10972,
+     "profit": 10605
+    },
+    {
+     "year": 2021,
+     "turnover": 136496,
+     "pretax": 10154,
+     "profit": 9646
+    }
+   ]
+  },
+  {
+   "slug": "videvita",
+   "brand": "Videvita",
+   "jarCode": "134738420",
+   "scrapedAt": "2026-06-25T11:52:59+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": null,
+     "pretax": -394,
+     "profit": -394
+    },
+    {
+     "year": 2024,
+     "turnover": null,
+     "pretax": -1940,
+     "profit": -1940
+    },
+    {
+     "year": 2023,
+     "turnover": null,
+     "pretax": 9773,
+     "profit": 8291
+    },
+    {
+     "year": 2022,
+     "turnover": null,
+     "pretax": 1560,
+     "profit": 970
+    },
+    {
+     "year": 2021,
+     "turnover": null,
+     "pretax": 815119,
+     "profit": 778367
+    }
+   ]
+  },
+  {
+   "slug": "visetas",
+   "brand": "VISETAS",
+   "jarCode": "300646038",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 89006,
+     "pretax": 61898,
+     "profit": 61898
+    },
+    {
+     "year": 2024,
+     "turnover": 87681,
+     "pretax": 84770,
+     "profit": 86705
+    },
+    {
+     "year": 2023,
+     "turnover": 145013,
+     "pretax": 36979,
+     "profit": 35044
+    },
+    {
+     "year": 2022,
+     "turnover": 176468,
+     "pretax": 26473,
+     "profit": 25601
+    },
+    {
+     "year": 2021,
+     "turnover": 137096,
+     "pretax": -69299,
+     "profit": -69299
+    }
+   ]
+  },
+  {
+   "slug": "vrs_wpi_vilnius",
+   "brand": "VRS92",
+   "jarCode": "125837960",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 314647,
+     "pretax": null,
+     "profit": 3405
+    },
+    {
+     "year": 2024,
+     "turnover": 568422,
+     "pretax": null,
+     "profit": -43977
+    },
+    {
+     "year": 2023,
+     "turnover": 516376,
+     "pretax": null,
+     "profit": -44482
+    },
+    {
+     "year": 2022,
+     "turnover": 566996,
+     "pretax": 10743,
+     "profit": 10453
+    },
+    {
+     "year": 2021,
+     "turnover": 662748,
+     "pretax": 34238,
+     "profit": 30759
+    }
+   ]
+  },
+  {
+   "slug": "way_makers",
+   "brand": "Way Makers",
+   "jarCode": "302982411",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 151486,
+     "pretax": 5050,
+     "profit": 4543
+    },
+    {
+     "year": 2024,
+     "turnover": 124520,
+     "pretax": 5163,
+     "profit": 4937
+    },
+    {
+     "year": 2023,
+     "turnover": 87472,
+     "pretax": -8800,
+     "profit": -8800
+    },
+    {
+     "year": 2022,
+     "turnover": 109420,
+     "pretax": -1170,
+     "profit": -1170
+    },
+    {
+     "year": 2021,
+     "turnover": 20541,
+     "pretax": 8519,
+     "profit": 8091
+    }
+   ]
+  },
+  {
+   "slug": "we_are_marketing_uab",
+   "brand": "We Are Marketing",
+   "jarCode": "302856900",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1327928,
+     "pretax": 88220,
+     "profit": 72996
+    },
+    {
+     "year": 2024,
+     "turnover": 1247022,
+     "pretax": 136870,
+     "profit": 111214
+    },
+    {
+     "year": 2023,
+     "turnover": 1097125,
+     "pretax": 11866,
+     "profit": 9018
+    },
+    {
+     "year": 2022,
+     "turnover": 966637,
+     "pretax": -31125,
+     "profit": -31125
+    },
+    {
+     "year": 2021,
+     "turnover": 747732,
+     "pretax": 54643,
+     "profit": 44239
+    }
+   ]
+  },
+  {
+   "slug": "verslo_media",
+   "brand": "We deliver agency",
+   "jarCode": "111436135",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2953000,
+     "pretax": 143000,
+     "profit": 158000
+    },
+    {
+     "year": 2024,
+     "turnover": 4813000,
+     "pretax": 1075000,
+     "profit": 937000
+    },
+    {
+     "year": 2023,
+     "turnover": 4918000,
+     "pretax": -752000,
+     "profit": -769000
+    },
+    {
+     "year": 2022,
+     "turnover": 5674000,
+     "pretax": 232000,
+     "profit": 180000
+    },
+    {
+     "year": 2021,
+     "turnover": 3889000,
+     "pretax": 165000,
+     "profit": 133000
+    }
+   ]
+  },
+  {
+   "slug": "uab_wrks",
+   "brand": "Karuselė",
+   "jarCode": "302786252",
+   "scrapedAt": "2026-06-25T11:46:02+03:00",
+   "scrapeInstance": 2,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1834282,
+     "pretax": 1194,
+     "profit": 376
+    },
+    {
+     "year": 2024,
+     "turnover": 844981,
+     "pretax": 45880,
+     "profit": 38886
+    },
+    {
+     "year": 2023,
+     "turnover": 1337678,
+     "pretax": 85139,
+     "profit": 72414
+    },
+    {
+     "year": 2022,
+     "turnover": 1178640,
+     "pretax": 32885,
+     "profit": 27661
+    },
+    {
+     "year": 2021,
+     "turnover": 762774,
+     "pretax": -22892,
+     "profit": -22892
+    }
+   ]
+  },
+  {
+   "slug": "younique_studio",
+   "brand": "Younique studio",
+   "jarCode": "305681598",
+   "scrapedAt": "2026-07-03T14:28:26+03:00",
+   "scrapeInstance": 3,
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 96731,
+     "pretax": null,
+     "profit": -22270
+    },
+    {
+     "year": 2024,
+     "turnover": 107277,
+     "pretax": null,
+     "profit": -24580
+    },
+    {
+     "year": 2023,
+     "turnover": 174318,
+     "pretax": null,
+     "profit": 62733
+    },
+    {
+     "year": 2022,
+     "turnover": 107395,
+     "pretax": null,
+     "profit": 39163
+    },
+    {
+     "year": 2021,
+     "turnover": 91477,
+     "pretax": null,
+     "profit": 47852
+    }
+   ]
+  }
+ ]
+}
