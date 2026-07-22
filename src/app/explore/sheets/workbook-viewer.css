@@ -689,6 +689,38 @@
   .closed-row .title-cell {
     color: var(--muted);
   }
+  /* What the marks in the grid mean, and how old each source is. Sits between
+     the toolbar and the figures because it has to be read before them. */
+  .source-legend {
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.68rem;
+    gap: 4px 16px;
+    padding: 6px 10px 8px;
+  }
+  .source-legend b {
+    color: var(--text);
+    font-size: 0.78rem;
+    margin-right: 3px;
+  }
+  /* Which scrape a figure came from. Quiet by design — provenance should be
+     checkable at a glance and ignorable the rest of the time, so it sits at a
+     third of the figure's weight until hovered. The legend above the sheet
+     says what each mark means. */
+  .source-mark {
+    color: var(--muted);
+    cursor: help;
+    display: inline-block;
+    font-size: 0.6rem;
+    line-height: 1;
+    margin-left: 4px;
+    opacity: 0.45;
+    vertical-align: 0.35em;
+  }
+  td:hover > .source-mark {
+    opacity: 1;
+  }
   /* Change from the previous year, riding along next to the figure it belongs to. */
   .delta {
     display: inline-block;
@@ -959,4 +991,112 @@
   .wbv .menu {
     width: min(320px, calc(100vw - 24px));
   }
+}
+
+/* Blocks — used by the rebuilt-data sheet (/explore/model), where one record is
+   several rows: a caption naming the company, its metric rows, then air. The
+   sheet marks rows via `rowClasses`; everything visual is here.
+
+   A company reads as its own small table while every block keeps the SAME year
+   columns, so a figure can still be compared straight down the page.
+   Separation comes from removing chrome, not adding it.
+
+   Type scale, largest to smallest — the caption must outrank the row labels,
+   which is exactly what went wrong the first time:
+     company caption  19px semibold, full ink
+     figures          13px tabular, full ink
+     row labels       12px medium, muted        */
+.wbv .workbook tbody tr.block-title > * {
+  background: transparent;
+  border-bottom: 0;
+  border-right: 0;
+}
+/* The caption is not a cell in the label column — it sits above the block and
+   runs past the column edge, which is what makes it read as a title. */
+.wbv .workbook tbody tr.block-title > td:first-of-type {
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  overflow: visible;
+  padding: 22px 12px 6px 4px;
+  text-align: left;
+  white-space: nowrap;
+}
+.wbv .workbook tbody tr.block-title > td:first-of-type .cell-text {
+  overflow: visible;
+}
+/* Row numbers count spreadsheet lines; a caption and a spacer are neither. */
+.wbv .workbook tbody tr.block-title > th,
+.wbv .workbook tbody tr.block-gap > th {
+  background: transparent;
+  border-bottom: 0;
+  border-right: 0;
+  color: transparent;
+}
+/* The gap is air: no rules through it, nothing to read. */
+.wbv .workbook tbody tr.block-gap > * {
+  background: transparent;
+  border-bottom: 0;
+  border-right: 0;
+  height: 8px;
+  padding: 0;
+}
+/* Data rows: tight enough that a block reads as one object rather than a list
+   of unrelated lines. 40px per row was air with a number floating in it. */
+.wbv .workbook tbody tr.block-row > td,
+.wbv .workbook tbody tr.block-row > th {
+  font-size: 13px;
+  line-height: 1.25;
+  padding: 5px 12px;
+}
+/* Row labels recede: they repeat identically in all 131 blocks, so they carry
+   almost no information after the first read. */
+.wbv .workbook tbody tr.block-row > td:first-of-type {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  max-width: 210px;
+  text-align: left;
+}
+/* Figures line up digit under digit, which is the only way a column of money
+   is comparable at a glance. */
+.wbv .workbook tbody tr.block-row > td {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+/* The row-number gutter is noise next to a named record. */
+.wbv .workbook tbody tr.block-row > th {
+  color: color-mix(in srgb, var(--muted) 35%, transparent);
+  font-size: 10px;
+}
+
+/* Nothing in the viewer may grow past the window.
+
+   A grid whose table is `min-width: max-content` will happily push every
+   ancestor wider than the screen unless each one is told it may shrink: a flex
+   item defaults to `min-width: auto`, i.e. "never smaller than my content".
+   One un-pinned ancestor and the horizontal scroll moves to the PAGE, which is
+   why the toolbar's last button ends up off-screen while the grid looks fine.
+   The scrolling belongs to .grid-wrap and nowhere else. */
+.wbv {
+  max-width: min(1800px, 100%);
+  min-width: 0;
+}
+.wbv .workbook,
+.wbv .toolbar,
+.wbv .grid-wrap,
+.wbv .sheet-tabs {
+  max-width: 100%;
+  min-width: 0;
+}
+/* The search box may shrink; it was holding the toolbar open at its max width. */
+.wbv .search-input {
+  min-width: 0;
+}
+/* The tab strip scrolls itself rather than stretching the shell. */
+.wbv .sheet-tabs {
+  overflow-x: auto;
 }

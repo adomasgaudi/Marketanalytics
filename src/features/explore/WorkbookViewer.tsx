@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { cn } from "@/lib/cn";
 import workbook from "../../../data/workbook.json";
 import disagreements from "../../../data/disagreements.json";
@@ -19,7 +26,6 @@ type CellStyle = {
 // that figure disagrees with the derivation, and the cells nothing in the sheet accounts for.
 type Derivation = {
   columns: Set<number>;
-  formulaByColumn: Map<number, string>;
   stored: Map<string, CellValue>;
   storedFormulas: Map<string, string>;
   notes: Map<string, string>;
@@ -32,6 +38,24 @@ type Sheet = {
   formulas?: string[][];
   numberFormats?: string[][];
   derived?: Derivation;
+  /** Row index -> block id. A sheet where one record spans several rows (the
+      rebuilt dataset: a company is a title row plus its metrics) sets this, so
+      a search hit on ANY row opens the whole block. Without it a search for
+      "Fabula" would match only the heading and leave its figures blurred. */
+  rowGroups?: (string | null)[];
+  /** Row index -> extra class on its <tr>. Lets a sheet mark a row as a block
+      caption or a spacer; the styling lives in the stylesheet, not here. */
+  rowClasses?: (string | null)[];
+  /** Round every figure to 3 significant figures and write it as 5,23M / 63,4K.
+      The workbook infers this from a column's metric group; a sheet whose
+      columns are years or months has no group to infer from and says so here. */
+  compactNumbers?: boolean;
+  /** Row -> column -> a provenance mark drawn after the value, e.g. "◻" or "◼²".
+      It rides ALONGSIDE the value rather than inside it: folded into the string
+      the cell would stop parsing as a number, and lose both its right alignment
+      and its place in a sort. `cellTitles` is the same grid of hover text. */
+  cellMarks?: (string | null)[][];
+  cellTitles?: (string | null)[][];
 };
 
 // Columns lifted out of the grid: they are hidden, and their values show as a hover
@@ -220,23 +244,46 @@ const changeMirror: Record<string, string> = {
   "Pelno pokytis, %": "Pelnas",
 };
 
+// "Apyvarta 2024" -> "[[#This Row],[Apyvarta 2024]]", which formulaTokens reads as a named term.
+const thisRow = (label: string) => `[[#This Row],[${label}]]`;
+
+// Asks for a column by its per-employee meaning even when its switch says total. codeWords keeps
+// both names, so a formula can say "the wage of one person" while the heading says "the bill".
+const perSense = (label: string) => `${label} ·per`;
+
 // Some metrics are the same fact at two scales, so they share one column and a switch rather
 // than taking up two. "Atlyginimų vidurkis" is the monthly wage of one employee; the yearly
 // wage bill of everyone is that times headcount times twelve — which is how the workbook's own
 // "Atlyginimų sąnaudos" formula reads. That column is folded away: 168 of its cells hold a
 // monthly figure where the rest hold a yearly one, so recomputing beats reading it.
+// A total is worked out, never read, so it carries a formula of its own rather than passing for
+// a stored figure. Both expand all the way down to the core columns: the per-employee figure one
+// of them scales is itself derived, and a formula pointing at a derived cell explains nothing.
 type MetricMode = {
   total: string;
   scale: (perEmployee: number, staff: number) => number;
+  formula: (period: string, wageIsTotal: boolean) => string;
 };
 const metricModes: Record<string, MetricMode> = {
   "Atlyginimų vidurkis": {
     total: "Atlyginimų sąnaudos",
     scale: (wage, staff) => wage * staff * 12,
+    // The wage term is this very column read the other way round, so it is asked for by its
+    // per-employee sense (perSense): naming it for what the column now holds would have the
+    // salary bill defined as itself times headcount.
+    formula: (period) =>
+      `=${thisRow(perSense(`Atlyginimų vidurkis ${period}`))}*${thisRow(`Darbuotojai ${period}`)}*12`,
   },
   "Ne atlyginimų sąnaudos darbuotojui": {
     total: "Ne atlyginimų sąnaudos",
     scale: (cost, staff) => cost * staff,
+    // (turnover − wage bill) / staff, times staff again — the division cancels out.
+    formula: (period, wageIsTotal) =>
+      `=${thisRow(`Apyvarta ${period}`)}-${
+        wageIsTotal
+          ? thisRow(`Atlyginimų vidurkis ${period}`)
+          : `${thisRow(`Atlyginimų vidurkis ${period}`)}*${thisRow(`Darbuotojai ${period}`)}*12`
+      }`,
   },
 };
 const foldedMetrics = new Set(Object.values(metricModes).map((mode) => mode.total));
@@ -318,13 +365,14 @@ const derivedColumns = [
       staff && salaryBill !== null ? (turnover - salaryBill) / staff : null,
     storedSalary: "Atlyginimų sąnaudos",
     // Written in the workbook's own reference syntax so the cell traces back to its inputs.
-    formula: ([turnover, wage, staff]: string[]) =>
-      `=(${turnover}-${wage}*${staff}*12)/${staff}`,
+    // The wage bill is one term while the wage metric is switched to totals — that column then
+    // holds the bill itself, so spelling it out again would name a column twice over.
+    formula: ([turnover, wage, staff]: string[], wageIsTotal: boolean) =>
+      `=(${turnover}-${wageIsTotal ? wage : `${wage}*${staff}*12`})/${staff}`,
+    // Which of the inputs above carries the switch that changes the shape of that formula.
+    scaled: "Atlyginimų vidurkis",
   },
 ];
-
-// "Apyvarta 2024" -> "[[#This Row],[Apyvarta 2024]]", which formulaTokens reads as a named term.
-const thisRow = (label: string) => `[[#This Row],[${label}]]`;
 
 const agrees = (a: number, b: number) =>
   Math.abs(a - b) <= Math.max(1, Math.abs(b)) * 0.01;
@@ -333,7 +381,6 @@ const withDerivedColumns = (sheet: Sheet): Sheet => {
   const header = sheet.values[0] ?? [];
   const derived: Derivation = {
     columns: new Set(),
-    formulaByColumn: new Map(),
     stored: new Map(),
     storedFormulas: new Map(),
     notes: new Map(),
@@ -349,10 +396,6 @@ const withDerivedColumns = (sheet: Sheet): Sheet => {
       if (inputs.some((index) => index < 0)) return;
       const salaryColumn = header.indexOf(`${spec.storedSalary} ${period}`);
       derived.columns.add(columnIndex);
-      derived.formulaByColumn.set(
-        columnIndex,
-        spec.formula(spec.inputs.map((name) => thisRow(`${name} ${period}`))),
-      );
 
       values.forEach((row, rowIndex) => {
         if (rowIndex === 0) return;
@@ -399,9 +442,17 @@ const withDerivedColumns = (sheet: Sheet): Sheet => {
   return derived.columns.size ? { ...sheet, values, derived } : sheet;
 };
 
-const sheets = (workbook.sheets as Sheet[])
+/** The source workbook, prepared. Callers that bring their own sheets — the
+    rebuilt dataset does — pass them in and never touch this. */
+const workbookSheets = (workbook.sheets as Sheet[])
   .map(withComputedColumns)
   .map(withDerivedColumns);
+
+/** A sheet as this viewer consumes one: `values[0]` is the header row, every
+    row after it a record. Everything else (formulas, number formats) optional.
+    Build one of these and the whole grid — freeze, search, sort, hover, tabs,
+    full screen — comes with it. */
+export type { Sheet };
 
 // "UAB \"Inspired Communications\"" -> "Inspired Communications"
 const legalForms =
@@ -446,21 +497,22 @@ const formulaTokens = (formula: string) =>
         : { kind: "operator" as const, text: operatorSigns[token] ?? token },
   );
 
-// A formula reads like code, not prose: "Atlyginimų vidurkis 2020" becomes ATLVI20. The full
-// term is one hover away, so the shape of the expression stays visible at a glance.
+// A formula reads like code, not prose: "Atlyginimų vidurkis 2020" becomes ATL.VID20. The code
+// is the one the column heading shows, out of metric-names.ts, so a term in a formula and the
+// column it points at are never called two different things. The full term is one hover away.
 const abbreviate = (label: string) => {
   const { group, period } = splitHeader(label);
-  const words = (group || period).split(/[^\p{L}\d]+/u).filter(Boolean);
-  const stem =
-    words.length > 1
-      ? words[0].slice(0, 3) + words[1].slice(0, 2)
-      : (words[0]?.slice(0, 5) ?? "");
-  const digits = group ? period.replace(/\D/g, "") : "";
-  return (stem + (digits.length === 4 ? digits.slice(2) : digits)).toUpperCase();
+  if (!group)
+    return period
+      .replace(/[^\p{L}\d]+/gu, "")
+      .slice(0, 7)
+      .toUpperCase();
+  const digits = period.replace(/\D/g, "");
+  return codeOf(group) + (digits.length === 4 ? digits.slice(2) : digits);
 };
 
 // Layout choices (freeze panes, column widths) survive reloads.
-const layoutKey = "financial-data-viewer:layout";
+const layoutKeyFor = (layoutId: string) => `financial-data-viewer:layout:${layoutId}`;
 type Layout = {
   frozenColumns: number;
   frozenRows: number;
@@ -469,9 +521,9 @@ type Layout = {
 };
 const defaultLayout: Layout = { frozenColumns: 1, frozenRows: 1, widths: {} };
 
-const readLayout = (): Layout => {
+const readLayout = (layoutId: string): Layout => {
   try {
-    const stored = window.localStorage.getItem(layoutKey);
+    const stored = window.localStorage.getItem(layoutKeyFor(layoutId));
     return stored
       ? { ...defaultLayout, ...(JSON.parse(stored) as Layout) }
       : defaultLayout;
@@ -483,10 +535,37 @@ const readLayout = (): Layout => {
 // Search text a sheet opens with. The company sheets list the whole market, so they start
 // scoped to Fabula and every other row opens on click.
 const sheetDefaultQuery: Record<string, string> = { Main: "fab" };
-const defaultQuery = (sheetIndex: number) =>
-  sheetDefaultQuery[sheets[sheetIndex]?.name] ?? "";
 
-export function WorkbookViewer() {
+type ViewerProps = {
+  /** Sheets to show. Omitted, it renders the source workbook. */
+  sheets?: Sheet[];
+  /** Namespaces the saved freeze/width layout, so two viewers don't share one. */
+  layoutId?: string;
+  /** Extra toolbar buttons, e.g. the model sheet's axis swap. */
+  extraActions?: ReactNode;
+  /** A line under the toolbar, above the grid. For what the reader has to know
+      before reading a single figure — the model sheet puts its source legend
+      here, because a sheet fed by two scrapes cannot be read without one. */
+  caption?: ReactNode;
+  /** What the year filter opens on. The workbook opens on its newest year;
+      a sheet whose newest years are mostly unfiled wants "" (all years). */
+  initialYear?: string;
+  /** Hides the built-in year select. For a caller that filters years itself —
+      the model sheet must, because flipped its years are rows, not columns. */
+  hideYearFilter?: boolean;
+};
+
+export function WorkbookViewer({
+  sheets: provided,
+  layoutId = "workbook",
+  extraActions,
+  caption,
+  initialYear,
+  hideYearFilter,
+}: ViewerProps = {}) {
+  const sheets = provided ?? workbookSheets;
+  const defaultQuery = (sheetIndex: number) =>
+    sheetDefaultQuery[sheets[sheetIndex]?.name] ?? "";
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
   const [query, setQuery] = useState(() => defaultQuery(0));
   const [highlightFormulas, setHighlightFormulas] = useState(false);
@@ -530,6 +609,7 @@ export function WorkbookViewer() {
   });
   const [groupRowHeight, setGroupRowHeight] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{
     sheet: string;
     column: number;
@@ -552,7 +632,7 @@ export function WorkbookViewer() {
     // localStorage can only be read after mount, so this state write is the
     // hydration-safe way in — same shape as TopNav's theme/palette restore.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLayout(readLayout());
+    setLayout(readLayout(layoutId));
     setLayoutLoaded(true);
   }, []);
 
@@ -574,7 +654,7 @@ export function WorkbookViewer() {
   useEffect(() => {
     if (!layoutLoaded) return;
     try {
-      window.localStorage.setItem(layoutKey, JSON.stringify(layout));
+      window.localStorage.setItem(layoutKeyFor(layoutId), JSON.stringify(layout));
     } catch {
       // storage unavailable (private mode, quota) — layout just stops persisting
     }
@@ -707,7 +787,7 @@ export function WorkbookViewer() {
 
   // Untouched, the filter sits on the newest year the sheet holds: the grid opens on one
   // period rather than every period at once. Picking "All years" is an explicit "" choice.
-  const year = yearChoice ?? years[0] ?? "";
+  const year = yearChoice ?? initialYear ?? years[0] ?? "";
 
   const visibleColumns = useMemo(() => {
     // A block is a metric with all its year columns, or a single column that has no metric.
@@ -870,17 +950,56 @@ export function WorkbookViewer() {
       );
       if (hit) matches.add(rowIndex);
     });
+    // One record, several rows: a hit anywhere in a block opens all of it.
+    const groups = activeSheet.rowGroups;
+    if (groups) {
+      const hitGroups = new Set(
+        [...matches].map((rowIndex) => groups[rowIndex]).filter(Boolean),
+      );
+      groups.forEach((group, rowIndex) => {
+        if (group && hitGroups.has(group)) matches.add(rowIndex);
+      });
+    }
     return matches;
   }, [activeSheet, query]);
 
   const filtering = query.trim() !== "";
+
+  // A match 600 rows down is no use off-screen: bring the first one into view.
+  // Row 0 is the header, and the frozen header rows sit on top of the grid, so
+  // the target is nudged clear of them rather than parked underneath.
+  useEffect(() => {
+    if (!filtering || !matchingRows.size) return;
+    const first = Math.min(...matchingRows);
+    // Addressed by data-cell (the sheet's own row index), not nth-child: the
+    // header and any frozen rows make the DOM order and the data order differ.
+    const row = tableRef.current
+      ?.querySelector(`[data-cell="${first}-0"]`)
+      ?.closest("tr") as HTMLTableRowElement | null;
+    const grid = gridRef.current;
+    if (!row || !grid) return;
+    const headerHeight = tableRef.current?.querySelector("thead")?.clientHeight ?? 0;
+    grid.scrollTo({
+      top: Math.max(0, row.offsetTop - headerHeight - 8),
+      behavior: "smooth",
+    });
+  }, [filtering, matchingRows]);
   const isOpen = (rowIndex: number) =>
     !filtering || matchingRows.has(rowIndex) || openedRows.has(rowIndex);
 
   const toggleRow = (rowIndex: number) =>
     setOpenedRows((current) => {
       const next = new Set(current);
-      if (!next.delete(rowIndex)) next.add(rowIndex);
+      // On a sheet where one record spans several rows, clicking any of them
+      // opens the whole record — a company's turnover is no use with its
+      // profit still veiled.
+      const groups = activeSheet.rowGroups;
+      const group = groups?.[rowIndex];
+      const rows = group
+        ? groups!.flatMap((entry, index) => (entry === group ? [index] : []))
+        : [rowIndex];
+      const closing = rows.every((row) => next.has(row));
+      rows.forEach((row) => (closing ? next.delete(row) : next.add(row)));
       return next;
     });
 
@@ -910,10 +1029,28 @@ export function WorkbookViewer() {
   const formulaAt = (rowIndex: number, columnIndex: number) => {
     const derived = activeSheet.derived;
     const stored = activeSheet.formulas?.[rowIndex]?.[columnIndex] ?? "";
-    if (!derived?.columns.has(columnIndex) || rowIndex === 0) return stored;
-    return storedMetrics.has(splitHeader(headerRow[columnIndex]).group)
-      ? (derived.storedFormulas.get(`${rowIndex}-${columnIndex}`) ?? "")
-      : (derived.formulaByColumn.get(columnIndex) ?? "");
+    if (rowIndex === 0) return stored;
+    const { group, period } = splitHeader(headerRow[columnIndex]);
+
+    // Switched to the whole company, the figure is scaled from headcount — a working, not a
+    // reading, whichever source the per-employee side of the switch is taking.
+    const mode = metricModes[group];
+    if (mode && totalMetrics.has(group))
+      return storedMetrics.has(group)
+        ? `=${thisRow(String(headerRow[columnIndex]))}*${thisRow(`Darbuotojai ${period}`)}`
+        : mode.formula(period, totalMetrics.has("Atlyginimų vidurkis"));
+
+    if (!derived?.columns.has(columnIndex)) return stored;
+    if (storedMetrics.has(group))
+      return derived.storedFormulas.get(`${rowIndex}-${columnIndex}`) ?? "";
+    // Built here rather than once up front: the shape follows the switches, so the formula a
+    // reader sees is the one that produced the figure beside it.
+    const spec = derivedColumns.find((entry) => entry.metric === group);
+    if (!spec) return "";
+    return spec.formula(
+      spec.inputs.map((name) => thisRow(`${name} ${period}`)),
+      totalMetrics.has(spec.scaled),
+    );
   };
 
   // What a cell shows once its metric's per-employee/total switch is taken into account.
@@ -1084,14 +1221,22 @@ export function WorkbookViewer() {
     headerRow.forEach((cell) => {
       const label = displayCell(cell);
       if (!label || map.has(label)) return;
-      const base = abbreviate(label) || label.slice(0, 5).toUpperCase();
+      // A column switched to the whole company is named for what it now holds: the wage column
+      // reads ATL.SĄN while the switch says total, and ATL.VID again when it says per.
+      const { group, period } = splitHeader(label);
+      const shown = totalMetrics.has(group)
+        ? `${metricModes[group].total} ${period}`
+        : label;
+      const base = abbreviate(shown) || label.slice(0, 5).toUpperCase();
       let code = base;
       for (let suffix = 2; taken.has(code); suffix += 1) code = `${base}·${suffix}`;
       taken.add(code);
       map.set(label, code);
+      // The same column asked for by its per-employee meaning keeps the per-employee name.
+      if (metricModes[group]) map.set(perSense(label), abbreviate(label));
     });
     return map;
-  }, [headerRow]);
+  }, [headerRow, totalMetrics]);
 
   const referencedColumns = (formula: string) =>
     formulaTokens(formula)
@@ -1222,7 +1367,11 @@ export function WorkbookViewer() {
     return (
       <tr
         key={rowIndex}
-        className={[isFrozenRow ? "frozen-row" : "", closed ? "closed-row" : ""]
+        className={[
+          isFrozenRow ? "frozen-row" : "",
+          closed ? "closed-row" : "",
+          activeSheet.rowClasses?.[rowIndex] ?? "",
+        ]
           .filter(Boolean)
           .join(" ")}
         onClick={rowIndex > 0 && filtering ? () => toggleRow(rowIndex) : undefined}
@@ -1245,7 +1394,11 @@ export function WorkbookViewer() {
           const format = activeSheet.numberFormats?.[rowIndex]?.[columnIndex];
           // Figures read at 3 significant figures unless their metric is switched to exact.
           const metric = splitHeader(headerRow[columnIndex]).group;
-          const rounded = rowIndex > 0 && metric !== "" && !exactGroups.has(metric);
+          const rounded =
+            rowIndex > 0 &&
+            (metric !== ""
+              ? !exactGroups.has(metric)
+              : (activeSheet.compactNumbers ?? false));
           const value = rounded ? sigFigs(stored) : stored;
           const raw =
             rounded && typeof value === "number" && !format?.includes("%")
@@ -1299,6 +1452,11 @@ export function WorkbookViewer() {
                 ? `the figures behind this row give ${displayCell(sigFigs(activeSheet.values[rowIndex]?.[columnIndex]))}`
                 : derivedNote,
             });
+          // Which scrape this figure came from. Hidden while the row is closed,
+          // where the whole point is that the figures recede.
+          const mark = veiled
+            ? ""
+            : (activeSheet.cellMarks?.[rowIndex]?.[columnIndex] ?? "");
           // …unless formula highlighting is on, in which case a formula cell reveals its formula.
           const formula = highlightFormulas ? formulaAt(rowIndex, columnIndex) : "";
           const isFrozenColumn = position < frozenColumnCount;
@@ -1447,6 +1605,14 @@ export function WorkbookViewer() {
               >
                 {text}
               </span>
+              {mark && (
+                <span
+                  className="source-mark"
+                  title={activeSheet.cellTitles?.[rowIndex]?.[columnIndex] ?? undefined}
+                >
+                  {mark}
+                </span>
+              )}
               {shownChange !== null && (
                 <span
                   className={`delta ${shownChange > 0 ? "up" : shownChange < 0 ? "down" : "flat"}`}
@@ -1513,7 +1679,8 @@ export function WorkbookViewer() {
           aria-label="Find in this sheet"
         />
         <div className="toolbar-actions">
-          {years.length > 1 && (
+          {extraActions}
+          {!hideYearFilter && years.length > 1 && (
             <select
               className={year ? "year-select on" : "year-select"}
               value={year}
@@ -1626,7 +1793,11 @@ export function WorkbookViewer() {
       </header>
 
       <section className="workbook" aria-label="Source workbook">
-        <div className="grid-wrap" onClick={() => setTraced(null)}>
+        {/* Above the grid, not in the toolbar: it is something to read once
+            before the figures, not a control. Full screen drops it with the
+            toolbar — by then the marks have been explained. */}
+        {caption && !fullScreen && caption}
+        <div className="grid-wrap" ref={gridRef} onClick={() => setTraced(null)}>
           <div className={traced ? "grid-stage tracing" : "grid-stage"}>
             <table ref={tableRef}>
               <thead>

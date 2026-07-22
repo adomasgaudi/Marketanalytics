@@ -68,6 +68,15 @@ export default function ExplorePage() {
           📑 Initial data — the source workbook (full screen) →
         </a>
 
+        {/* The rebuilt dataset: same grid, columns filled in as the new
+            Sodra + registry pipeline is built. */}
+        <a
+          href="/explore/model"
+          className="border-line bg-panel2 text-muted hover:text-ink mb-3.5 ml-2 inline-block rounded-lg border px-4 py-2 text-[13px] font-semibold transition-colors"
+        >
+          🧮 Rebuilt data — the new model (full screen) →
+        </a>
+
         <ExploreView model={model} profiles={profiles} tabs={tabs}>
           {/* One wrapper element: an RSC-serialized child array would demand
               list keys and warn regardless of static JSX. */}
