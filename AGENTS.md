@@ -124,7 +124,7 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- pr-architecture/          Architecture.md (env snippet), full architecture, data-flow
 |  |- pr-design/                UI.md
 |  |- pr-project-state/         Version history, key decisions
-|  |- pr-scrape/                Scraping how-to + missing slugs
+|  |- pr-scrape/                Scraping how-to: registries (official), rekvizitai (fallback)
 |  `- research/                 Supplementary research summaries
 |
 |- .github/workflows/           deploy-pages (Next static export -> Pages)
@@ -147,6 +147,14 @@ This file is very valuable context. All edit here must be vital. If this file ge
 ## Read before touching /explore/sheets
 
 [docs/ai-obs/HANDOFF-workbook-viewer.md](docs/ai-obs/HANDOFF-workbook-viewer.md) — the workbook viewer that now IS that page (ported 2026-07-22 from the standalone `financial-data-viewer`, which is retired). Covers the `workbook.json` pipeline, the disagreements record, and four decisions that look like mistakes and are not: hand-written CSS scoped to `.wbv`, no theme toggle of its own, a local `CellStyle` instead of `CSSProperties`, no changelog.
+
+<br />
+
+## Read before scraping ANY company figures
+
+[docs/pr-scrape/SCRAPE-registry-data.md](docs/pr-scrape/SCRAPE-registry-data.md) — the official sources, and the four things that will silently corrupt your data if you don't know them.
+
+The one that matters most: **Registrų centras publishes the same filings twice**, and `registrucentras.lt/aduomenys/` is months ahead of the data.gov.lt mirror we also query — it had FY2025 for 127 of 131 companies while the mirror had 4. If a year looks missing, it probably isn't. The doc also covers the May–June filing calendar (when re-scraping is worth doing at all), the registration-year-≠-fiscal-year filename trap, the mis-cased line that drops 31% of pre-tax values, and the provenance mark every new source must carry before it is wired in.
 
 <br />
 
