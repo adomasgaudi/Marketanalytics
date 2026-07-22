@@ -43,21 +43,21 @@ except Exception:
 API = "https://atvira.sodra.lt/imones-rest"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT_DIR = os.path.join(ROOT, "data", "sodra")
-REK = os.path.join(ROOT, "data", "rek_tabs.json")
+COMPANIES = os.path.join(ROOT, "data2", "companies.json")
 
 
 def all_jar_codes():
-    """Every "Įmonės kodas" in rek_tabs.json — the same key build_site.py joins on,
-    so --all covers exactly the companies whose Sodra block can reach the page."""
-    rek = json.load(open(REK, encoding="utf-8"))
+    """Every jarCode in data2/companies.json — the one hand-maintained list of
+    which agencies we track. It replaced rek_tabs.json here for the same reason
+    it did in scrape_gov.py: rek_tabs only ever held the companies with a
+    rekvizitai page, so the 14 whose codes were found by hand could never be
+    scraped, and their headcount and wages stayed blank on every sheet."""
+    companies = json.load(open(COMPANIES, encoding="utf-8"))
     codes = []
-    for block in rek["companies"]:
-        for tab in block.get("tabs", {}).values():
-            for field, value in tab.get("rows", []):
-                if field == "Įmonės kodas":
-                    code = str(value).strip()
-                    if code and code not in codes:
-                        codes.append(code)
+    for company in companies:
+        code = str(company.get("jarCode") or "").strip()
+        if code and code not in codes:
+            codes.append(code)
     return codes
 
 
