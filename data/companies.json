@@ -1,0 +1,926 @@
+[
+ {
+  "brand": "100 ačiū",
+  "name": "100 ačiū, MB",
+  "slug": "100_aciu",
+  "jarCode": "304065386",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "360 Sportas",
+  "name": "361 FORMA, VšĮ",
+  "slug": "360_sportas",
+  "jarCode": "303225934",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "6 Loops",
+  "name": "6 vijos, MB",
+  "slug": "6_vijos",
+  "jarCode": "304405052",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Adface",
+  "name": "Adface, UAB",
+  "slug": "adface",
+  "jarCode": "301734377",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Adverum",
+  "name": "Adverum, UAB",
+  "slug": "ad_verum",
+  "jarCode": "300003647",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Advision",
+  "name": "Reklamos vizija, UAB",
+  "slug": "advision_uab_reklamos_vizija",
+  "jarCode": "135970471",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "AgencyUP",
+  "name": "Agency up, UAB",
+  "slug": "agency_up",
+  "jarCode": "301321574",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "ALL CAPS",
+  "name": "All Caps, UAB",
+  "slug": "all_caps",
+  "jarCode": "125763054",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Andstudio",
+  "name": "Andstudio, UAB",
+  "slug": "andstudio",
+  "jarCode": "305290966",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "APG media",
+  "name": "APG MEDIA, UAB",
+  "slug": "apg_media",
+  "jarCode": "305005890",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Arena Media",
+  "name": "Arena Media, UAB",
+  "slug": "adcom",
+  "jarCode": "300597228",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "autoriai.lt",
+  "name": "Kūrybiniai komunikacijos sprendimai, UAB",
+  "slug": "kurybiniai_komunikacijos_sprendimai",
+  "jarCode": "303119589",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Ave Media Agentūra",
+  "name": "Ave Media, MB",
+  "slug": "ave_media",
+  "jarCode": "304686507",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Be reklamos negerai",
+  "name": "UAB \"Be reklamos\"",
+  "slug": null,
+  "jarCode": "304713630",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "BE1ST Agency",
+  "name": "7 sprendimai, MB",
+  "slug": "7_sprendimai",
+  "jarCode": "304823347",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "BeeMarketing",
+  "name": "Bemedija, UAB",
+  "slug": "bemedija",
+  "jarCode": "303139606",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Berta&Agency",
+  "name": "UAB \"Berta And\"",
+  "slug": null,
+  "jarCode": "300613091",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Black Florence",
+  "name": "UAB \"Petraitis ir Pūras\"",
+  "slug": "petraitis_ir_puras",
+  "jarCode": "302979365",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Bosanova",
+  "name": "UAB „Bosanova“",
+  "slug": "uab_bosanova",
+  "jarCode": "302448012",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "BPN",
+  "name": "BPN LT, UAB",
+  "slug": "bpn_lt",
+  "jarCode": "304067387",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Brainhouse",
+  "name": "Rekūrai LT, UAB",
+  "slug": "brainhouse",
+  "jarCode": "302644331",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Caption",
+  "name": "Caption, UAB",
+  "slug": "caption",
+  "jarCode": "304844761",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Choco agency",
+  "name": "Turinio rinkodara, UAB",
+  "slug": "turinio_rinkodara",
+  "jarCode": "304170889",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Clinic212",
+  "name": "Du Dvylika, UAB",
+  "slug": "uab_du_dvylika",
+  "jarCode": "302535912",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "co:agency",
+  "name": "UAB coagency",
+  "slug": null,
+  "jarCode": "300078393",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Convo",
+  "name": "UAB \"Sėkmingi\"",
+  "slug": null,
+  "jarCode": "304754709",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Cyclopes",
+  "name": "Ciklopas, UAB",
+  "slug": "uab_ciklopas_fotografijos_studija",
+  "jarCode": "300013463",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Dansu",
+  "name": "UAB \"Dansu\"",
+  "slug": "uab_dansu",
+  "jarCode": "301732159",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Dear problem",
+  "name": "Dear Problem, UAB",
+  "slug": "dear_problem",
+  "jarCode": "302651984",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Dentsu",
+  "name": "Dentsu Lithuania, UAB",
+  "slug": "dentsu_lithuania",
+  "jarCode": "124216438",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Digital Matter",
+  "name": "Digital matter, UAB",
+  "slug": "digital_matter",
+  "jarCode": "302653711",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "DigitFruition",
+  "name": "MB Digitfruition",
+  "slug": null,
+  "jarCode": "306279691",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Efcom",
+  "name": "EFCOM, UAB",
+  "slug": "efcom",
+  "jarCode": "300132599",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "ELITAZ Grupė",
+  "name": "UAB \"ELITAZ Grupė\"",
+  "slug": "elitaz_grupe",
+  "jarCode": "302932166",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "ENTER",
+  "name": "Enter Agency, UAB",
+  "slug": "enter_agency",
+  "jarCode": "304719793",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Enternet",
+  "name": "UAB EnterNet",
+  "slug": "uab_enternet",
+  "jarCode": "302686095",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Etiquette",
+  "name": "Etiquette, UAB",
+  "slug": "etikete",
+  "jarCode": "303472482",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Eventum Group",
+  "name": "Tekvila, UAB",
+  "slug": "tekvila",
+  "jarCode": "302248937",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Evo media",
+  "name": "UAB \"EVO MEDIA\"",
+  "slug": "uab_evo_media",
+  "jarCode": "302478991",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Evolvery",
+  "name": "Evolvery, UAB",
+  "slug": "evolvery",
+  "jarCode": "302542497",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Expertmedia",
+  "name": "UAB \"RAKVA\"",
+  "slug": null,
+  "jarCode": "301536032",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Fabula",
+  "name": "Fabula ir partneriai, UAB",
+  "slug": "viesuju_rysiu_partneriai",
+  "jarCode": "124099127",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "FAD",
+  "name": "MB \"Reklamos ateitis\"",
+  "slug": null,
+  "jarCode": "304788355",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Fcomm",
+  "name": "Fcomm, UAB",
+  "slug": "uab_publicum_financial_communications",
+  "jarCode": "301790575",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Foko",
+  "name": "MB \"Fotokomanda\"",
+  "slug": null,
+  "jarCode": "302932718",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "FULL SCREEN",
+  "name": "UAB \"FULL SCREEN\"",
+  "slug": "full_screen",
+  "jarCode": "302625352",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Galley group",
+  "name": "UAB \"Galley Group\"",
+  "slug": "galley_group_reklamos_agentura_uab_galegrus",
+  "jarCode": "126286061",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Gideas",
+  "name": "Gideas, UAB",
+  "slug": "gideas",
+  "jarCode": "303020484",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Good one",
+  "name": "Good one, UAB",
+  "slug": "good_one_uab",
+  "jarCode": "302417999",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Google partner",
+  "name": "VERSLO IDĖJŲ PARTNERIAI, UAB",
+  "slug": "verslo_ideju_partneriai",
+  "jarCode": "300940673",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Havas Media",
+  "name": "Havas Media, UAB",
+  "slug": "uab_mpg_idea",
+  "jarCode": "302344394",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Headline",
+  "name": "Headline Agency, UAB",
+  "slug": "headline_agency",
+  "jarCode": "301163601",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "IdeaPrima",
+  "name": "Idea prima, UAB",
+  "slug": "idea_prima",
+  "jarCode": "126093354",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Idee fixe",
+  "name": "Idee fixe Vilnius, UAB",
+  "slug": "uab_idee_fixe_vilnius",
+  "jarCode": "301899560",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Impact Advisory / Flow",
+  "name": "IC Baltic, UAB",
+  "slug": "ic_baltic",
+  "jarCode": "300016915",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Indiana",
+  "name": "UAB \"INDIANA.LT\"",
+  "slug": "indiana_lt",
+  "jarCode": "302641591",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Influenceriai.lt",
+  "name": "UAB \"Nuomonės lyderiai\"",
+  "slug": null,
+  "jarCode": "304747369",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "INK",
+  "name": "INK agency, UAB",
+  "slug": "ink_agency",
+  "jarCode": "300122046",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Inspired UM",
+  "name": "Inspired communications, UAB",
+  "slug": "inspired_communications",
+  "jarCode": "300642933",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Integrity PR",
+  "name": "Integrity PR, UAB",
+  "slug": "integrity_pr",
+  "jarCode": "111688780",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Karuselė",
+  "name": "WRKS, UAB",
+  "slug": "uab_wrks",
+  "jarCode": "302786252",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "KOKO PR",
+  "name": "Komunikacija ir konsultantai, UAB",
+  "slug": "komunikacija_ir_konsultantai",
+  "jarCode": "124130081",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Kubrik",
+  "name": "UAB \"Kubrik\"",
+  "slug": "uab_kubrik",
+  "jarCode": "301542341",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Love media",
+  "name": "UAB Love media",
+  "slug": null,
+  "jarCode": "302745177",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Madiavo",
+  "name": null,
+  "slug": null,
+  "jarCode": null,
+  "found": "jarCode not found — company code not published on madiavo.com"
+ },
+ {
+  "brand": "Magnus advisory",
+  "name": "Magnus advisory, MB",
+  "slug": "magnus_advisory",
+  "jarCode": "305709318",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Maniac",
+  "name": "UAB \"Maniakai\"",
+  "slug": null,
+  "jarCode": "110889086",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Marios Agency",
+  "name": "Marios Agency, MB",
+  "slug": "marios_agency",
+  "jarCode": "305611450",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Market ratss",
+  "name": "Market Rats, UAB",
+  "slug": "market_rats",
+  "jarCode": "302561024",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Media House",
+  "name": "Media House, UAB",
+  "slug": "media_house",
+  "jarCode": "111707070",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Mediacom",
+  "name": "Trendmark, UAB",
+  "slug": "trendmark",
+  "jarCode": "300021385",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Mediapark",
+  "name": "Gaumina, UAB",
+  "slug": "gaumina",
+  "jarCode": "224497630",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Meta",
+  "name": "Meta advisory Lithuania, UAB",
+  "slug": "uab_lamco",
+  "jarCode": "302837871",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Milk Vilnius",
+  "name": "Milk Agency, UAB",
+  "slug": "milk_agency",
+  "jarCode": "300634324",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Momento LT",
+  "name": "Momento LT, UAB",
+  "slug": "momento_lt",
+  "jarCode": "306107243",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "NEW!",
+  "name": "UAB \"New Agency\"",
+  "slug": "new_agency",
+  "jarCode": "302704981",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Not Perfect",
+  "name": "Not Perfect Vilnius, UAB",
+  "slug": "not_perfect",
+  "jarCode": "300529266",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Nova media",
+  "name": "UAB „Nova media LT“",
+  "slug": "uab_nova_media_lt",
+  "jarCode": "301673262",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Nuostabu",
+  "name": "Nuostabu, UAB",
+  "slug": "magnet_lt",
+  "jarCode": "304557170",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Ogilvy",
+  "name": "Adell reklama, UAB",
+  "slug": "adell_reklama",
+  "jarCode": "110771682",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "OMD",
+  "name": "Media decisions, UAB",
+  "slug": "omd",
+  "jarCode": "300631883",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Omnicom",
+  "name": "Media mind, UAB",
+  "slug": "omnicom_media_group",
+  "jarCode": "111632739",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "One event",
+  "name": "One event, UAB",
+  "slug": "one_event",
+  "jarCode": "306835832",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Oneclick.lt",
+  "name": "MB „Vienas paspaudimas\"",
+  "slug": "vienas_paspaudimas",
+  "jarCode": "304859756",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Open Agency",
+  "name": "Open Agency, UAB",
+  "slug": "open_agency",
+  "jarCode": "302414298",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Panama Agency",
+  "name": "Panama agency, MB",
+  "slug": "panama_agency",
+  "jarCode": "305678883",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Pantomima",
+  "name": "Pantomima, MB",
+  "slug": "pantomima",
+  "jarCode": "304955338",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Particle PR",
+  "name": "Particle PR, UAB",
+  "slug": "perception_lab",
+  "jarCode": "306313364",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Partizanas",
+  "name": "Partizanas, UAB",
+  "slug": "partizanas",
+  "jarCode": "300065271",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Pick a Story",
+  "name": "Videoprojektų sprendimai, MB",
+  "slug": "videoprojektu_sprendimai",
+  "jarCode": "304300090",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Pirmoji Kava",
+  "name": "Pirmoji Kava, VšĮ",
+  "slug": "pirmoji_kava",
+  "jarCode": "225293310",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "PR Ace",
+  "name": "PR Ace Agency, MB",
+  "slug": "pr_ace_agency",
+  "jarCode": "306725040",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "PR service",
+  "name": "PR Service (UAB PIAR)",
+  "slug": "piar",
+  "jarCode": "226018840",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Propeller",
+  "name": "Propeller, UAB",
+  "slug": "propeller",
+  "jarCode": "300091483",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Publicis groupe",
+  "name": "Lion Communications Vilnius, UAB",
+  "slug": "star_communications_worldwide",
+  "jarCode": "111794310",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Publicum",
+  "name": "Publicum, UAB",
+  "slug": "publicum",
+  "jarCode": "125671759",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "RAIBEC",
+  "name": "UAB \"LITS\"",
+  "slug": null,
+  "jarCode": "148508931",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Rapid Media",
+  "name": "Lost Bunch, UAB",
+  "slug": "rapid_informatic_media_and_communication_services",
+  "jarCode": "305758742",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Renginio efektas",
+  "name": "Renginio efektas, UAB",
+  "slug": "renginio_efektas",
+  "jarCode": "305210105",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Reprise",
+  "name": "Reprise Media, UAB",
+  "slug": "reprise_media",
+  "jarCode": "304737161",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Ric Creative",
+  "name": "RIC CREATIVE, UAB",
+  "slug": "uab_ric_creative",
+  "jarCode": "302466583",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Salve Agency",
+  "name": "Salve Agency, UAB",
+  "slug": "salve_agency",
+  "jarCode": "303374383",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Scuare",
+  "name": "Kvadratai, MB",
+  "slug": "kvadratai",
+  "jarCode": "304824716",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Seo Spiders on the web",
+  "name": "SEOvoras, UAB",
+  "slug": "verslo_vystymas",
+  "jarCode": "302928919",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Skaitmeninė reklama",
+  "name": "Skaitmeninė reklama, UAB",
+  "slug": "skaitmenine_reklama",
+  "jarCode": "304009850",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Smarts",
+  "name": "Protingi sprendimai, UAB",
+  "slug": "protingi_sprendimai",
+  "jarCode": "126327871",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Socium Agency",
+  "name": "Socium agency, UAB",
+  "slug": "socium_agency",
+  "jarCode": "305678310",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "SOMA Agency",
+  "name": "Havas Creative SOMA, UAB",
+  "slug": null,
+  "jarCode": "302713051",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Some Films",
+  "name": "UAB \"Some Films\"",
+  "slug": "some_films",
+  "jarCode": "302735546",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Sons & Daughters",
+  "name": "Sons & Daughters, UAB",
+  "slug": "ddb_vilnius",
+  "jarCode": "111621671",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Spark Agency",
+  "name": "SPARK LT, UAB",
+  "slug": "spark_lt",
+  "jarCode": "304139541",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Spotlight",
+  "name": "UAB \"Spotlight LT\"",
+  "slug": "spotlight_lt",
+  "jarCode": "302930418",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Stebink",
+  "name": "Stebink, UAB",
+  "slug": "stebink",
+  "jarCode": "303129487",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "SuperYou",
+  "name": "Superyou, UAB",
+  "slug": "the_xx",
+  "jarCode": "302705193",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "SynthesisCG",
+  "name": "Synthesis Consulting Group, UAB",
+  "slug": "synthesis_consulting_group",
+  "jarCode": "304229686",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Tarela",
+  "name": "Tarela, UAB",
+  "slug": "tarela",
+  "jarCode": "124257787",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "The Critical",
+  "name": "The Critical, UAB",
+  "slug": "dizaino_agentura",
+  "jarCode": "304562858",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "The Magic",
+  "name": "The Magic, UAB",
+  "slug": "menrida",
+  "jarCode": "302693428",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "TOTEM agency",
+  "name": "TOTEM promo, UAB",
+  "slug": "totem_promo",
+  "jarCode": "302652310",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "TRUTH.",
+  "name": "Astos dizainas, UAB",
+  "slug": "astos_dizainas",
+  "jarCode": "123932858",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Vento Nuovo",
+  "name": "VENTO NUOVO, UAB",
+  "slug": "uab_vento_nuovo",
+  "jarCode": "301793500",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Via Media",
+  "name": "Via media, UAB",
+  "slug": "via_media",
+  "jarCode": "111625698",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Videvita",
+  "name": "Videvita, UAB",
+  "slug": "videvita",
+  "jarCode": "134738420",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "VISETAS",
+  "name": "Visetas, UAB",
+  "slug": "visetas",
+  "jarCode": "300646038",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "VRS92",
+  "name": "VRS WPI Vilnius, UAB",
+  "slug": "vrs_wpi_vilnius",
+  "jarCode": "125837960",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Way Makers",
+  "name": "Way makers, MB",
+  "slug": "way_makers",
+  "jarCode": "302982411",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "We Are Marketing",
+  "name": "We Are Marketing, UAB",
+  "slug": "we_are_marketing_uab",
+  "jarCode": "302856900",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "We deliver agency",
+  "name": "We deliver, UAB",
+  "slug": "verslo_media",
+  "jarCode": "111436135",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "WhatAbout",
+  "name": "Whatabout agency, UAB",
+  "slug": null,
+  "jarCode": "302795358",
+  "found": "2026-07-22 web search, verified against VMI registry"
+ },
+ {
+  "brand": "Wide wings",
+  "name": "UAB \"Wide Wings\"",
+  "slug": "wide_wings",
+  "jarCode": "302988072",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Younique studio",
+  "name": "Younique studio, UAB",
+  "slug": "younique_studio",
+  "jarCode": "305681598",
+  "found": "rek_tabs"
+ },
+ {
+  "brand": "Zest production house",
+  "name": "Vaizdo skonis, UAB",
+  "slug": "vaizdo_skonis",
+  "jarCode": "303193931",
+  "found": "rek_tabs"
+ }
+]
