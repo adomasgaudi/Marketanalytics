@@ -144,6 +144,18 @@ This file is very valuable context. All edit here must be vital. If this file ge
 
 <br />
 
+## Agent handover notes — read first, then add your own
+
+[agents/README.md](agents/README.md) — one folder per agent that has worked here,
+each with a `NOTES.md` holding what the repo itself cannot tell you: why a decision
+went the way it did, which number is a guess, what broke before. Several agents work
+on this repo at once; these files are the handover.
+
+Start by reading them. Before you finish, take the next free number and write your
+own — the shape is 30 words, then 300.
+
+<br />
+
 ## Read before touching /explore/sheets
 
 [docs/ai-obs/HANDOFF-workbook-viewer.md](docs/ai-obs/HANDOFF-workbook-viewer.md) — the workbook viewer that now IS that page (ported 2026-07-22 from the standalone `financial-data-viewer`, which is retired). Covers the `workbook.json` pipeline, the disagreements record, and four decisions that look like mistakes and are not: hand-written CSS scoped to `.wbv`, no theme toggle of its own, a local `CellStyle` instead of `CSSProperties`, no changelog.
