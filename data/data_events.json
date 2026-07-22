@@ -321,6 +321,119 @@
         "dataJson": 1,
         "fileCount": 3
       }
+    },
+    {
+      "id": "evt-5093054db2aa",
+      "at": "2026-07-22T21:58:28Z",
+      "source": "sodra",
+      "trigger": "scrape_sodra.py",
+      "commit": "84032ce",
+      "summary": "Sodra: 12 new (12/16 written)",
+      "stats": {
+        "added": 12,
+        "changed": 0,
+        "removed": 0,
+        "written": 12,
+        "scanned": 16
+      },
+      "changes": [
+        {
+          "jarCode": "304713630",
+          "brand": "Be reklamos negerai",
+          "name": "UAB \"BE REKLAMOS\"",
+          "kind": "added",
+          "monthCount": 103,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "300613091",
+          "brand": "Berta&Agency",
+          "name": "UAB \"BERTA AND\"",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "300078393",
+          "brand": "co:agency",
+          "name": "UAB COAGENCY",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "304754709",
+          "brand": "Convo",
+          "name": "UAB \"SĖKMINGI\"",
+          "kind": "added",
+          "monthCount": 99,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "301536032",
+          "brand": "Expertmedia",
+          "name": "UAB \"RAKVA\"",
+          "kind": "added",
+          "monthCount": 109,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "302932718",
+          "brand": "Foko",
+          "name": "MB FOTOKOMANDA",
+          "kind": "added",
+          "monthCount": 69,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "304747369",
+          "brand": "Influenceriai.lt",
+          "name": "UAB \"NUOMONĖS LYDERIAI\"",
+          "kind": "added",
+          "monthCount": 101,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "302745177",
+          "brand": "Love media",
+          "name": "UAB LOVE MEDIA",
+          "kind": "added",
+          "monthCount": 103,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "110889086",
+          "brand": "Maniac",
+          "name": "UAB \"MANIAKAI\"",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "148508931",
+          "brand": "RAIBEC",
+          "name": "UAB \"LITS\"",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "302713051",
+          "brand": "SOMA Agency",
+          "name": "HAVAS CREATIVE SOMA, UAB",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        },
+        {
+          "jarCode": "302795358",
+          "brand": "WhatAbout",
+          "name": "WHATABOUT AGENCY, UAB",
+          "kind": "added",
+          "monthCount": 113,
+          "latestMonth": 202605
+        }
+      ]
     }
   ]
 }
