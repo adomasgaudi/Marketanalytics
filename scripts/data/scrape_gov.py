@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch revenue/profit (Registrų centras) and paid taxes (VMI) from data.gov.lt.
+"""Fetch turnover/profit (Registrų centras) and paid taxes (VMI) from data.gov.lt.
 
     python3 scripts/data/scrape_gov.py <jarCode> [<jarCode> ...]
     python3 scripts/data/scrape_gov.py --all    # every jarCode in data2/companies.json
@@ -18,7 +18,12 @@ Two sources, two shapes:
   datasets/gov/rc/jar/pelno_ataskaitos/PelnoAtaskaita
     Registrų centras JAR — the raw lines of every filed pelno (nuostolių)
     ataskaita. Annual, one filing per financial year, published ~May-June of
-    the following year. This is where revenue and net profit come from.
+    the following year. This is where turnover and net profit come from.
+
+    The field is `turnover`, not `revenue`: the source line is PARDAVIMO
+    PAJAMOS — total sales, the whole invoice including any media spend billed
+    on to a client. data.json calls the same figure `revenue`, which is why the
+    dashboard has to relabel it "Turnover" on the way out.
 
   datasets/gov/vmi/ja_mokesciai/Moketojas
     VMI — taxes actually PAID into the state budget (cash, not accrued).
@@ -66,9 +71,9 @@ COMPANIES = os.path.join(ROOT, "data2", "companies.json")
 # template names the same line differently ("PARDAVIMO PAJAMOS" on a company
 # form, "PAJAMOS" on a non-profit one).
 LINE_TYPES = {
-    "ISLT00345": "revenue",   # PARDAVIMO PAJAMOS
-    "ISLT00001": "revenue",   # PARDAVIMO PAJAMOS (long form)
-    "ISLT00293": "revenue",   # PAJAMOS (asociacijos / VšĮ)
+    "ISLT00345": "turnover",  # PARDAVIMO PAJAMOS
+    "ISLT00001": "turnover",  # PARDAVIMO PAJAMOS (long form)
+    "ISLT00293": "turnover",  # PAJAMOS (asociacijos / VšĮ)
     "ISLT00019": "profit",    # GRYNASIS PELNAS (NUOSTOLIAI)
     "ISLT00350": "profit",    # GRYNASIS PELNAS (NUOSTOLIAI) (trumpa)
     "ISLT00310": "profit",    # GRYNASIS VEIKLOS REZULTATAS
@@ -101,7 +106,7 @@ def get(model, query):
 
 
 def fetch_financials(jar):
-    """Annual revenue/profit for one company code, newest year first."""
+    """Annual turnover/profit for one company code, newest year first."""
     rows = get(RC_MODEL, "juridinis_asmuo.ja_kodas=%s&limit(500)"
                          "&select(line_type_id,reiksme,laikotarpis_nuo,laikotarpis_iki,reg_date)" % jar)
     # (year, metric) -> row, newest reg_date wins so a corrected refiling replaces
@@ -120,7 +125,7 @@ def fetch_financials(jar):
 
     years = {}
     for (year, metric), r in best.items():
-        y = years.setdefault(year, {"year": year, "revenue": None, "profit": None,
+        y = years.setdefault(year, {"year": year, "turnover": None, "profit": None,
                                     "pretax": None, "periodEnd": r.get("laikotarpis_iki"),
                                     "filedAt": r.get("reg_date")})
         y[metric] = r.get("reiksme")
@@ -181,7 +186,7 @@ def main(argv):
             "brand": brand_for_jar(jar),
             "name": vmi_name,
             "latestYear": latest["year"] if latest else None,
-            "revenue": latest["revenue"] if latest else None,
+            "turnover": latest["turnover"] if latest else None,
             "profit": latest["profit"] if latest else None,
             "financials": financials,
             "taxes": taxes,
