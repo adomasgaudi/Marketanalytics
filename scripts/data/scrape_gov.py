@@ -60,7 +60,7 @@ VMI_MODEL = "datasets/gov/vmi/ja_mokesciai/Moketojas"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, "data", "gov_finance.json")
-REK = os.path.join(ROOT, "data", "rek_tabs.json")
+COMPANIES = os.path.join(ROOT, "data", "companies.json")
 
 # line_type_id -> our metric. Several ids per metric because each filing
 # template names the same line differently ("PARDAVIMO PAJAMOS" on a company
@@ -146,17 +146,17 @@ def fetch_taxes(jar):
 
 
 def all_jar_codes():
-    """Every "Įmonės kodas" in rek_tabs.json — the same join key scrape_sodra.py
-    uses, so --all covers exactly the same company set."""
-    rek = json.load(open(REK, encoding="utf-8"))
+    """Every jarCode in companies.json — the one hand-maintained list of which
+    agencies we track. It replaced rek_tabs.json as the source of the company
+    set: rek_tabs only ever held the 117 with a rekvizitai page, and 14 more
+    codes were found by hand (their registered names look nothing like their
+    brands, e.g. Convo is UAB "Sėkmingi"). Adding an agency is one line there."""
+    companies = json.load(open(COMPANIES, encoding="utf-8"))
     codes = []
-    for block in rek["companies"]:
-        for tab in block.get("tabs", {}).values():
-            for field, value in tab.get("rows", []):
-                if field == "Įmonės kodas":
-                    code = str(value).strip()
-                    if code and code not in codes:
-                        codes.append(code)
+    for company in companies:
+        code = str(company.get("jarCode") or "").strip()
+        if code and code not in codes:
+            codes.append(code)
     return codes
 
 

@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 EVENTS_PATH = os.path.join(ROOT, "data", "data_events.json")
 REK_PATH = os.path.join(ROOT, "data", "rek_tabs.json")
+COMPANIES_PATH = os.path.join(ROOT, "data", "companies.json")
 DATA_PATH = os.path.join(ROOT, "data", "data.json")
 
 _brand_by_jar = None
@@ -76,6 +77,16 @@ def _load_jar_maps():
                     _brand_by_jar[code] = brand
                     if block.get("slug"):
                         _slug_by_jar[code] = block["slug"]
+    # companies.json carries the 14 agencies that have no rekvizitai page, so it
+    # is the only place their brand is written down. rek_tabs wins where both
+    # know a code — it is the scrape's own record of what that page said.
+    if os.path.exists(COMPANIES_PATH):
+        for company in json.load(open(COMPANIES_PATH, encoding="utf-8")):
+            code = str(company.get("jarCode") or "").strip()
+            if code and code not in _brand_by_jar:
+                _brand_by_jar[code] = company.get("brand") or company.get("name")
+                if company.get("slug"):
+                    _slug_by_jar[code] = company["slug"]
 
 
 def brand_for_jar(jar):
