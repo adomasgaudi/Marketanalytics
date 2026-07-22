@@ -1,0 +1,2847 @@
+{
+ "scrapedAt": "2026-07-22T22:02:54Z",
+ "source": "Registrų centras bulk dump, https://www.registrucentras.lt/aduomenys/?byla=JAR_FA_RODIKLIAI_PLNA_<year>_n.csv",
+ "note": "The year in the filename is when a statement was REGISTERED, not the period it covers. Regenerated daily by RC; months fresher than the same registry on data.gov.lt.",
+ "registrationYears": [
+  "2026",
+  "2025"
+ ],
+ "companies": [
+  {
+   "jarCode": "304065386",
+   "brand": "100 ačiū",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 82887,
+     "profit": -29378,
+     "pretax": -29378,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 212585,
+     "profit": 27478,
+     "pretax": 29274,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "303225934",
+   "brand": "360 Sportas",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1430957,
+     "profit": 56255,
+     "pretax": 68579,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 1078791,
+     "profit": 47433,
+     "pretax": 55804,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "304405052",
+   "brand": "6 Loops",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 123706,
+     "profit": 60309,
+     "pretax": 65157,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-10"
+    },
+    {
+     "year": 2024,
+     "turnover": 60840,
+     "profit": 31289,
+     "pretax": 32936,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-24"
+    }
+   ]
+  },
+  {
+   "jarCode": "125763054",
+   "brand": "ALL CAPS",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1944683,
+     "profit": 33795,
+     "pretax": 40591,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-16"
+    },
+    {
+     "year": 2024,
+     "turnover": 1908884,
+     "profit": 31004,
+     "pretax": 37236,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-07-01"
+    }
+   ]
+  },
+  {
+   "jarCode": "305005890",
+   "brand": "APG media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1202065,
+     "profit": 209067,
+     "pretax": 249714,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1136845,
+     "profit": 91430,
+     "pretax": 105658,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "301734377",
+   "brand": "Adface",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 124853,
+     "profit": -27350,
+     "pretax": -27350,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 212639,
+     "profit": 4687,
+     "pretax": 5057,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "300003647",
+   "brand": "Adverum",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1231054,
+     "profit": 129065,
+     "pretax": 153401,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-02"
+    },
+    {
+     "year": 2024,
+     "turnover": 1193265,
+     "profit": 119988,
+     "pretax": 137313,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-18"
+    }
+   ]
+  },
+  {
+   "jarCode": "135970471",
+   "brand": "Advision",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 429549,
+     "profit": -23250,
+     "pretax": -23250,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 415142,
+     "profit": -14767,
+     "pretax": -14767,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "301321574",
+   "brand": "AgencyUP",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1004702,
+     "profit": 782,
+     "pretax": 2096,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1582645,
+     "profit": 102053,
+     "pretax": 121859,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "305290966",
+   "brand": "Andstudio",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 739789,
+     "profit": 137541,
+     "pretax": 164345,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-11"
+    },
+    {
+     "year": 2024,
+     "turnover": 587545,
+     "profit": 129775,
+     "pretax": 153737,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-18"
+    }
+   ]
+  },
+  {
+   "jarCode": "300597228",
+   "brand": "Arena Media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 11978555,
+     "profit": 349411,
+     "pretax": 420523,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 10772482,
+     "profit": 78192,
+     "pretax": 95523,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "304686507",
+   "brand": "Ave Media Agentūra",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 96795,
+     "profit": 10010,
+     "pretax": 10649,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-21"
+    },
+    {
+     "year": 2024,
+     "turnover": 86746,
+     "profit": 7310,
+     "pretax": 7908,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "304067387",
+   "brand": "BPN",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 33028692,
+     "profit": 511062,
+     "pretax": 612959,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-01"
+    },
+    {
+     "year": 2024,
+     "turnover": 36438837,
+     "profit": 519321,
+     "pretax": 613969,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-03"
+    }
+   ]
+  },
+  {
+   "jarCode": "304713630",
+   "brand": "Be reklamos negerai",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 234165,
+     "profit": 2202,
+     "pretax": 2622,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 326287,
+     "profit": 6038,
+     "pretax": 7103,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-22"
+    }
+   ]
+  },
+  {
+   "jarCode": "303139606",
+   "brand": "BeeMarketing",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 828607,
+     "profit": 234466,
+     "pretax": 279734,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-09"
+    },
+    {
+     "year": 2024,
+     "turnover": 456627,
+     "profit": 58893,
+     "pretax": 69314,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-08-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "300613091",
+   "brand": "Berta&Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 590266,
+     "profit": -406947,
+     "pretax": -406947,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-05"
+    },
+    {
+     "year": 2024,
+     "turnover": 1526769,
+     "profit": -47780,
+     "pretax": -47780,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-17"
+    }
+   ]
+  },
+  {
+   "jarCode": "302979365",
+   "brand": "Black Florence",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 190073,
+     "profit": 88430,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-11"
+    },
+    {
+     "year": 2024,
+     "turnover": 220696,
+     "profit": 133481,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-17"
+    }
+   ]
+  },
+  {
+   "jarCode": "302448012",
+   "brand": "Bosanova",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1447186,
+     "profit": 198956,
+     "pretax": 235285,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-03-23"
+    },
+    {
+     "year": 2024,
+     "turnover": 1566507,
+     "profit": 103845,
+     "pretax": 118731,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-17"
+    }
+   ]
+  },
+  {
+   "jarCode": "302644331",
+   "brand": "Brainhouse",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1961713,
+     "profit": 8833,
+     "pretax": 14146,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 2543777,
+     "profit": 99925,
+     "pretax": 125734,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-10"
+    }
+   ]
+  },
+  {
+   "jarCode": "304844761",
+   "brand": "Caption",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1598862,
+     "profit": 182602,
+     "pretax": 220751,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 1258533,
+     "profit": 4983,
+     "pretax": 10028,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "304170889",
+   "brand": "Choco agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2942759,
+     "profit": 141720,
+     "pretax": 169829,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-07"
+    },
+    {
+     "year": 2024,
+     "turnover": 3855674,
+     "profit": 181329,
+     "pretax": 205391,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-19"
+    }
+   ]
+  },
+  {
+   "jarCode": "302535912",
+   "brand": "Clinic212",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 916576,
+     "profit": 43424,
+     "pretax": 53070,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-31"
+    },
+    {
+     "year": 2024,
+     "turnover": 970809,
+     "profit": 45410,
+     "pretax": 47747,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "304754709",
+   "brand": "Convo",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 558211,
+     "profit": 7207,
+     "pretax": 8683,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 514040,
+     "profit": 17322,
+     "pretax": 20621,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-27"
+    }
+   ]
+  },
+  {
+   "jarCode": "300013463",
+   "brand": "Cyclopes",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1146200,
+     "profit": 56366,
+     "pretax": 67870,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-22"
+    },
+    {
+     "year": 2024,
+     "turnover": 848557,
+     "profit": 40206,
+     "pretax": 47896,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-24"
+    }
+   ]
+  },
+  {
+   "jarCode": "301732159",
+   "brand": "Dansu",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3349748,
+     "profit": 116799,
+     "pretax": 141543,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-20"
+    },
+    {
+     "year": 2024,
+     "turnover": 6566337,
+     "profit": 364854,
+     "pretax": 406547,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-05"
+    }
+   ]
+  },
+  {
+   "jarCode": "302651984",
+   "brand": "Dear problem",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 594931,
+     "profit": 19092,
+     "pretax": 21791,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-04"
+    },
+    {
+     "year": 2024,
+     "turnover": 532524,
+     "profit": 19852,
+     "pretax": 22776,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "124216438",
+   "brand": "Dentsu",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 21045603,
+     "profit": 389647,
+     "pretax": 464998,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 36638811,
+     "profit": 1889619,
+     "pretax": 2226552,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "306279691",
+   "brand": "DigitFruition",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 54449,
+     "profit": 16972,
+     "pretax": 17173,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 10169,
+     "profit": -14089,
+     "pretax": -14089,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "302653711",
+   "brand": "Digital Matter",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3044965,
+     "profit": 2886,
+     "pretax": -1859,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-21"
+    },
+    {
+     "year": 2024,
+     "turnover": 3893452,
+     "profit": -215562,
+     "pretax": -241361,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "302932166",
+   "brand": "ELITAZ Grupė",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2836397,
+     "profit": 937,
+     "pretax": 1761,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 3378877,
+     "profit": 165961,
+     "pretax": 195248,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-10"
+    }
+   ]
+  },
+  {
+   "jarCode": "304719793",
+   "brand": "ENTER",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 16700,
+     "profit": 3200,
+     "pretax": 3810,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 46405,
+     "profit": -48434,
+     "pretax": -48434,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "300132599",
+   "brand": "Efcom",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 9076,
+     "profit": -4134,
+     "pretax": -4134,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 16127,
+     "profit": -1197,
+     "pretax": -1197,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-15"
+    }
+   ]
+  },
+  {
+   "jarCode": "302686095",
+   "brand": "Enternet",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1296894,
+     "profit": 60438,
+     "pretax": 73036,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 1100235,
+     "profit": 7093,
+     "pretax": 10161,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "303472482",
+   "brand": "Etiquette",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 586017,
+     "profit": -30818,
+     "pretax": -30818,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 646857,
+     "profit": 13518,
+     "pretax": 16985,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "302248937",
+   "brand": "Eventum Group",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1284329,
+     "profit": 14206,
+     "pretax": 16680,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1063817,
+     "profit": 28207,
+     "pretax": 32505,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-05"
+    }
+   ]
+  },
+  {
+   "jarCode": "302478991",
+   "brand": "Evo media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 920649,
+     "profit": 221092,
+     "pretax": 265464,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-20"
+    },
+    {
+     "year": 2024,
+     "turnover": 712632,
+     "profit": 139519,
+     "pretax": 164595,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-25"
+    }
+   ]
+  },
+  {
+   "jarCode": "302542497",
+   "brand": "Evolvery",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 974537,
+     "profit": -3435,
+     "pretax": -1588,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-07-02"
+    },
+    {
+     "year": 2024,
+     "turnover": 1029834,
+     "profit": 26939,
+     "pretax": 35004,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-25"
+    }
+   ]
+  },
+  {
+   "jarCode": "301536032",
+   "brand": "Expertmedia",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2142352,
+     "profit": 519797,
+     "pretax": 623146,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-03-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 1806257,
+     "profit": 354039,
+     "pretax": 428300,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-14"
+    }
+   ]
+  },
+  {
+   "jarCode": "304788355",
+   "brand": "FAD",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 266666,
+     "profit": 4769,
+     "pretax": 5073,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-03-12"
+    },
+    {
+     "year": 2024,
+     "turnover": 211576,
+     "profit": 1076,
+     "pretax": 1133,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-21"
+    }
+   ]
+  },
+  {
+   "jarCode": "302625352",
+   "brand": "FULL SCREEN",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1077029,
+     "profit": 4309,
+     "pretax": 5536,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1701810,
+     "profit": 236581,
+     "pretax": 278988,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-05"
+    }
+   ]
+  },
+  {
+   "jarCode": "124099127",
+   "brand": "Fabula",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5190238,
+     "profit": 98186,
+     "pretax": 122428,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 5231622,
+     "profit": 329162,
+     "pretax": 392552,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "301790575",
+   "brand": "Fcomm",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 365528,
+     "profit": 9286,
+     "pretax": 11196,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 414461,
+     "profit": 35096,
+     "pretax": 41398,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-16"
+    }
+   ]
+  },
+  {
+   "jarCode": "302932718",
+   "brand": "Foko",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 272472,
+     "profit": -861,
+     "pretax": -763,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-16"
+    },
+    {
+     "year": 2024,
+     "turnover": 217614,
+     "profit": 31160,
+     "pretax": 31756,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-26"
+    }
+   ]
+  },
+  {
+   "jarCode": "126286061",
+   "brand": "Galley group",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2591954,
+     "profit": 144597,
+     "pretax": 167236,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-20"
+    },
+    {
+     "year": 2024,
+     "turnover": 1984708,
+     "profit": 93394,
+     "pretax": 107432,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "303020484",
+   "brand": "Gideas",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 52265,
+     "profit": 4955,
+     "pretax": 5308,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 41486,
+     "profit": 436,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "302417999",
+   "brand": "Good one",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 11534632,
+     "profit": 78289,
+     "pretax": 107273,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 10097522,
+     "profit": 244402,
+     "pretax": 295515,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "300940673",
+   "brand": "Google partner",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2195915,
+     "profit": 64516,
+     "pretax": 77628,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-03"
+    },
+    {
+     "year": 2024,
+     "turnover": 2179847,
+     "profit": 42493,
+     "pretax": 50814,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "302344394",
+   "brand": "Havas Media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 10209457,
+     "profit": 331983,
+     "pretax": 403823,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 10632287,
+     "profit": 248039,
+     "pretax": 296995,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-27"
+    }
+   ]
+  },
+  {
+   "jarCode": "301163601",
+   "brand": "Headline",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1619351,
+     "profit": 9731,
+     "pretax": 14589,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1572640,
+     "profit": 45107,
+     "pretax": 55414,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-23"
+    }
+   ]
+  },
+  {
+   "jarCode": "300122046",
+   "brand": "INK",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2722403,
+     "profit": 144769,
+     "pretax": 174143,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 2822488,
+     "profit": 134463,
+     "pretax": 158502,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "126093354",
+   "brand": "IdeaPrima",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3169223,
+     "profit": 92687,
+     "pretax": 111417,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 2912372,
+     "profit": 31793,
+     "pretax": 38768,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "301899560",
+   "brand": "Idee fixe",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1303976,
+     "profit": 36875,
+     "pretax": 44037,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 786302,
+     "profit": 37146,
+     "pretax": 43865,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-09"
+    }
+   ]
+  },
+  {
+   "jarCode": "300016915",
+   "brand": "Impact Advisory / Flow",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 276442,
+     "profit": -6269,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 339411,
+     "profit": 789,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "302641591",
+   "brand": "Indiana",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3441554,
+     "profit": 116559,
+     "pretax": 140976,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 3604605,
+     "profit": 137745,
+     "pretax": 164040,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-05"
+    }
+   ]
+  },
+  {
+   "jarCode": "304747369",
+   "brand": "Influenceriai.lt",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2112305,
+     "profit": 86091,
+     "pretax": 103889,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 2454743,
+     "profit": 141326,
+     "pretax": 167274,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-07"
+    }
+   ]
+  },
+  {
+   "jarCode": "300642933",
+   "brand": "Inspired UM",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 21603925,
+     "profit": 436486,
+     "pretax": 528668,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 21601990,
+     "profit": 294872,
+     "pretax": 352148,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "111688780",
+   "brand": "Integrity PR",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2533172,
+     "profit": 131686,
+     "pretax": 159442,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 2679018,
+     "profit": 229286,
+     "pretax": 270519,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "124130081",
+   "brand": "KOKO PR",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 187605,
+     "profit": 9123,
+     "pretax": 9858,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-03-04"
+    },
+    {
+     "year": 2024,
+     "turnover": 193289,
+     "profit": 9873,
+     "pretax": 10482,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-13"
+    }
+   ]
+  },
+  {
+   "jarCode": "302786252",
+   "brand": "Karuselė",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1834282,
+     "profit": 376,
+     "pretax": 1194,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-12"
+    },
+    {
+     "year": 2024,
+     "turnover": 844981,
+     "profit": 38886,
+     "pretax": 45880,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "301542341",
+   "brand": "Kubrik",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 160469,
+     "profit": -94970,
+     "pretax": -94970,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-01-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 299800,
+     "profit": 12287,
+     "pretax": 14455,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-02-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "302745177",
+   "brand": "Love media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 308762,
+     "profit": -72385,
+     "pretax": -72385,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 448957,
+     "profit": 31628,
+     "pretax": 37209,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "305709318",
+   "brand": "Magnus advisory",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 160750,
+     "profit": 148510,
+     "pretax": 157990,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 95209,
+     "profit": 80047,
+     "pretax": 84260,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-03"
+    }
+   ]
+  },
+  {
+   "jarCode": "110889086",
+   "brand": "Maniac",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 591372,
+     "profit": 125064,
+     "pretax": 152928,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-15"
+    },
+    {
+     "year": 2024,
+     "turnover": 645283,
+     "profit": 222567,
+     "pretax": 264565,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-15"
+    }
+   ]
+  },
+  {
+   "jarCode": "305611450",
+   "brand": "Marios Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 391937,
+     "profit": 61336,
+     "pretax": 73019,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-24"
+    },
+    {
+     "year": 2024,
+     "turnover": 390217,
+     "profit": 92018,
+     "pretax": 108256,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-24"
+    }
+   ]
+  },
+  {
+   "jarCode": "302561024",
+   "brand": "Market ratss",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1500581,
+     "profit": 105787,
+     "pretax": 124856,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-04"
+    },
+    {
+     "year": 2024,
+     "turnover": 1427828,
+     "profit": 125310,
+     "pretax": 147428,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-27"
+    }
+   ]
+  },
+  {
+   "jarCode": "111707070",
+   "brand": "Media House",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 24713263,
+     "profit": 348051,
+     "pretax": 412647,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-25"
+    },
+    {
+     "year": 2024,
+     "turnover": 15451756,
+     "profit": 244146,
+     "pretax": 289275,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "300021385",
+   "brand": "Mediacom",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 7481139,
+     "profit": 98365,
+     "pretax": 118708,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 8271381,
+     "profit": 131476,
+     "pretax": 156489,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "224497630",
+   "brand": "Mediapark",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 49790,
+     "profit": -88825,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-26"
+    },
+    {
+     "year": 2024,
+     "turnover": null,
+     "profit": 15734,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "302837871",
+   "brand": "Meta",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 727180,
+     "profit": 352941,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 595916,
+     "profit": 260652,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "300634324",
+   "brand": "Milk Vilnius",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1782156,
+     "profit": 17890,
+     "pretax": 19734,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-20"
+    },
+    {
+     "year": 2024,
+     "turnover": 1696197,
+     "profit": -65019,
+     "pretax": -65019,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "306107243",
+   "brand": "Momento LT",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 290796,
+     "profit": 24624,
+     "pretax": 24624,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-07"
+    },
+    {
+     "year": 2024,
+     "turnover": 116742,
+     "profit": -14559,
+     "pretax": -14559,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "302704981",
+   "brand": "NEW!",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2344987,
+     "profit": 937,
+     "pretax": 4623,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 3272793,
+     "profit": 30560,
+     "pretax": 34561,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-07"
+    }
+   ]
+  },
+  {
+   "jarCode": "300529266",
+   "brand": "Not Perfect",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 4719914,
+     "profit": 174506,
+     "pretax": 205840,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 3158150,
+     "profit": -73517,
+     "pretax": -73517,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "301673262",
+   "brand": "Nova media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 448360,
+     "profit": 74489,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 456070,
+     "profit": 95284,
+     "pretax": 112099,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-22"
+    }
+   ]
+  },
+  {
+   "jarCode": "304557170",
+   "brand": "Nuostabu",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1276910,
+     "profit": 43223,
+     "pretax": 52080,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-23"
+    },
+    {
+     "year": 2024,
+     "turnover": 1247369,
+     "profit": 12524,
+     "pretax": 16129,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-27"
+    }
+   ]
+  },
+  {
+   "jarCode": "300631883",
+   "brand": "OMD",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5585201,
+     "profit": 75814,
+     "pretax": 79694,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-31"
+    },
+    {
+     "year": 2024,
+     "turnover": 6217756,
+     "profit": 306407,
+     "pretax": 320956,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "110771682",
+   "brand": "Ogilvy",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 8169695,
+     "profit": 769221,
+     "pretax": 953870,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-22"
+    },
+    {
+     "year": 2024,
+     "turnover": 7456879,
+     "profit": 493389,
+     "pretax": 590389,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-06"
+    }
+   ]
+  },
+  {
+   "jarCode": "111632739",
+   "brand": "Omnicom",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 8266360,
+     "profit": 258765,
+     "pretax": 311670,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 7514559,
+     "profit": 72943,
+     "pretax": 89290,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "306835832",
+   "brand": "One event",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 587388,
+     "profit": 30651,
+     "pretax": 36489,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-01"
+    },
+    {
+     "year": 2024,
+     "turnover": 157570,
+     "profit": 11187,
+     "pretax": 11187,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-08-31"
+    }
+   ]
+  },
+  {
+   "jarCode": "304859756",
+   "brand": "Oneclick.lt",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 370788,
+     "profit": 79048,
+     "pretax": 90164,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 542041,
+     "profit": 89946,
+     "pretax": 103367,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-03"
+    }
+   ]
+  },
+  {
+   "jarCode": "302414298",
+   "brand": "Open Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 17258623,
+     "profit": 435224,
+     "pretax": 463237,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-18"
+    },
+    {
+     "year": 2024,
+     "turnover": 16809406,
+     "profit": 478689,
+     "pretax": 538334,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-19"
+    }
+   ]
+  },
+  {
+   "jarCode": "306725040",
+   "brand": "PR Ace",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 615944,
+     "profit": 9880,
+     "pretax": 13335,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-23"
+    },
+    {
+     "year": 2024,
+     "turnover": 168267,
+     "profit": 66604,
+     "pretax": 66604,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "226018840",
+   "brand": "PR service",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 547670,
+     "profit": 6436,
+     "pretax": 8642,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-07-09"
+    },
+    {
+     "year": 2024,
+     "turnover": 484090,
+     "profit": -15658,
+     "pretax": -15658,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-12-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "305678883",
+   "brand": "Panama Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 617824,
+     "profit": 47110,
+     "pretax": 56387,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-03-19"
+    },
+    {
+     "year": 2024,
+     "turnover": 407865,
+     "profit": 60868,
+     "pretax": 72281,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-15"
+    }
+   ]
+  },
+  {
+   "jarCode": "304955338",
+   "brand": "Pantomima",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 57678,
+     "profit": 4891,
+     "pretax": 5203,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 165035,
+     "profit": 2248,
+     "pretax": 2376,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "306313364",
+   "brand": "Particle PR",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 615600,
+     "profit": 64805,
+     "pretax": 77748,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 474855,
+     "profit": 74154,
+     "pretax": 87546,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-21"
+    }
+   ]
+  },
+  {
+   "jarCode": "300065271",
+   "brand": "Partizanas",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5336559,
+     "profit": 152661,
+     "pretax": 188296,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-07"
+    },
+    {
+     "year": 2024,
+     "turnover": 4789830,
+     "profit": 132820,
+     "pretax": 142460,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-23"
+    }
+   ]
+  },
+  {
+   "jarCode": "304300090",
+   "brand": "Pick a Story",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 91357,
+     "profit": 5730,
+     "pretax": 5730,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 122111,
+     "profit": -20529,
+     "pretax": -20529,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "225293310",
+   "brand": "Pirmoji Kava",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5614491,
+     "profit": 57712,
+     "pretax": 74617,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-07"
+    },
+    {
+     "year": 2024,
+     "turnover": 4486742,
+     "profit": 37578,
+     "pretax": 47197,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-14"
+    }
+   ]
+  },
+  {
+   "jarCode": "300091483",
+   "brand": "Propeller",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5468701,
+     "profit": 294232,
+     "pretax": 357241,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-07"
+    },
+    {
+     "year": 2024,
+     "turnover": 4151193,
+     "profit": 209600,
+     "pretax": 257537,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "111794310",
+   "brand": "Publicis groupe",
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 20721932,
+     "profit": 290888,
+     "pretax": 351215,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-07-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "125671759",
+   "brand": "Publicum",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 5126495,
+     "profit": 440443,
+     "pretax": 533032,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 4743413,
+     "profit": 684359,
+     "pretax": 812137,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "148508931",
+   "brand": "RAIBEC",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 796851,
+     "profit": -697,
+     "pretax": -685,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-09"
+    },
+    {
+     "year": 2024,
+     "turnover": 843249,
+     "profit": 2897,
+     "pretax": 3115,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "305758742",
+   "brand": "Rapid Media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 101083,
+     "profit": 32429,
+     "pretax": 34519,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-01-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 44366,
+     "profit": 4534,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "305210105",
+   "brand": "Renginio efektas",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 547197,
+     "profit": 15258,
+     "pretax": 15258,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 414804,
+     "profit": 52158,
+     "pretax": 52158,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-01"
+    }
+   ]
+  },
+  {
+   "jarCode": "304737161",
+   "brand": "Reprise",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 13183245,
+     "profit": 536671,
+     "pretax": 641091,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 11526712,
+     "profit": 95363,
+     "pretax": 113044,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-12"
+    }
+   ]
+  },
+  {
+   "jarCode": "302466583",
+   "brand": "Ric Creative",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 514641,
+     "profit": -67081,
+     "pretax": -67081,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-05"
+    },
+    {
+     "year": 2024,
+     "turnover": 645958,
+     "profit": 1994,
+     "pretax": 3413,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-19"
+    }
+   ]
+  },
+  {
+   "jarCode": "302713051",
+   "brand": "SOMA Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 4917288,
+     "profit": 5143,
+     "pretax": 6863,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 5026701,
+     "profit": -152937,
+     "pretax": -152937,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "303374383",
+   "brand": "Salve Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 318185,
+     "profit": 30402,
+     "pretax": 36820,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 360932,
+     "profit": 36217,
+     "pretax": 42719,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "304824716",
+   "brand": "Scuare",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 763796,
+     "profit": 1700,
+     "pretax": 3233,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 891608,
+     "profit": 126884,
+     "pretax": 150923,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "302928919",
+   "brand": "Seo Spiders on the web",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 760275,
+     "profit": 39018,
+     "pretax": 46976,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-31"
+    },
+    {
+     "year": 2024,
+     "turnover": 770285,
+     "profit": 86675,
+     "pretax": 103324,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "304009850",
+   "brand": "Skaitmeninė reklama",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2577484,
+     "profit": 65470,
+     "pretax": 81193,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 2521409,
+     "profit": 80127,
+     "pretax": 95376,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "126327871",
+   "brand": "Smarts",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 945023,
+     "profit": 72392,
+     "pretax": 87457,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-05"
+    },
+    {
+     "year": 2024,
+     "turnover": 850562,
+     "profit": 69004,
+     "pretax": 82686,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-06"
+    }
+   ]
+  },
+  {
+   "jarCode": "305678310",
+   "brand": "Socium Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 294685,
+     "profit": 82486,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-02-25"
+    },
+    {
+     "year": 2024,
+     "turnover": 201743,
+     "profit": 93993,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-02-27"
+    }
+   ]
+  },
+  {
+   "jarCode": "302735546",
+   "brand": "Some Films",
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 1582631,
+     "profit": 2290,
+     "pretax": 3948,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-09-16"
+    }
+   ]
+  },
+  {
+   "jarCode": "111621671",
+   "brand": "Sons & Daughters",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1717484,
+     "profit": 24173,
+     "pretax": 32849,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-28"
+    },
+    {
+     "year": 2024,
+     "turnover": 1795590,
+     "profit": 14732,
+     "pretax": 20980,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-23"
+    }
+   ]
+  },
+  {
+   "jarCode": "304139541",
+   "brand": "Spark Agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 791627,
+     "profit": -1334,
+     "pretax": 11,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 671087,
+     "profit": -10732,
+     "pretax": -10511,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "302930418",
+   "brand": "Spotlight",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1066296,
+     "profit": 40776,
+     "pretax": 50894,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 1064448,
+     "profit": 83018,
+     "pretax": 87420,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-12"
+    }
+   ]
+  },
+  {
+   "jarCode": "303129487",
+   "brand": "Stebink",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 353509,
+     "profit": 15039,
+     "pretax": 18117,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-13"
+    },
+    {
+     "year": 2024,
+     "turnover": 378983,
+     "profit": 24220,
+     "pretax": 28876,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-23"
+    }
+   ]
+  },
+  {
+   "jarCode": "302705193",
+   "brand": "SuperYou",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3471095,
+     "profit": 76802,
+     "pretax": 98571,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-14"
+    },
+    {
+     "year": 2024,
+     "turnover": 3457966,
+     "profit": 10004,
+     "pretax": 15842,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-08"
+    }
+   ]
+  },
+  {
+   "jarCode": "304229686",
+   "brand": "SynthesisCG",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1793025,
+     "profit": 574851,
+     "pretax": 651847,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-08"
+    },
+    {
+     "year": 2024,
+     "turnover": 1415385,
+     "profit": 518099,
+     "pretax": 598000,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-18"
+    }
+   ]
+  },
+  {
+   "jarCode": "302652310",
+   "brand": "TOTEM agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2228425,
+     "profit": 141344,
+     "pretax": 171345,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-06-03"
+    },
+    {
+     "year": 2024,
+     "turnover": 1851227,
+     "profit": 120628,
+     "pretax": 146230,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-23"
+    }
+   ]
+  },
+  {
+   "jarCode": "123932858",
+   "brand": "TRUTH.",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2420458,
+     "profit": 59824,
+     "pretax": 74999,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 2697617,
+     "profit": 6319,
+     "pretax": 15238,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "124257787",
+   "brand": "Tarela",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 411859,
+     "profit": 1304,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-18"
+    },
+    {
+     "year": 2024,
+     "turnover": 316507,
+     "profit": -2233,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "304562858",
+   "brand": "The Critical",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2383957,
+     "profit": 12268,
+     "pretax": 18073,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-22"
+    },
+    {
+     "year": 2024,
+     "turnover": 2631602,
+     "profit": 82652,
+     "pretax": 100039,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-07-10"
+    }
+   ]
+  },
+  {
+   "jarCode": "302693428",
+   "brand": "The Magic",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 4454509,
+     "profit": 18632,
+     "pretax": 27004,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-25"
+    },
+    {
+     "year": 2024,
+     "turnover": 3460546,
+     "profit": 41864,
+     "pretax": 52265,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "300646038",
+   "brand": "VISETAS",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 89006,
+     "profit": 61898,
+     "pretax": 61898,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-02-13"
+    },
+    {
+     "year": 2024,
+     "turnover": 87681,
+     "profit": 86705,
+     "pretax": 84770,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "125837960",
+   "brand": "VRS92",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 314647,
+     "profit": 3405,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-29"
+    },
+    {
+     "year": 2024,
+     "turnover": 568422,
+     "profit": -43977,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "301793500",
+   "brand": "Vento Nuovo",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 283336,
+     "profit": 81053,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-05"
+    },
+    {
+     "year": 2024,
+     "turnover": 299712,
+     "profit": 93548,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-04-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "111625698",
+   "brand": "Via Media",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 10440321,
+     "profit": 229960,
+     "pretax": 275532,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 8837519,
+     "profit": 225361,
+     "pretax": 267107,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  },
+  {
+   "jarCode": "134738420",
+   "brand": "Videvita",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": null,
+     "profit": -394,
+     "pretax": -394,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-02"
+    },
+    {
+     "year": 2024,
+     "turnover": null,
+     "profit": -1940,
+     "pretax": -1940,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-05"
+    }
+   ]
+  },
+  {
+   "jarCode": "302982411",
+   "brand": "Way Makers",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 151486,
+     "profit": 4543,
+     "pretax": 5050,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 124520,
+     "profit": 4937,
+     "pretax": 5163,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-29"
+    }
+   ]
+  },
+  {
+   "jarCode": "302856900",
+   "brand": "We Are Marketing",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1327928,
+     "profit": 72996,
+     "pretax": 88220,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-04-21"
+    },
+    {
+     "year": 2024,
+     "turnover": 1247022,
+     "profit": 111214,
+     "pretax": 136870,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-03-24"
+    }
+   ]
+  },
+  {
+   "jarCode": "111436135",
+   "brand": "We deliver agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 2953000,
+     "profit": 158000,
+     "pretax": 143000,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-30"
+    },
+    {
+     "year": 2024,
+     "turnover": 4813000,
+     "profit": 937000,
+     "pretax": 1075000,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-02"
+    }
+   ]
+  },
+  {
+   "jarCode": "302795358",
+   "brand": "WhatAbout",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 14395946,
+     "profit": 522323,
+     "pretax": 558660,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-26"
+    },
+    {
+     "year": 2024,
+     "turnover": 11931673,
+     "profit": -382931,
+     "pretax": -382931,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "302988072",
+   "brand": "Wide wings",
+   "financials": [
+    {
+     "year": 2024,
+     "turnover": 808733,
+     "profit": 21444,
+     "pretax": 21444,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-07-01"
+    }
+   ]
+  },
+  {
+   "jarCode": "305681598",
+   "brand": "Younique studio",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 96731,
+     "profit": -22270,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-11"
+    },
+    {
+     "year": 2024,
+     "turnover": 107277,
+     "profit": -24580,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "303193931",
+   "brand": "Zest production house",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 1368804,
+     "profit": 63128,
+     "pretax": null,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-27"
+    },
+    {
+     "year": 2024,
+     "turnover": 1713642,
+     "profit": 58387,
+     "pretax": null,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-28"
+    }
+   ]
+  },
+  {
+   "jarCode": "303119589",
+   "brand": "autoriai.lt",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 381320,
+     "profit": 23714,
+     "pretax": 29074,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-14"
+    },
+    {
+     "year": 2024,
+     "turnover": 477010,
+     "profit": 21248,
+     "pretax": 25725,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-06-04"
+    }
+   ]
+  },
+  {
+   "jarCode": "300078393",
+   "brand": "co:agency",
+   "financials": [
+    {
+     "year": 2025,
+     "turnover": 3546204,
+     "profit": 324926,
+     "pretax": 385830,
+     "periodEnd": "2025-12-31",
+     "filedAt": "2026-05-20"
+    },
+    {
+     "year": 2024,
+     "turnover": 3374832,
+     "profit": 281779,
+     "pretax": 323224,
+     "periodEnd": "2024-12-31",
+     "filedAt": "2025-05-30"
+    }
+   ]
+  }
+ ]
+}
