@@ -2,9 +2,9 @@
 """Fetch revenue/profit (Registrų centras) and paid taxes (VMI) from data.gov.lt.
 
     python3 scripts/data/scrape_gov.py <jarCode> [<jarCode> ...]
-    python3 scripts/data/scrape_gov.py --all    # every company code in rek_tabs.json
+    python3 scripts/data/scrape_gov.py --all    # every jarCode in data2/companies.json
 
-Writes data/gov_finance.json — one record per company, joined on jarCode.
+Writes data2/gov_finance.json — one record per company, joined on jarCode.
 
 Why this exists: rekvizitai's "Pardavimo pajamos / Grynasis pelnas / Sumokėti
 mokesčiai VMI" blocks are not rekvizitai's own numbers. They are republished
@@ -59,8 +59,8 @@ RC_MODEL = "datasets/gov/rc/jar/pelno_ataskaitos/PelnoAtaskaita"
 VMI_MODEL = "datasets/gov/vmi/ja_mokesciai/Moketojas"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, "data", "gov_finance.json")
-COMPANIES = os.path.join(ROOT, "data", "companies.json")
+OUT = os.path.join(ROOT, "data2", "gov_finance.json")
+COMPANIES = os.path.join(ROOT, "data2", "companies.json")
 
 # line_type_id -> our metric. Several ids per metric because each filing
 # template names the same line differently ("PARDAVIMO PAJAMOS" on a company
