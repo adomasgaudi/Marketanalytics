@@ -5,7 +5,6 @@ import { Coverage } from "@/features/explore/Coverage";
 import { DataChanges } from "@/features/explore/DataChanges";
 import { ExploreView } from "@/features/explore/ExploreView";
 import type { RekTabsFile } from "@/features/explore/FieldData";
-import { RawSheets } from "@/features/explore/SheetExplorer";
 import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { TopNav } from "@/features/market-rough/TopNav";
@@ -15,8 +14,9 @@ import { TopNav } from "@/features/market-rough/TopNav";
  * picker + field data, coverage grid, data-changes log, raw Excel sheets.
  * Linked from the (Dev-mode-only) "Explore the raw data & sources" buttons.
  */
-/** rek_tabs.json carries no Sodra data — attach data/sodra/<jarCode>.json per
-    company on the server, exactly as the legacy build_site.py did at build. */
+/** rek_tabs.json carries no Sodra data — attach data/sodra/<slug>.json per
+    company on the server, exactly as the legacy build_site.py did at build
+    (the legacy joined on Įmonės kodas; the files are now named by slug). */
 let rekTabsCache: RekTabsFile | undefined;
 
 function loadRekTabsWithSodra(): RekTabsFile {
@@ -25,12 +25,11 @@ function loadRekTabsWithSodra(): RekTabsFile {
     readFileSync(path.join(process.cwd(), "data", "rek_tabs.json"), "utf8"),
   ) as RekTabsFile;
   for (const company of file.companies ?? []) {
-    const code = company.tabs?.["Įmonė"]?.rows?.find((r) => r[0] === "Įmonės kodas")?.[1];
-    if (!code) continue;
+    if (!company.slug) continue;
     try {
       company.sodra = JSON.parse(
         readFileSync(
-          path.join(process.cwd(), "data", "sodra", `${String(code).trim()}.json`),
+          path.join(process.cwd(), "data", "sodra", `${company.slug}.json`),
           "utf8",
         ),
       );
@@ -60,12 +59,16 @@ export default function ExplorePage() {
           </p>
         </header>
 
-        <ExploreView
-          model={model}
-          profiles={profiles}
-          tabs={tabs}
-          after={<RawSheets key="raw-sheets" />}
+        {/* The raw Excel sheets now live on their own full-screen page — the
+            grid needs the whole viewport to be usable. */}
+        <a
+          href="/explore/sheets"
+          className="border-line bg-panel2 text-muted hover:text-ink mb-3.5 inline-block rounded-lg border px-4 py-2 text-[13px] font-semibold transition-colors"
         >
+          📑 Initial data — the source workbook (full screen) →
+        </a>
+
+        <ExploreView model={model} profiles={profiles} tabs={tabs}>
           {/* One wrapper element: an RSC-serialized child array would demand
               list keys and warn regardless of static JSX. */}
           <div>

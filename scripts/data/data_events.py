@@ -16,6 +16,7 @@ REK_PATH = os.path.join(ROOT, "data", "rek_tabs.json")
 DATA_PATH = os.path.join(ROOT, "data", "data.json")
 
 _brand_by_jar = None
+_slug_by_jar = None
 
 DATA_METRICS = (
     "employees", "avgSalary", "salaryCosts", "revenue", "profit",
@@ -57,19 +58,36 @@ def git_head():
         return None
 
 
+def _load_jar_maps():
+    """Index rek_tabs.json by "Įmonės kodas" once — brand and slug in one walk."""
+    global _brand_by_jar, _slug_by_jar
+    if _brand_by_jar is not None:
+        return
+    _brand_by_jar, _slug_by_jar = {}, {}
+    if not os.path.exists(REK_PATH):
+        return
+    rek = json.load(open(REK_PATH, encoding="utf-8"))
+    for block in rek.get("companies", []):
+        brand = block.get("brand") or block.get("name")
+        for tab in block.get("tabs", {}).values():
+            for field, value in tab.get("rows", []):
+                if field == "Įmonės kodas" and value:
+                    code = str(value).strip()
+                    _brand_by_jar[code] = brand
+                    if block.get("slug"):
+                        _slug_by_jar[code] = block["slug"]
+
+
 def brand_for_jar(jar):
-    global _brand_by_jar
-    if _brand_by_jar is None:
-        _brand_by_jar = {}
-        if os.path.exists(REK_PATH):
-            rek = json.load(open(REK_PATH, encoding="utf-8"))
-            for block in rek.get("companies", []):
-                brand = block.get("brand") or block.get("name")
-                for tab in block.get("tabs", {}).values():
-                    for field, value in tab.get("rows", []):
-                        if field == "Įmonės kodas" and value:
-                            _brand_by_jar[str(value).strip()] = brand
+    _load_jar_maps()
     return _brand_by_jar.get(str(jar))
+
+
+def slug_for_jar(jar):
+    """The rek_tabs slug a company code belongs to — the name of its Sodra file
+    (data/sodra/<slug>.json). None when the code is not in rek_tabs.json."""
+    _load_jar_maps()
+    return _slug_by_jar.get(str(jar))
 
 
 def sodra_meta():

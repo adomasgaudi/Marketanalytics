@@ -25,7 +25,7 @@ EN/LT · source traceability · mobile-first · self-contained.
 - `data/data.json` — core financials, **906 rows** (132 brands × 2019–2025). Fields: company, brand, year, activities\[], city, risk, employees, avgSalary, salaryCosts, revenue(=turnover), profit, nonSalaryCosts, estimatedIncome(=fee revenue).
 - `data/sheets_data.json` — 7 raw Excel sheets (Explorer source).
 - `data/rek_tabs.json` — scraped Rekvizitai profiles per company.
-- `data/sodra/*.json` — **115 files**, monthly Sodra payroll/headcount per company.
+- `data/sodra/<slug>.json` — **115 files**, monthly Sodra payroll/headcount per company, one per rek_tabs slug (the `jarCode` join key lives inside each file).
   `data/data_events.json` — track the data-change audit log.
 
 ## Build

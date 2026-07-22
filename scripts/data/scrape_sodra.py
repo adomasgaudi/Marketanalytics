@@ -11,7 +11,9 @@ rekvizitai scrape already captures as "Įmonės kodas". For each company we:
      internal `code` + confirm the jarCode match
   2. fetch   /imones-rest/values/monthly/page?codes=<code>&size=N
      -> the monthly history: avgWage, numInsured, tax, activity, municipality
-and write data/sodra/<jarCode>.json (one self-contained file per company = SSOT).
+and write data/sodra/<slug>.json (one self-contained file per company = SSOT),
+where <slug> is the company's rek_tabs.json slug — the filename says which
+company it is, while the jarCode stays inside the record as the join key.
 
 Why direct API, not HTML scraping: atvira.sodra.lt is an open-data portal with a
 clean JSON REST API (discovered via its own UI). Far more robust than parsing the
@@ -31,7 +33,7 @@ property of the source, not a bug — multi-employee firms return wages.
 import json, os, sys, time, urllib.error, urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from data_events import append_sodra_batch, diff_sodra, sodra_meta
+from data_events import append_sodra_batch, diff_sodra, slug_for_jar, sodra_meta
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -57,6 +59,17 @@ def all_jar_codes():
                     if code and code not in codes:
                         codes.append(code)
     return codes
+
+
+def out_path(jar):
+    """data/sodra/<slug>.json. A code absent from rek_tabs.json has no slug to
+    name the file after — fall back to the bare code rather than refuse to
+    scrape, so a lagging rek_tabs.json can't block a manual refresh."""
+    slug = slug_for_jar(jar)
+    if not slug:
+        print(f"{jar}: not in rek_tabs.json — naming the file after the code", flush=True)
+        slug = str(jar)
+    return os.path.join(OUT_DIR, f"{slug}.json")
 
 
 UA = "Mozilla/5.0 (compatible; marketanalytics.lt data refresh)"
@@ -127,7 +140,7 @@ def main(jars):
             print(f"{jar}: not found on Sodra", flush=True)
             continue
         fetched += 1
-        out = os.path.join(OUT_DIR, f"{jar}.json")
+        out = out_path(jar)
         old = None
         if os.path.exists(out):
             with open(out, encoding="utf-8") as f:

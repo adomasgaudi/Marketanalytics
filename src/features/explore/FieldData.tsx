@@ -46,7 +46,7 @@ export type RekCompany = {
   /** Įmonės kodas — attached by the legacy build (build_site.py). */
   code?: string | null;
   // NOTE (data gap): data/rek_tabs.json itself carries NO `sodra` key — the
-  // legacy build_site.py attaches data/sodra/<jarCode>.json to each company at
+  // legacy build_site.py attaches data/sodra/<slug>.json to each company at
   // build time before injecting __REK_DATA__. The v3 page passes rek_tabs.json
   // straight through, so `sodra` is undefined here and the Sodra source is
   // empty until the page (or a build step) enriches the file the same way.

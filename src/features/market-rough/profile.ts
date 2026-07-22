@@ -16,6 +16,7 @@ export type CompanyProfile = {
 
 type Sheet = { columns: string[]; rows: (string | number | null)[][] };
 type RekCompany = {
+  slug?: string;
   brand?: string;
   tabs?: Record<string, { rows: [string, string][] }>;
 };
@@ -32,16 +33,16 @@ export function loadProfiles(): Record<string, CompanyProfile> {
       sodra: false,
     });
 
-  // Sodra files are keyed by jarCode (data/sodra/<code>.json), matched via the
-  // "Įmonės kodas" field of the Rekvizitai Įmonė tab (as legacy build_site.py).
-  let sodraCodes = new Set<string>();
+  // Sodra files are named after the company slug (data/sodra/<slug>.json), so
+  // the directory listing IS the set of slugs that have Sodra data.
+  let sodraSlugs = new Set<string>();
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require("fs") as typeof import("fs");
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const path = require("path") as typeof import("path");
     const dir = path.join(process.cwd(), "data", "sodra");
-    sodraCodes = new Set(
+    sodraSlugs = new Set(
       fs.readdirSync(dir).map((f: string) => f.replace(/\.json$/, "")),
     );
   } catch {
@@ -74,8 +75,7 @@ export function loadProfiles(): Record<string, CompanyProfile> {
     // Rekvizitai website wins over the sheet, as in the legacy.
     p.website = g("Tinklalapis") ?? p.website;
     p.rekvizitai = Object.keys(c.tabs ?? {}).length > 0;
-    const code = g("Įmonės kodas");
-    p.sodra = code != null && sodraCodes.has(String(code).trim());
+    p.sodra = c.slug != null && sodraSlugs.has(c.slug);
   }
   return out;
 }

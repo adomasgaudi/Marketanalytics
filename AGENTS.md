@@ -1,8 +1,34 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # AGENTS.md - Marketanalytics-stacked
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.41.0
+> v3.42.0
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -27,7 +53,6 @@ Push approved work directly to `main`. This policy was set by the owner on 2026-
 ### Harness includes all the information that you as an agent receive:
 
 - Prompt / system context (Already have this)
-
 - Skills / Rules / memory (you have some not all)
 - Hooks
 - Tools
@@ -38,13 +63,11 @@ Push approved work directly to `main`. This policy was set by the owner on 2026-
 ### The Project Space includes from most abstrast to specific:
 
 - Project overall idea, goal, owner values, short vs long term value expectation
-
 - Project Environment (repository, repo location, software environments, info/file architechture/structure)
 
 * Project details
 
   - Logic - functions, components, variables, data
-
   - Design
   - Technical structure (technology decisions, fuctionality decisions/implementations (tools, stack), 3rd party tools,
 
@@ -85,12 +108,15 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |  |- sheets_data.json          Imported spreadsheet source data
 |  |- rek_tabs.json             Scraped Rekvizitai source data
 |  |- data_events.json          Data-change audit log
-|  `- sodra/                    Per-company payroll source files
+|  |- workbook.json             The source .xlsx as one Main sheet - powers /explore/sheets
+|  |- disagreements.json        What the retired sheets recorded differently (flagged in gold)
+|  `- sodra/<slug>.json         Per-company payroll source, named by rek_tabs slug
 |
 |- scripts/                     Split by WHAT THEY ACT ON, not by language
 |  |- app/                      Acts on the app: write-version, lan-qr (run per build/dev)
 |  `- data/                     Acts on data/: the LIVE Py scrape+parse+estimate
-|                               pipeline, plus the make-sheets .mjs one-offs
+|     |                         pipeline, plus the make-sheets .mjs one-offs
+|     `- workbook/              The .xlsx extract + merge/retire chain behind workbook.json
 |
 |- docs/                        Every doc lives in one of these - nothing loose at docs/ root
 |  |- ai-harness/               Harness space: skills, rules, startprompt, old-agents
@@ -107,7 +133,20 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 `- .githooks/                   Repository hooks (commit-msg format)
 ```
 
+
+
+
+
+
+
+
 This file is very valuable context. All edit here must be vital. If this file gets too big it will loose its purpose.
+
+<br />
+
+## Read before touching /explore/sheets
+
+[docs/ai-obs/HANDOFF-workbook-viewer.md](docs/ai-obs/HANDOFF-workbook-viewer.md) — the workbook viewer that now IS that page (ported 2026-07-22 from the standalone `financial-data-viewer`, which is retired). Covers the `workbook.json` pipeline, the disagreements record, and four decisions that look like mistakes and are not: hand-written CSS scoped to `.wbv`, no theme toggle of its own, a local `CellStyle` instead of `CSSProperties`, no changelog.
 
 <br />
 
@@ -118,4 +157,10 @@ try to reply in under 40w unless you need more to explain, but treat reply lengt
 The same for code, explain what you're going to do and why - top level view\
 explain what each part of the code does - more technical\
 write the code. but don't write more than 50lines of code at a time, so that i can be checked.
+
+<br />
+
+<br />
+
+plan should be up to 50 words with bulets and checkboxes
 

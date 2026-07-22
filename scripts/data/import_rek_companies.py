@@ -4,7 +4,7 @@
 This bridges the scraped Rekvizitai company tabs with yearly dashboard records.
 It uses:
   - data/rek_tabs.json for company identity, turnover, profit, risk, address
-  - data/sodra/<jarCode>.json for yearly average employees and wages
+  - data/sodra/<slug>.json for yearly average employees and wages
 
 The output rows follow the dashboard's data.json schema. `estimatedIncome` is
 left null because Rekvizitai does not expose fee-income / pass-through split.
@@ -135,8 +135,8 @@ def collect_financial_series(block):
     return revenue, profit
 
 
-def load_sodra(code):
-    path = os.path.join(SODRA_DIR, f"{code}.json")
+def load_sodra(slug):
+    path = os.path.join(SODRA_DIR, f"{slug}.json")
     if not os.path.exists(path):
         return []
     return load_json(path).get("months", [])
@@ -187,7 +187,7 @@ def main():
         brand = meta["brand"]
         code = extract_company_code(fields)
         revenue, profit = collect_financial_series(block)
-        sodra_months = load_sodra(code) if code else []
+        sodra_months = load_sodra(slug)
         city = extract_city(fields.get("Adresas"))
         risk = fields.get("Kredito rizika") or fields.get("Kreditavimo rizika") or ""
 

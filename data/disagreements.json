@@ -1,0 +1,920 @@
+[
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "6 Loops, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.000323939099449,
+  "ours": 1.0003239390994494,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "7 sprendimai, MB",
+  "year": 2021,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 6.795536429143315,
+  "ours": 2.0226180944755803,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "7 sprendimai, MB",
+  "year": 2022,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 1.8721938944440764,
+  "ours": 0.004966558506059202,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "7 sprendimai, MB",
+  "year": 2023,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 0.7191947812335266,
+  "ours": -0.044247496046389036,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Astos dizainas, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -33.03593692702604,
+  "ours": 33.035936927026036,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Ave Media, MB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -39.06451612903226,
+  "ours": 39.064516129032256,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Ave Media, MB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -10.0024630541872,
+  "ours": 10.002463054187192,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Be reklamos negerai, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -8.488344988344988,
+  "ours": 8.488344988344988,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Be reklamos negerai, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": 4.12238368940462,
+  "ours": -4.12238368940462,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Bemedija, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.587063029661017,
+  "ours": 2.587063029661017,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Caption, UAB",
+  "year": 2022,
+  "field": "Apyvarta",
+  "theirs": 716566,
+  "ours": 1061361,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Caption, UAB",
+  "year": 2022,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 0.39,
+  "ours": 0.48117689089351157,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Caption, UAB",
+  "year": 2022,
+  "field": "Ne-atlyginimų sąnaudos",
+  "theirs": 47327,
+  "ours": 392122,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Caption, UAB",
+  "year": 2022,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -0.8520642918766176,
+  "ours": 0.22570299703672214,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Caption, UAB",
+  "year": 2023,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": 9.297462336509815,
+  "ours": 0.24284788917734787,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Convo, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -1,
+  "ours": 1,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Du Dvylika, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.467009256514149,
+  "ours": 2.467009256514148,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Du Dvylika, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.191239455719285,
+  "ours": 1.1912394557192851,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Efcom, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -3.752607324763522,
+  "ours": 3.7526073247635217,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Efcom, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.497267759562842,
+  "ours": 2.4972677595628414,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Enter Agency, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.393915056455804,
+  "ours": 1.3939150564558038,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "FAD, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -18.47415329768271,
+  "ours": 18.474153297682708,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Gaumina, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.513557149547684,
+  "ours": 1.5135571495476843,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "IC Baltic, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -28.16666666666667,
+  "ours": 28.166666666666668,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "Darbuotojų pokytis, %",
+  "theirs": 0.03125,
+  "ours": -0.03125,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "Darbuotojų skaičius",
+  "theirs": 33,
+  "ours": 31,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "DU sąnaudos",
+  "theirs": 1714680,
+  "ours": 1610760,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "DU sąnaudų pokytis, %",
+  "theirs": 0.19841988727858295,
+  "ours": 0.12578837895866882,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "Fiks ir pelno mokestis",
+  "theirs": 737312.4,
+  "ours": 692626.8,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -0.2117640697491131,
+  "ours": -0.20758319762530325,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Inspired Communications, UAB",
+  "year": 2024,
+  "field": "Spėjamos pajamos",
+  "theirs": 2746864.4,
+  "ours": 2598258.8,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Komunikacija ir konsultantai, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.677258848806966,
+  "ours": 2.6772588488069657,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Komunikacija ir konsultantai, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.609328726554788,
+  "ours": 2.609328726554788,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "LoveMedia, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -5.635026269702276,
+  "ours": 5.635026269702276,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Magnus advisory, MB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": 3.099128202858787,
+  "ours": 0.7711864406779662,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "New Agency, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.730859588710456,
+  "ours": 1.730859588710456,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "New Agency, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.996283497424529,
+  "ours": 1.996283497424529,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Particle PR, UAB",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -3.7240326598793256,
+  "ours": 3.7240326598793256,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "Darbuotojų pokytis, %",
+  "theirs": -0.6153846153846154,
+  "ours": -0.6025641025641025,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "Darbuotojų skaičius",
+  "theirs": 30,
+  "ours": 31,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "DU sąnaudos",
+  "theirs": 932760,
+  "ours": 963852,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "DU sąnaudų pokytis, %",
+  "theirs": -0.5840824451008091,
+  "ours": -0.5702185266041694,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "Fiks ir pelno mokestis",
+  "theirs": 401086.8,
+  "ours": 414456.36,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": 0.15300679590580035,
+  "ours": 0.1433808880590384,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Partizanas, UAB",
+  "year": 2024,
+  "field": "Spėjamos pajamos",
+  "theirs": 1466666.8,
+  "ours": 1511128.3599999999,
+  "why": "Main holds a different figure"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "PR Service, UAB (PIAR)",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudos",
+  "theirs": -213480,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "PR",
+  "company": "PR Service, UAB (PIAR)",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudos",
+  "theirs": -213480,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "PR Service, UAB (PIAR)",
+  "year": 2024,
+  "field": "Spėjamos pajamos",
+  "theirs": 305276.4,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "PR",
+  "company": "PR Service, UAB (PIAR)",
+  "year": 2024,
+  "field": "Spėjamos pajamos",
+  "theirs": 305276.4,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "RAIBEC, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.1207582885616457,
+  "ours": 0.12075828856164575,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "RAIBEC, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -2.501345575431376,
+  "ours": 2.5013455754313756,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "RAIBEC, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.455483870967742,
+  "ours": 1.455483870967742,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Reklamos vizija, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.009074035883687381,
+  "ours": -0.009074035883687359,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Reklamos vizija, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.44383132365964983,
+  "ours": -0.44383132365964983,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Reklamos vizija, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.3032462017552138,
+  "ours": 0.3032462017552137,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Some Films, UAB",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudos",
+  "theirs": -37980,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Some Films, UAB",
+  "year": 2024,
+  "field": "Spėjamos pajamos",
+  "theirs": 54311.4,
+  "ours": null,
+  "why": "no turnover recorded that year, so this is arithmetic on a gap"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Sons & Daughters, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.566679596029249,
+  "ours": 1.566679596029249,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Spark LT, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.6065713772024451,
+  "ours": 0.6065713772024451,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Spark LT, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.3869530446703987,
+  "ours": 0.3869530446703987,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Tarela, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.030154601584909,
+  "ours": 1.0301546015849092,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Tarela, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -8.410519724483407,
+  "ours": 8.410519724483406,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2021,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 35.02453012151476,
+  "ours": -0.5020445339791261,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.9390012719038863,
+  "ours": -0.8492874907847728,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2022,
+  "field": "Apyvartos pokytis, %",
+  "theirs": -1,
+  "ours": 0.14865871031327604,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": -1,
+  "ours": 0.505630660897143,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2023,
+  "field": "Apyvartos pokytis, %",
+  "theirs": -1,
+  "ours": 0.1239415194160934,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -1,
+  "ours": 0.09723313102463406,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2024,
+  "field": "Apyvartos pokytis, %",
+  "theirs": -0.7625137096586003,
+  "ours": -0.0008634167969570392,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Vento Nuovo, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.858655864122212,
+  "ours": 0.5219223323083931,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Videoprojektų sprendimai, MB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": -4.030474395224631,
+  "ours": 4.030474395224631,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Visetas, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.3300043930297261,
+  "ours": -0.3300043930297262,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Visetas, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.5259727390835223,
+  "ours": -0.5259727390835224,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Visetas, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.36942813027605,
+  "ours": 1.3694281302760503,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "VRS WPI Vilnius, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -0.011352906793759221,
+  "ours": 0.011352906793759273,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Way Makers, MB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": 6.521367521367521,
+  "ours": -6.521367521367521,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Way Makers, MB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.561022727272727,
+  "ours": 1.5610227272727273,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "We Are Marketing, UAB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": -27.3126600284495,
+  "ours": 27.312660028449503,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "We Are Marketing, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.289734939759036,
+  "ours": 1.289734939759036,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Whatabout.agency, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": -1.585693013003154,
+  "ours": 1.5856930130031541,
+  "why": "the sign is inverted: a loss turning into a profit is recorded as a fall"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2021,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 21.94287011488005,
+  "ours": 1.438839880931446,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2021,
+  "field": "Pelno pokytis, %",
+  "theirs": 29.915205063958854,
+  "ours": -2.50942898588949,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2022,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 13.989576204747408,
+  "ours": 0.5452021175341583,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2022,
+  "field": "Pelno pokytis, %",
+  "theirs": -26.66044906517561,
+  "ours": 2.2083260527695265,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2023,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 15.75298479603611,
+  "ours": 0.1349334826579787,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2023,
+  "field": "Atlyginimo pokytis, %",
+  "theirs": -0.05514285714285716,
+  "ours": -0.018571428571428572,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2023,
+  "field": "Pelno pokytis, %",
+  "theirs": 11.485918802646324,
+  "ours": 1.6179096923466252,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2024,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 7.616955650014429,
+  "ours": -0.36832257090271353,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Įmonės-analizei",
+  "company": "Wrks, UAB",
+  "year": 2024,
+  "field": "Pelno pokytis, %",
+  "theirs": 0.31691385643660075,
+  "ours": -0.4630043914160245,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Meta advisory Lithuania, UAB",
+  "year": 2024,
+  "field": "Atlyginimo pokytis, %",
+  "theirs": 0.4193548387096775,
+  "ours": -0.09090909090909091,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Meta advisory Lithuania, UAB",
+  "year": 2024,
+  "field": "DU sąnaudų pokytis, %",
+  "theirs": 0.18279569892473124,
+  "ours": -0.24242424242424243,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Meta advisory Lithuania, UAB",
+  "year": 2024,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": 0.19316795948815413,
+  "ours": 2.2848287388664397,
+  "why": "the figures give a different change"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "6 Loops, UAB",
+  "year": 2022,
+  "field": "Apyvartos pokytis, %",
+  "theirs": -1,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2021 figure to compare against"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Kvadratai, MB",
+  "year": 2020,
+  "field": "Apyvartos pokytis, %",
+  "theirs": 0,
+  "ours": -0.2057067725591495,
+  "why": "recorded as no change, but the figures give one"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "VRS WPI Vilnius, UAB",
+  "year": 2020,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -1,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2019 figure to compare against"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Kubrik, UAB",
+  "year": 2020,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -1,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2020 figure to compare against"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "ALL CAPS, UAB",
+  "year": 2023,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": 0,
+  "ours": -0.09017711644170788,
+  "why": "recorded as no change, but the figures give one"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Adell reklama, UAB",
+  "year": 2022,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": 0,
+  "ours": 0.20433637603821114,
+  "why": "recorded as no change, but the figures give one"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Petraitis ir Pūras, UAB",
+  "year": 2020,
+  "field": "Ne-atlyginimų sąnaudų pokytis, %",
+  "theirs": -0.09013483195016225,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2019 figure to compare against"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Kvadratai, MB",
+  "year": 2020,
+  "field": "Pelno pokytis, %",
+  "theirs": 0,
+  "ours": -0.35627378212054306,
+  "why": "recorded as no change, but the figures give one"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "100 ačiū, MB",
+  "year": 2022,
+  "field": "Darbuotojų pokytis, %",
+  "theirs": -1,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2022 figure to compare against"
+ },
+ {
+  "sheet": "Analizė-pokyčiai",
+  "company": "Ric Creative, UAB",
+  "year": 2020,
+  "field": "DU sąnaudų pokytis, %",
+  "theirs": -1,
+  "ours": null,
+  "why": "a change Main cannot check: it has no 2019 figure to compare against"
+ }
+]

@@ -20,7 +20,6 @@ export function ExploreView({
   profiles,
   tabs,
   children,
-  after,
 }: {
   model: MarketModel;
   profiles?: Record<string, CompanyProfile>;
@@ -28,8 +27,6 @@ export function ExploreView({
   /** Server-rendered sections (coverage, data changes) slotted between the
       picker and the field-data table, matching the legacy rekView order. */
   children?: React.ReactNode;
-  /** Server-rendered sections after the field-data table (raw sheets). */
-  after?: React.ReactNode;
 }) {
   const [brand, setBrand] = useState(model.brands[0]);
   // Page-level view: the ported tables experience, or every dataset as raw
@@ -89,7 +86,6 @@ export function ExploreView({
         <div ref={fieldRef}>
           <FieldData brand={brand} tabs={tabs} />
         </div>
-        {after}
       </div>
     </>
   );
