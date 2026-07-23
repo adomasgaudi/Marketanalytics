@@ -203,8 +203,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
 
   // Inner company ring only when scoped to one segment — in All Segments the
   // same brand can sit in several slices and would be drawn multiple times.
-  const companySlices = segment
-    ? rows.flatMap((segmentRow) => {
+  const companySlices = rows.flatMap((segmentRow) => {
         const brands = [
           ...new Set(
             model.rows
@@ -238,8 +237,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             color: tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length),
           };
         });
-      })
-    : [];
+  });
 
   // Company shares of the ring, for the on-slice labels and the legend.
   const companyTotal = companySlices.reduce((sum, s) => sum + s.value, 0) || 1;
@@ -332,7 +330,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             key={segment || "all"}
             data={{
               labels: rows.map((o) => segName(o.s)),
-              datasets: segment ? [segmentRing, companyRing] : [segmentRing],
+              datasets: [segmentRing, companyRing],
             }}
             options={
               {
