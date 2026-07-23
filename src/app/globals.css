@@ -27,6 +27,9 @@
   --color-zebra: rgb(0 0 0 / 2.2%);
   /* Money-flow stack: rest-of-revenue vs rest-of-turnover. */
   --color-mf-rev: #5e6678;
+  --color-mf-rev-labour: #4b5563;
+  --color-mf-rev-opex: #6b7280;
+  --color-mf-rev-tax: #5a6e62;
   --color-mf-turn: #c2c8d2;
 
   --radius-sm: 4px;
@@ -61,6 +64,9 @@
   --color-chart-bg: #171b24;
   --color-zebra: rgb(255 255 255 / 1.5%);
   --color-mf-rev: #7d8696;
+  --color-mf-rev-labour: #5c6678;
+  --color-mf-rev-opex: #7b8698;
+  --color-mf-rev-tax: #6b8278;
   --color-mf-turn: #c2c8d2;
 }
 

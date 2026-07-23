@@ -70,6 +70,9 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
   const salary = medianSalary(rows, year) ?? 0;
   const salaryPrev = medianSalary(rows, year - 1) ?? 0;
   const salaryFmt = (v: number) => `${fmtEurFull(v)}/mo`;
+  const payrollCur = rows
+    .filter((row) => row.year === year)
+    .reduce((sum, row) => sum + (row.salaryCosts ?? 0), 0);
 
   const empCur =
     market === "avg" ? (cur.count ? cur.employees / cur.count : 0) : cur.employees;
@@ -210,6 +213,7 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
             turnover={scale(cur.revenue)}
             revenue={scale(cur.estimatedIncome)}
             profit={scale(cur.profit)}
+            payroll={scale(payrollCur)}
             prev={
               hasPrev
                 ? {
@@ -251,11 +255,15 @@ export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
           const t = marketTotals(rows, fy);
           const d = market === "avg" ? t.count : market === "emp" ? t.employees : 1;
           const dv = (v: number) => (d > 0 ? v / d : 0);
+          const payroll = rows
+            .filter((row) => row.year === fy)
+            .reduce((sum, row) => sum + (row.salaryCosts ?? 0), 0);
           return {
             year: fy,
             turnover: dv(t.revenue),
             revenue: dv(t.estimatedIncome),
             profit: dv(t.profit),
+            payroll: dv(payroll),
           };
         })}
       />

@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.50.0",
+    date: "2026-07-23",
+    title: "Revenue bar sub-tones",
+    desc: "Money-flow revenue band splits into three greys: payroll+1.77%, opex, and profit tax (greenish). Legend and figures unchanged — graph only.",
+  },
+  {
     v: "v3.49.0",
     date: "2026-07-23",
     title: "Fix multi-segment double-count",

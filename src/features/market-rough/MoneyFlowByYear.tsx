@@ -2,12 +2,15 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { fmtPct } from "./format";
+import { revBreakdown } from "./money-flow-breakdown";
 
 export type YearFlow = {
   year: number;
   turnover: number;
   revenue: number;
   profit: number;
+  /** Sodra wage bill — bar subdivision only. */
+  payroll?: number | null;
 };
 
 /** Chart-label format, as the legacy SVG engine: 1.94M / 653.5k — no €. */
@@ -271,14 +274,51 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                   const profit = Math.max(0, r.profit);
                   const revRest = Math.max(0, r.revenue - profit);
                   const turnRest = Math.max(0, r.turnover - r.revenue);
+                  const revParts = revBreakdown(revRest, r.payroll);
                   const cx = x(i);
                   if (cx < m.l - bandW || cx > m.l + pw + bandW) return null;
                   const x0 = cx - barW / 2;
                   const yProfitTop = y(profit);
                   const yRevTop = y(profit + revRest);
                   const yTurnTop = y(profit + revRest + turnRest);
+                  const revH = Math.max(0, yProfitTop - yRevTop);
                   const prev = i > 0 ? rows[i - 1].turnover : null;
                   const yoy = prev != null && prev > 0 ? r.turnover / prev - 1 : null;
+                  const revRects = () => {
+                    if (revH <= 0) return null;
+                    if (!revParts || revRest <= 0) {
+                      return (
+                        <rect
+                          x={x0}
+                          y={yRevTop}
+                          width={barW}
+                          height={revH}
+                          fill="var(--color-mf-rev)"
+                        />
+                      );
+                    }
+                    let yTop = yRevTop;
+                    const slices = [
+                      { h: revParts.employer, fill: "var(--color-mf-rev-labour)" },
+                      { h: revParts.opex, fill: "var(--color-mf-rev-opex)" },
+                      { h: revParts.profitTax, fill: "var(--color-mf-rev-tax)" },
+                    ].filter((s) => s.h > 0);
+                    return slices.map((slice, si) => {
+                      const h = (slice.h / revRest) * revH;
+                      const el = (
+                        <rect
+                          key={si}
+                          x={x0}
+                          y={yTop}
+                          width={barW}
+                          height={h}
+                          fill={slice.fill}
+                        />
+                      );
+                      yTop += h;
+                      return el;
+                    });
+                  };
                   return (
                     <g key={r.year}>
                       <rect
@@ -288,13 +328,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         height={Math.max(0, y(0) - yProfitTop)}
                         fill="var(--color-green)"
                       />
-                      <rect
-                        x={x0}
-                        y={yRevTop}
-                        width={barW}
-                        height={Math.max(0, yProfitTop - yRevTop)}
-                        fill="var(--color-mf-rev)"
-                      />
+                      {revRects()}
                       <rect
                         x={x0}
                         y={yTurnTop}

@@ -333,6 +333,7 @@ export function CompanyPerYear({
               turnover={scaleMoney(row.revenue)}
               revenue={scaleMoney(row.estimatedIncome)}
               profit={scaleMoney(row.profit)}
+              payroll={scaleMoney(row.salaryCosts)}
               prev={
                 prev
                   ? {
@@ -406,6 +407,7 @@ export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
             turnover: r.revenue ?? 0,
             revenue: r.estimatedIncome ?? 0,
             profit: r.profit ?? 0,
+            payroll: r.salaryCosts ?? null,
           }))}
       />
       <DeepDive model={model} title="Compare financials" />

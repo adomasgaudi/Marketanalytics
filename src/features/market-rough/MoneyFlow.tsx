@@ -2,6 +2,7 @@ import { cn } from "@/lib/cn";
 import { type Formula, FormulaPopover } from "./Formula";
 import { fmtEur, fmtPct } from "./format";
 import type { Rank } from "./metrics";
+import { revBreakdown } from "./money-flow-breakdown";
 
 /** Previous-year figures on the same basis, for the per-item YoY chips. */
 export type MoneyFlowPrev = { T?: number | null; R?: number | null; P?: number | null };
@@ -11,6 +12,8 @@ type Props = {
   turnover: number | null;
   revenue: number | null;
   profit: number | null;
+  /** Sodra wage bill — subdivides the revenue band in the bar only. */
+  payroll?: number | null;
   prev?: MoneyFlowPrev;
   /** Rank chip after the turnover headline (company view). */
   rank?: Rank | null;
@@ -63,6 +66,7 @@ export function MoneyFlow({
   mode = "value",
   yrLabel,
   formulas = {},
+  payroll,
 }: Props) {
   if (revenue == null && turnover == null) return null;
   const T = turnover ?? revenue!;
@@ -71,12 +75,23 @@ export function MoneyFlow({
     turnover != null && revenue != null && turnover > revenue ? turnover - revenue : 0;
   const pctOf = (v: number) => (T > 0 ? (v / T) * 100 : 0);
 
-  // Bar bottom→top: Net profit (green), rest-of-Revenue, rest-of-Turnover.
+  // Bar bottom→top: Net profit, revenue sub-slices, pass-through turnover.
   const profitSeg = profit != null && profit > 0 ? profit : 0;
   const revRest = revenue != null ? Math.max(0, revenue - profitSeg) : 0;
+  const revParts = revBreakdown(revRest, payroll);
+  const revSlices =
+    revParts && revRest > 0
+      ? [
+          { cls: "bg-mf-rev-tax", pct: pctOf(revParts.profitTax) },
+          { cls: "bg-mf-rev-opex", pct: pctOf(revParts.opex) },
+          { cls: "bg-mf-rev-labour", pct: pctOf(revParts.employer) },
+        ].filter((s) => s.pct > 0)
+      : revRest > 0
+        ? [{ cls: "bg-mf-rev", pct: pctOf(revRest) }]
+        : [];
   const segments = [
     profitSeg > 0 && { cls: "bg-green", pct: pctOf(profitSeg) },
-    revRest > 0 && { cls: "bg-mf-rev", pct: pctOf(revRest) },
+    ...revSlices,
     pass > 0 && { cls: "bg-mf-turn", pct: pctOf(pass) },
   ].filter(Boolean) as { cls: string; pct: number }[];
 
