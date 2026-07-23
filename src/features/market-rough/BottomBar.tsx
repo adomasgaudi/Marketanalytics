@@ -369,6 +369,12 @@ export function BottomBar({
             // width read as arbitrary. They just get roomier, not spaced apart.
             className="flex w-full min-w-0 snap-x snap-mandatory [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
           >
+            {/* Half-track spacers so the FIRST and LAST year can reach the
+                centre. Without them an edge year can never scroll to the
+                middle, so the carousel could only ever settle on an inner year
+                — the side years were tap-only. No data-year/snap: they are
+                dead space the settle logic and native snap both ignore. */}
+            <div aria-hidden className="pointer-events-none w-1/2 flex-none" />
             {model.finYears.map((option) => (
               <button
                 key={option}
@@ -409,6 +415,7 @@ export function BottomBar({
                 <span className="hidden md:inline">{option}</span>
               </button>
             ))}
+            <div aria-hidden className="pointer-events-none w-1/2 flex-none" />
           </div>
 
           {/* Carousel bubbles: one dot per year so the count and the current
