@@ -356,24 +356,25 @@ html[data-mode="default"] [data-devcorner] {
   background: color-mix(in srgb, var(--color-accent) 14%, var(--color-panel));
   color: var(--color-ink);
 }
-@media (min-width: 768px) {
-  .segment-picker-trigger {
-    display: flex;
-    width: auto;
-    min-width: 132px;
-    height: 36px;
-    gap: 7px;
-    padding: 0 10px;
-    justify-content: flex-start;
-  }
-  .segment-picker-label {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-    font-weight: 600;
-  }
+/* Expanded once the bar has room for the name (see barDensity in BottomBar).
+   Driven by data-density, not a viewport query, so the all-years view — where
+   the year track is gone — can spell the segment out on a phone too. */
+.segment-picker[data-density="expanded"] .segment-picker-trigger {
+  display: flex;
+  width: auto;
+  min-width: 132px;
+  height: 36px;
+  gap: 7px;
+  padding: 0 10px;
+  justify-content: flex-start;
+}
+.segment-picker[data-density="expanded"] .segment-picker-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* Legacy ≤600px density: tighter page gutters, 12px cards, 300px chart boxes.
