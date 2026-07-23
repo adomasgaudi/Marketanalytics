@@ -328,6 +328,9 @@ html[data-mode="default"] [data-devcorner] {
   box-shadow: 0 12px 28px rgb(0 0 0 / 0.2);
 }
 .segment-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   min-height: 38px;
   padding: 8px 10px;
   border-radius: 6px;
@@ -337,6 +340,17 @@ html[data-mode="default"] [data-devcorner] {
   font-weight: 600;
   text-align: left;
 }
+/* Swatch of the segment's slice colour (inline background); mirrors the
+   doughnut legend so an option reads as the slice it selects. */
+.segment-picker-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 3px;
+}
+/* Background tints on hover/active. The ink colour only lands on "All
+   segments" — every coloured option carries an inline colour that wins over
+   this rule, so it keeps its segment hue. */
 .segment-picker-option:hover,
 .segment-picker-option[data-on="true"] {
   background: color-mix(in srgb, var(--color-accent) 14%, var(--color-panel));

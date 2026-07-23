@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { IconAverage, IconBuilding, IconMarket, IconPerson, IconSegments } from "./Icons";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
+import { useSegColors } from "./useSegColors";
 import { useViewMode } from "./ViewSync";
 import {
   BASES,
@@ -194,6 +195,11 @@ export function BottomBar({
   mode: "market" | "company";
 }) {
   const [{ year, market, basis, segment }, setParams] = useDashboardParams(model.last);
+  // Same live palette the doughnut uses (theme × harmony/spectral), so the
+  // picker's colours ARE the slice colours — the trigger and each option read
+  // as the segment they select. "All segments" has no single hue, so it stays
+  // neutral.
+  const SEG_COLORS = useSegColors();
   // Hints follow the segment scope; the LABELS are fixed-width so switching
   // segment can never resize the control.
   const MARKET_HINTS = marketHints(segment);
@@ -439,6 +445,14 @@ export function BottomBar({
               aria-expanded={segmentOpen}
               aria-haspopup="listbox"
               className="segment-picker-trigger"
+              // Active segment paints the whole trigger — border, icon (it
+              // draws in currentColor) and label. Inline so it also wins over
+              // the CSS hover/expanded accent while a segment is scoped.
+              style={
+                segment && SEG_COLORS[segment]
+                  ? { borderColor: SEG_COLORS[segment], color: SEG_COLORS[segment] }
+                  : undefined
+              }
               {...dragSegment}
               onClick={() => {
                 if (!segmentDrag.current.moved) setSegmentOpen((open) => !open);
@@ -460,19 +474,29 @@ export function BottomBar({
                 role="listbox"
                 aria-label="Segment scope"
               >
-                {["", ...model.segments].map((option) => (
-                  <button
-                    key={option || "all"}
-                    type="button"
-                    role="option"
-                    aria-selected={(segment ?? "") === option}
-                    className="segment-picker-option"
-                    data-on={(segment ?? "") === option}
-                    onClick={() => selectSegment(option)}
-                  >
-                    {option ? segName(option) : "All segments"}
-                  </button>
-                ))}
+                {["", ...model.segments].map((option) => {
+                  const color = option ? SEG_COLORS[option] : null;
+                  return (
+                    <button
+                      key={option || "all"}
+                      type="button"
+                      role="option"
+                      aria-selected={(segment ?? "") === option}
+                      className="segment-picker-option"
+                      data-on={(segment ?? "") === option}
+                      // Text takes the segment's hue; the leading dot repeats it
+                      // as a swatch so the row matches its slice at a glance.
+                      style={color ? { color } : undefined}
+                      onClick={() => selectSegment(option)}
+                    >
+                      <span
+                        className="segment-picker-dot"
+                        style={{ background: color ?? "var(--color-line)" }}
+                      />
+                      {option ? segName(option) : "All segments"}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
