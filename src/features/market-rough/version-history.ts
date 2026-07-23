@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.42.6",
+    date: "2026-07-23",
+    title: "Swipe segment selector",
+    desc: "The mobile segment control now shows a compact active-segment code and steps through segments with a horizontal drag.",
+  },
+  {
     v: "v3.42.5",
     date: "2026-07-23",
     title: "Swipe years to select",

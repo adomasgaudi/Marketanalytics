@@ -30,6 +30,19 @@ const MARKET_LABELS: Record<MarketMode, string> = {
 /** Second line, shown only under "Whole": which market is being summed. */
 const wholeSubLabel = (segment: string) => (segment ? segName(segment) : "market");
 
+/** Compact mobile identity for the active segment button. */
+const segmentCode = (segment: string) => {
+  if (!segment) return "ALL";
+  const words = segName(segment).match(/[\p{L}\d]+/gu) ?? [];
+  return words.length > 1
+    ? words
+        .slice(0, 2)
+        .map((word) => word[0])
+        .join("")
+        .toUpperCase()
+    : (words[0]?.slice(0, 2).toUpperCase() ?? "--");
+};
+
 const BASIS_LABELS: Record<Basis, string> = {
   total: "Full company",
   emp: "Per employee",
@@ -209,6 +222,7 @@ export function BottomBar({
   // popup slot as the flash, and wins while the pointer is on a button.
   const [hint, setHint] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const segmentDrag = useRef({ active: false, startX: 0, moved: false });
   const showFlash = (label: string) => {
     setFlash(label);
     if (flashTimer.current) clearTimeout(flashTimer.current);
@@ -218,6 +232,28 @@ export function BottomBar({
     setParams({ segment: next || null });
     setSegmentOpen(false);
     showFlash(`Segment: ${next ? segName(next) : "All segments"}`);
+  };
+  const dragSegment = {
+    onPointerDown: (event: React.PointerEvent<HTMLButtonElement>) => {
+      segmentDrag.current = { active: true, startX: event.clientX, moved: false };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    onPointerMove: (event: React.PointerEvent<HTMLButtonElement>) => {
+      if (Math.abs(event.clientX - segmentDrag.current.startX) > 24)
+        segmentDrag.current.moved = true;
+    },
+    onPointerUp: (event: React.PointerEvent<HTMLButtonElement>) => {
+      const drag = segmentDrag.current;
+      drag.active = false;
+      if (!drag.moved) return;
+      selectSegment(
+        stepIn(
+          ["", ...model.segments],
+          segment ?? "",
+          event.clientX < drag.startX ? 1 : -1,
+        ),
+      );
+    },
   };
   useEffect(
     () => () => void (flashTimer.current && clearTimeout(flashTimer.current)),
@@ -403,9 +439,17 @@ export function BottomBar({
               aria-expanded={segmentOpen}
               aria-haspopup="listbox"
               className="segment-picker-trigger"
-              onClick={() => setSegmentOpen((open) => !open)}
+              {...dragSegment}
+              onClick={() => {
+                if (!segmentDrag.current.moved) setSegmentOpen((open) => !open);
+              }}
             >
-              <IconSegments size={20} />
+              <span className="font-bold tracking-[.08em] md:hidden">
+                {segmentCode(segment)}
+              </span>
+              <span className="hidden md:inline">
+                <IconSegments size={20} />
+              </span>
               <span className="segment-picker-label">
                 {segment ? segName(segment) : "All segments"}
               </span>
