@@ -303,16 +303,6 @@ export function CompanyPerYear({
     <div>
       {tabs}
       {profileCard}
-      {/* Above the money-flow card, as in MarketsView: the toggle governs both
-          that card and the KPI cards, so it must not sit between them. */}
-      <KpiModeToggle
-        mode={kpiMode}
-        onChange={(m) => {
-          touched.current = true;
-          setKpiMode(m);
-        }}
-      />
-      {/* iPad and up: money-flow and the KPI cards sit on one row (as MarketsView). */}
       <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
         <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
           {!hasFin ? (
@@ -329,7 +319,6 @@ export function CompanyPerYear({
             </div>
           ) : (
             <MoneyFlow
-              mode={kpiMode}
               turnover={scaleMoney(row.revenue)}
               revenue={scaleMoney(row.estimatedIncome)}
               profit={scaleMoney(row.profit)}
@@ -370,10 +359,19 @@ export function CompanyPerYear({
             />
           )}
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:w-[340px] md:flex-none md:grid-cols-2">
-          {cards.map((card) => (
-            <KpiCard key={card.label} card={card} mode={kpiMode} />
-          ))}
+        <div className="md:w-[340px] md:flex-none">
+          <KpiModeToggle
+            mode={kpiMode}
+            onChange={(m) => {
+              touched.current = true;
+              setKpiMode(m);
+            }}
+          />
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:grid-cols-2">
+            {cards.map((card) => (
+              <KpiCard key={card.label} card={card} mode={kpiMode} />
+            ))}
+          </div>
         </div>
       </div>
 

@@ -19,8 +19,6 @@ type Props = {
   rank?: Rank | null;
   /** Small scope tag after the headline, e.g. "per company · 113 cos". */
   tag?: string;
-  /** Mirrors the €/% KPI toggle: "change" swaps each value for its YoY. */
-  mode?: "value" | "change";
   /** "2024 → 2025" — the span the YoY figures compare. */
   yrLabel?: string;
   /** Dev-mode formula folds, keyed by legend row. Built by `moneyFormulas`. */
@@ -30,19 +28,16 @@ type Props = {
 function Yoy({
   cur,
   prev,
-  big,
 }: {
   cur: number | null;
   prev?: number | null;
-  big?: boolean;
 }) {
   if (cur == null || prev == null || prev <= 0) return null;
   const ratio = cur / prev - 1;
   return (
     <span
       className={cn(
-        "font-semibold",
-        big ? "text-[19px]" : "text-[12px]",
+        "text-[12px] font-semibold",
         ratio >= 0 ? "text-green" : "text-red",
       )}
     >
@@ -63,7 +58,6 @@ export function MoneyFlow({
   prev = {},
   rank,
   tag,
-  mode = "value",
   yrLabel,
   formulas = {},
   payroll,
@@ -202,18 +196,9 @@ export function MoneyFlow({
                   item.lead ? "text-[19px] leading-tight" : "text-[13px]",
                 )}
               >
-                {/* % mode promotes the YoY to the headline and shows nothing
-                    else — the absolute before→after figures live in € mode. */}
-                {mode === "change" ? (
-                  <b>
-                    {item.name}{" "}
-                    <Yoy cur={item.cur} prev={item.before} big={item.lead} />
-                  </b>
-                ) : (
-                  <b>
-                    {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
-                  </b>
-                )}
+                <b>
+                  {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />
+                </b>
               </div>
               {/* Sits after the figure, not under it: the row is a single
                   baseline and the popover anchors itself inside the viewport. */}

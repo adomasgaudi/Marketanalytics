@@ -10,6 +10,18 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.52.0",
+    date: "2026-07-23",
+    title: "Cash flow always shows €",
+    desc: "Removed the €/% toggle from the money-flow card — turnover, revenue and profit always show euro values with a small coloured YoY % beside each. The €/% pill now only governs the KPI cards beside it.",
+  },
+  {
+    v: "v3.51.0",
+    date: "2026-07-23",
+    title: "Scatter matches doughnut colours",
+    desc: "Size vs profitability uses the same fixed segment order and palette as the segment doughnut — dropped top-5 + Other bucketing.",
+  },
+  {
     v: "v3.50.0",
     date: "2026-07-23",
     title: "Revenue bar sub-tones",

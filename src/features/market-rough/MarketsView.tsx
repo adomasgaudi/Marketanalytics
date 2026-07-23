@@ -178,12 +178,9 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
 
   return (
     <div>
-      <KpiModeToggle mode={shownMode} onChange={setKpiMode} changeDisabled={!hasPrev} />
-      {/* iPad and up: money-flow and the KPI cards sit on one row. */}
       <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
         <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
           <MoneyFlow
-            mode={shownMode}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             formulas={moneyFormulas({
               source: src,
@@ -225,10 +222,13 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
             }
           />
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:w-[340px] md:flex-none md:grid-cols-2">
-          {cards.map((card) => (
-            <KpiCard key={card.label} card={card} mode={shownMode} />
-          ))}
+        <div className="md:w-[340px] md:flex-none">
+          <KpiModeToggle mode={shownMode} onChange={setKpiMode} changeDisabled={!hasPrev} />
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:grid-cols-2">
+            {cards.map((card) => (
+              <KpiCard key={card.label} card={card} mode={shownMode} />
+            ))}
+          </div>
         </div>
       </div>
 
