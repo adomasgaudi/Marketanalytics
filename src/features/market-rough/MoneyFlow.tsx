@@ -197,20 +197,13 @@ export function MoneyFlow({
                   item.lead ? "text-[19px] leading-tight" : "text-[13px]",
                 )}
               >
-                {/* % mode promotes the YoY to the headline and drops the
-                    absolute figures to the sub line, like the KPI cards. */}
+                {/* % mode promotes the YoY to the headline and shows nothing
+                    else — the absolute before→after figures live in € mode. */}
                 {mode === "change" ? (
-                  <>
-                    <b>
-                      {item.name}{" "}
-                      <Yoy cur={item.cur} prev={item.before} big={item.lead} />
-                    </b>
-                    {item.before != null && item.before > 0 && (
-                      <span className="text-muted text-[11px] font-normal">
-                        {fmtEur(item.before)} → {item.val}
-                      </span>
-                    )}
-                  </>
+                  <b>
+                    {item.name}{" "}
+                    <Yoy cur={item.cur} prev={item.before} big={item.lead} />
+                  </b>
                 ) : (
                   <b>
                     {item.name} {item.val} <Yoy cur={item.cur} prev={item.before} />

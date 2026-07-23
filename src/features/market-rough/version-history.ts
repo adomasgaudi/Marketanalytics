@@ -10,6 +10,18 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.45.0",
+    date: "2026-07-23",
+    title: "Percent cash flow drops euro sub-line",
+    desc: "In % view the market and company cash-flow legend now shows only the YoY percentage; the €before → €after sub-line stays in € view. The gold revenue bracket is unchanged.",
+  },
+  {
+    v: "v3.44.0",
+    date: "2026-07-23",
+    title: "Rebuilt data toggle is dev-only",
+    desc: "The nav's rebuilt/legacy data-source toggle now shows only in Dev mode, and a bookmarked ?src=legacy is reset to rebuilt outside it.",
+  },
+  {
     v: "v3.43.0",
     date: "2026-07-23",
     title: "Coloured segment picker",
