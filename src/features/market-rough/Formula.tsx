@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useDashboardParams } from "./useDashboardParams";
 
 /**
  * Formula rendering for the Dev-mode KPI folds.
@@ -21,23 +20,25 @@ import { useDashboardParams } from "./useDashboardParams";
 
 /** One symbol in a formula, tied back to the field it came from. */
 export type FormulaVar = {
-  /** 2-3 char symbol used in the math, e.g. "HC". */
-  code: string;
+  /** 2-3 char symbol used in the math, e.g. "HC". Omitted for source-only folds. */
+  code?: string;
   /** Plain-language meaning, e.g. "headcount". */
   label: string;
-  /** Raw key in data/data.json, when the value maps to one. Omitted for
-      derived quantities (counts, medians) that exist only in the model. */
+  /** Raw key in data/data.json, when the value maps to one. */
   field?: string;
-  /** The symbol's actual value for the figure on screen, pre-formatted by the
-      call site (it owns the right units). Turns the fold from a definition
-      into a worked example you can check against the card. */
+  /** The symbol's actual value for the figure on screen, pre-formatted. */
   value?: string;
+  /** data2/… path (or data/data.json · field for legacy). */
+  path?: string;
+  /** Where it was scraped from. */
+  source?: string;
 };
 
 export type Formula = {
   /** Short heading, e.g. "Per-employee basis". */
   name: string;
-  math: ReactNode;
+  /** Omitted for filed figures — panel shows value + path + source only. */
+  math?: ReactNode;
   vars: FormulaVar[];
 };
 
@@ -85,33 +86,65 @@ export function Math_({ children }: { children: ReactNode }) {
 
 /* --- Shared builders ---------------------------------------------------- */
 
-/** Every KPI shares the same YoY definition; only the symbol changes.
- *  `vals` supplies the two figures being divided, already formatted. */
-export function yoy(
-  code: string,
-  label: string,
-  field?: string,
-  vals?: { cur?: string; prev?: string },
+type DataSource = "legacy" | "rebuilt";
+
+const PROVENANCE: Record<
+  DataSource,
+  Partial<Record<string, { path: string; source: string }>>
+> = {
+  rebuilt: {
+    revenue: {
+      path: "data2/rc_bulk.json · turnover",
+      source: "Registrų centras — registrucentras.lt/aduomenys",
+    },
+    profit: {
+      path: "data2/rc_bulk.json · profit",
+      source: "Registrų centras — registrucentras.lt/aduomenys",
+    },
+    employees: {
+      path: "data2/sodra_months.json · avgHeadcount",
+      source: "Sodra — sodra.lt",
+    },
+    avgSalary: {
+      path: "data2/sodra_months.json · avgWage",
+      source: "Sodra — sodra.lt",
+    },
+    salaryCosts: {
+      path: "data2/sodra_months.json · wageBill",
+      source: "Sodra — sodra.lt",
+    },
+  },
+  legacy: {
+    revenue: { path: "data/data.json · revenue", source: "Original spreadsheet" },
+    profit: { path: "data/data.json · profit", source: "Original spreadsheet" },
+    estimatedIncome: {
+      path: "data/data.json · estimatedIncome",
+      source: "Original spreadsheet",
+    },
+    employees: { path: "data/data.json · employees", source: "Original spreadsheet" },
+    avgSalary: { path: "data/data.json · avgSalary", source: "Original spreadsheet" },
+    salaryCosts: { path: "data/data.json · salaryCosts", source: "Original spreadsheet" },
+  },
+};
+
+/** Filed figure with no derivation — value, file path, scrape source. */
+export function sourceFormula(
+  name: string,
+  field: string,
+  value: string | undefined,
+  dataset: DataSource,
 ): Formula {
+  const p = PROVENANCE[dataset][field];
   return {
-    name: "Year-over-year change",
-    math: (
-      <>
-        <Frac
-          num={<V c={code} sub="t" />}
-          den={
-            <>
-              <V c={code} sub="t−1" />
-            </>
-          }
-        />
-        <Op o="−" />
-        <N v={1} />
-      </>
-    ),
+    name,
     vars: [
-      { code: `${code}ₜ`, label: `${label}, selected year`, field, value: vals?.cur },
-      { code: `${code}ₜ₋₁`, label: `${label}, prior year`, field, value: vals?.prev },
+      {
+        label: name.toLowerCase(),
+        value,
+        field,
+        path: p?.path,
+        source: p?.source,
+      },
     ],
   };
 }
@@ -131,87 +164,19 @@ export type MoneyBasis = {
   source?: "legacy" | "rebuilt";
 };
 
-/** Body of a money formula: optional ∑ over filings, optional ÷ divisor. */
-function moneyBody(code: string, src: string, { sum, div }: MoneyBasis) {
-  const core = sum ? (
-    <>
-      <mo largeop="true">∑</mo>
-      <V c={src} sub="i" />
-    </>
-  ) : (
-    <V c={src} />
-  );
-  return (
-    <>
-      <V c={code} />
-      <Op o="=" />
-      {div ? <Frac num={<>{core}</>} den={<V c={div.code} />} /> : core}
-    </>
-  );
-}
-
-function moneyVars(
-  code: string,
-  codeLabel: string,
-  src: string,
-  srcLabel: string,
-  field: string,
-  { sum, div, values }: MoneyBasis,
-  key: "T" | "R" | "P",
-): FormulaVar[] {
-  return [
-    { code, label: codeLabel, value: values?.[key] },
-    { code: sum ? `${src}ᵢ` : src, label: srcLabel, field },
-    ...(div ? [{ code: div.code, label: div.label, value: div.value }] : []),
-  ];
-}
-
 /**
- * The three money-flow figures. Turnover is what the filing reports as sales;
- * Revenue is the agency's own income out of that (a fee estimate for the latest
- * year); Net profit is the bottom line. Same basis applies to all three.
+ * The three money-flow figures. Turnover and net profit are filed — source only.
+ * Revenue is derived, so it keeps the build formula.
  */
 export function moneyFormulas(
   basis: MoneyBasis = {},
 ): Record<"T" | "R" | "P", Formula[]> {
+  const src = basis.source ?? "rebuilt";
   return {
-    T: [
-      {
-        name: "Turnover",
-        // Symbol is `sales`, not `rev`: data.json's `revenue` field is the
-        // filed sales figure we show as Turnover, while the card labelled
-        // "Revenue" is the agency's own income. Sharing the letters made the
-        // fold read as "Turnover = Revenue".
-        math: moneyBody("T", "sales", basis),
-        vars: moneyVars(
-          "T",
-          "turnover shown",
-          "sales",
-          "filed sales revenue (Pardavimo pajamos)",
-          "revenue",
-          basis,
-          "T",
-        ),
-      },
-    ],
+    T: [sourceFormula("Turnover", "revenue", basis.values?.T, src)],
     R: [
-      {
-        name: "Revenue (agency income)",
-        math: moneyBody("R", "ei", basis),
-        vars: moneyVars(
-          "R",
-          "revenue shown",
-          "ei",
-          "agency income out of turnover (spėjamos pajamos)",
-          "estimatedIncome",
-          basis,
-          "R",
-        ),
-      },
-      basis.source === "legacy"
+      src === "legacy"
         ? {
-            // The old spreadsheet took turnover down by a ratio. Nothing was
-            // measured; the ratio was carried over from the brand's own past.
             name: "…how the figure was reached",
             math: (
               <>
@@ -235,8 +200,6 @@ export function moneyFormulas(
             ],
           }
         : {
-            // The rebuild works UP from what the agency spent and kept, so the
-            // only assumption left is the opex share.
             name: "…how the figure is built",
             math: (
               <>
@@ -256,31 +219,25 @@ export function moneyFormulas(
                 code: "pay",
                 label: "payroll — Sodra's monthly wage × headcount, summed over the year",
                 field: "salaryCosts",
+                path: PROVENANCE.rebuilt.salaryCosts?.path,
+                source: PROVENANCE.rebuilt.salaryCosts?.source,
               },
               { code: "sod", label: "1,0177 — the employer's own Sodra contribution" },
               {
                 code: "opx",
                 label: "1,43 — own opex at 43% of labour. The only assumption here",
               },
-              { code: "pre", label: "profit before tax, as filed with Registrų centras" },
+              {
+                code: "pre",
+                label: "profit before tax, as filed with Registrų centras",
+                field: "profit",
+                path: PROVENANCE.rebuilt.profit?.path,
+                source: PROVENANCE.rebuilt.profit?.source,
+              },
             ],
           },
     ],
-    P: [
-      {
-        name: "Net profit",
-        math: moneyBody("P", "pr", basis),
-        vars: moneyVars(
-          "P",
-          "net profit shown",
-          "pr",
-          "filed profit after tax",
-          "profit",
-          basis,
-          "P",
-        ),
-      },
-    ],
+    P: [sourceFormula("Net profit", "profit", basis.values?.P, src)],
   };
 }
 
@@ -345,22 +302,13 @@ export function FormulaPopover({ formulas }: { formulas: Formula[] }) {
 const EDGE = 8; // viewport breathing room
 
 function FormulaPanel({ formulas }: { formulas: Formula[] }) {
-  // Which file a reader should open to check the figure. 0 is a placeholder
-  // year — only `src` is read here, never the year.
-  const [{ src }] = useDashboardParams(0);
-  const sourceFile = src === "legacy" ? "data.json" : "data2";
   const panelRef = useRef<HTMLDivElement>(null);
-  // Nudge applied after measuring; the panel is anchored to its trigger, which
-  // can sit anywhere across the page width.
   const [shift, setShift] = useState(0);
   const [below, setBelow] = useState(false);
 
-  // useLayoutEffect, not useEffect: measure and correct before paint so the
-  // panel never flashes off-screen on first open.
   useLayoutEffect(() => {
     const el = panelRef.current;
     if (!el) return;
-    // Measure unshifted, else each open compounds the previous correction.
     const rect = el.getBoundingClientRect();
     const left = rect.left - shift;
     const right = rect.right - shift;
@@ -368,7 +316,6 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
     if (right > window.innerWidth - EDGE) next = window.innerWidth - EDGE - right;
     if (left + next < EDGE) next = EDGE - left;
     setShift(next);
-    // Flip under the trigger when the panel would clip the top of the viewport.
     setBelow(rect.height + 6 > rect.bottom);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formulas]);
@@ -378,8 +325,6 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
       ref={panelRef}
       role="dialog"
       style={{ transform: `translateX(${shift}px)` }}
-      // Width is capped to the viewport on narrow screens; the measured shift
-      // keeps it inside the edges on wide ones.
       className={`border-line bg-panel absolute left-0 z-[210] w-[min(280px,calc(100vw-16px))] rounded-[6px] border p-3 text-left shadow-[0_4px_16px_rgba(0,0,0,.22)] ${
         below ? "top-[calc(100%+6px)]" : "bottom-[calc(100%+6px)]"
       }`}
@@ -389,32 +334,53 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
           <div className="text-muted mb-1 text-[10px] font-semibold tracking-wide uppercase">
             {f.name}
           </div>
-          <Math_>{f.math}</Math_>
+          {f.math ? <Math_>{f.math}</Math_> : null}
           <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-[10.5px]">
-            {f.vars.map((v) => (
-              <Fragment key={v.code}>
-                <dt className="text-ink font-semibold italic">{v.code}</dt>
-                <dd className="text-muted">
-                  {/* Value first and in ink: the reader is checking the number
-                      on the card, and only then how it was defined. */}
+            {f.vars.map((v, j) =>
+              !f.math && v.path ? (
+                <dd key={j} className="text-muted col-span-2 leading-snug">
                   {v.value != null && (
                     <span className="text-ink font-semibold tabular-nums">{v.value}</span>
                   )}
-                  <span className={v.value != null ? "block" : ""}>
-                    {v.label}
-                    {/* The raw key AND the file it is in, so a Dev-mode reader
-                        can find the number rather than trust the label. Which
-                        file that is depends on the nav's data-source toggle —
-                        naming the wrong one is worse than naming none. */}
-                    {v.field && (
-                      <code className="bg-panel2 text-muted ml-1 rounded px-1 py-px text-[9.5px]">
-                        {sourceFile} · {v.field}
-                      </code>
-                    )}
-                  </span>
+                  {v.value != null && (v.path || v.source) && " — "}
+                  {v.path && (
+                    <code className="bg-panel2 text-muted rounded px-1 py-px text-[9.5px]">
+                      {v.path}
+                    </code>
+                  )}
+                  {v.source && (
+                    <span className={v.path ? " block mt-0.5" : ""}>{v.source}</span>
+                  )}
                 </dd>
-              </Fragment>
-            ))}
+              ) : (
+                <Fragment key={v.code ?? j}>
+                  {v.code ? (
+                    <dt className="text-ink font-semibold italic">{v.code}</dt>
+                  ) : null}
+                  <dd className={v.code ? "text-muted" : "text-muted col-span-2"}>
+                    {v.value != null && (
+                      <span className="text-ink font-semibold tabular-nums">{v.value}</span>
+                    )}
+                    <span className={v.value != null ? "block" : ""}>
+                      {v.label}
+                      {v.path && (
+                        <code className="bg-panel2 text-muted ml-1 rounded px-1 py-px text-[9.5px]">
+                          {v.path}
+                        </code>
+                      )}
+                      {v.source && !v.path && (
+                        <span className="text-muted block text-[9.5px]">{v.source}</span>
+                      )}
+                      {v.field && !v.path && (
+                        <code className="bg-panel2 text-muted ml-1 rounded px-1 py-px text-[9.5px]">
+                          {v.field}
+                        </code>
+                      )}
+                    </span>
+                  </dd>
+                </Fragment>
+              ),
+            )}
           </dl>
         </div>
       ))}

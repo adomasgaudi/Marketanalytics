@@ -1,5 +1,5 @@
 import { cn } from "@/lib/cn";
-import { type Formula, FormulaPopover, yoy } from "./Formula";
+import { type Formula, FormulaPopover } from "./Formula";
 import { fmtEur, fmtPct } from "./format";
 import type { Rank } from "./metrics";
 
@@ -80,17 +80,7 @@ export function MoneyFlow({
     pass > 0 && { cls: "bg-mf-turn", pct: pctOf(pass) },
   ].filter(Boolean) as { cls: string; pct: number }[];
 
-  // Each row pairs its own definition with the shared YoY formula, and only
-  // shows the latter when there is a prior year to compare against.
-  const folds = (
-    k: "T" | "R" | "P",
-    code: string,
-    label: string,
-    before?: number | null,
-  ) => [
-    ...(formulas[k] ?? []),
-    ...(formulas[k] && before != null && before > 0 ? [yoy(code, label)] : []),
-  ];
+  const folds = (k: "T" | "R" | "P") => [...(formulas[k] ?? [])];
 
   const legend = [
     profit != null && {
@@ -99,7 +89,7 @@ export function MoneyFlow({
       val: fmtEur(profit),
       cur: profit,
       before: prev.P,
-      formulas: folds("P", "P", "net profit", prev.P),
+      formulas: folds("P"),
     },
     revenue != null && {
       dot: "bg-mf-rev",
@@ -107,7 +97,7 @@ export function MoneyFlow({
       val: fmtEur(revenue),
       cur: revenue,
       before: prev.R,
-      formulas: folds("R", "R", "revenue", prev.R),
+      formulas: folds("R"),
     },
     {
       dot: "bg-mf-turn",
@@ -115,7 +105,7 @@ export function MoneyFlow({
       val: fmtEur(T),
       cur: turnover,
       before: prev.T,
-      formulas: folds("T", "T", "turnover", prev.T),
+      formulas: folds("T"),
       // Turnover is the card's headline now that the title row is gone.
       lead: true,
     },

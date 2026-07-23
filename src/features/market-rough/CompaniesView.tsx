@@ -6,7 +6,7 @@ import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
-import { moneyFormulas, Op, V, yoy } from "./Formula";
+import { moneyFormulas, sourceFormula } from "./Formula";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { defaultBrand, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
@@ -270,38 +270,12 @@ export function CompanyPerYear({
           : "–",
       changeCls: empYoY ? (row.employees! >= prevEmp! ? "pos" : "neg") : "",
       formulas: [
-        {
-          // One company, one filing — no sum or median to take. The figure is
-          // read straight off the year's record.
-          name: "Headcount",
-          math: (
-            <>
-              <V c="HC" />
-              <Op o="=" />
-              <V c="emp" />
-            </>
-          ),
-          vars: [
-            {
-              code: "HC",
-              label: "headcount shown",
-              value: emp != null ? emp.toLocaleString() : undefined,
-            },
-            {
-              code: "emp",
-              label: `${brand}'s reported employees, ${year}`,
-              field: "employees",
-            },
-          ],
-        },
-        ...(empYoY
-          ? [
-              yoy("HC", "headcount", "employees", {
-                cur: emp?.toLocaleString(),
-                prev: prevEmp?.toLocaleString(),
-              }),
-            ]
-          : []),
+        sourceFormula(
+          "Headcount",
+          "employees",
+          emp != null ? emp.toLocaleString() : undefined,
+          src,
+        ),
       ],
     },
     {
@@ -315,36 +289,12 @@ export function CompanyPerYear({
           : "–",
       changeCls: salYoY ? (row.avgSalary! >= prevSal! ? "pos" : "neg") : "",
       formulas: [
-        {
-          name: "Average monthly salary",
-          math: (
-            <>
-              <V c="SAL" />
-              <Op o="=" />
-              <V c="avg" />
-            </>
-          ),
-          vars: [
-            {
-              code: "SAL",
-              label: "salary shown",
-              value: sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
-            },
-            {
-              code: "avg",
-              label: `${brand}'s average monthly pay, ${year} (only > €500/mo counts)`,
-              field: "avgSalary",
-            },
-          ],
-        },
-        ...(salYoY
-          ? [
-              yoy("SAL", "average salary", "avgSalary", {
-                cur: sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
-                prev: prevSal != null ? `€${prevSal.toLocaleString()}/mo` : undefined,
-              }),
-            ]
-          : []),
+        sourceFormula(
+          "Average monthly salary",
+          "avgSalary",
+          sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
+          src,
+        ),
       ],
     },
   ];

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
-import { Frac, moneyFormulas, Op, V, yoy } from "./Formula";
+import { Frac, moneyFormulas, Op, V } from "./Formula";
 import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
@@ -55,7 +55,6 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
     curVal: number,
     prevVal: number,
     fmt: (v: number) => string,
-    formulaName: string,
   ): KpiCardData => {
     const ratio = hasPrev && prevVal > 0 ? curVal / prevVal - 1 : null;
     return {
@@ -64,14 +63,7 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
       changeText: ratio == null ? "—" : fmtPct(ratio),
       rangeText: hasPrev ? `${fmt(prevVal)} → ${fmt(curVal)}` : fmt(curVal),
       changeCls: ratio != null && ratio < 0 ? "neg" : "pos",
-      formulas: hasPrev
-        ? [
-            yoy(formulaName, formulaName.toLowerCase(), undefined, {
-              cur: fmt(curVal),
-              prev: fmt(prevVal),
-            }),
-          ]
-        : [],
+      formulas: [],
     };
   };
 
@@ -94,7 +86,6 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
         empCur,
         empPrev,
         empFmt,
-        "Employees",
       ),
       // Two distinct formulas, not one sentence: how the figure is built, then
       // how the change on it is measured.
@@ -148,20 +139,10 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
                 { code: "empᵢ", label: "one company's headcount", field: "employees" },
               ],
             },
-        ...(hasPrev
-          ? [
-              yoy(
-                market === "avg" ? "AE" : "HC",
-                market === "avg" ? "average employees" : "total headcount",
-                "employees",
-                { cur: empFmt(empCur), prev: empFmt(empPrev) },
-              ),
-            ]
-          : []),
       ],
     },
     {
-      ...yoyCard("Median salary", salary, salaryPrev, salaryFmt, "Median salary"),
+      ...yoyCard("Median salary", salary, salaryPrev, salaryFmt),
       formulas: [
         {
           name: "Median salary",
@@ -188,14 +169,6 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
             },
           ],
         },
-        ...(hasPrev
-          ? [
-              yoy("SAL", "median salary", "avgSalary", {
-                cur: salaryFmt(salary),
-                prev: salaryFmt(salaryPrev),
-              }),
-            ]
-          : []),
       ],
     },
   ];
