@@ -337,9 +337,13 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                   ? [
                       null,
                       {
+                        // shownVal, not a hardcoded %: the €/% toggle has to
+                        // reach the on-slice text too, or switching to € changes
+                        // the legend and the tooltip while the donut keeps
+                        // showing percentages.
                         lines: companySlices.map((s, i) => [
                           s.brand,
-                          `${companyPct(i).toFixed(companyPct(i) < 10 ? 1 : 0)}%`,
+                          shownVal(s.value, companyPct(i)),
                         ]),
                         pcts: companySlices.map((_, i) => companyPct(i)),
                         min: 4.5,
