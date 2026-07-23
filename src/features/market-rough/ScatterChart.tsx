@@ -11,7 +11,7 @@ import {
 import { useMemo } from "react";
 import { Bubble } from "react-chartjs-2";
 import { fmtM } from "./format";
-import { segName } from "./segments";
+import { primarySegment, segName } from "./segments";
 import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -62,17 +62,19 @@ export function ScatterChart({ model }: { model: MarketModel }) {
           r: Math.max(4, Math.sqrt(d.employees as number) * 2.2),
           brand: d.brand,
           emp: d.employees as number,
-          seg: d.activities[0] ?? "Other",
+          seg: primarySegment(d),
         })),
     [model.rows, year, perEmp],
   );
 
-  // Top-5 segments by whole-market revenue in the latest year, as the legacy.
+  // Top-5 segments by fee revenue — each company credited once (primary segment).
   const topSegs = useMemo(() => {
     const sums: Record<string, number> = {};
     model.rows.forEach((d) => {
-      if (d.year === model.last && d.estimatedIncome)
-        d.activities.forEach((a) => (sums[a] = (sums[a] ?? 0) + d.estimatedIncome!));
+      if (d.year === model.last && d.estimatedIncome) {
+        const seg = primarySegment(d);
+        sums[seg] = (sums[seg] ?? 0) + d.estimatedIncome!;
+      }
     });
     return Object.entries(sums)
       .sort((a, b) => b[1] - a[1])

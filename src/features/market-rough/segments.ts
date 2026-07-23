@@ -166,6 +166,76 @@ export const basisWord = (b: SegBasis) =>
 const median = (a: number[]) =>
   a.length ? a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)] : null;
 
+/** When a company must land in one segment only (19 brands span several). */
+export const primarySegment = (row: CompanyYear) => row.activities[0] ?? "Other";
+
+/** Whole-market figure for metric × basis × year — each company once. */
+export function marketMetricTotal(
+  rows: CompanyYear[],
+  metric: SegMetricKey,
+  basis: SegBasis,
+  year: number,
+): number {
+  const M = SEG_METRICS[metric];
+  const ds = rows
+    .filter((d) => d.year === year)
+    .map((d) => ({ v: M.f(d), e: d.employees }))
+    .filter(
+      (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
+    );
+
+  if (M.ratio) return median(ds.map((o) => o.v)) ?? 0;
+  if (basis === "emp") {
+    const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
+    return median(w) ?? 0;
+  }
+  if (basis === "company") return median(ds.map((o) => o.v)) ?? 0;
+  return ds.reduce((s, o) => s + o.v, 0);
+}
+
+/**
+ * Denominator for segment-share %. Summing per-segment totals double-counts
+ * multi-segment companies (Fabula × 4); scoped to one segment it is that slice.
+ */
+export function segmentShareTotal(
+  rows: CompanyYear[],
+  metric: SegMetricKey,
+  basis: SegBasis,
+  year: number,
+  scopedSegment: string | null,
+  shownValues: number[],
+): number {
+  if (scopedSegment) {
+    return shownValues.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
+  }
+  return marketMetricTotal(rows, metric, basis, year) || 1;
+}
+
+/** Segment total counting each company once (primary segment only). */
+export function segMetricValUnique(
+  rows: CompanyYear[],
+  seg: string,
+  metric: SegMetricKey,
+  basis: SegBasis,
+  year: number,
+): number | null {
+  const M = SEG_METRICS[metric];
+  const ds = rows
+    .filter((d) => d.year === year && primarySegment(d) === seg)
+    .map((d) => ({ v: M.f(d), e: d.employees }))
+    .filter(
+      (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
+    );
+
+  if (M.ratio) return median(ds.map((o) => o.v));
+  if (basis === "emp") {
+    const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
+    return w.length >= 3 ? median(w) : null;
+  }
+  if (basis === "company") return median(ds.map((o) => o.v));
+  return ds.length ? ds.reduce((s, o) => s + o.v, 0) : null;
+}
+
 /** One segment's value for metric × basis × year (null = not enough data). */
 export function segMetricVal(
   rows: CompanyYear[],
@@ -212,7 +282,7 @@ export function segMetricPct(
 export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
   const M = SEG_METRICS[metric];
   return basis === "total"
-    ? `Total ${M.short} summed across every company in each segment${M.pos ? " (positive values)." : "."}`
+    ? `Each segment's total (companies with several segments count in each). Shares use the deduped whole market, not the sum of slices.`
     : basis === "emp"
       ? `Median ${M.short} per employee in each segment — a productivity proxy.`
       : `Median ${M.short} per company in each segment.`;

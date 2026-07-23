@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { fmtM } from "./format";
+import { primarySegment } from "./segments";
 import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -37,7 +38,7 @@ export function ScatterScrub({ model }: { model: MarketModel }) {
             y: ((d.profit as number) / (d.estimatedIncome as number)) * 100,
             r: Math.max(3, Math.sqrt(d.employees as number) * 1.6),
             brand: d.brand,
-            seg: d.activities[0] ?? "Other",
+            seg: primarySegment(d),
           };
         });
       return out;

@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.49.0",
+    date: "2026-07-23",
+    title: "Fix multi-segment double-count",
+    desc: "Segment chart centre and % shares use deduped market total; inner company ring only when scoped. Insights, scatter legend and winner clustering count each company once (primary segment).",
+  },
+  {
     v: "v3.48.0",
     date: "2026-07-23",
     title: "Year carousel fix",

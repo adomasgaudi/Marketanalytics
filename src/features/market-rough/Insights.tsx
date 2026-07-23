@@ -1,6 +1,7 @@
 import { cn } from "@/lib/cn";
 import { fmtEur, fmtPct } from "./format";
 import { margin, marketTotals, medianSalary } from "./metrics";
+import { primarySegment } from "./segments";
 import type { CompanyYear, MarketModel } from "./types";
 
 type Insight = {
@@ -69,7 +70,7 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
   const segRevenue = model.segments
     .map((seg) => ({
       seg,
-      rows: inYear(rows, year).filter((row) => row.activities.includes(seg)),
+      rows: inYear(rows, year).filter((row) => primarySegment(row) === seg),
     }))
     .map(({ seg, rows: segRows }) => ({
       seg,
@@ -244,8 +245,10 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
   if (year > back && winners.length) {
     // Which segment do the fast growers cluster in? That's where demand is shifting.
     const segCounts = new Map<string, number>();
-    for (const { row } of winners.slice(0, 8))
-      for (const seg of row.activities) segCounts.set(seg, (segCounts.get(seg) ?? 0) + 1);
+    for (const { row } of winners.slice(0, 8)) {
+      const seg = primarySegment(row);
+      segCounts.set(seg, (segCounts.get(seg) ?? 0) + 1);
+    }
     const hot = [...segCounts.entries()].sort((a, b) => b[1] - a[1])[0];
     const clustered = hot && hot[1] >= Math.max(3, Math.ceil(winners.length / 2));
     insights.push({

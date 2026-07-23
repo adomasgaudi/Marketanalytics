@@ -8,9 +8,11 @@ import { BarsSvg } from "./BarsSvg";
 import { fmtEur } from "./format";
 import {
   basisWord,
+  marketMetricTotal,
   SEG_METRICS,
   type SegBasis,
   type SegMetricKey,
+  segmentShareTotal,
   segMetricVal,
   segName,
 } from "./segments";
@@ -182,52 +184,62 @@ export function SegmentChart({ model }: { model: MarketModel }) {
     return { s, v: v ?? 0, has: v != null };
   });
 
-  const total = rows.reduce((sum, o) => sum + Math.max(0, o.v), 0) || 1;
-  const pct = (i: number) => (Math.max(0, rows[i].v) / total) * 100;
+  const shareTotal = segmentShareTotal(
+    model.rows,
+    metric,
+    basis,
+    year,
+    segment ?? null,
+    rows.map((o) => o.v),
+  );
+  const centreValue = segment
+    ? Math.max(0, rows[0]?.v ?? 0)
+    : marketMetricTotal(model.rows, metric, basis, year);
+  const pct = (i: number) => (Math.max(0, rows[i].v) / shareTotal) * 100;
   const shown = (i: number) =>
     show === "pct" ? `${pct(i).toFixed(pct(i) < 10 ? 1 : 0)}%` : fmtEur(rows[i].v);
 
   const title = `${year} ${SEG_METRICS[metric].label} ${segment ? `in ${segName(segment)} by company` : "by segment"}${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
 
-  // Fixed company slots preserve every inner-slice position across years and
-  // metric/basis changes. Missing or unreported companies simply shrink to 0.
-  const companySlices = rows.flatMap((segmentRow) => {
-    const brands = [
-      ...new Set(
-        model.rows.filter((d) => d.activities.includes(segmentRow.s)).map((d) => d.brand),
-      ),
-    ].sort();
-    const valuesByBrand = new Map(
-      model.rows
-        .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
-        .map((d) => {
-          const raw = SEG_METRICS[metric].f(d);
-          const value =
-            raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
-          return [d.brand, Math.max(0, value)] as const;
-        }),
-    );
-    const companyTotal = [...valuesByBrand.values()].reduce(
-      (sum, value) => sum + value,
-      0,
-    );
-    const displayedSegmentValue = Math.max(0, segmentRow.v);
-    return brands.map((brand, i) => {
-      const value = valuesByBrand.get(brand) ?? 0;
-      return {
-        value:
-          companyTotal > 0 && displayedSegmentValue > 0
-            ? (value / companyTotal) * displayedSegmentValue
-            : 0,
-        brand,
-        // Scoped, the ring IS the chart, so each company takes its own shade;
-        // unscoped it stays a flat subdivision of the segment's colour.
-        color: segment
-          ? tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length)
-          : (SEG_COLORS[segmentRow.s] ?? "#888"),
-      };
-    });
-  });
+  // Inner company ring only when scoped to one segment — in All Segments the
+  // same brand can sit in several slices and would be drawn multiple times.
+  const companySlices = segment
+    ? rows.flatMap((segmentRow) => {
+        const brands = [
+          ...new Set(
+            model.rows
+              .filter((d) => d.activities.includes(segmentRow.s))
+              .map((d) => d.brand),
+          ),
+        ].sort();
+        const valuesByBrand = new Map(
+          model.rows
+            .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
+            .map((d) => {
+              const raw = SEG_METRICS[metric].f(d);
+              const value =
+                raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
+              return [d.brand, Math.max(0, value)] as const;
+            }),
+        );
+        const companyTotal = [...valuesByBrand.values()].reduce(
+          (sum, value) => sum + value,
+          0,
+        );
+        const displayedSegmentValue = Math.max(0, segmentRow.v);
+        return brands.map((brand, i) => {
+          const value = valuesByBrand.get(brand) ?? 0;
+          return {
+            value:
+              companyTotal > 0 && displayedSegmentValue > 0
+                ? (value / companyTotal) * displayedSegmentValue
+                : 0,
+            brand,
+            color: tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length),
+          };
+        });
+      })
+    : [];
 
   // Company shares of the ring, for the on-slice labels and the legend.
   const companyTotal = companySlices.reduce((sum, s) => sum + s.value, 0) || 1;
@@ -320,7 +332,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             key={segment || "all"}
             data={{
               labels: rows.map((o) => segName(o.s)),
-              datasets: [segmentRing, companyRing],
+              datasets: segment ? [segmentRing, companyRing] : [segmentRing],
             }}
             options={
               {
@@ -360,8 +372,8 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                       null,
                     ],
                 centre: {
-                  top: segment ? segName(segment) : "Total",
-                  big: fmtEur(rows.reduce((sum, o) => sum + Math.max(0, o.v), 0)),
+                  top: segment ? segName(segment) : "Total market",
+                  big: fmtEur(centreValue),
                 },
                 plugins: {
                   // Replaced by the fixed-width HTML legend beside the canvas.
@@ -433,7 +445,9 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             fmt={show === "pct" ? (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}%` : fmtEur}
             xTitle={
               show === "pct"
-                ? "Share of total, %"
+                ? segment
+                  ? "Share of segment, %"
+                  : "Share of whole market, %"
                 : `${basis === "total" ? "Total" : "Median"} ${SEG_METRICS[metric].short}, €`
             }
             tip={(r) => {
