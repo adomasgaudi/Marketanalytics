@@ -67,20 +67,30 @@ export function ScatterChart({ model }: { model: MarketModel }) {
     [model.rows, year, perEmp],
   );
 
-  // Top-5 segments by fee revenue — each company credited once (primary segment).
-  const topSegs = useMemo(() => {
-    const sums: Record<string, number> = {};
-    model.rows.forEach((d) => {
-      if (d.year === model.last && d.estimatedIncome) {
-        const seg = primarySegment(d);
-        sums[seg] = (sums[seg] ?? 0) + d.estimatedIncome!;
-      }
-    });
-    return Object.entries(sums)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([s]) => s);
-  }, [model]);
+  const segColor = (seg: string) =>
+    SEG_COLORS[seg] ?? (cssVar("--color-muted") || "#888");
+
+  // Same fixed segment order and palette as the doughnut — not top-5 + Other.
+  const datasets = useMemo(
+    () =>
+      model.segments
+        .map((s) => ({
+          label: segName(s),
+          data: rows.filter((r) => r.seg === s),
+          color: segColor(s),
+        }))
+        .filter((d) => d.data.length > 0)
+        .map((d) => ({
+          label: d.label,
+          data: d.data,
+          backgroundColor: `${d.color}73`,
+          borderColor: d.color,
+          borderWidth: 1.5,
+          hoverBackgroundColor: `${d.color}cc`,
+          hoverBorderWidth: 2,
+        })),
+    [rows, model.segments, SEG_COLORS],
+  );
 
   if (!rows.length) {
     return (
@@ -93,17 +103,6 @@ export function ScatterChart({ model }: { model: MarketModel }) {
 
   const ink = cssVar("--color-ink");
   const grid = cssVar("--color-grid");
-
-  // No "my company" star — every brand is just a bubble in its segment.
-  const datasets = topSegs.concat(["Other"]).map((s) => ({
-    label: segName(s),
-    data: rows.filter((r) => (s === "Other" ? !topSegs.includes(r.seg) : r.seg === s)),
-    backgroundColor: `${SEG_COLORS[s] ?? "#888"}73`,
-    borderColor: SEG_COLORS[s] ?? "#888",
-    borderWidth: 1.5,
-    hoverBackgroundColor: `${SEG_COLORS[s] ?? "#888"}cc`,
-    hoverBorderWidth: 2,
-  }));
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
