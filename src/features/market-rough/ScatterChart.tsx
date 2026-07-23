@@ -8,7 +8,7 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bubble } from "react-chartjs-2";
 import { fmtM } from "./format";
 import { primarySegment, segName } from "./segments";
@@ -39,9 +39,19 @@ const cssVar = (name: string) =>
 
 /** Size vs profitability: one bubble per company, revenue × margin, r = headcount. */
 export function ScatterChart({ model }: { model: MarketModel }) {
-  const [{ year, market }] = useDashboardParams(model.last);
+  const [{ year, market, segment }] = useDashboardParams(model.last);
   const SEG_COLORS = useSegColors();
   const perEmp = market === "emp";
+  const [hiddenSegs, setHiddenSegs] = useState<Set<string>>(() => new Set());
+
+  // Bottom-bar segment scopes the pool; crossed-out legend items hide colour groups.
+  useEffect(() => {
+    if (segment) {
+      setHiddenSegs(new Set(model.segments.filter((s) => s !== segment)));
+    } else {
+      setHiddenSegs(new Set());
+    }
+  }, [segment, model.segments]);
 
   const rows: Dot[] = useMemo(
     () =>
@@ -49,6 +59,7 @@ export function ScatterChart({ model }: { model: MarketModel }) {
         .filter(
           (d) =>
             d.year === year &&
+            (!segment || d.activities.includes(segment)) &&
             (d.estimatedIncome ?? 0) > 50_000 &&
             d.profit != null &&
             (d.employees ?? 0) > 0,
@@ -64,50 +75,55 @@ export function ScatterChart({ model }: { model: MarketModel }) {
           emp: d.employees as number,
           seg: primarySegment(d),
         })),
-    [model.rows, year, perEmp],
+    [model.rows, year, perEmp, segment],
   );
 
   const segColor = (seg: string) =>
     SEG_COLORS[seg] ?? (cssVar("--color-muted") || "#888");
 
-  // Same fixed segment order and palette as the doughnut — not top-5 + Other.
+  // One dataset per segment slot — legend stays fixed; hidden ones strike through.
   const datasets = useMemo(
     () =>
-      model.segments
-        .map((s) => ({
+      model.segments.map((s) => {
+        const color = segColor(s);
+        const hidden = hiddenSegs.has(s);
+        return {
           label: segName(s),
-          data: rows.filter((r) => r.seg === s),
-          color: segColor(s),
-        }))
-        .filter((d) => d.data.length > 0)
-        .map((d) => ({
-          label: d.label,
-          data: d.data,
-          backgroundColor: `${d.color}73`,
-          borderColor: d.color,
+          data: hidden ? [] : rows.filter((r) => r.seg === s),
+          hidden,
+          backgroundColor: `${color}73`,
+          borderColor: color,
           borderWidth: 1.5,
-          hoverBackgroundColor: `${d.color}cc`,
+          hoverBackgroundColor: `${color}cc`,
           hoverBorderWidth: 2,
-        })),
-    [rows, model.segments, SEG_COLORS],
+        };
+      }),
+    [rows, model.segments, hiddenSegs, SEG_COLORS],
   );
 
-  if (!rows.length) {
+  const visibleRows = rows.filter((r) => !hiddenSegs.has(r.seg));
+
+  if (!visibleRows.length) {
     return (
       <section className="card border-line bg-panel mb-4 rounded-xl border p-[18px]">
-        <h2 className="mb-1 text-[15px] font-semibold">Size vs profitability ({year})</h2>
+        <h2 className="mb-1 text-[15px] font-semibold">
+          Size vs profitability ({year}
+          {segment ? ` · ${segName(segment)}` : ""})
+        </h2>
         <p className="text-muted p-6 text-center text-[13px]">No data for {year}.</p>
       </section>
     );
   }
 
   const ink = cssVar("--color-ink");
+  const muted = cssVar("--color-muted") || ink;
   const grid = cssVar("--color-grid");
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">
         Size vs profitability ({year}
+        {segment ? ` · ${segName(segment)}` : ""}
         {perEmp ? " · per employee" : ""})
       </h2>
       {/* The phone height is intentionally shorter via the mobile override;
@@ -126,6 +142,19 @@ export function ScatterChart({ model }: { model: MarketModel }) {
               responsive: true,
               plugins: {
                 legend: {
+                  onClick: (
+                    _e: unknown,
+                    item: { datasetIndex?: number },
+                  ) => {
+                    const seg = model.segments[item.datasetIndex ?? -1];
+                    if (!seg) return;
+                    setHiddenSegs((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(seg)) next.delete(seg);
+                      else next.add(seg);
+                      return next;
+                    });
+                  },
                   labels: {
                     color: ink,
                     usePointStyle: true,
@@ -134,6 +163,25 @@ export function ScatterChart({ model }: { model: MarketModel }) {
                     boxHeight: 8,
                     padding: 16,
                     font: { size: 12 },
+                    filter: (item: { text?: string }) => (item.text ?? "").length > 0,
+                    generateLabels: (chart: {
+                      data: { datasets: { label?: string }[] };
+                    }) =>
+                      chart.data.datasets.map((ds, i) => {
+                        const seg = model.segments[i];
+                        const off = hiddenSegs.has(seg);
+                        const color = segColor(seg);
+                        return {
+                          text: ds.label ?? segName(seg),
+                          fillStyle: color,
+                          strokeStyle: color,
+                          lineWidth: 1.5,
+                          hidden: false,
+                          datasetIndex: i,
+                          fontColor: off ? muted : ink,
+                          strikeThrough: off,
+                        };
+                      }),
                   },
                 },
                 tooltip: {

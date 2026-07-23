@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.53.0",
+    date: "2026-07-23",
+    title: "Scatter respects segment filter",
+    desc: "Size vs profitability follows the bottom-bar segment scope. Other segments start crossed out in the legend; click any label to uncross and show that colour group again.",
+  },
+  {
     v: "v3.52.0",
     date: "2026-07-23",
     title: "Cash flow always shows €",
