@@ -80,6 +80,11 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     } catch {}
   }, [theme, palette, mode, graphPan, segPalette]);
 
+  // Legacy comparison is dev-only; strip a bookmarked ?src=legacy outside it.
+  useEffect(() => {
+    if (mode !== "dev" && src === "legacy") setParams({ src: "rebuilt" });
+  }, [mode, src, setParams]);
+
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
@@ -161,29 +166,29 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </Link>
 
-      {/* Data source. Rebuilt is the default and needs no announcement, so the
-          pill only lights up when the site is showing the OLD spreadsheet
-          figures — that is the state worth seeing from across the room.
-          `ml-auto` starts the right-hand cluster. */}
-      <button
-        type="button"
-        onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
-        aria-pressed={src === "rebuilt"}
-        title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
-        className={`ml-auto flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
-          src === "legacy"
-            ? "border-gold text-gold bg-gold/12"
-            : "border-line text-muted hover:text-ink"
-        }`}
-      >
-        🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
-      </button>
+      {/* Right cluster: data-source toggle is dev-only; settings always visible. */}
+      <div className="ml-auto flex flex-shrink-0 items-center">
+        {mode === "dev" && (
+          <button
+            type="button"
+            onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
+            aria-pressed={src === "rebuilt"}
+            title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
+            className={`mr-2 flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
+              src === "legacy"
+                ? "border-gold text-gold bg-gold/12"
+                : "border-line text-muted hover:text-ink"
+            }`}
+          >
+            🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
+          </button>
+        )}
 
-      {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
-      <div
-        ref={wrapRef}
-        className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
-      >
+        {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
+        <div
+          ref={wrapRef}
+          className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
+        >
         {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
             5; the counter resets after 3.2s. Inert once already in Dev mode. */}
         <span
@@ -284,6 +289,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             )}
           </div>
         )}
+        </div>
       </div>
     </nav>
   );
