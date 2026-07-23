@@ -48,7 +48,8 @@ const onSlice = {
       // Chart.js can paint one final animation frame after a dataset has been
       // replaced or destroyed. In that frame its arcs and our labels are not
       // guaranteed to have matching lengths, so skip it rather than throwing.
-      if (!ring?.lines?.length || !arcs?.length || arcs.length !== ring.lines.length) return;
+      if (!ring?.lines?.length || !arcs?.length || arcs.length !== ring.lines.length)
+        return;
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -86,7 +87,8 @@ const centreText = {
   id: "segCentre",
   afterDatasetsDraw(chart: Chart) {
     const centre = (chart.options as { centre?: { top: string; big: string } }).centre;
-    const arc = chart.getDatasetMeta(0)?.data?.[0] as unknown as { x: number; y: number } | undefined;
+    const arc = chart.getDatasetMeta(0)?.data?.[0] as unknown as
+      { x: number; y: number } | undefined;
     if (!centre || !arc) return;
     const { ctx } = chart;
     ctx.save();
@@ -234,8 +236,8 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const shownVal = (value: number, share: number) =>
     show === "pct" ? `${share.toFixed(share < 10 ? 1 : 0)}%` : fmtEur(value);
 
-  // The company ring only reads at single-segment scope. Whole-market mode would
-  // stack ~150+ micro-slices and Chart.js collapses the donut on first paint.
+  // Both modes keep an inner company ring. It is intentionally unlabeled in
+  // All Segments, where 150+ slices are structural detail rather than text.
   const segmentRing = {
     label: "Segments",
     data: rows.map((o) => Math.max(0, o.v)),
@@ -244,16 +246,14 @@ export function SegmentChart({ model }: { model: MarketModel }) {
     borderWidth: 2,
     weight: segment ? 0.4 : 2,
   };
-  const companyRing = segment
-    ? {
-        label: "Companies",
-        data: companySlices.map((slice) => slice.value),
-        backgroundColor: companySlices.map((slice) => slice.color),
-        borderColor: cssVar("--color-chart-bg"),
-        borderWidth: 1,
-        weight: 3,
-      }
-    : null;
+  const companyRing = {
+    label: "Companies",
+    data: companySlices.map((slice) => slice.value),
+    backgroundColor: companySlices.map((slice) => slice.color),
+    borderColor: cssVar("--color-chart-bg"),
+    borderWidth: 1,
+    weight: segment ? 3 : 1,
+  };
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
@@ -320,7 +320,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             key={segment || "all"}
             data={{
               labels: rows.map((o) => segName(o.s)),
-              datasets: companyRing ? [segmentRing, companyRing] : [segmentRing],
+              datasets: [segmentRing, companyRing],
             }}
             options={
               {
@@ -333,7 +333,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                 // outer ring. Scoped: the outer ring is one slice at 100% — a
                 // tautology, so it stays blank — and the company ring carries
                 // name + share wherever an arc is wide enough to hold two lines.
-                ringLabels: companyRing
+                ringLabels: segment
                   ? [
                       null,
                       {
@@ -353,6 +353,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                         min: 5,
                         size: 11,
                       },
+                      null,
                     ],
                 centre: {
                   top: segment ? segName(segment) : "Total",
@@ -373,7 +374,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                         dataIndex: number;
                         label?: string;
                       }) => {
-                        if (companyRing && c.datasetIndex === 1) {
+                        if (c.datasetIndex === 1) {
                           const s = companySlices[c.dataIndex];
                           return s
                             ? ` ${s.brand}: ${fmtEur(s.value)} (${companyPct(c.dataIndex).toFixed(1)}%)`
