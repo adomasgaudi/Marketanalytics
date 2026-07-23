@@ -161,28 +161,34 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </Link>
 
-      {/* Data source. Rebuilt is the default and needs no announcement, so the
-          pill only lights up when the site is showing the OLD spreadsheet
-          figures — that is the state worth seeing from across the room.
-          `ml-auto` starts the right-hand cluster. */}
-      <button
-        type="button"
-        onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
-        aria-pressed={src === "rebuilt"}
-        title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
-        className={`ml-auto flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
-          src === "legacy"
-            ? "border-gold text-gold bg-gold/12"
-            : "border-line text-muted hover:text-ink"
-        }`}
-      >
-        🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
-      </button>
+      {/* Data source. Dev-only: switching between the rebuilt figures and the
+          original spreadsheet's is a debugging affordance, not something the
+          public dashboard should expose. The pill only lights up when showing
+          the OLD spreadsheet figures — the state worth seeing from across the
+          room. `ml-auto` (here or on settings-wrap when hidden) starts the
+          right-hand cluster. */}
+      {mode === "dev" && (
+        <button
+          type="button"
+          onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
+          aria-pressed={src === "rebuilt"}
+          title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
+          className={`ml-auto flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
+            src === "legacy"
+              ? "border-gold text-gold bg-gold/12"
+              : "border-line text-muted hover:text-ink"
+          }`}
+        >
+          🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
+        </button>
+      )}
 
-      {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
+      {/* settings-wrap: cog above, clickable version below, menus anchored
+          right. Carries `ml-auto` so the cluster stays right-aligned even when
+          the dev-only data toggle above is absent. */}
       <div
         ref={wrapRef}
-        className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
+        className="relative ml-auto flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
       >
         {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
             5; the counter resets after 3.2s. Inert once already in Dev mode. */}
