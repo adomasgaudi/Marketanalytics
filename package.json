@@ -1,6 +1,6 @@
 {
   "name": "marketanalytics",
-  "version": "3.42.4",
+  "version": "3.42.5",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {

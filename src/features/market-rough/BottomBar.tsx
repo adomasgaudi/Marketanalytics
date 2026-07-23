@@ -229,7 +229,28 @@ export function BottomBar({
   // also scroll the page ancestors.
   const trackRef = useRef<HTMLDivElement>(null);
   const activeYearRef = useRef<HTMLButtonElement>(null);
+  const touchYearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragScroll = useDragScroll(trackRef);
+  // Touch scrolling is a carousel gesture: once it settles, select the enabled
+  // pill nearest the track's centre. Desktop keeps its drag/click behaviour.
+  const settleTouchYear = () => {
+    if (!window.matchMedia("(pointer: coarse)").matches) return;
+    if (touchYearTimer.current) clearTimeout(touchYearTimer.current);
+    touchYearTimer.current = setTimeout(() => {
+      const track = trackRef.current;
+      if (!track) return;
+      const centre = track.getBoundingClientRect().left + track.clientWidth / 2;
+      const nearest = [...track.querySelectorAll<HTMLButtonElement>("[data-year]")]
+        .filter((button) => !button.disabled)
+        .sort(
+          (a, b) =>
+            Math.abs(a.getBoundingClientRect().left + a.offsetWidth / 2 - centre) -
+            Math.abs(b.getBoundingClientRect().left + b.offsetWidth / 2 - centre),
+        )[0];
+      const next = Number(nearest?.dataset.year);
+      if (Number.isFinite(next) && next !== year) setParams({ year: next });
+    }, 120);
+  };
   // Wheel anywhere over the track picks the next/previous year; the centring
   // effect below then pulls it into view, so the track scrolls as a side effect.
   useWheelStep(trackRef, (dir) => setParams({ year: stepIn(model.finYears, year, dir) }));
@@ -262,6 +283,11 @@ export function BottomBar({
       behavior: "smooth",
     });
   }, [year, view]);
+
+  useEffect(
+    () => () => void (touchYearTimer.current && clearTimeout(touchYearTimer.current)),
+    [],
+  );
 
   useEffect(() => {
     const bar = barRef.current;
@@ -302,9 +328,10 @@ export function BottomBar({
           <div
             ref={trackRef}
             {...dragScroll.handlers}
+            onScroll={settleTouchYear}
             // Ticks stay grouped at the left — spreading them across the free
             // width read as arbitrary. They just get roomier, not spaced apart.
-            className="flex w-full min-w-0 [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
+            className="flex w-full min-w-0 snap-x snap-mandatory [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
           >
             {model.finYears.map((option) => (
               <button
@@ -317,6 +344,7 @@ export function BottomBar({
                     : `${option} — no ${segment ? segName(segment) + " " : ""}figures filed`
                 }
                 aria-label={String(option)}
+                data-year={option}
                 ref={option === year ? activeYearRef : undefined}
                 disabled={!yearsWithData.has(option) && option !== year}
                 // A drag that ends over a pill must not also select that year.
@@ -329,7 +357,7 @@ export function BottomBar({
                 // Carousel falloff: the selected year is full size, the
                 // surrounding ticks shrink and fade back.
                 className={cn(
-                  "bb-pill border-line flex-none cursor-pointer rounded border font-semibold whitespace-nowrap transition-all",
+                  "bb-pill border-line flex-none cursor-pointer snap-center rounded border font-semibold whitespace-nowrap transition-all",
                   option === year
                     ? "border-accent bg-accent px-2.5 py-0 text-[12px] leading-[22px] text-white md:px-3 md:text-[13px] md:leading-[28px]"
                     : yearsWithData.has(option)
@@ -436,9 +464,7 @@ export function BottomBar({
                   </>
                 ),
                 title:
-                  m === "whole"
-                    ? `Whole ${wholeSubLabel(segment)}`
-                    : MARKET_LABELS[m],
+                  m === "whole" ? `Whole ${wholeSubLabel(segment)}` : MARKET_LABELS[m],
               }))}
               value={market}
               onChange={(m) => {
