@@ -16,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     // Dark is the legacy dashboard's default; light is an explicit opt-in there.
-    <html lang="en" data-theme="dark" data-mode="default">
+    // data-skin is fixed: the refined skin IS the design now, and the
+    // classic fallback it used to switch back to is gone. The attribute stays
+    // because ~55 rules in globals.css are scoped to it.
+    <html lang="en" data-theme="dark" data-mode="default" data-skin="refined">
       {/* NuqsAdapter lets the dashboard keep its selections (year, basis,
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>

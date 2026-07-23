@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
-import { IconMoon, IconPalette, IconSettings, IconSparkle, IconSun } from "./Icons";
+import { IconMoon, IconPalette, IconSettings, IconSun } from "./Icons";
 import type { SegPalette } from "./segments";
 import { useDashboardParams } from "./useDashboardParams";
 import { useViewMode, ViewSub } from "./ViewSync";
@@ -36,10 +36,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [verHint, setVerHint] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<Palette>("classic");
-  // Visual-polish layer. Defaults ON, but every rule is scoped under
-  // [data-skin="refined"] — flipping this back to "classic" restores the
-  // pre-polish design exactly, which is the kill switch for other devices.
-  const [skin, setSkin] = useState<"classic" | "refined">("refined");
   // Doughnut/bars segment colours. "harmony" (default) is the muted validated
   // set; "spectral" restores the original saturated one. See segments.ts.
   const [segPalette, setSegPalette] = useState<SegPalette>("harmony");
@@ -59,7 +55,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       const saved = localStorage.getItem("palette");
       if (saved && (PALETTES as readonly string[]).includes(saved))
         setPalette(saved as Palette);
-      if (localStorage.getItem("skin") === "classic") setSkin("classic");
       if (localStorage.getItem("segPalette") === "spectral") setSegPalette("spectral");
       if (localStorage.getItem("viewMode") === "dev") setMode("dev");
       if (localStorage.getItem("graphPan") === "on") setGraphPan(true);
@@ -73,7 +68,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     if (palette !== "classic") root.setAttribute("data-palette", palette);
     else root.removeAttribute("data-palette");
     root.setAttribute("data-mode", mode);
-    root.setAttribute("data-skin", skin);
     // Absent attribute means "harmony" — only the opt-out is written.
     if (segPalette === "spectral") root.setAttribute("data-seg-palette", "spectral");
     else root.removeAttribute("data-seg-palette");
@@ -82,10 +76,9 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
       localStorage.setItem("viewMode", mode);
-      localStorage.setItem("skin", skin);
       localStorage.setItem("graphPan", graphPan ? "on" : "off");
     } catch {}
-  }, [theme, palette, mode, graphPan, skin, segPalette]);
+  }, [theme, palette, mode, graphPan, segPalette]);
 
   useEffect(() => {
     if (!open) return;
@@ -251,16 +244,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             >
               <IconPalette size={15} />
               <span className="capitalize">{palette}</span>
-            </button>
-            {/* Kill switch for the polish layer — deliberately NOT dev-gated so
-                it stays reachable on a phone if the new skin misbehaves. */}
-            <button
-              type="button"
-              className={menuItem}
-              onClick={() => setSkin(skin === "refined" ? "classic" : "refined")}
-            >
-              <IconSparkle size={15} />
-              {skin === "refined" ? "Skin: refined" : "Skin: classic"}
             </button>
             {/* Segment chart colours; "spectral" restores the pre-v3.41 set. */}
             <button
