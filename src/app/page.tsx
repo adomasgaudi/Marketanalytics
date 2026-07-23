@@ -1,6 +1,8 @@
 import { Footer } from "@/components/ui/footer";
-import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
+import { ViewGroupCard } from "@/features/market-rough/ViewSync";
+import { HeroTitle } from "@/features/market-rough/HeroTitle";
 import { BottomBar } from "@/features/market-rough/BottomBar";
+import { CompanyStrip } from "@/features/market-rough/CompanyStrip";
 import { loadMarketData } from "@/features/market-rough/data";
 import { MarketAllTime, MarketPerYear } from "@/features/market-rough/MarketsView";
 import { TopCards } from "@/features/market-rough/TopCards";
@@ -8,13 +10,22 @@ import { TopNav } from "@/features/market-rough/TopNav";
 import { Bloom } from "@/components/ui/bloom";
 import events from "../../data/data_events.json";
 
-/** Newest `at` in the data-change audit log, as "9 Jul 2026". */
+/**
+ * Newest `at` in the data-change audit log, as "22 Jul 2026" — written by the
+ * scrapers themselves, so nothing here is hand-maintained.
+ *
+ * Formatted in UTC on purpose. The stamps carry mixed offsets ("…Z" and
+ * "+03:00") and the page is prerendered, so without a fixed zone the date
+ * would follow whatever timezone the BUILD MACHINE happens to run in — a
+ * late-evening scrape then renders as the next day.
+ */
 function lastUpdated() {
   const latest = events.events.reduce((a, e) => (e.at > a ? e.at : a), "");
   return new Date(latest).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   });
 }
 
@@ -42,9 +53,7 @@ export default function MarketsPage() {
             Lithuanian marketing &amp; communications · {model.years[0]}–
             {model.years[model.years.length - 1]}
           </p>
-          <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
-            Markets <ViewWord scope="mkt" />
-          </h1>
+          <HeroTitle defaultYear={model.last} />
           {/* Freshness marker: newest entry in the data-change audit log. */}
           <p className="text-muted mt-3 flex items-center gap-1.5 text-[11.5px]">
             <span className="bg-green inline-block h-1.5 w-1.5 rounded-full" />
@@ -64,6 +73,10 @@ export default function MarketsPage() {
           />
           <TopCards model={model} />
         </div>
+
+        {/* Names the count above it: every tracked agency on one line, so the
+            "132" stops being an abstraction. */}
+        <CompanyStrip model={model} />
 
         <div className="relative isolate">
           <Bloom

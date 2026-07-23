@@ -17,7 +17,15 @@ export function useViewMode(scope: ViewScope): [ViewMode, (v: ViewMode) => void]
  * The hero's clickable dotted-underline word: tapping it switches per-year ↔
  * all-years, exactly like the legacy #mktViewWord / #coViewWord.
  */
-export function ViewWord({ scope }: { scope: ViewScope }) {
+export function ViewWord({
+  scope,
+  yearLabel = "per year",
+}: {
+  scope: ViewScope;
+  /** What to show in per-year mode. Markets names the actual year ("in 2025");
+      Companies keeps the abstract "per year". */
+  yearLabel?: string;
+}) {
   const [view, set] = useViewMode(scope);
   const toggle = () => set(view === "year" ? "all" : "year");
   return (
@@ -32,7 +40,7 @@ export function ViewWord({ scope }: { scope: ViewScope }) {
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle()}
       className="text-accent focus-visible:outline-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] transition-colors duration-150 select-none hover:decoration-solid focus-visible:outline-2 focus-visible:outline-offset-2"
     >
-      {view === "year" ? "per year" : "all years"}
+      {view === "year" ? yearLabel : "all years"}
     </span>
   );
 }

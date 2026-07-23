@@ -12,6 +12,7 @@ import { defaultBrand, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankVsMarket } from "./RankVsMarket";
+import { useSourcedModel } from "./rebuilt-source";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
@@ -38,12 +39,15 @@ export function useSelectedBrand(model: MarketModel) {
 
 /** The hoisted company picker, visible on every Financials tab. */
 export function CompanyPicker({
-  model,
+  model: legacyModel,
   profiles,
 }: {
   model: MarketModel;
   profiles?: Record<string, CompanyProfile>;
 }) {
+  // The selector filters companies by turnover, so it must rank them on the
+  // same figures the cards below will show.
+  const model = useSourcedModel(legacyModel);
   const { pool, off, set, setOff } = useSelectedBrands(model);
   const [{ year }] = useDashboardParams(model.last);
   return (
@@ -136,13 +140,16 @@ export function CompanyTabs({
 
 /** The "Company {year}" panel: profile box, money-flow, #/% KPIs, vs-market. */
 export function CompanyPerYear({
-  model,
+  model: legacyModel,
   profiles,
 }: {
   model: MarketModel;
   profiles?: Record<string, CompanyProfile>;
 }) {
-  const [{ year, basis }] = useDashboardParams(model.last);
+  // Follows the nav's data-source toggle, so every widget below — money-flow,
+  // KPIs, ranks, deep-dive — reads the same dataset.
+  const model = useSourcedModel(legacyModel);
+  const [{ year, basis, src }] = useDashboardParams(model.last);
   const { brands, pool } = useSelectedBrands(model);
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
@@ -355,62 +362,68 @@ export function CompanyPerYear({
           setKpiMode(m);
         }}
       />
-      {!hasFin ? (
-        // Partial year (2025+): record exists but financials aren't filed yet.
-        <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
-          {year} financials aren&rsquo;t filed yet — Lithuanian annual reports land ~mid-
-          {year + 1}. Showing Sodra headcount &amp; pay only.
+      {/* iPad and up: money-flow and the KPI cards sit on one row (as MarketsView). */}
+      <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
+        <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
+          {!hasFin ? (
+            // Partial year (2025+): record exists but financials aren't filed yet.
+            <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
+              {year} financials aren&rsquo;t filed yet — Lithuanian annual reports land
+              ~mid-
+              {year + 1}. Showing Sodra headcount &amp; pay only.
+            </div>
+          ) : noHeadcount ? (
+            <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
+              {brand} reported no {year} headcount, so per-employee figures can&rsquo;t be
+              computed. Switch the basis to full company to see the {year} financials.
+            </div>
+          ) : (
+            <MoneyFlow
+              mode={kpiMode}
+              turnover={scaleMoney(row.revenue)}
+              revenue={scaleMoney(row.estimatedIncome)}
+              profit={scaleMoney(row.profit)}
+              prev={
+                prev
+                  ? {
+                      T: scaleMoneyPrev(prev.revenue),
+                      R: scaleMoneyPrev(prev.estimatedIncome),
+                      P: scaleMoneyPrev(prev.profit),
+                    }
+                  : {}
+              }
+              formulas={moneyFormulas({
+              source: src,
+                div:
+                  perEmployee && (row.employees ?? 0) > 0
+                    ? {
+                        code: "HC",
+                        label: "this company's headcount",
+                        value: Math.round(row.employees!).toLocaleString(),
+                      }
+                    : null,
+                // The figures as shown on the card, so the fold reads as a worked
+                // example rather than a definition (matches MarketsView).
+                values: {
+                  T: fmtEur(scaleMoney(row.revenue)),
+                  R: fmtEur(scaleMoney(row.estimatedIncome)),
+                  P: fmtEur(scaleMoney(row.profit)),
+                },
+              })}
+              rank={perEmployee ? null : turnover}
+              tag={
+                perEmployee && (row.employees ?? 0) > 0
+                  ? `per employee · ${Math.round(row.employees!)} staff`
+                  : undefined
+              }
+            />
+          )}
         </div>
-      ) : noHeadcount ? (
-        <div className="text-muted border-line bg-panel mb-4 rounded-xl border p-4 text-[13px]">
-          {brand} reported no {year} headcount, so per-employee figures can&rsquo;t be
-          computed. Switch the basis to full company to see the {year} financials.
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:w-[340px] md:flex-none md:grid-cols-2">
+          {cards.map((card) => (
+            <KpiCard key={card.label} card={card} mode={kpiMode} />
+          ))}
         </div>
-      ) : (
-        <MoneyFlow
-          mode={kpiMode}
-          turnover={scaleMoney(row.revenue)}
-          revenue={scaleMoney(row.estimatedIncome)}
-          profit={scaleMoney(row.profit)}
-          prev={
-            prev
-              ? {
-                  T: scaleMoneyPrev(prev.revenue),
-                  R: scaleMoneyPrev(prev.estimatedIncome),
-                  P: scaleMoneyPrev(prev.profit),
-                }
-              : {}
-          }
-          formulas={moneyFormulas({
-            div:
-              perEmployee && (row.employees ?? 0) > 0
-                ? {
-                    code: "HC",
-                    label: "this company's headcount",
-                    value: Math.round(row.employees!).toLocaleString(),
-                  }
-                : null,
-            // The figures as shown on the card, so the fold reads as a worked
-            // example rather than a definition (matches MarketsView).
-            values: {
-              T: fmtEur(scaleMoney(row.revenue)),
-              R: fmtEur(scaleMoney(row.estimatedIncome)),
-              P: fmtEur(scaleMoney(row.profit)),
-            },
-          })}
-          rank={perEmployee ? null : turnover}
-          tag={
-            perEmployee && (row.employees ?? 0) > 0
-              ? `per employee · ${Math.round(row.employees!)} staff`
-              : undefined
-          }
-        />
-      )}
-
-      <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5">
-        {cards.map((card) => (
-          <KpiCard key={card.label} card={card} mode={kpiMode} />
-        ))}
       </div>
 
       <RankVsMarket
@@ -427,7 +440,8 @@ export function CompanyPerYear({
 
 /** The "Company all time" panel: money-flow by year + the folded-in
     "Compare financials" deep-dive (legacy makeSectionsCollapsible). */
-export function CompanyAllTime({ model }: { model: MarketModel }) {
+export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
+  const model = useSourcedModel(legacyModel);
   const { brand } = useSelectedBrand(model);
 
   return (

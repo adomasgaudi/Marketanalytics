@@ -50,7 +50,11 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
 
   const R = rows.length;
-  const sig = rows.map((r) => `${r.year}:${r.turnover}`).join("|");
+  // Must cover EVERY plotted figure, not just turnover. It gates both the
+  // fitted view and the zoom reset, and switching the data source changes
+  // revenue and profit while leaving turnover identical — so a turnover-only
+  // signature let the chart keep a view fitted to the other dataset.
+  const sig = rows.map((r) => `${r.year}:${r.turnover}:${r.revenue}:${r.profit}`).join("|");
 
   // Legacy fitState: stacked headroom ×1.22 for the total labels, then
   // zoomOut 0.2 → ±10% margin on BOTH axes (so the 0-line floats above the

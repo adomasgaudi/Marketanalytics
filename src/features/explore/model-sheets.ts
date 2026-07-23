@@ -1,5 +1,5 @@
 import type { Sheet } from "./WorkbookViewer";
-import { COMPANIES, METRICS, type Metric, YEARS } from "./model-data";
+import { COMPANIES, METRICS, type Metric, segmentsOf, YEARS } from "./model-data";
 
 /**
  * The rebuilt dataset expressed as a workbook sheet, so it renders through the
@@ -45,7 +45,7 @@ const title = (company: Company) => company.brand;
 const blankRow = (width: number) => Array<null>(width).fill(null);
 
 /** Years across the top, metrics down the side — the default reading. */
-const across = (years: number[], metrics: Metric[]): Sheet => {
+const across = (years: number[], metrics: Metric[], companies: Company[]): Sheet => {
   const width = years.length + 1;
   // "Metai 2015", not "2015": the viewer reads a header as <group> <period>, and
   // only a column with a group can be dropped by the year filter. The group also
@@ -58,7 +58,7 @@ const across = (years: number[], metrics: Metric[]): Sheet => {
   // Provenance rides in its own grids, laid out cell-for-cell against `values`.
   const cellMarks: (string | null)[][] = [blankRow(width)];
   const cellTitles: (string | null)[][] = [blankRow(width)];
-  for (const company of COMPANIES) {
+  for (const company of companies) {
     values.push([title(company), ...blankRow(years.length)]);
     cellMarks.push(blankRow(width));
     cellTitles.push(blankRow(width));
@@ -97,7 +97,7 @@ const across = (years: number[], metrics: Metric[]): Sheet => {
 };
 
 /** Swapped: a row per year, a column per metric. */
-const down = (years: number[], metrics: Metric[]): Sheet => {
+const down = (years: number[], metrics: Metric[], companies: Company[]): Sheet => {
   const width = metrics.length + 1;
   const values: (string | number | null)[][] = [
     ["Metai", ...metrics.map((metric) => metric.label)],
@@ -106,7 +106,7 @@ const down = (years: number[], metrics: Metric[]): Sheet => {
   const rowClasses: (string | null)[] = [null];
   const cellMarks: (string | null)[][] = [blankRow(width)];
   const cellTitles: (string | null)[][] = [blankRow(width)];
-  for (const company of COMPANIES) {
+  for (const company of companies) {
     values.push([title(company), ...blankRow(metrics.length)]);
     cellMarks.push(blankRow(width));
     cellTitles.push(blankRow(width));
@@ -155,11 +155,21 @@ export const buildModelSheet = (
   orientation: "across" | "down",
   year: number | null,
   showOptional = false,
+  segment: string | null = null,
 ): Sheet[] => {
   const years = year ? YEARS.filter((entry) => entry === year) : YEARS;
+  // Segment narrows which company BLOCKS are built at all, rather than hiding
+  // rows after the fact — a hidden block would still leave its two gap rows.
+  const companies = segment
+    ? COMPANIES.filter((company) => segmentsOf(company.brand).includes(segment))
+    : COMPANIES;
   // The +1,77% column repeats its neighbour almost exactly, so it is off by
   // default — but the 1,0177 is always in the arithmetic behind Agentūros
   // pajamos whether or not the column is on screen.
   const metrics = showOptional ? METRICS : METRICS.filter((m) => !m.optional);
-  return [orientation === "down" ? down(years, metrics) : across(years, metrics)];
+  return [
+    orientation === "down"
+      ? down(years, metrics, companies)
+      : across(years, metrics, companies),
+  ];
 };

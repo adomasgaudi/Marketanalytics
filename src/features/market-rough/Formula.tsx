@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useDashboardParams } from "./useDashboardParams";
 
 /**
  * Formula rendering for the Dev-mode KPI folds.
@@ -124,6 +125,10 @@ export type MoneyBasis = {
   /** Displayed figure per row, already formatted — the left side of each
       equation, so the fold can be checked against the card. */
   values?: Partial<Record<"T" | "R" | "P", string>>;
+  /** Which dataset produced the figures. It decides how the Revenue fold
+      explains itself: the two datasets build that number in genuinely
+      different ways, so one explanation cannot serve both. */
+  source?: "legacy" | "rebuilt";
 };
 
 /** Body of a money formula: optional ∑ over filings, optional ÷ divisor. */
@@ -203,25 +208,63 @@ export function moneyFormulas(
           "R",
         ),
       },
-      {
-        name: "…when the year isn't filed yet",
-        math: (
-          <>
-            <V c="ei" />
-            <Op o="=" />
-            <V c="sales" />
-            <Op o="×" />
-            <V c="f" />
-          </>
-        ),
-        vars: [
-          { code: "sales", label: "filed sales revenue (turnover)", field: "revenue" },
-          {
-            code: "f",
-            label: "fee ratio — mean of ei ÷ sales over the brand's last ≤3 filed years",
+      basis.source === "legacy"
+        ? {
+            // The old spreadsheet took turnover down by a ratio. Nothing was
+            // measured; the ratio was carried over from the brand's own past.
+            name: "…how the figure was reached",
+            math: (
+              <>
+                <V c="ei" />
+                <Op o="=" />
+                <V c="sales" />
+                <Op o="×" />
+                <V c="f" />
+              </>
+            ),
+            vars: [
+              {
+                code: "sales",
+                label: "filed sales revenue (turnover)",
+                field: "revenue",
+              },
+              {
+                code: "f",
+                label: "fee ratio — mean of ei ÷ sales over the brand's last ≤3 filed years",
+              },
+            ],
+          }
+        : {
+            // The rebuild works UP from what the agency spent and kept, so the
+            // only assumption left is the opex share.
+            name: "…how the figure is built",
+            math: (
+              <>
+                <V c="ei" />
+                <Op o="=" />
+                <V c="pay" />
+                <Op o="×" />
+                <V c="sod" />
+                <Op o="×" />
+                <V c="opx" />
+                <Op o="+" />
+                <V c="pre" />
+              </>
+            ),
+            vars: [
+              {
+                code: "pay",
+                label: "payroll — Sodra's monthly wage × headcount, summed over the year",
+                field: "salaryCosts",
+              },
+              { code: "sod", label: "1,0177 — the employer's own Sodra contribution" },
+              {
+                code: "opx",
+                label: "1,43 — own opex at 43% of labour. The only assumption here",
+              },
+              { code: "pre", label: "profit before tax, as filed with Registrų centras" },
+            ],
           },
-        ],
-      },
     ],
     P: [
       {
@@ -302,6 +345,10 @@ export function FormulaPopover({ formulas }: { formulas: Formula[] }) {
 const EDGE = 8; // viewport breathing room
 
 function FormulaPanel({ formulas }: { formulas: Formula[] }) {
+  // Which file a reader should open to check the figure. 0 is a placeholder
+  // year — only `src` is read here, never the year.
+  const [{ src }] = useDashboardParams(0);
+  const sourceFile = src === "legacy" ? "data.json" : "data2";
   const panelRef = useRef<HTMLDivElement>(null);
   // Nudge applied after measuring; the panel is anchored to its trigger, which
   // can sit anywhere across the page width.
@@ -355,11 +402,13 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
                   )}
                   <span className={v.value != null ? "block" : ""}>
                     {v.label}
-                    {/* The raw key, so a Dev-mode reader can find the number in
-                        data.json rather than trusting the label. */}
+                    {/* The raw key AND the file it is in, so a Dev-mode reader
+                        can find the number rather than trust the label. Which
+                        file that is depends on the nav's data-source toggle —
+                        naming the wrong one is worse than naming none. */}
                     {v.field && (
                       <code className="bg-panel2 text-muted ml-1 rounded px-1 py-px text-[9.5px]">
-                        data.json · {v.field}
+                        {sourceFile} · {v.field}
                       </code>
                     )}
                   </span>

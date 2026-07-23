@@ -14,11 +14,14 @@ import { segName } from "./segments";
 import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
+import { useSourcedModel } from "./rebuilt-source";
 import { useDashboardParams } from "./useDashboardParams";
 
 /** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
-export function MarketPerYear({ model }: { model: MarketModel }) {
-  const [{ year, market, segment }] = useDashboardParams(model.last);
+export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
+  // Rebuilt figures by default; every child below is handed this same model.
+  const model = useSourcedModel(legacyModel);
+  const [{ year, market, segment, src }] = useDashboardParams(model.last);
   // €/% is ephemeral UI, not page identity — it stays out of the URL.
   const [kpiMode, setKpiMode] = useState<KpiMode>("value");
 
@@ -207,6 +210,7 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
             mode={shownMode}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             formulas={moneyFormulas({
+              source: src,
               sum: true,
               div:
                 market === "avg"
@@ -259,7 +263,8 @@ export function MarketPerYear({ model }: { model: MarketModel }) {
 }
 
 /** The "Market all time" panel: money-flow by year, segment trends, scrubber. */
-export function MarketAllTime({ model }: { model: MarketModel }) {
+export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
+  const model = useSourcedModel(legacyModel);
   const [{ market, segment }] = useDashboardParams(model.last);
   const rows = segment
     ? model.rows.filter((row) => row.activities.includes(segment))

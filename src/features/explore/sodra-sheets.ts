@@ -1,3 +1,4 @@
+import { segmentsOf } from "./model-data";
 import { SODRA, SODRA_YEARS, type SodraCompany } from "./sodra-data";
 import type { Sheet } from "./WorkbookViewer";
 
@@ -59,7 +60,7 @@ const heading = (column: Column) =>
     ? `${column.year} Σ`
     : `${column.year}-${String(column.month).padStart(2, "0")}`;
 
-const across = (year: number | null): Sheet => {
+const across = (year: number | null, companies: SodraCompany[]): Sheet => {
   const years = year ? SODRA_YEARS.filter((entry) => entry === year) : SODRA_YEARS;
   const columns = columnsFor(years, year != null);
   const width = columns.length + 1;
@@ -78,7 +79,7 @@ const across = (year: number | null): Sheet => {
       ? undefined
       : company.byMonth.get(column.year * 100 + column.month);
 
-  for (const company of SODRA) {
+  for (const company of companies) {
     push([company.brand, ...blankRow(columns.length)], company.brand, "block-title");
     push(
       [
@@ -161,7 +162,7 @@ const across = (year: number | null): Sheet => {
 
 /** Flipped: a row per month, the two metrics as columns. Same data, and the
     only shape that stays readable once every month of ten years is on screen. */
-const down = (year: number | null): Sheet => {
+const down = (year: number | null, companies: SodraCompany[]): Sheet => {
   const years = year ? SODRA_YEARS.filter((entry) => entry === year) : SODRA_YEARS;
   const columns = columnsFor(years, year != null);
 
@@ -183,7 +184,7 @@ const down = (year: number | null): Sheet => {
     rowClasses.push(cls);
   };
 
-  for (const company of SODRA) {
+  for (const company of companies) {
     push([company.brand, null, null, null, null, null], company.brand, "block-title");
     for (const column of columns) {
       const summary = company.years[column.year];
@@ -238,4 +239,12 @@ const down = (year: number | null): Sheet => {
 export const buildSodraSheet = (
   orientation: "across" | "down",
   year: number | null,
-): Sheet => (orientation === "down" ? down(year) : across(year));
+  segment: string | null = null,
+): Sheet => {
+  // Segment is a property of the BRAND, not of the payroll record, so it is
+  // joined the same way the model sheet joins it — by brand name.
+  const companies = segment
+    ? SODRA.filter((company) => segmentsOf(company.brand).includes(segment))
+    : SODRA;
+  return orientation === "down" ? down(year, companies) : across(year, companies);
+};

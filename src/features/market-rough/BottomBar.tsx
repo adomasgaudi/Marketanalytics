@@ -15,11 +15,20 @@ import {
   useDashboardParams,
 } from "./useDashboardParams";
 
+/**
+ * The three labels read as one series — "/ company", "/ employee", "whole X" —
+ * so the control shows at a glance that the first two DIVIDE the third. The
+ * whole-market label carries the active segment, because "whole market" while
+ * scoped to PR is a lie about what is being summed.
+ */
 const MARKET_LABELS: Record<MarketMode, string> = {
-  avg: "Average / company",
-  emp: "Per employee",
-  whole: "Whole market",
+  whole: "Whole",
+  avg: "/ company",
+  emp: "/ employee",
 };
+
+/** Second line, shown only under "Whole": which market is being summed. */
+const wholeSubLabel = (segment: string) => (segment ? segName(segment) : "market");
 
 const BASIS_LABELS: Record<Basis, string> = {
   total: "Full company",
@@ -28,10 +37,13 @@ const BASIS_LABELS: Record<Basis, string> = {
 
 /** Hover copy: what the icon *does*, one line, plainer than the short label
  *  that names it. Shown in a styled popup instead of the native tooltip. */
-const MARKET_HINTS: Record<MarketMode, string> = {
-  avg: "Divide the market by the number of companies in it",
-  emp: "Divide the market by the total headcount",
-  whole: "Sum every company — the market at full size",
+const marketHints = (segment: string): Record<MarketMode, string> => {
+  const what = segment ? `${segName(segment)} segment` : "market";
+  return {
+    avg: `Divide the ${what} by the number of companies in it`,
+    emp: `Divide the ${what} by its total headcount`,
+    whole: `Sum every company — the ${what} at full size`,
+  };
 };
 
 const BASIS_HINTS: Record<Basis, string> = {
@@ -120,6 +132,35 @@ function useWheelStep(
   }, [ref]);
 }
 
+/**
+ * Arrow keys anywhere on the page drive the bottom bar: ←/→ steps the year,
+ * ↑/↓ steps the segment. Bound to the window rather than the bar because the
+ * bar is a fixed overlay nobody focuses — the point is to scrub the dashboard
+ * while reading the charts. Typing fields and modifier chords are left alone,
+ * as are the browser's own shortcuts.
+ */
+function useArrowKeys(step: (key: string) => void) {
+  const stepRef = useRef(step);
+  stepRef.current = step;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const el = e.target as HTMLElement | null;
+      if (
+        el?.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(el?.tagName ?? "")
+      )
+        return;
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      // Only now claim the key — ↑/↓ would otherwise stop scrolling the page.
+      e.preventDefault();
+      stepRef.current(e.key);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+}
+
 /** Move `current` by `dir` inside `list`, clamped at both ends. */
 function stepIn<T>(list: readonly T[], current: T, dir: 1 | -1): T {
   const i = list.indexOf(current);
@@ -140,6 +181,20 @@ export function BottomBar({
   mode: "market" | "company";
 }) {
   const [{ year, market, basis, segment }, setParams] = useDashboardParams(model.last);
+  // Hints follow the segment scope; the LABELS are fixed-width so switching
+  // segment can never resize the control.
+  const MARKET_HINTS = marketHints(segment);
+
+  // Which years the CURRENT scope actually has figures for. The track always
+  // renders every year either way — a year that vanishes takes the ticks
+  // either side of it with it, and the whole bar jumps under the cursor. An
+  // unavailable year stays exactly where it was, greyed and inert.
+  const yearsWithData = new Set(
+    model.rows
+      .filter((row) => !segment || row.activities.includes(segment))
+      .filter((row) => row.revenue != null || row.estimatedIncome != null)
+      .map((row) => row.year),
+  );
   const [view] = useViewMode(mode === "market" ? "mkt" : "co");
 
   // Legacy syncBottomBarH: measure the bar (it can wrap to 2 rows on narrow
@@ -184,6 +239,20 @@ export function BottomBar({
   useWheelStep(segmentRef, (dir) =>
     selectSegment(stepIn(["", ...model.segments], segment ?? "", dir)),
   );
+  // Keyboard mirror of the two wheel gestures. ←/→ only while the year track is
+  // actually on screen (the all-years view hides it), ↑/↓ only on the Markets
+  // page, which is the one that carries a segment picker.
+  useArrowKeys((key) => {
+    if (key === "ArrowLeft" || key === "ArrowRight") {
+      if (view === "all") return;
+      setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
+    } else if (mode === "market") {
+      selectSegment(
+        stepIn(["", ...model.segments], segment ?? "", key === "ArrowDown" ? 1 : -1),
+      );
+    }
+  });
+
   useEffect(() => {
     const track = trackRef.current;
     const pill = activeYearRef.current;
@@ -242,9 +311,14 @@ export function BottomBar({
                 key={option}
                 type="button"
                 // Abbreviated ticks still announce the full year.
-                title={String(option)}
+                title={
+                  yearsWithData.has(option)
+                    ? String(option)
+                    : `${option} — no ${segment ? segName(segment) + " " : ""}figures filed`
+                }
                 aria-label={String(option)}
                 ref={option === year ? activeYearRef : undefined}
+                disabled={!yearsWithData.has(option) && option !== year}
                 // A drag that ends over a pill must not also select that year.
                 onClick={() => {
                   if (!dragScroll.moved()) setParams({ year: option });
@@ -258,7 +332,11 @@ export function BottomBar({
                   "bb-pill border-line flex-none cursor-pointer rounded border font-semibold whitespace-nowrap transition-all",
                   option === year
                     ? "border-accent bg-accent px-2.5 py-0 text-[12px] leading-[22px] text-white md:px-3 md:text-[13px] md:leading-[28px]"
-                    : "bg-panel2 text-muted hover:text-ink px-2 py-0 text-[10px] leading-[17px] opacity-70 hover:opacity-100 md:px-2.5 md:text-[11px] md:leading-[23px]",
+                    : yearsWithData.has(option)
+                      ? "bg-panel2 text-muted hover:text-ink px-2 py-0 text-[10px] leading-[17px] opacity-70 hover:opacity-100 md:px-2.5 md:text-[11px] md:leading-[23px]"
+                      : // No figures in this scope: same box, same place, just
+                        // visibly not a thing you can pick.
+                        "bg-panel2 text-muted px-2 py-0 text-[10px] leading-[17px] opacity-30 md:px-2.5 md:text-[11px] md:leading-[23px]",
                 )}
               >
                 {/* Abbreviated ticks only where width is scarce; from md the
@@ -341,10 +419,26 @@ export function BottomBar({
                 label: (
                   <>
                     <span className="md:hidden">{MARKET_ICONS[m]}</span>
-                    <span className="hidden md:inline">{MARKET_LABELS[m]}</span>
+                    {/* Fixed width: the segment name lives on a second line, so
+                        a scope change from "market" to "Digital media" cannot
+                        stretch the button and shuffle the whole bar. */}
+                    <span className="hidden w-[72px] flex-col leading-[1.15] md:inline-flex">
+                      <span>{MARKET_LABELS[m]}</span>
+                      <span
+                        className={cn(
+                          "truncate text-[10px] font-bold",
+                          m === market ? "text-white/70" : "text-muted",
+                        )}
+                      >
+                        {m === "whole" ? wholeSubLabel(segment) : " "}
+                      </span>
+                    </span>
                   </>
                 ),
-                title: MARKET_LABELS[m],
+                title:
+                  m === "whole"
+                    ? `Whole ${wholeSubLabel(segment)}`
+                    : MARKET_LABELS[m],
               }))}
               value={market}
               onChange={(m) => {
@@ -387,7 +481,9 @@ export function BottomBar({
           role="status"
           aria-live="polite"
           className={cn(
-            "border-line bg-panel pointer-events-none absolute right-3 bottom-[calc(100%+8px)] z-[420] max-w-[240px] rounded-md border px-2.5 py-1.5 text-[12px] shadow-[0_4px_16px_rgba(0,0,0,.22)]",
+            // Centred, not right-pinned: the bottom-right corner belongs to
+            // the dev-tools widget, and the hint was landing under it.
+            "border-line bg-panel pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[420] max-w-[min(320px,calc(100vw-24px))] -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-center text-[12px] shadow-[0_4px_16px_rgba(0,0,0,.22)]",
             hint ? "text-muted font-medium" : "text-ink font-semibold whitespace-nowrap",
           )}
         >

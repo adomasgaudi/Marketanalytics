@@ -1,7 +1,7 @@
+import legacyJson from "../../../data/data.json";
 import companiesJson from "../../../data2/companies.json";
 import { SODRA } from "./sodra-data";
 import govJson from "../../../data2/gov_finance.json";
-import rekJson from "../../../data2/rek_finance.json";
 import rcJson from "../../../data2/rc_bulk.json";
 
 /**
@@ -109,8 +109,8 @@ export const TAXES_METRIC: Metric = {
  * Where a single figure came from, and when it was taken. Two registries feed
  * this sheet and they do NOT agree on recency: the open-data snapshot of
  * Registrų centras trails filings by months, so 2025 is nearly empty there
- * while rekvizitai — reselling the same registry on a direct feed — already
- * has it. Mixing them is only honest if every cell says which one it is.
+ * while the registry's OWN daily dump already has it. Mixing them is only
+ * honest if every cell says which one it is.
  *
  * `mark` is what the cell wears. Where one source was taken on several dates
  * the mark carries the instance number, so ◼¹ and ◼³ are visibly not the same
@@ -133,16 +133,6 @@ export const GOV_SOURCE: Provenance = {
   at: govScrapedAt,
 };
 
-/** One entry per rekvizitai scrape run, numbered oldest-first by the builder. */
-export const REK_SOURCES: Provenance[] = (
-  rekJson as { scrapes: { instance: number; date: string }[] }
-).scrapes.map((scrape) => ({
-  id: `rek${scrape.instance}`,
-  mark: `◼${"¹²³⁴⁵⁶⁷⁸⁹"[scrape.instance - 1] ?? scrape.instance}`,
-  label: "rekvizitai.lt",
-  at: scrape.date,
-}));
-
 /**
  * The same registry as GOV_SOURCE, but taken from Registrų centras directly
  * instead of the data.gov.lt mirror — and months ahead of it. Its own mark
@@ -156,7 +146,7 @@ export const RC_SOURCE: Provenance = {
   at: (rcJson as { scrapedAt?: string }).scrapedAt ?? "",
 };
 
-export const SOURCES: Provenance[] = [GOV_SOURCE, RC_SOURCE, ...REK_SOURCES];
+export const SOURCES: Provenance[] = [GOV_SOURCE, RC_SOURCE];
 
 type Filing = {
   year: number;
@@ -190,18 +180,6 @@ const gov = govJson as {
 
 const byJar = new Map(gov.companies.map((company) => [company.jarCode, company]));
 
-const rek = rekJson as {
-  companies: {
-    jarCode: string | null;
-    scrapeInstance: number | null;
-    financials: Omit<Filing, "filedAt">[];
-  }[];
-};
-
-const rekByJar = new Map(
-  rek.companies.filter((company) => company.jarCode).map((c) => [c.jarCode, c]),
-);
-
 const rcByJar = new Map(
   (rcJson as { companies: { jarCode: string; financials: Filing[] }[] }).companies.map(
     (company) => [company.jarCode, company],
@@ -225,6 +203,7 @@ export const COMPANIES: Company[] = (
       employerCost: {},
       opex: {},
       netRevenue: {},
+      impliedOpex: {},
       headcount: {},
       wageBill: {},
     };
@@ -258,19 +237,11 @@ export const COMPANIES: Company[] = (
       }
     }
 
-    // Rekvizitai FILLS GAPS ONLY, and now fills almost nothing: it is a resale
-    // of the same filings, so it is here for the handful RC's dump misses.
-    const rekEntry = entry.jarCode ? rekByJar.get(entry.jarCode) : undefined;
-    const rekSource = REK_SOURCES.find(
-      (candidate) => candidate.id === `rek${rekEntry?.scrapeInstance}`,
-    );
-    for (const filing of rekEntry?.financials ?? []) {
-      for (const key of FILED) {
-        if (filing[key] == null || values[key][filing.year] != null) continue;
-        values[key][filing.year] = filing[key];
-        if (rekSource) sources[key][filing.year] = rekSource;
-      }
-    }
+    // Rekvizitai used to fill gaps here. It is gone: it resells the same
+    // registry filings, and once RC's own dump was wired in it contributed
+    // ZERO figures neither gov nor rc_bulk already had — checked across all
+    // 552 of its turnover values. A source that adds nothing is not a source,
+    // only another thing that can drift.
     for (const tax of source?.taxes ?? []) {
       values.taxes[tax.year] = tax.ytd;
       if (tax.ytd != null) sources.taxes[tax.year] = GOV_SOURCE;
@@ -320,17 +291,52 @@ export const COMPANIES: Company[] = (
       // grossed back up. The fallback exists for years RC has not published.
       const filedPretax = values.pretax[year];
       const net = values.profit[year];
-      const beforeTax =
-        filedPretax ?? (net == null ? null : net / (1 - MODEL.citRate));
+      const beforeTax = filedPretax ?? (net == null ? null : net / (1 - MODEL.citRate));
+      const modelled =
+        beforeTax == null ? null : employer * (1 + MODEL.opexOfLabour) + beforeTax;
+      // An agency cannot keep more than it billed. Where the model says
+      // otherwise the SOURCED figure wins and the result is capped at turnover
+      // — 22 of 774 company-years hit this, and every one of them means the
+      // 0,43 opex share is too high for that company (a low-margin reseller,
+      // or a firm whose staff cost is nearly all of its cost).
+      const turnover = values.turnover[year];
       values.netRevenue[year] =
-        beforeTax == null
+        modelled == null
           ? null
-          : Math.round(employer * (1 + MODEL.opexOfLabour) + beforeTax);
+          : Math.round(turnover != null ? Math.min(modelled, turnover) : modelled);
+      if (modelled != null && turnover != null && modelled > turnover) {
+        // What opex share would have fitted. Kept so the assumption can be
+        // revisited against evidence rather than argued about.
+        values.impliedOpex[year] =
+          Math.round(((turnover - beforeTax!) / employer - 1) * 100) / 100;
+      }
     }
 
     return { ...entry, values, partialTax, filedAt, sources };
   })
   .sort((a, b) => a.brand.localeCompare(b.brand, "lt"));
+
+/**
+ * Which service segments a brand trades in, joined from the legacy dataset on
+ * the brand name. The rebuilt data2/ files carry registry figures only — no
+ * activity classification — so this is the one field the sheet still borrows
+ * from data.json. Brand is the join key because data2 has no segment column to
+ * match on; a brand missing there simply has no segments and is only ever shown
+ * unfiltered.
+ */
+const SEGMENTS_BY_BRAND = new Map<string, string[]>(
+  (legacyJson as { brand: string; activities: string[] }[]).map((row) => [
+    row.brand,
+    row.activities,
+  ]),
+);
+
+export const segmentsOf = (brand: string) => SEGMENTS_BY_BRAND.get(brand) ?? [];
+
+/** Every segment present, sorted — the filter's option list. */
+export const SEGMENTS: string[] = [
+  ...new Set([...SEGMENTS_BY_BRAND.values()].flat()),
+].sort();
 
 /** Every year any company has a figure for, oldest first. */
 export const YEARS: number[] = [

@@ -9,6 +9,7 @@ import { EngTag } from "./SegmentChart";
 import { segName } from "./segments";
 import { useSegColors } from "./useSegColors";
 import type { CompanyYear, MarketModel } from "./types";
+import { useSourcedModel } from "./rebuilt-source";
 import { useDashboardParams } from "./useDashboardParams";
 
 const MY_BRAND = "Fabula";
@@ -37,7 +38,8 @@ type Row = { brand: string; val: number; rank: number; grp?: "top" | "mid" | "bo
 /** Legacy drawTop: single-year rankings on the drawBarsSvg engine. >20 matches
     → top 10 + bottom 10, with any selected company pulled back in from the
     hidden middle; selected gold, top green, bottom red. */
-export function RankingsChart({ model }: { model: MarketModel }) {
+export function RankingsChart({ model: legacyModel }: { model: MarketModel }) {
+  const model = useSourcedModel(legacyModel);
   const [{ year, basis, companies }] = useDashboardParams(model.last);
   const SEG_COLORS = useSegColors();
   const [metricKey, setMetricKey] = useState("estimatedIncome");

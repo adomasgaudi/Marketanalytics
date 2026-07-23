@@ -29,42 +29,136 @@ export function EngTag({ label }: { label: string }) {
   );
 }
 
-/** Draws "12%" / "€36.6M" on slices that are big enough to hold it. */
+/** One ring's worth of on-slice text: `lines[i]` is drawn stacked in slice `i`,
+ *  but only where the slice holds at least `min` percent of the circle. */
+type RingLabels = { lines: string[][]; pcts: number[]; min: number; size: number };
+
+/** Draws "12%" / "€36.6M" / a company name on slices big enough to hold it.
+ *  Works per dataset, so the outer segment ring and the inner company ring can
+ *  carry different text at different sizes. */
 const onSlice = {
   id: "segOnSlice",
   afterDatasetsDraw(chart: Chart) {
-    const labels = (chart.options as { sliceLabels?: string[] }).sliceLabels;
-    const pcts = (chart.options as { slicePcts?: number[] }).slicePcts;
-    if (!labels || !pcts) return;
+    const rings = (chart.options as { ringLabels?: (RingLabels | null)[] }).ringLabels;
+    if (!rings) return;
     const { ctx } = chart;
-    const meta = chart.getDatasetMeta(0);
+    rings.forEach((ring, datasetIndex) => {
+      if (!ring) return;
+      const meta = chart.getDatasetMeta(datasetIndex);
+      const arcs = meta?.data;
+      // Chart.js can paint one final animation frame after a dataset has been
+      // replaced or destroyed. In that frame its arcs and our labels are not
+      // guaranteed to have matching lengths, so skip it rather than throwing.
+      if (!arcs?.length) return;
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      // A soft dark halo, not a hard stroke: keeps white text legible on the
+      // lighter tints without outlining every glyph.
+      ctx.shadowColor = "rgba(0,0,0,.55)";
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 0.5;
+      ctx.fillStyle = "#fff";
+      arcs.forEach((arc, i) => {
+        const lines = ring.lines[i];
+        const share = ring.pcts[i];
+        if (!lines?.length || !Number.isFinite(share) || share < ring.min) return;
+        const pos = (
+          arc as { tooltipPosition: (b: boolean) => { x: number; y: number } }
+        ).tooltipPosition(false);
+        lines.forEach((line, l) => {
+          ctx.font = `${l === 0 ? 700 : 600} ${l === 0 ? ring.size : ring.size - 1.5}px system-ui`;
+          ctx.globalAlpha = l === 0 ? 1 : 0.85;
+          ctx.fillText(
+            line,
+            pos.x,
+            pos.y + (l - (lines.length - 1) / 2) * (ring.size + 2),
+          );
+        });
+      });
+      ctx.restore();
+    });
+  },
+};
+
+/** The hole is dead space; the total belongs in it. Two lines, centred on the
+ *  ring's own centre so it stays put whatever the legend does to the layout. */
+const centreText = {
+  id: "segCentre",
+  afterDatasetsDraw(chart: Chart) {
+    const centre = (chart.options as { centre?: { top: string; big: string } }).centre;
+    const arc = chart.getDatasetMeta(0)?.data?.[0] as unknown as { x: number; y: number } | undefined;
+    if (!centre || !arc) return;
+    const { ctx } = chart;
     ctx.save();
-    ctx.font = "700 11px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = "rgba(0,0,0,.6)";
-    ctx.shadowBlur = 3;
-    ctx.shadowOffsetY = 0.5;
-    ctx.fillStyle = "#fff";
-    meta.data.forEach((arc, i) => {
-      if (pcts[i] < 5) return;
-      const pos = (
-        arc as { tooltipPosition: (b: boolean) => { x: number; y: number } }
-      ).tooltipPosition(false);
-      ctx.fillText(labels[i], pos.x, pos.y);
-    });
+    ctx.fillStyle = cssVar("--color-muted") || "#888";
+    ctx.font = "600 10px system-ui";
+    ctx.fillText(centre.top.toUpperCase(), arc.x, arc.y - 13);
+    ctx.fillStyle = cssVar("--color-ink") || "#111";
+    ctx.font = "700 22px system-ui";
+    ctx.fillText(centre.big, arc.x, arc.y + 7);
     ctx.restore();
   },
 };
+
+/**
+ * A company's shade of its segment's colour. Companies have no colour identity
+ * of their own — they belong to the segment — so the ring reads as one hue
+ * stepping light to dark rather than a second, competing palette. The step is
+ * by POSITION IN THE RING, so neighbours always differ.
+ */
+function tint(hex: string, i: number, n: number) {
+  const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex);
+  if (!m) return hex;
+  const [r, g, b] = m.slice(1).map((h) => parseInt(h, 16));
+  // -22%..+30% lightness across the ring, alternating so adjacent slices sit at
+  // opposite ends of the range instead of blending into a gradient.
+  const t = n < 2 ? 0 : ((i % 2 === 0 ? i : n - i) / n) * 0.52 - 0.22;
+  const mix = (c: number) =>
+    Math.round(t >= 0 ? c + (255 - c) * t : c * (1 + t))
+      .toString(16)
+      .padStart(2, "0");
+  return `#${mix(r)}${mix(g)}${mix(b)}`;
+}
 
 const cssVar = (name: string) =>
   typeof document === "undefined"
     ? ""
     : getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
+/**
+ * The chart's legend, as HTML rather than Chart.js's own. Two reasons: its
+ * width is FIXED, so a long name or an extra entry can no longer shrink the
+ * canvas and slide the donut sideways; and names wrap onto a second line
+ * instead of being clipped. Scrolls once a segment has more companies than the
+ * chart is tall.
+ */
+function DonutLegend({
+  items,
+}: {
+  items: { key: string; text: string; value: string; color: string }[];
+}) {
+  return (
+    <ul className="absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex">
+      {items.map((item) => (
+        <li key={item.key} className="flex items-start gap-1.5 leading-[1.35]">
+          <span
+            className="mt-[3px] h-2.5 w-2.5 flex-none rounded-[3px]"
+            style={{ background: item.color }}
+          />
+          <span className="min-w-0 flex-1 break-words">{item.text}</span>
+          <span className="text-muted flex-none tabular-nums">{item.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** "{year} Revenue by segment" — doughnut or SVG bars, %/€, follows year + basis. */
 export function SegmentChart({ model }: { model: MarketModel }) {
-  const [{ year, market }] = useDashboardParams(model.last);
+  const [{ year, market, segment }] = useDashboardParams(model.last);
   const SEG_COLORS = useSegColors();
   const [type, setType] = useState<"doughnut" | "bars">("doughnut");
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
@@ -78,7 +172,11 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   // position and their colour as the year changes — a segment that starts
   // reporting (e.g. PA) grows from nothing instead of shoving its neighbours
   // along. `has` marks the slots with real data, for the legend and bars.
-  const rows = model.segments.map((s) => {
+  // Scoped to one segment, the outer ring collapses to that segment's own full
+  // circle and the inner ring becomes the readable half: its companies. The
+  // two-ring shape is kept rather than swapped, so the picker reads as a zoom.
+  const shownSegments = segment ? [segment] : model.segments;
+  const rows = shownSegments.map((s) => {
     const v = segMetricVal(model.rows, s, metric, basis, year);
     return { s, v: v ?? 0, has: v != null };
   });
@@ -88,7 +186,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const shown = (i: number) =>
     show === "pct" ? `${pct(i).toFixed(pct(i) < 10 ? 1 : 0)}%` : fmtEur(rows[i].v);
 
-  const title = `${year} ${SEG_METRICS[metric].label} by segment${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
+  const title = `${year} ${SEG_METRICS[metric].label} ${segment ? `in ${segName(segment)} by company` : "by segment"}${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
 
   // Fixed company slots preserve every inner-slice position across years and
   // metric/basis changes. Missing or unreported companies simply shrink to 0.
@@ -113,7 +211,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
       0,
     );
     const displayedSegmentValue = Math.max(0, segmentRow.v);
-    return brands.map((brand) => {
+    return brands.map((brand, i) => {
       const value = valuesByBrand.get(brand) ?? 0;
       return {
         value:
@@ -121,10 +219,21 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             ? (value / companyTotal) * displayedSegmentValue
             : 0,
         brand,
-        color: SEG_COLORS[segmentRow.s] ?? "#888",
+        // Scoped, the ring IS the chart, so each company takes its own shade;
+        // unscoped it stays a flat subdivision of the segment's colour.
+        color: segment
+          ? tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length)
+          : (SEG_COLORS[segmentRow.s] ?? "#888"),
       };
     });
   });
+
+  // Company shares of the ring, for the on-slice labels and the legend.
+  const companyTotal = companySlices.reduce((sum, s) => sum + s.value, 0) || 1;
+  const companyPct = (i: number) => (companySlices[i].value / companyTotal) * 100;
+  /** Legend figure for a company row, in whichever unit the toggle is on. */
+  const shownVal = (value: number, share: number) =>
+    show === "pct" ? `${share.toFixed(share < 10 ? 1 : 0)}%` : fmtEur(value);
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
@@ -169,59 +278,100 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           No companies have reported {year} figures yet.
         </p>
       ) : type === "doughnut" ? (
-        <div className="chartbox relative h-[340px]">
+        // The canvas stays a DIRECT child of the sized box — Chart.js measures
+        // its parent, and wrapping it in another div (flex item or absolute)
+        // leaves it measuring a box that isn't laid out yet, which collapses
+        // the donut. The legend's column is reserved with padding instead, and
+        // being a fixed width it can never resize the canvas or shift the
+        // donut sideways.
+        <div className="chartbox relative h-[340px] sm:pr-[176px]">
           <EngTag label="Chart.js" />
           <Doughnut
-            // Stable segment/company slots let Chart.js animate all changes.
+            // Remount whenever the SLICE COUNT changes — i.e. when the segment
+            // scope changes. Chart.js tweens arcs between updates; if the
+            // number of arcs changes mid-flight (stepping segments quickly
+            // with ↑/↓ or the wheel) it is left drawing arcs whose radius and
+            // angle belong to two different charts, and the donut collapses
+            // into skewed slivers. Within one scope the key is stable, so
+            // year and metric changes still animate.
+            // The ring structure and values change together. A fresh chart
+            // prevents Chart.js from interpolating between stale arc arrays
+            // when the year/segment controls are scrubbed rapidly.
+            key={`${segment || "all"}:${year}:${metric}:${basis}`}
             data={{
               labels: rows.map((o) => segName(o.s)),
               datasets: [
                 {
+                  // Both datasets MUST carry a distinct label. react-chartjs-2
+                  // matches datasets across updates by label; with both blank
+                  // the inner ring never matches, is rebuilt as a fresh object
+                  // every year change, and animates in from zero instead of
+                  // tweening. The labels are never displayed — the legend is
+                  // generated from data.labels and doughnut tooltips title
+                  // themselves from the same array.
+                  label: "Segments",
                   data: rows.map((o) => Math.max(0, o.v)),
                   backgroundColor: rows.map((o) => SEG_COLORS[o.s] ?? "#888"),
                   borderColor: cssVar("--color-chart-bg"),
                   borderWidth: 2,
-                  weight: 2,
+                  // Scoped, this ring is a single 100% slice carrying no
+                  // information, so it thins to a coloured rim that says only
+                  // which segment is on screen and hands the width to the
+                  // companies inside it.
+                  weight: segment ? 0.4 : 2,
                 },
                 {
-                  // The outer ring remains the readable description; company
-                  // slices intentionally have no labels, legend, or tooltip.
+                  // Unscoped this is a thin subdivision of each segment;
+                  // scoped it becomes the chart itself.
+                  label: "Companies",
                   data: companySlices.map((slice) => slice.value),
                   backgroundColor: companySlices.map((slice) => slice.color),
                   borderColor: cssVar("--color-chart-bg"),
                   borderWidth: 1,
-                  weight: 1,
+                  weight: segment ? 3 : 1,
                 },
               ],
             }}
             options={
               {
                 maintainAspectRatio: false,
-                sliceLabels: rows.map((_, i) => shown(i)),
-                slicePcts: rows.map((_, i) => pct(i)),
+                cutout: "58%",
+                // Room for the labels of the outermost slices, which sit near
+                // the canvas edge once the legend no longer squeezes the box.
+                layout: { padding: 6 },
+                // Per-ring on-slice text. Unscoped: the segment share on the
+                // outer ring, nothing inside. Scoped: the outer ring is one
+                // slice at 100% — a tautology, so it stays blank — and the
+                // company ring carries name + share wherever an arc is wide
+                // enough to hold two lines.
+                ringLabels: [
+                  segment
+                    ? null
+                    : {
+                        lines: rows.map((_, i) => [shown(i)]),
+                        pcts: rows.map((_, i) => pct(i)),
+                        min: 5,
+                        size: 11,
+                      },
+                  segment
+                    ? {
+                        lines: companySlices.map((s, i) => [
+                          s.brand,
+                          `${companyPct(i).toFixed(companyPct(i) < 10 ? 1 : 0)}%`,
+                        ]),
+                        pcts: companySlices.map((_, i) => companyPct(i)),
+                        min: 4.5,
+                        size: 10.5,
+                      }
+                    : null,
+                ],
+                centre: {
+                  top: segment ? segName(segment) : "Total",
+                  big: fmtEur(rows.reduce((sum, o) => sum + Math.max(0, o.v), 0)),
+                },
                 plugins: {
-                  legend: {
-                    position: "right" as const,
-                    labels: {
-                      color: cssVar("--color-ink"),
-                      boxWidth: 12,
-                      font: { size: 11 },
-                      generateLabels: (chart: Chart) =>
-                        (chart.data.labels as string[])
-                          .map((lab, i) => ({ lab, i }))
-                          .filter(({ i }) => rows[i].has)
-                          .map(({ lab, i }) => ({
-                            text: `${lab} · ${shown(i)}`,
-                            fillStyle: (
-                              chart.data.datasets[0].backgroundColor as string[]
-                            )[i],
-                            strokeStyle: "transparent",
-                            lineWidth: 0,
-                            index: i,
-                            fontColor: cssVar("--color-ink"),
-                          })),
-                    },
-                  },
+                  // Replaced by the fixed-width HTML legend beside the canvas.
+                  legend: { display: false },
                   tooltip: {
                     titleColor: cssVar("--color-ink"),
                     bodyColor: cssVar("--color-ink"),
@@ -234,8 +384,12 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                         dataIndex: number;
                         label?: string;
                       }) => {
-                        if (c.datasetIndex === 1)
-                          return ` ${companySlices[c.dataIndex]?.brand ?? "Company"}`;
+                        if (c.datasetIndex === 1) {
+                          const s = companySlices[c.dataIndex];
+                          return s
+                            ? ` ${s.brand}: ${fmtEur(s.value)} (${companyPct(c.dataIndex).toFixed(1)}%)`
+                            : " Company";
+                        }
                         return ` ${c.label}: ${fmtEur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`;
                       },
                     },
@@ -243,7 +397,31 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                 },
               } as never
             }
-            plugins={[onSlice]}
+            plugins={[onSlice, centreText]}
+          />
+          <DonutLegend
+            items={
+              segment
+                ? companySlices
+                    .map((s, i) => ({
+                      key: s.brand,
+                      text: s.brand,
+                      value: shownVal(s.value, companyPct(i)),
+                      color: s.color,
+                      sort: s.value,
+                    }))
+                    .filter((e) => e.sort > 0)
+                    .sort((a, b) => b.sort - a.sort)
+                : rows
+                    .map((o, i) => ({
+                      key: o.s,
+                      text: segName(o.s),
+                      value: shown(i),
+                      color: SEG_COLORS[o.s] ?? "#888",
+                      sort: o.has ? o.v : -1,
+                    }))
+                    .filter((e) => e.sort >= 0)
+            }
           />
         </div>
       ) : (

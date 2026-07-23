@@ -6,6 +6,7 @@ import { fmtEur, fmtEurFull, fmtInt } from "./format";
 import { LineChart } from "./LineChart";
 import { defaultBrand } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
+import { useSourcedModel } from "./rebuilt-source";
 import { useDashboardParams } from "./useDashboardParams";
 
 const DD_METRICS: {
@@ -61,7 +62,14 @@ const DD_METRICS: {
 
 /** Company deep-dive: one metric across every year for the selected company.
     Lives inside the all-time panel as "Compare financials" (legacy fold). */
-export function DeepDive({ model, title }: { model: MarketModel; title?: string }) {
+export function DeepDive({
+  model: legacyModel,
+  title,
+}: {
+  model: MarketModel;
+  title?: string;
+}) {
+  const model = useSourcedModel(legacyModel);
   const [{ companies }] = useDashboardParams(model.last);
   const [metricKey, setMetricKey] = useState("ddRev");
 

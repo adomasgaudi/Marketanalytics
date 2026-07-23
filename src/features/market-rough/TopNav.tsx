@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
 import { IconMoon, IconPalette, IconSettings, IconSparkle, IconSun } from "./Icons";
 import type { SegPalette } from "./segments";
+import { useDashboardParams } from "./useDashboardParams";
 import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
@@ -44,6 +45,9 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [segPalette, setSegPalette] = useState<SegPalette>("harmony");
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
+  // Which dataset the money figures come from. In the URL so a comparison is
+  // shareable; the toggle only writes it, CompaniesView reads it.
+  const [{ src }, setParams] = useDashboardParams(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [mktView, setMktView] = useViewMode("mkt");
   const [coView, setCoView] = useViewMode("co");
@@ -164,12 +168,28 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </Link>
 
-      {/* settings-wrap: cog above, clickable version below, menus anchored right.
-          ml-auto pins it to the nav's right padding edge at every width — a
-          deliberate break from the legacy, which only pushed it right ≤600px. */}
+      {/* Data source. Rebuilt is the default and needs no announcement, so the
+          pill only lights up when the site is showing the OLD spreadsheet
+          figures — that is the state worth seeing from across the room.
+          `ml-auto` starts the right-hand cluster. */}
+      <button
+        type="button"
+        onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
+        aria-pressed={src === "rebuilt"}
+        title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
+        className={`ml-auto flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
+          src === "legacy"
+            ? "border-gold text-gold bg-gold/12"
+            : "border-line text-muted hover:text-ink"
+        }`}
+      >
+        🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
+      </button>
+
+      {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
       <div
         ref={wrapRef}
-        className="relative ml-auto flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
+        className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
       >
         {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
             5; the counter resets after 3.2s. Inert once already in Dev mode. */}

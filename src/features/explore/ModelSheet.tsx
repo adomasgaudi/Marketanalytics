@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SOURCES, YEARS } from "./model-data";
+import { segName } from "@/features/market-rough/segments";
+import { SEGMENTS, SOURCES, YEARS } from "./model-data";
 import { buildModelSheet } from "./model-sheets";
 import { SODRA_YEARS } from "./sodra-data";
 import { buildSodraSheet } from "./sodra-sheets";
@@ -20,6 +21,9 @@ import { WorkbookViewer } from "./WorkbookViewer";
 export function ModelSheet() {
   const [yearsDown, setYearsDown] = useState(false);
   const [year, setYear] = useState<number | null>(null);
+  // Segment is joined from the legacy dataset on brand, so it drops whole
+  // company blocks from BOTH sheets rather than filtering columns.
+  const [segment, setSegment] = useState<string | null>(null);
   // The employer's +1,77% column. Off by default because it is the payroll
   // again at 1,0177x; the multiplier is in the derived figures regardless.
   const [showOptional, setShowOptional] = useState(false);
@@ -28,8 +32,11 @@ export function ModelSheet() {
   // wage bill summed out of it. The year filter drives both — on Sodra it also
   // switches that sheet from yearly rollups to the twelve months behind them.
   const sheets = useMemo(
-    () => [...buildModelSheet(yearsDown ? "down" : "across", year, showOptional), buildSodraSheet(yearsDown ? "down" : "across", year)],
-    [yearsDown, year, showOptional],
+    () => [
+      ...buildModelSheet(yearsDown ? "down" : "across", year, showOptional, segment),
+      buildSodraSheet(yearsDown ? "down" : "across", year, segment),
+    ],
+    [yearsDown, year, showOptional, segment],
   );
 
   return (
@@ -56,6 +63,20 @@ export function ModelSheet() {
       }
       extraActions={
         <>
+          <select
+            className={segment ? "year-select on" : "year-select"}
+            value={segment ?? ""}
+            onChange={(event) => setSegment(event.target.value || null)}
+            aria-label="Show one service segment"
+            title="Keep only the companies trading in one segment — applies to both sheets"
+          >
+            <option value="">All segments</option>
+            {SEGMENTS.map((option) => (
+              <option key={option} value={option}>
+                {segName(option)}
+              </option>
+            ))}
+          </select>
           <select
             className={year ? "year-select on" : "year-select"}
             value={year ?? ""}

@@ -26,7 +26,14 @@ export const metricNames: MetricName[] = [
     label: "Ne atlyginimų sąnaudos darbuotojui",
   },
   { sheet: "Grynasis pelnas", code: "GR.PELN", label: "Grynasis pelnas" },
-  { sheet: "Fiks ir pelno mokestis", code: "MOKESČIAI", label: "Fiks ir pelno mokestis" },
+  // Named "Fiks ir pelno mokestis" in the sheet, but it is not a tax: every row is exactly
+  // 0.43 × DU sąnaudos, and Spėjamos pajamos = DU × 1.43 + pelnas. It is the agency's own
+  // overhead allowance, so the grid calls it what it is. `sheet` must stay as the sheet has it.
+  {
+    sheet: "Fiks ir pelno mokestis",
+    code: "OPEX",
+    label: "Savos veiklos sąnaudos (43% nuo DU)",
+  },
   { sheet: "Spėjamos pajamos", code: "SPĖJ.PAJ", label: "Spėjamos pajamos" },
   { sheet: "Skola Sodrai", code: "SKOLA", label: "Skola Sodrai" },
 ];
