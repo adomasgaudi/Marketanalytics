@@ -294,10 +294,10 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             // angle belong to two different charts, and the donut collapses
             // into skewed slivers. Within one scope the key is stable, so
             // year and metric changes still animate.
-            // The ring structure and values change together. A fresh chart
-            // prevents Chart.js from interpolating between stale arc arrays
-            // when the year/segment controls are scrubbed rapidly.
-            key={`${segment || "all"}:${year}:${metric}:${basis}`}
+            // A scope change replaces the ring structure, but year/metric
+            // changes keep the same slots and animate each slice in place.
+            // The plugins above safely ignore Chart.js's teardown frame.
+            key={segment || "all"}
             data={{
               labels: rows.map((o) => segName(o.s)),
               datasets: [
