@@ -174,6 +174,24 @@ function useArrowKeys(step: (key: string) => void) {
   }, []);
 }
 
+/**
+ * How much of each control's name to spell out, from the room the bar has.
+ * Three tiers with two breakpoints, matching what the user asked for:
+ *   icon  — glyph / segment code only (phones with the year track present)
+ *   short — one-line names ("Whole", "/ company", "Full company")
+ *   full  — the two-line market labels that carry the segment sub-line
+ * Per-year keeps the old viewport cutoff (icon <768, full ≥768) so that view
+ * is untouched; all-years — where the year track is hidden and the whole bar
+ * is free — is the one that grows its labels to fill the space it now has.
+ */
+type Density = "icon" | "short" | "full";
+function barDensity(width: number, allYears: boolean): Density {
+  if (!allYears) return width >= 768 ? "full" : "icon";
+  if (width >= 560) return "full";
+  if (width >= 380) return "short";
+  return "icon";
+}
+
 /** Move `current` by `dir` inside `list`, clamped at both ends. */
 function stepIn<T>(list: readonly T[], current: T, dir: 1 | -1): T {
   const i = list.indexOf(current);
@@ -214,6 +232,17 @@ export function BottomBar({
   // screens) and publish --bb-h, which .wrap uses as its bottom padding so
   // the footer is never hidden behind the fixed bar.
   const barRef = useRef<HTMLDivElement>(null);
+  // Width drives how full the control labels get (see barDensity). Measured, not
+  // guessed from the viewport, so the all-years view — which frees the whole bar
+  // by hiding the year track — actually uses the room it gains.
+  const [barW, setBarW] = useState(0);
+  const density = barDensity(barW, view === "all");
+  // Roomier tap target while the buttons are icon-only; tighter once they carry
+  // words, so a full row of names still fits the line.
+  const segBtnClass =
+    density === "icon"
+      ? "px-3 py-2 text-[14px] leading-5"
+      : "px-3.5 py-1 text-[12.5px] leading-[28px]";
   // The basis/market control is icon-only, so confirm each pick in words for a
   // moment after it's made — otherwise the icons are a guessing game.
   const [flash, setFlash] = useState<string | null>(null);
@@ -329,7 +358,10 @@ export function BottomBar({
     const bar = barRef.current;
     if (!bar) return;
     const root = document.documentElement;
-    const sync = () => root.style.setProperty("--bb-h", `${bar.offsetHeight}px`);
+    const sync = () => {
+      root.style.setProperty("--bb-h", `${bar.offsetHeight}px`);
+      setBarW(bar.clientWidth);
+    };
     sync();
     const ro = new ResizeObserver(sync);
     ro.observe(bar);
@@ -432,7 +464,11 @@ export function BottomBar({
         {/* Segment scope for the cash-flow panel. A <select> rather than a Seg:
             9 segments as joined buttons would be ~900px wide. */}
         {mode === "market" && (
-          <div ref={segmentRef} className="segment-picker">
+          <div
+            ref={segmentRef}
+            className="segment-picker"
+            data-density={density === "icon" ? "compact" : "expanded"}
+          >
             <button
               type="button"
               aria-label="Segment scope"
@@ -444,12 +480,11 @@ export function BottomBar({
                 if (!segmentDrag.current.moved) setSegmentOpen((open) => !open);
               }}
             >
-              <span className="font-bold tracking-[.08em] md:hidden">
-                {segmentCode(segment)}
-              </span>
-              <span className="hidden md:inline">
+              {density === "icon" ? (
+                <span className="font-bold tracking-[.08em]">{segmentCode(segment)}</span>
+              ) : (
                 <IconSegments size={20} />
-              </span>
+              )}
               <span className="segment-picker-label">
                 {segment ? segName(segment) : "All segments"}
               </span>
@@ -487,14 +522,18 @@ export function BottomBar({
               label="Market basis"
               options={MARKET_MODES.map((m) => ({
                 value: m,
-                // Icon while width is scarce, full name once there's room.
-                label: (
-                  <>
-                    <span className="md:hidden">{MARKET_ICONS[m]}</span>
-                    {/* Fixed width: the segment name lives on a second line, so
-                        a scope change from "market" to "Digital media" cannot
-                        stretch the button and shuffle the whole bar. */}
-                    <span className="hidden w-[72px] flex-col leading-[1.15] md:inline-flex">
+                // Icon while width is scarce, a one-line name when there's some
+                // room, the two-line label with its segment sub-line once full.
+                label:
+                  density === "icon" ? (
+                    MARKET_ICONS[m]
+                  ) : density === "short" ? (
+                    <span className="whitespace-nowrap">{MARKET_LABELS[m]}</span>
+                  ) : (
+                    // Fixed width: the segment name lives on a second line, so
+                    // a scope change from "market" to "Digital media" cannot
+                    // stretch the button and shuffle the whole bar.
+                    <span className="inline-flex w-[72px] flex-col leading-[1.15]">
                       <span>{MARKET_LABELS[m]}</span>
                       <span
                         className={cn(
@@ -505,8 +544,7 @@ export function BottomBar({
                         {m === "whole" ? wholeSubLabel(segment) : " "}
                       </span>
                     </span>
-                  </>
-                ),
+                  ),
                 title:
                   m === "whole" ? `Whole ${wholeSubLabel(segment)}` : MARKET_LABELS[m],
               }))}
@@ -517,19 +555,21 @@ export function BottomBar({
               }}
               onHoverChange={(m) => setHint(m && MARKET_HINTS[m])}
               className="flex-none"
-              btnClassName="px-3 py-2 text-[14px] leading-5 md:px-3.5 md:py-1 md:text-[12.5px] md:leading-[28px]"
+              btnClassName={segBtnClass}
             />
           ) : (
             <Seg
               label="Company basis"
               options={BASES.map((b) => ({
                 value: b,
-                label: (
-                  <>
-                    <span className="md:hidden">{BASIS_ICONS[b]}</span>
-                    <span className="hidden md:inline">{BASIS_LABELS[b]}</span>
-                  </>
-                ),
+                // No segment sub-line here, so this control has just two tiers:
+                // icon when width is scarce, the full word once there's room.
+                label:
+                  density === "icon" ? (
+                    BASIS_ICONS[b]
+                  ) : (
+                    <span className="whitespace-nowrap">{BASIS_LABELS[b]}</span>
+                  ),
                 title: BASIS_LABELS[b],
               }))}
               value={basis}
@@ -539,7 +579,7 @@ export function BottomBar({
               }}
               onHoverChange={(b) => setHint(b && BASIS_HINTS[b])}
               className="flex-none"
-              btnClassName="px-3 py-2 text-[14px] leading-5 md:px-3.5 md:py-1 md:text-[12.5px] md:leading-[28px]"
+              btnClassName={segBtnClass}
             />
           )}
         </div>
