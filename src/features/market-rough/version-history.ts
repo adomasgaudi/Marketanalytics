@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.48.0",
+    date: "2026-07-23",
+    title: "Year carousel fix",
+    desc: "Year track can centre any year (incl. 2025): scroll-padding, smooth scroll-to-select on all devices, clicks no longer blocked by drag state.",
+  },
+  {
     v: "v3.47.0",
     date: "2026-07-23",
     title: "Simpler dev formulas",

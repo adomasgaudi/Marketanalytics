@@ -84,12 +84,10 @@ function yearLabel(year: number, selected: number) {
 }
 
 /** Instagram-carousel drag: press and pull the year track sideways with a
- *  mouse (touch already pans natively via overflow-x-auto). `moved` lets the
- *  year buttons ignore the click that ends a drag. */
+ *  mouse (touch already pans natively via overflow-x-auto). */
 function useDragScroll(ref: React.RefObject<HTMLDivElement | null>) {
-  const drag = useRef({ down: false, startX: 0, startLeft: 0, moved: false });
+  const drag = useRef({ down: false, startX: 0, startLeft: 0 });
   return {
-    moved: () => drag.current.moved,
     handlers: {
       onPointerDown: (e: React.PointerEvent) => {
         if (e.pointerType !== "mouse" || !ref.current) return;
@@ -97,15 +95,12 @@ function useDragScroll(ref: React.RefObject<HTMLDivElement | null>) {
           down: true,
           startX: e.clientX,
           startLeft: ref.current.scrollLeft,
-          moved: false,
         };
       },
       onPointerMove: (e: React.PointerEvent) => {
         const d = drag.current;
         if (!d.down || !ref.current) return;
-        const dx = e.clientX - d.startX;
-        if (Math.abs(dx) > 4) d.moved = true;
-        ref.current.scrollLeft = d.startLeft - dx;
+        ref.current.scrollLeft = d.startLeft - (e.clientX - d.startX);
       },
       onPointerUp: () => {
         drag.current.down = false;
@@ -271,27 +266,45 @@ export function BottomBar({
   // also scroll the page ancestors.
   const trackRef = useRef<HTMLDivElement>(null);
   const activeYearRef = useRef<HTMLButtonElement>(null);
-  const touchYearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // While we are centring the active pill, ignore scroll-end selection.
+  const centringYear = useRef(false);
+  const hasCentredYear = useRef(false);
   const dragScroll = useDragScroll(trackRef);
-  // Touch scrolling is a carousel gesture: once it settles, select the enabled
-  // pill nearest the track's centre. Desktop keeps its drag/click behaviour.
-  const settleTouchYear = () => {
-    if (!window.matchMedia("(pointer: coarse)").matches) return;
-    if (touchYearTimer.current) clearTimeout(touchYearTimer.current);
-    touchYearTimer.current = setTimeout(() => {
-      const track = trackRef.current;
-      if (!track) return;
-      const centre = track.getBoundingClientRect().left + track.clientWidth / 2;
-      const nearest = [...track.querySelectorAll<HTMLButtonElement>("[data-year]")]
-        .filter((button) => !button.disabled)
-        .sort(
-          (a, b) =>
-            Math.abs(a.getBoundingClientRect().left + a.offsetWidth / 2 - centre) -
-            Math.abs(b.getBoundingClientRect().left + b.offsetWidth / 2 - centre),
-        )[0];
-      const next = Number(nearest?.dataset.year);
-      if (Number.isFinite(next) && next !== year) setParams({ year: next });
-    }, 120);
+
+  const centreActiveYear = (smooth: boolean) => {
+    const track = trackRef.current;
+    const pill = activeYearRef.current;
+    if (!track || !pill) return;
+    centringYear.current = true;
+    track.scrollTo({
+      left: pill.offsetLeft - track.clientWidth / 2 + pill.offsetWidth / 2,
+      behavior: smooth ? "smooth" : "instant",
+    });
+    window.setTimeout(() => {
+      centringYear.current = false;
+    }, smooth ? 450 : 50);
+  };
+
+  const pickNearestYear = () => {
+    if (centringYear.current) return;
+    const track = trackRef.current;
+    if (!track) return;
+    const centre = track.scrollLeft + track.clientWidth / 2;
+    const nearest = [...track.querySelectorAll<HTMLButtonElement>("[data-year]")]
+      .filter((button) => !button.disabled)
+      .sort(
+        (a, b) =>
+          Math.abs(a.offsetLeft + a.offsetWidth / 2 - centre) -
+          Math.abs(b.offsetLeft + b.offsetWidth / 2 - centre),
+      )[0];
+    const next = Number(nearest?.dataset.year);
+    if (Number.isFinite(next) && next !== year) setParams({ year: next });
+  };
+
+  const onTrackScroll = () => {
+    if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
+    scrollEndTimer.current = setTimeout(pickNearestYear, 150);
   };
   // Wheel anywhere over the track picks the next/previous year; the centring
   // effect below then pulls it into view, so the track scrolls as a side effect.
@@ -317,17 +330,14 @@ export function BottomBar({
   });
 
   useEffect(() => {
-    const track = trackRef.current;
-    const pill = activeYearRef.current;
-    if (!track || !pill) return;
-    track.scrollTo({
-      left: pill.offsetLeft - track.clientWidth / 2 + pill.offsetWidth / 2,
-      behavior: "smooth",
-    });
+    if (view === "all") return;
+    centreActiveYear(hasCentredYear.current);
+    hasCentredYear.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, view]);
 
   useEffect(
-    () => () => void (touchYearTimer.current && clearTimeout(touchYearTimer.current)),
+    () => () => void (scrollEndTimer.current && clearTimeout(scrollEndTimer.current)),
     [],
   );
 
@@ -370,16 +380,13 @@ export function BottomBar({
           <div
             ref={trackRef}
             {...dragScroll.handlers}
-            onScroll={settleTouchYear}
-            // Ticks stay grouped at the left — spreading them across the free
-            // width read as arbitrary. They just get roomier, not spaced apart.
-            className="flex w-full min-w-0 snap-x snap-mandatory [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
+            onScroll={onTrackScroll}
+            className="flex w-full min-w-0 snap-x snap-mandatory scroll-px-[50%] [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
           >
             {model.finYears.map((option) => (
               <button
                 key={option}
                 type="button"
-                // Abbreviated ticks still announce the full year.
                 title={
                   yearsWithData.has(option)
                     ? String(option)
@@ -389,10 +396,7 @@ export function BottomBar({
                 data-year={option}
                 ref={option === year ? activeYearRef : undefined}
                 disabled={!yearsWithData.has(option) && option !== year}
-                // A drag that ends over a pill must not also select that year.
-                onClick={() => {
-                  if (!dragScroll.moved()) setParams({ year: option });
-                }}
+                onClick={() => setParams({ year: option })}
                 // bb-pill + data-on are styling hooks for the refined skin; they
                 // have no effect while the skin is set to classic.
                 data-on={option === year}
