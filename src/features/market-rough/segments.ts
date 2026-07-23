@@ -166,8 +166,27 @@ export const basisWord = (b: SegBasis) =>
 const median = (a: number[]) =>
   a.length ? a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)] : null;
 
+/** Canonical segment names — used to normalise workbook Veikla values. */
+export const SEGMENT_KEYS = [
+  "Media",
+  "Digital media",
+  "Kūryba",
+  "PR",
+  "Production house",
+  "BTL",
+  "PA",
+  "Konsultantai",
+  "Renginiai",
+] as const;
+
+export const canonSegment = (raw: string): string | null => {
+  const t = raw.trim().toLowerCase();
+  return SEGMENT_KEYS.find((s) => s.toLowerCase() === t) ?? null;
+};
+
 /** When a company must land in one segment only (19 brands span several). */
-export const primarySegment = (row: CompanyYear) => row.activities[0] ?? "Other";
+export const primarySegment = (row: CompanyYear) =>
+  row.mainSegment ?? row.activities[0] ?? "Other";
 
 /** Whole-market figure for metric × basis × year — each company once. */
 export function marketMetricTotal(

@@ -49,6 +49,7 @@ export function CompanyProfileCard({
   const acts = row?.activities?.length
     ? row.activities
     : (years.map((y) => mine[y]).find((r) => r.activities?.length)?.activities ?? []);
+  const main = row?.mainSegment ?? acts[0];
 
   const rows: [string, React.ReactNode][] = [
     ["CEO", profile?.ceo ?? <Nd />],
@@ -59,12 +60,19 @@ export function CompanyProfileCard({
       acts.length ? (
         <span>
           {acts.map((s) => (
-            <span key={s} className="mr-1">
+            <span key={s} className="mr-1.5">
               <span
                 className="mr-1 inline-block h-2 w-2 rounded-full align-[-1px]"
                 style={{ background: SEG_COLORS[s] ?? "#888" }}
               />
-              {segName(s)}
+              <span className={s === main ? "font-bold" : "text-muted font-normal"}>
+                {segName(s)}
+              </span>
+              {s === main && acts.length > 1 && (
+                <span className="text-muted ml-0.5 text-[10px] font-semibold tracking-wide uppercase">
+                  main
+                </span>
+              )}
             </span>
           ))}
         </span>

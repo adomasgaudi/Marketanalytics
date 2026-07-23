@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.54.0",
+    date: "2026-07-23",
+    title: "Main segment per company",
+    desc: "Each company now has one canonical main segment (workbook Veikla when set, else first activity). Shown as “main” in the profile; scatter and deduped counts use it so multi-segment brands don’t conflict.",
+  },
+  {
     v: "v3.53.0",
     date: "2026-07-23",
     title: "Scatter respects segment filter",

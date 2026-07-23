@@ -5,6 +5,8 @@ export type CompanyYear = {
   year: number;
   /** Market segments the company operates in (Kūryba, PR, Media, ...). */
   activities: string[];
+  /** One canonical segment for deduped counts — workbook Veikla when set. */
+  mainSegment?: string;
   city: string;
   risk: string;
   /** Financials are null where a company has no filing for that year. */
