@@ -23,6 +23,16 @@ const nextConfig: NextConfig = {
       ? {}
       : { resolveAlias: { "@adomas/dev-tools": "./src/dev/dev-corner-stub.tsx" } }),
   },
+  webpack: (config) => {
+    if (!hasDevTools) {
+      config.resolve ??= {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@adomas/dev-tools": path.resolve(__dirname, "src/dev/dev-corner-stub.tsx"),
+      };
+    }
+    return config;
+  },
   // Next blocks cross-origin dev resources (/_next/*, HMR) by default, so a
   // phone hitting http://<lan-ip>:3000 gets the HTML but no client JS — the
   // page renders and nothing is clickable. Allow the LAN to test on device.

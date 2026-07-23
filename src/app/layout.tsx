@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { DevCornerMount } from "@/dev/DevCornerMount";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
@@ -32,6 +33,8 @@ export default function RootLayout({
         {/* Dev overlay — the Pepper dev corner (src/dev): edit/view trays,
             x-ray, depth experiments, version history. Dev mode only. */}
         <DevCornerMount />
+        {/* X-ray switchboard (bottom-left); hidden until html[data-mode=dev]. */}
+        <Script src="/devtools.js" strategy="afterInteractive" />
       </body>
     </html>
   );

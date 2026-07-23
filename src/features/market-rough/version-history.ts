@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.46.0",
+    date: "2026-07-23",
+    title: "Dev tools on live",
+    desc: "Loads devtools.js (x-ray corner) and ships a built-in version-history FAB when @adomas/dev-tools is not installed — both appear after the 8-click dev unlock.",
+  },
+  {
     v: "v3.45.0",
     date: "2026-07-23",
     title: "Percent cash flow drops euro sub-line",
