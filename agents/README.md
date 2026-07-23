@@ -10,6 +10,7 @@ Several agents work here at once. These notes are how they hand over.
 | --- | --- | --- |
 | [agent1](agent1/NOTES.md) | 2026-07-22 | data2 rebuild: registry + Sodra pipeline, the wage-bill finding, `/explore/model` |
 | [agent2](agent2/NOTES.md) | 2026-07-23 | Chart.js rapid-update race in the segment donut and all-years view |
+| [agent3](agent3/NOTES.md) | 2026-07-23 | All-segments donut crash from ~150-slice inner ring |
 
 ## If you are a new agent
 

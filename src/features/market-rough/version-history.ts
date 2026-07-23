@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.42.3",
+    date: "2026-07-23",
+    title: "All-segments donut fix",
+    desc: "Dropped the inner company ring at whole-market scope (~150 micro-slices collapsed Chart.js) and hardened on-slice label guards.",
+  },
+  {
     v: "v3.42.2",
     date: "2026-07-23",
     title: "Persistent segment positions",

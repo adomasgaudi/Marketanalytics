@@ -28,7 +28,7 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.42.2
+> v3.42.3
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 

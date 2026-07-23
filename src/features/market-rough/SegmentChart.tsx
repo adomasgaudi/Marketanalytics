@@ -43,13 +43,12 @@ const onSlice = {
     if (!rings) return;
     const { ctx } = chart;
     rings.forEach((ring, datasetIndex) => {
-      if (!ring) return;
       const meta = chart.getDatasetMeta(datasetIndex);
       const arcs = meta?.data;
       // Chart.js can paint one final animation frame after a dataset has been
       // replaced or destroyed. In that frame its arcs and our labels are not
       // guaranteed to have matching lengths, so skip it rather than throwing.
-      if (!arcs?.length) return;
+      if (!ring?.lines?.length || !arcs?.length || arcs.length !== ring.lines.length) return;
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -235,6 +234,27 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const shownVal = (value: number, share: number) =>
     show === "pct" ? `${share.toFixed(share < 10 ? 1 : 0)}%` : fmtEur(value);
 
+  // The company ring only reads at single-segment scope. Whole-market mode would
+  // stack ~150+ micro-slices and Chart.js collapses the donut on first paint.
+  const segmentRing = {
+    label: "Segments",
+    data: rows.map((o) => Math.max(0, o.v)),
+    backgroundColor: rows.map((o) => SEG_COLORS[o.s] ?? "#888"),
+    borderColor: cssVar("--color-chart-bg"),
+    borderWidth: 2,
+    weight: segment ? 0.4 : 2,
+  };
+  const companyRing = segment
+    ? {
+        label: "Companies",
+        data: companySlices.map((slice) => slice.value),
+        backgroundColor: companySlices.map((slice) => slice.color),
+        borderColor: cssVar("--color-chart-bg"),
+        borderWidth: 1,
+        weight: 3,
+      }
+    : null;
+
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">{title}</h2>
@@ -300,37 +320,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             key={segment || "all"}
             data={{
               labels: rows.map((o) => segName(o.s)),
-              datasets: [
-                {
-                  // Both datasets MUST carry a distinct label. react-chartjs-2
-                  // matches datasets across updates by label; with both blank
-                  // the inner ring never matches, is rebuilt as a fresh object
-                  // every year change, and animates in from zero instead of
-                  // tweening. The labels are never displayed — the legend is
-                  // generated from data.labels and doughnut tooltips title
-                  // themselves from the same array.
-                  label: "Segments",
-                  data: rows.map((o) => Math.max(0, o.v)),
-                  backgroundColor: rows.map((o) => SEG_COLORS[o.s] ?? "#888"),
-                  borderColor: cssVar("--color-chart-bg"),
-                  borderWidth: 2,
-                  // Scoped, this ring is a single 100% slice carrying no
-                  // information, so it thins to a coloured rim that says only
-                  // which segment is on screen and hands the width to the
-                  // companies inside it.
-                  weight: segment ? 0.4 : 2,
-                },
-                {
-                  // Unscoped this is a thin subdivision of each segment;
-                  // scoped it becomes the chart itself.
-                  label: "Companies",
-                  data: companySlices.map((slice) => slice.value),
-                  backgroundColor: companySlices.map((slice) => slice.color),
-                  borderColor: cssVar("--color-chart-bg"),
-                  borderWidth: 1,
-                  weight: segment ? 3 : 1,
-                },
-              ],
+              datasets: companyRing ? [segmentRing, companyRing] : [segmentRing],
             }}
             options={
               {
@@ -340,21 +330,13 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                 // the canvas edge once the legend no longer squeezes the box.
                 layout: { padding: 6 },
                 // Per-ring on-slice text. Unscoped: the segment share on the
-                // outer ring, nothing inside. Scoped: the outer ring is one
-                // slice at 100% — a tautology, so it stays blank — and the
-                // company ring carries name + share wherever an arc is wide
-                // enough to hold two lines.
-                ringLabels: [
-                  segment
-                    ? null
-                    : {
-                        lines: rows.map((_, i) => [shown(i)]),
-                        pcts: rows.map((_, i) => pct(i)),
-                        min: 5,
-                        size: 11,
-                      },
-                  segment
-                    ? {
+                // outer ring. Scoped: the outer ring is one slice at 100% — a
+                // tautology, so it stays blank — and the company ring carries
+                // name + share wherever an arc is wide enough to hold two lines.
+                ringLabels: companyRing
+                  ? [
+                      null,
+                      {
                         lines: companySlices.map((s, i) => [
                           s.brand,
                           `${companyPct(i).toFixed(companyPct(i) < 10 ? 1 : 0)}%`,
@@ -362,9 +344,16 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                         pcts: companySlices.map((_, i) => companyPct(i)),
                         min: 4.5,
                         size: 10.5,
-                      }
-                    : null,
-                ],
+                      },
+                    ]
+                  : [
+                      {
+                        lines: rows.map((_, i) => [shown(i)]),
+                        pcts: rows.map((_, i) => pct(i)),
+                        min: 5,
+                        size: 11,
+                      },
+                    ],
                 centre: {
                   top: segment ? segName(segment) : "Total",
                   big: fmtEur(rows.reduce((sum, o) => sum + Math.max(0, o.v), 0)),
@@ -384,7 +373,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                         dataIndex: number;
                         label?: string;
                       }) => {
-                        if (c.datasetIndex === 1) {
+                        if (companyRing && c.datasetIndex === 1) {
                           const s = companySlices[c.dataIndex];
                           return s
                             ? ` ${s.brand}: ${fmtEur(s.value)} (${companyPct(c.dataIndex).toFixed(1)}%)`
