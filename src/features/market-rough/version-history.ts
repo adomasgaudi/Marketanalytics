@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.42.7",
+    date: "2026-07-23",
+    title: "Coloured segment picker",
+    desc: "The bottom-bar segment filter now uses each segment's slice colour — a swatch and hue on every menu option, and the active segment tints the trigger — tracking the live theme and harmony/spectral palette.",
+  },
+  {
     v: "v3.42.6",
     date: "2026-07-23",
     title: "Swipe segment selector",
