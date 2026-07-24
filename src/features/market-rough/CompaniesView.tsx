@@ -5,7 +5,9 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { slugify } from "@/lib/slug";
 import { CompanyProfileCard } from "./CompanyProfile";
-import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
+import { cmpColor, CompareChips } from "./CompanySelector";
+import { brandSegments } from "./segments";
+import { useCompareColors } from "./useSegColors";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
@@ -61,7 +63,10 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
   // Every selected company (minus toggled-off), not just the first — the
   // title names what the page is actually comparing.
   const pool = companies.filter((b) => !off.includes(b));
-  const brands = pool.length ? pool : companies.slice(0, 1);
+  const all = pool.length ? pool : companies.slice(0, 1);
+  // Past three names the title stops being a title — cap and count the rest.
+  const brands = all.slice(0, 3);
+  const more = all.length - brands.length;
   return (
     <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
       {/* Size steps down as the list grows, so five names still fit. */}
@@ -91,6 +96,9 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
         ) : (
           <span className="text-muted/60">Select a company</span>
         )}
+        {more > 0 && (
+          <span className="text-muted/60 ml-2 text-[0.55em]">+{more} more</span>
+        )}
       </span>
       {/* The per-year / all-time toggle the old "Companies per year" title
           carried — kept, demoted to the subtitle line (mirrors HeroTitle). */}
@@ -104,31 +112,17 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
 /** The hoisted company picker, visible on every Financials tab. */
 export function CompanyPicker({
   model: legacyModel,
-  profiles,
 }: {
   model: MarketModel;
   profiles?: Record<string, CompanyProfile>;
 }) {
-  // The selector filters companies by turnover, so it must rank them on the
-  // same figures the cards below will show.
   const model = useSourcedModel(legacyModel);
   const { pool, off, set, setOff } = useSelectedBrands(model);
-  const [{ year, segment }] = useDashboardParams(model.last);
+  const compareColors = useCompareColors(brandSegments(model))(pool);
   return (
     <>
-      {/* The picker button scrolls away, like the legacy #ovCompanySelect. */}
-      <div className="mb-1.5">
-        <CompanySelector
-          model={model}
-          year={year}
-          selected={pool}
-          off={off}
-          onChange={set}
-          onOffChange={setOff}
-          profiles={profiles}
-          scopedSegment={segment}
-        />
-      </div>
+      {/* The old CompanySelector dropdown is gone — the searchable agency
+          strip in the hero is the picker now. Only the compare pills remain. */}
       {/* Only the company PILLS stay pinned under the 50px top nav — the
           legacy page-level .co-stickybar (top:44px, z-80, border-bottom). */}
       {pool.length > 1 && (
@@ -139,6 +133,7 @@ export function CompanyPicker({
             onChange={set}
             onOffChange={setOff}
             fallbackBrand={defaultBrand(model)}
+            colors={compareColors}
           />
         </div>
       )}

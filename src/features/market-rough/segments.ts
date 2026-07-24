@@ -1,4 +1,4 @@
-import type { CompanyYear } from "./types";
+import type { CompanyYear, MarketModel } from "./types";
 
 /**
  * Segment colours, keyed by the LT data keys. One set — SPECTRAL — used for
@@ -260,3 +260,12 @@ export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
       ? `Median ${M.short} per employee in each segment — a productivity proxy.`
       : `Median ${M.short} per company in each segment.`;
 }
+
+/** Segments a brand wears, main first — feeds useCompareColors. */
+export const brandSegments =
+  (model: MarketModel) =>
+  (brand: string): string[] => {
+    const row = Object.values(model.byBrand[brand] ?? {})[0] as CompanyYear | undefined;
+    if (!row) return [];
+    return [...new Set([row.mainSegment ?? "", ...row.activities])].filter(Boolean);
+  };

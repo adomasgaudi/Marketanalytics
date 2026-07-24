@@ -35,9 +35,18 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
   const [{ year, segment, companies }, setParams] = useDashboardParams(model.last);
 
   const [sort, setSort] = useState<Sort>("turnover");
+  const [query, setQuery] = useState("");
+  // Diacritic-insensitive: "aciu" finds "100 ačiū".
+  const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const rows = model.rows
     .filter((row) => row.year === year)
     .filter((row) => !segment || row.activities.includes(segment))
+    .filter(
+      (row) =>
+        !query ||
+        fold(row.brand).includes(fold(query)) ||
+        fold(row.company).includes(fold(query)),
+    )
     .sort((a, b) =>
       sort === "alphabetical"
         ? a.brand.localeCompare(b.brand, undefined, { sensitivity: "base" })
@@ -56,7 +65,9 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
       ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
   }, [selectedKey, year, segment]);
 
-  if (!rows.length) return null;
+  // A zero-match SEARCH must keep the section (and its input) on screen;
+  // only an empty year/segment hides the strip entirely.
+  if (!rows.length && !query) return null;
 
   const word =
     "hover:text-accent cursor-pointer underline decoration-dotted underline-offset-2 transition-colors";
@@ -108,6 +119,15 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
             Open {companies.length} in dashboard →
           </Link>
         )}
+        {/* Search: 131 chips is a scroll, a name is a keystroke. */}
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search…"
+          aria-label="Search agencies"
+          className="border-line bg-panel text-ink placeholder:text-muted/60 ml-auto w-[130px] rounded-full border px-3 py-0.5 text-[11px] font-normal tracking-normal normal-case outline-none focus:border-[var(--color-accent)]"
+        />
       </div>
 
       {/* THREE rows that scroll together, not one row that wraps — the band
@@ -117,6 +137,11 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
         ref={stripRef}
         className="-mx-1 grid [scrollbar-width:none] [grid-auto-columns:max-content] grid-flow-col grid-rows-3 gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden"
       >
+        {!rows.length && (
+          <p className="text-muted col-span-full row-span-3 self-center px-1 text-[12px]">
+            No agency matches “{query}”.
+          </p>
+        )}
         {rows.map((row) => (
           <button
             key={row.brand}

@@ -110,12 +110,15 @@ export function CompareChips({
   onChange,
   onOffChange,
   fallbackBrand,
+  colors,
 }: {
   selected: string[];
   off: string[];
   onChange: (brands: string[]) => void;
   onOffChange: (off: string[]) => void;
   fallbackBrand: string;
+  /** brand -> colour from useCompareColors; falls back to the index palette. */
+  colors?: Record<string, string>;
 }) {
   const cmpColor = useCmpColor();
   const activeList = activeOf(selected, off);
@@ -160,7 +163,7 @@ export function CompareChips({
           >
             <i
               className={cn("h-2 w-2 flex-none rounded-full", !on && "opacity-35")}
-              style={{ background: cmpColor(i) }}
+              style={{ background: colors?.[b] ?? cmpColor(i) }}
             />
             {b}
             {/* Remove: a visible × that still owns the chip's whole right
