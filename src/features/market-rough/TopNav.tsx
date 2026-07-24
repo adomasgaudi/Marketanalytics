@@ -95,6 +95,38 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const menuItem =
     "flex w-full cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-2.5 py-[7px] text-left text-[13px] text-ink hover:bg-panel2";
 
+  // Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at 5; the
+  // counter resets after 3.2s. Inert once already in Dev mode.
+  const onVerClick = (e: React.MouseEvent) => {
+    if (mode === "dev") return;
+    e.stopPropagation();
+    verClicks.current++;
+    if (verTimer.current) clearTimeout(verTimer.current);
+    verTimer.current = setTimeout(() => {
+      verClicks.current = 0;
+      setVerHint("");
+    }, 3200);
+    if (verClicks.current === 5) setVerHint("Click 3 more times");
+    if (verClicks.current >= 8) {
+      verClicks.current = 0;
+      setVerHint("");
+      setMode("dev");
+    }
+  };
+  const versionTag = (sizeCls: string) => (
+    <span
+      onClick={onVerClick}
+      className={`letterpress text-muted ${sizeCls} leading-none font-semibold whitespace-nowrap select-none`}
+    >
+      {APP_VERSION_LABEL}
+    </span>
+  );
+  const verHintEl = verHint ? (
+    <span className="border-line bg-panel text-muted absolute top-[calc(100%+5px)] right-0 z-210 rounded-[4px] border px-2 py-[3px] text-[10px] font-semibold whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,.18)]">
+      {verHint}
+    </span>
+  ) : null;
+
   // Nav padding folds in the content wrap's own px-6 (840+48=792) so the logo
   // shares a left edge with the page content, not the column's outer edge.
   return (
@@ -151,70 +183,52 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       {/* Right cluster: the theme+accent control lives out here (the settings
           menu below is empty in default mode); the cog appears only in Dev. */}
       <div className="ml-auto flex flex-shrink-0 items-center gap-2">
-        {/* One control, two sides: theme on the left, accent swatch on the right. */}
-        <div className="border-line flex items-center overflow-hidden rounded-full border">
-          <button
-            type="button"
-            title={theme === "dark" ? "Switch to light" : "Switch to dark"}
-            aria-label="Toggle light / dark theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="text-muted hover:text-accent hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
-          >
-            {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
-          </button>
-          <span className="bg-line h-4 w-px" />
-          <button
-            type="button"
-            title={`Accent: ${palette} — click to cycle`}
-            aria-label="Cycle accent colour"
-            // Cycles through the accent palettes rather than flipping two.
-            onClick={() =>
-              setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
-            }
-            className="hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
-          >
-            <span
-              className="border-line h-3.5 w-3.5 rounded-full border"
-              style={{ background: "var(--color-accent)" }}
-            />
-          </button>
+        {/* One control, two sides: theme on the left, accent swatch on the
+            right. In default mode the version tucks UNDER it. */}
+        <div className="relative flex flex-col items-center gap-[3px]">
+          <div className="border-line flex items-center overflow-hidden rounded-full border">
+            <button
+              type="button"
+              title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+              aria-label="Toggle light / dark theme"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="text-muted hover:text-accent hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+            >
+              {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
+            </button>
+            <span className="bg-line h-4 w-px" />
+            <button
+              type="button"
+              title={`Accent: ${palette} — click to cycle`}
+              aria-label="Cycle accent colour"
+              // Cycles through the accent palettes rather than flipping two.
+              onClick={() =>
+                setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
+              }
+              className="hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+            >
+              <span
+                className="border-line h-3.5 w-3.5 rounded-full border"
+                style={{ background: "var(--color-accent)" }}
+              />
+            </button>
+          </div>
+          {/* Default mode: small version tag under the buttons (secret dev key). */}
+          {mode !== "dev" && (
+            <>
+              {versionTag("text-[8px]")}
+              {verHintEl}
+            </>
+          )}
         </div>
 
-        {/* Version (secret dev key) + Dev-only settings cog, menus anchored right. */}
-        <div
-          ref={wrapRef}
-          className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
-        >
-          {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
-            5; the counter resets after 3.2s. Inert once already in Dev mode. */}
-          <span
-            onClick={(e) => {
-              if (mode === "dev") return;
-              e.stopPropagation();
-              verClicks.current++;
-              if (verTimer.current) clearTimeout(verTimer.current);
-              verTimer.current = setTimeout(() => {
-                verClicks.current = 0;
-                setVerHint("");
-              }, 3200);
-              if (verClicks.current === 5) setVerHint("Click 3 more times");
-              if (verClicks.current >= 8) {
-                verClicks.current = 0;
-                setVerHint("");
-                setMode("dev");
-              }
-            }}
-            className="letterpress text-muted text-[10px] leading-none font-semibold whitespace-nowrap select-none"
+        {/* Dev only: the version sits beside the cog, menus anchored right. */}
+        {mode === "dev" && (
+          <div
+            ref={wrapRef}
+            className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
           >
-            {APP_VERSION_LABEL}
-          </span>
-          {verHint && (
-            <span className="border-line bg-panel text-muted absolute top-[calc(100%+5px)] right-0 z-210 rounded-[4px] border px-2 py-[3px] text-[10px] font-semibold whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,.18)]">
-              {verHint}
-            </span>
-          )}
-          {/* Cog only in Dev — default mode has no menu items left to show. */}
-          {mode === "dev" && (
+            {versionTag("text-[10px]")}
             <button
               type="button"
               title="Settings"
@@ -225,37 +239,37 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
             >
               <IconSettings size={19} className="block" />
             </button>
-          )}
 
-          {open && mode === "dev" && (
-            <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
-              <button
-                type="button"
-                className={menuItem}
-                onClick={() => {
-                  setMode("default");
-                  setOpen(false);
-                }}
-              >
-                → Default view
-              </button>
-              <button
-                type="button"
-                className={menuItem}
-                onClick={() => setGraphPan((v) => !v)}
-              >
-                🔒 Graph pan: {graphPan ? "on" : "off"}
-              </button>
-              <button
-                type="button"
-                className={`${menuItem} cursor-default opacity-50`}
-                title="Sodra scraping runs in CI (refresh-sodra workflow)"
-              >
-                🔄 Refresh Sodra
-              </button>
-            </div>
-          )}
-        </div>
+            {open && (
+              <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
+                <button
+                  type="button"
+                  className={menuItem}
+                  onClick={() => {
+                    setMode("default");
+                    setOpen(false);
+                  }}
+                >
+                  → Default view
+                </button>
+                <button
+                  type="button"
+                  className={menuItem}
+                  onClick={() => setGraphPan((v) => !v)}
+                >
+                  🔒 Graph pan: {graphPan ? "on" : "off"}
+                </button>
+                <button
+                  type="button"
+                  className={`${menuItem} cursor-default opacity-50`}
+                  title="Sodra scraping runs in CI (refresh-sodra workflow)"
+                >
+                  🔄 Refresh Sodra
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </nav>
   );
