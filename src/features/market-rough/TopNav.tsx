@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
-import { IconMoon, IconPalette, IconSettings, IconSun } from "./Icons";
-import type { SegPalette } from "./segments";
+import { IconMoon, IconSettings, IconSun } from "./Icons";
 import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
@@ -35,14 +34,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [verHint, setVerHint] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [palette, setPalette] = useState<Palette>("classic");
-  // Doughnut/bars segment colours. "harmony" (default) is the muted validated
-  // set; "spectral" restores the original saturated one. See segments.ts.
-  // Spectral is the default: it separates nine categories, which is what these
-  // charts are for. Harmony trades that separation for tonal calm and is kept
-  // as an opt-in. NOTE the storage key changed with the flip — the old one had
-  // "harmony" written into it on every render, so re-using it would have
-  // pinned every existing visitor to the old default forever.
-  const [segPalette, setSegPalette] = useState<SegPalette>("spectral");
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -56,7 +47,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       const saved = localStorage.getItem("palette");
       if (saved && (PALETTES as readonly string[]).includes(saved))
         setPalette(saved as Palette);
-      if (localStorage.getItem("segPalette2") === "harmony") setSegPalette("harmony");
       if (localStorage.getItem("viewMode") === "dev") setMode("dev");
       if (localStorage.getItem("graphPan") === "on") setGraphPan(true);
     } catch {}
@@ -69,18 +59,13 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     if (palette !== "classic") root.setAttribute("data-palette", palette);
     else root.removeAttribute("data-palette");
     root.setAttribute("data-mode", mode);
-    // Absent attribute means "harmony" — only the opt-out is written.
-    // Absent means the default; only the opt-out is written.
-    if (segPalette === "harmony") root.setAttribute("data-seg-palette", "harmony");
-    else root.removeAttribute("data-seg-palette");
     try {
-      localStorage.setItem("segPalette2", segPalette);
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
       localStorage.setItem("viewMode", mode);
       localStorage.setItem("graphPan", graphPan ? "on" : "off");
     } catch {}
-  }, [theme, palette, mode, graphPan, segPalette]);
+  }, [theme, palette, mode, graphPan]);
 
   useEffect(() => {
     if (!open) return;
@@ -163,9 +148,39 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </Link>
 
-      {/* Right cluster: settings always visible. */}
-      <div className="ml-auto flex flex-shrink-0 items-center">
-        {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
+      {/* Right cluster: the theme+accent control lives out here (the settings
+          menu below is empty in default mode); the cog appears only in Dev. */}
+      <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+        {/* One control, two sides: theme on the left, accent swatch on the right. */}
+        <div className="border-line flex items-center overflow-hidden rounded-full border">
+          <button
+            type="button"
+            title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+            aria-label="Toggle light / dark theme"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="text-muted hover:text-accent hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+          >
+            {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
+          </button>
+          <span className="bg-line h-4 w-px" />
+          <button
+            type="button"
+            title={`Accent: ${palette} — click to cycle`}
+            aria-label="Cycle accent colour"
+            // Cycles through the accent palettes rather than flipping two.
+            onClick={() =>
+              setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
+            }
+            className="hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+          >
+            <span
+              className="border-line h-3.5 w-3.5 rounded-full border"
+              style={{ background: "var(--color-accent)" }}
+            />
+          </button>
+        </div>
+
+        {/* Version (secret dev key) + Dev-only settings cog, menus anchored right. */}
         <div
           ref={wrapRef}
           className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
@@ -198,76 +213,46 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
               {verHint}
             </span>
           )}
-          <button
-            type="button"
-            title="Settings"
-            aria-label="Settings"
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
-          >
-            <IconSettings size={19} className="block" />
-          </button>
+          {/* Cog only in Dev — default mode has no menu items left to show. */}
+          {mode === "dev" && (
+            <button
+              type="button"
+              title="Settings"
+              aria-label="Settings"
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+              className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
+            >
+              <IconSettings size={19} className="block" />
+            </button>
+          )}
 
-          {open && (
+          {open && mode === "dev" && (
             <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
-              {/* Labels name the mode you'd switch TO, not the current one. */}
               <button
                 type="button"
                 className={menuItem}
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={() => {
+                  setMode("default");
+                  setOpen(false);
+                }}
               >
-                {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
-                {theme === "dark" ? "Light" : "Dark"}
+                → Default view
               </button>
               <button
                 type="button"
                 className={menuItem}
-                // Cycles through the accent palettes rather than flipping two.
-                onClick={() =>
-                  setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
-                }
+                onClick={() => setGraphPan((v) => !v)}
               >
-                <IconPalette size={15} />
-                <span className="capitalize">{palette}</span>
+                🔒 Graph pan: {graphPan ? "on" : "off"}
               </button>
-              {/* Segment chart colours; "spectral" restores the pre-v3.41 set. */}
               <button
                 type="button"
-                className={menuItem}
-                onClick={() =>
-                  setSegPalette(segPalette === "harmony" ? "spectral" : "harmony")
-                }
+                className={`${menuItem} cursor-default opacity-50`}
+                title="Sodra scraping runs in CI (refresh-sodra workflow)"
               >
-                <IconPalette size={15} />
-                {segPalette === "harmony" ? "Segments: harmony" : "Segments: spectral"}
+                🔄 Refresh Sodra
               </button>
-              {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
-              {mode === "dev" && (
-                <>
-                  <button
-                    type="button"
-                    className={menuItem}
-                    onClick={() => setMode("default")}
-                  >
-                    → Default view
-                  </button>
-                  <button
-                    type="button"
-                    className={menuItem}
-                    onClick={() => setGraphPan((v) => !v)}
-                  >
-                    🔒 Graph pan: {graphPan ? "on" : "off"}
-                  </button>
-                  <button
-                    type="button"
-                    className={`${menuItem} cursor-default opacity-50`}
-                    title="Sodra scraping runs in CI (refresh-sodra workflow)"
-                  >
-                    🔄 Refresh Sodra
-                  </button>
-                </>
-              )}
             </div>
           )}
         </div>

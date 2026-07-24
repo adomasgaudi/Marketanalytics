@@ -1,13 +1,8 @@
 import type { CompanyYear } from "./types";
 
 /**
- * Segment colours, keyed by the LT data keys. TWO sets ship, switched by the
- * "Segment colours" item in the settings menu (see useSegColors):
- *
- *   "harmony" (default) — HARMONY_* below, the muted validated set.
- *   "spectral"          — SEG_COLORS_* below, the original beauty-first set.
- *
- * ---- SPECTRAL (the original; still selectable, so it stays as written) ----
+ * Segment colours, keyed by the LT data keys. One set — SPECTRAL — used for
+ * both doughnut and line charts, in a light and a dark variant (see useSegColors).
  *
  * BEAUTY-FIRST palette, chosen deliberately over a maximally-separable one at
  * the owner's direction. Nine hues evenly spaced around the wheel at constant
@@ -46,86 +41,6 @@ export const SEG_COLORS_DARK: Record<string, string> = {
   Konsultantai: "#fb7185",
   Renginiai: "#e879f9",
 };
-
-/**
- * ---- HARMONY (the default) ----
- *
- * The nine slots are a single blue–violet tonal gradient derived from the dark
- * page bloom and its electric-blue accent. Value carries most of the hierarchy;
- * the slight violet turn at either end keeps the tones from becoming one colour.
- *
- * The trick that buys separation back while the hues sit closer together:
- * lightness ZIGZAGS by slot (L 0.53/0.67 alternating, dark 0.52/0.66). Adjacent
- * slices therefore differ in value, not hue alone — which is also what makes it
- * survive colour-blind simulation where the spectral set does not.
- *
- * Labels and legends still carry identity; this palette optimizes tonal harmony
- * and visual beauty before maximum categorical separation.
- */
-export const SEG_COLORS_HARMONY_LIGHT: Record<string, string> = {
-  Media: "#7352c7", // violet blue
-  "Digital media": "#5a69c8", // indigo blue
-  Kūryba: "#3f7ec9", // cobalt
-  PR: "#278cc0", // clear blue
-  "Production house": "#2488ae", // blue teal
-  BTL: "#3b79a4", // azure slate
-  PA: "#536e98", // steel blue
-  Konsultantai: "#6b5eaa", // blue violet
-  Renginiai: "#8a55bb", // electric violet
-};
-
-export const SEG_COLORS_HARMONY_DARK: Record<string, string> = {
-  Media: "#c2b5ff",
-  "Digital media": "#a2adff",
-  Kūryba: "#82a7ff",
-  PR: "#62a5f2",
-  "Production house": "#4f9add",
-  BTL: "#5c89c7",
-  PA: "#6377af",
-  Konsultantai: "#7669b7",
-  Renginiai: "#976bc8",
-};
-
-/**
- * LINE palette. Harmony deliberately compresses hue — nine segments inside one
- * violet-to-teal band — which is right for a labelled donut, where each slice
- * is a large adjacent area and low chroma reads as refined.
- *
- * A 2px line has a fraction of that area, so the same colours collapse: three
- * of them read as the same grey-purple and the chart becomes undecipherable.
- * Line work needs the opposite treatment — hue spread right around the wheel,
- * chroma high, and LIGHTNESS alternated so neighbours differ in value as well
- * as hue (which is what keeps them apart in greyscale and for the ~8% of men
- * with red-green deficiency).
- *
- * Segment ORDER matches the harmony sets, so a segment keeps a recognisable
- * position in the sequence across both palettes.
- */
-export const SEG_COLORS_LINE_LIGHT: Record<string, string> = {
-  Media: "#7c3aed", // violet
-  "Digital media": "#0369a1", // deep sky
-  Kūryba: "#c2410c", // burnt orange
-  PR: "#0891b2", // cyan
-  "Production house": "#a21caf", // magenta
-  BTL: "#15803d", // green
-  PA: "#b45309", // amber
-  Konsultantai: "#1d4ed8", // strong blue
-  Renginiai: "#be123c", // crimson
-};
-
-export const SEG_COLORS_LINE_DARK: Record<string, string> = {
-  Media: "#a78bfa", // violet
-  "Digital media": "#38bdf8", // sky
-  Kūryba: "#fb923c", // orange
-  PR: "#22d3ee", // cyan
-  "Production house": "#e879f9", // magenta
-  BTL: "#4ade80", // green
-  PA: "#fbbf24", // amber
-  Konsultantai: "#60a5fa", // blue
-  Renginiai: "#fb7185", // rose
-};
-
-export type SegPalette = "harmony" | "spectral";
 
 /** Light set is the SSR/default export — see useSegColors() for live theming. */
 

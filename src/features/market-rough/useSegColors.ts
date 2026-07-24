@@ -5,11 +5,7 @@ import {
   CMP_PAL_DARK,
   CMP_PAL_LIGHT,
   SEG_COLORS_DARK,
-  SEG_COLORS_HARMONY_DARK,
-  SEG_COLORS_HARMONY_LIGHT,
   SEG_COLORS_LIGHT,
-  SEG_COLORS_LINE_DARK,
-  SEG_COLORS_LINE_LIGHT,
 } from "./segments";
 
 /**
@@ -44,30 +40,17 @@ export function useCmpColor(): (i: number) => string {
 }
 
 /**
- * Live segment palette — four sets, picked by theme × palette choice. Each is
- * separately validated against its own surface (see segments.ts), so charts
- * re-read on a change rather than reusing one set everywhere.
- *
- * data-seg-palette is absent by default, which means "spectral" — the set that
- * actually separates nine categories. The settings menu writes "harmony" to
- * opt into the muted set.
+ * Live segment palette — the spectral set, in its theme-correct variant. Charts
+ * re-read on a theme change rather than reusing one set everywhere.
  */
 export function useSegColors(): Record<string, string> {
   const dark = useDarkTheme();
-  const harmony = useRootAttr("data-seg-palette", null) === "harmony";
-  if (!harmony) return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
-  return dark ? SEG_COLORS_HARMONY_DARK : SEG_COLORS_HARMONY_LIGHT;
+  return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
 }
 
-/**
- * Palette for LINE charts. A line carries a fraction of a slice's area, so the
- * harmony set — which trades hue separation for tonal calm — stops being
- * decipherable there. Spectral already separates well, so it is used as-is;
- * only harmony needs the line-specific replacement.
- */
+/** Segment palette for LINE charts. Spectral separates well on thin strokes, so
+ *  lines use the same set as the doughnut. */
 export function useSegLineColors(): Record<string, string> {
   const dark = useDarkTheme();
-  const harmony = useRootAttr("data-seg-palette", null) === "harmony";
-  if (!harmony) return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
-  return dark ? SEG_COLORS_LINE_DARK : SEG_COLORS_LINE_LIGHT;
+  return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
 }
