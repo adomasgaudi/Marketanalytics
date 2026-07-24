@@ -5,7 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { slugify } from "@/lib/slug";
 import { CompanyProfileCard } from "./CompanyProfile";
-import { cmpColor, CompareChips } from "./CompanySelector";
+import { cmpColor } from "./CompanySelector";
 import { brandSegments } from "./segments";
 import { useCompareColors } from "./useSegColors";
 import { DeepDive } from "./DeepDive";
@@ -106,38 +106,6 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
         <ViewWord scope="co" />
       </span>
     </h1>
-  );
-}
-
-/** The hoisted company picker, visible on every Financials tab. */
-export function CompanyPicker({
-  model: legacyModel,
-}: {
-  model: MarketModel;
-  profiles?: Record<string, CompanyProfile>;
-}) {
-  const model = useSourcedModel(legacyModel);
-  const { pool, off, set, setOff } = useSelectedBrands(model);
-  const compareColors = useCompareColors(brandSegments(model))(pool);
-  return (
-    <>
-      {/* The old CompanySelector dropdown is gone — the searchable agency
-          strip in the hero is the picker now. Only the compare pills remain. */}
-      {/* Only the company PILLS stay pinned under the 50px top nav — the
-          legacy page-level .co-stickybar (top:44px, z-80, border-bottom). */}
-      {pool.length > 1 && (
-        <div className="bg-bg border-line sticky top-[50px] z-40 mb-2 border-b py-1.5 max-sm:top-[46px]">
-          <CompareChips
-            selected={pool}
-            off={off}
-            onChange={set}
-            onOffChange={setOff}
-            fallbackBrand={defaultBrand(model)}
-            colors={compareColors}
-          />
-        </div>
-      )}
-    </>
   );
 }
 
@@ -279,7 +247,13 @@ export function CompanyPerYear({
         : v;
 
   const tabs = (
-    <CompanyTabs brands={brands} colorPool={pool} colors={compareColors} focused={brand} onFocus={setFocus} />
+    <CompanyTabs
+      brands={brands}
+      colorPool={pool}
+      colors={compareColors}
+      focused={brand}
+      onFocus={setFocus}
+    />
   );
   const profileCard = (
     <CompanyProfileCard
@@ -453,11 +427,23 @@ export function CompanyPerYear({
     "Compare financials" deep-dive (legacy makeSectionsCollapsible). */
 export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const { brand } = useSelectedBrand(model);
+  const { brands, pool } = useSelectedBrands(model);
+  const compareColors = useCompareColors(brandSegments(model))(pool);
+  // Same focus pattern as the per-year view: tabs pick which single company
+  // the money-flow chart shows; the compare chart below plots all of them.
+  const [focus, setFocus] = useState<string | null>(null);
+  const brand = focus && brands.includes(focus) ? focus : brands[0];
   if (!brand) return <SelectCompanyHint />;
 
   return (
     <div>
+      <CompanyTabs
+        brands={brands}
+        colorPool={pool}
+        colors={compareColors}
+        focused={brand}
+        onFocus={setFocus}
+      />
       <MoneyFlowByYear
         title={`${brand} — money-flow by year`}
         rows={model.finYears

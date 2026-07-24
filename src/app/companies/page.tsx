@@ -10,7 +10,6 @@ import {
   CompanyAllTime,
   CompanyHeroTitle,
   CompanyPerYear,
-  CompanyPicker,
 } from "@/features/market-rough/CompaniesView";
 import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
@@ -63,11 +62,6 @@ export default function CompaniesPage() {
             <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
           </header>
 
-          {/* Page-level, like the legacy liftCompanyControls: the picker scrolls
-            away; the compare pills stick for the WHOLE Companies page. */}
-          {/* NOT wrapped in a bloom container — an extra ancestor box would clamp
-            the sticky compare pills to it instead of the whole page. */}
-          <CompanyPicker model={model} profiles={profiles} />
 
           <ViewGroupCard
             title="Financials"
