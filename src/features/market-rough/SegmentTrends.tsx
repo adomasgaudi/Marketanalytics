@@ -28,13 +28,20 @@ const TREND_METRICS: SegMetricKey[] = [
 
 /** Financial metrics by segment: one line per selected segment across the years. */
 export function SegmentTrends({ model }: { model: MarketModel }) {
-  const [{ market }] = useDashboardParams(model.last);
+  const [{ market, segment }] = useDashboardParams(model.last);
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   // Legacy default: just the first segment selected.
   const [segs, setSegs] = useState<Set<string>>(
     () => new Set(model.segments.slice(0, 1)),
   );
   const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Scrolling the bottom-bar segment picker scopes this chart too: a chosen
+  // segment shows just that line, "All segments" restores every segment. Keyed
+  // on the scope only, so manual multi-select below still holds between changes.
+  useEffect(() => {
+    setSegs(segment ? new Set([segment]) : new Set(model.segments));
+  }, [segment, model.segments]);
 
   // A dropdown that only closes by re-clicking its own button is a trap — it
   // covers the chart it filters. Bound on pointerdown, not click, so the list
@@ -136,6 +143,25 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
               aria-multiselectable="true"
               className="border-line bg-panel absolute top-[calc(100%+4px)] left-0 z-20 max-h-[240px] w-[240px] overflow-y-auto rounded-lg border p-1.5 shadow-[0_4px_20px_rgba(0,0,0,.4)]"
             >
+              {/* Select all / Clear all live IN the list, not beside the button:
+                  they act on the same set the options below toggle, so they
+                  belong where that set is edited. */}
+              <div className="border-line mb-1 flex gap-1 border-b pb-1.5">
+                <button
+                  type="button"
+                  onClick={() => setSegs(new Set(model.segments))}
+                  className="text-muted hover:text-ink hover:bg-panel2 flex-1 cursor-pointer rounded-md px-2 py-1 text-[12px] font-semibold"
+                >
+                  Select all
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSegs(new Set())}
+                  className="text-muted hover:text-ink hover:bg-panel2 flex-1 cursor-pointer rounded-md px-2 py-1 text-[12px] font-semibold"
+                >
+                  Clear all
+                </button>
+              </div>
               {model.segments.map((s) => (
                 <button
                   key={s}
@@ -161,13 +187,6 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => setSegs(new Set())}
-          className="border-line bg-panel2 text-muted hover:text-ink cursor-pointer rounded-md border px-2.5 py-1 text-[12px] font-semibold italic"
-        >
-          Clear all
-        </button>
         {[...segs].map((s) => (
           /* Each chip wears its own line's colour, not one shared accent: the
              chip is how you find that line in the chart, and nine identical

@@ -243,7 +243,7 @@ export function BottomBar({
   const segBtnClass =
     density === "icon"
       ? "px-3 py-2 text-[14px] leading-5"
-      : "px-3.5 py-1 text-[12.5px] leading-[28px]";
+      : "flex items-center justify-center px-3.5 py-1 text-[12.5px] leading-[28px]";
   // The basis/market control is icon-only, so confirm each pick in words for a
   // moment after it's made — otherwise the icons are a guessing game.
   const [flash, setFlash] = useState<string | null>(null);
@@ -535,7 +535,10 @@ export function BottomBar({
                 mid-swipe; the extra 64px gives the rubber-band room a carousel
                 is expected to have. No data-year/snap: dead space that both the
                 settle logic and native snap ignore. */}
-            <div aria-hidden className="pointer-events-none w-[calc(50%+64px)] flex-none" />
+            <div
+              aria-hidden
+              className="pointer-events-none w-[calc(50%+64px)] flex-none"
+            />
             {model.finYears.map((option) => (
               <button
                 key={option}
@@ -572,7 +575,10 @@ export function BottomBar({
                 <span className="hidden md:inline">{option}</span>
               </button>
             ))}
-            <div aria-hidden className="pointer-events-none w-[calc(50%+64px)] flex-none" />
+            <div
+              aria-hidden
+              className="pointer-events-none w-[calc(50%+64px)] flex-none"
+            />
           </div>
 
           {/* Carousel bubbles: one dot per year so the count and the current
@@ -666,7 +672,7 @@ export function BottomBar({
         {/* The basis control can't shrink (nowrap labels, ~340px wide), so on a
             phone it used to stretch the flex line and push the year track off
             screen. Its own scroll box keeps the overflow local. */}
-        <div className="relative max-w-full min-w-0 shrink justify-self-end [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div className="relative max-w-full min-w-0 shrink [scrollbar-width:none] justify-self-end overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {mode === "market" ? (
             <Seg
               label="Market basis"
@@ -683,16 +689,18 @@ export function BottomBar({
                     // Fixed width: the segment name lives on a second line, so
                     // a scope change from "market" to "Digital media" cannot
                     // stretch the button and shuffle the whole bar.
-                    <span className="inline-flex w-[72px] flex-col leading-[1.15]">
+                    <span className="inline-flex w-[72px] flex-col justify-center leading-[1.15]">
                       <span>{MARKET_LABELS[m]}</span>
-                      <span
-                        className={cn(
-                          "truncate text-[10px] font-bold",
-                          m === market ? "text-white/70" : "text-muted",
-                        )}
-                      >
-                        {m === "whole" ? wholeSubLabel(segment) : " "}
-                      </span>
+                      {m === "whole" && (
+                        <span
+                          className={cn(
+                            "truncate text-[10px] font-bold",
+                            m === market ? "text-white/70" : "text-muted",
+                          )}
+                        >
+                          {wholeSubLabel(segment)}
+                        </span>
+                      )}
                     </span>
                   ),
                 title:
