@@ -71,10 +71,7 @@ export function CompanyProfileCard({
     // The main segment gets its own line. Inline, an "main" tag after one of
     // four names was easy to miss, and the one segment a company is actually
     // known for is the thing a reader wants first.
-    [
-      "Main segment",
-      main ? <SegDot seg={main} bold /> : <Nd />,
-    ],
+    ["Main segment", main ? <SegDot seg={main} bold /> : <Nd />],
     [
       "Also in",
       acts.filter((s) => s !== main).length ? (
@@ -103,12 +100,50 @@ export function CompanyProfileCard({
     ],
   ];
 
+  const link = (href: string, text: string) => (
+    <a href={href} target="_blank" rel="noopener" className="text-accent">
+      {text}
+    </a>
+  );
+
+  // Registry + contact rows from the Įmonės sheet. Only the ones the company
+  // actually has are shown — an empty block of "no data" rows would drown the
+  // detail above.
+  const evrk =
+    profile?.evrkCode && profile?.evrkActivity
+      ? `${profile.evrkCode} · ${profile.evrkActivity}`
+      : profile?.evrkActivity || profile?.evrkCode || "";
+  const place = [profile?.address, profile?.city].filter(Boolean).join(", ");
+  const socials: [string, string | null | undefined][] = [
+    ["Facebook", profile?.facebook],
+    ["Instagram", profile?.instagram],
+    ["LinkedIn", profile?.linkedin],
+  ];
+  const extraRows: (readonly [string, React.ReactNode])[] = [
+    ...(profile?.code ? [["Company code", profile.code] as const] : []),
+    ...(profile?.vat ? [["VAT code", profile.vat] as const] : []),
+    ...(evrk ? [["EVRK", evrk] as const] : []),
+    ...(place ? [["Address", place] as const] : []),
+    ...(profile?.email
+      ? [["Email", link(`mailto:${profile.email}`, profile.email)] as const]
+      : []),
+    ...(profile?.phone
+      ? [["Phone", link(`tel:${profile.phone}`, `+${profile.phone}`)] as const]
+      : []),
+    ...(profile?.rekvizitaiUrl
+      ? [["Rekvizitai", link(profile.rekvizitaiUrl, "profile ↗")] as const]
+      : []),
+    ...socials
+      .filter(([, url]) => url)
+      .map(([name, url]) => [name, link(url as string, "link ↗")] as const),
+  ];
+
   return (
     <div className="border-line bg-panel mb-4 rounded-xl border p-4">
-      <div className="mb-1.5 flex flex-wrap items-baseline gap-2">
-        <span className="text-[15px] font-bold">{brand}</span>
+      <div className="mb-2 flex flex-wrap items-baseline gap-2">
+        <span className="text-[26px] leading-tight font-bold">{brand}</span>
         {fullName && fullName !== brand && (
-          <span className="text-muted text-[12px]">{fullName}</span>
+          <span className="text-muted text-[13px]">{fullName}</span>
         )}
       </div>
       {rows.map(([k, v]) => (
@@ -117,6 +152,16 @@ export function CompanyProfileCard({
           <span className="font-semibold">{v}</span>
         </div>
       ))}
+      {extraRows.length > 0 && (
+        <div className="border-line mt-2 border-t pt-2">
+          {extraRows.map(([k, v]) => (
+            <div key={k} className="flex gap-2 py-[1px] text-[12.5px]">
+              <span className="text-muted min-w-[88px]">{k}</span>
+              <span className="font-semibold break-all">{v}</span>
+            </div>
+          ))}
+        </div>
+      )}
       {profile?.description ? (
         <div className="border-line mt-2 border-t pt-2 text-[12.5px]">
           {profile.description}

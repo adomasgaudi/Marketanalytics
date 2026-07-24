@@ -9,6 +9,20 @@ export type CompanyProfile = {
   founded: string | null;
   website: string | null;
   description: string | null;
+  // Contact + registry fields from the raw Įmonės sheet, so the profile card can
+  // carry the same detail the /explore field grid shows.
+  code: string | null;
+  vat: string | null;
+  evrkCode: string | null;
+  evrkActivity: string | null;
+  address: string | null;
+  city: string | null;
+  email: string | null;
+  phone: string | null;
+  rekvizitaiUrl: string | null;
+  facebook: string | null;
+  instagram: string | null;
+  linkedin: string | null;
   /** Data sources available for the brand (legacy REK_HAS; Initial is always there). */
   rekvizitai: boolean;
   sodra: boolean;
@@ -29,6 +43,18 @@ export function loadProfiles(): Record<string, CompanyProfile> {
       founded: null,
       website: null,
       description: null,
+      code: null,
+      vat: null,
+      evrkCode: null,
+      evrkActivity: null,
+      address: null,
+      city: null,
+      email: null,
+      phone: null,
+      rekvizitaiUrl: null,
+      facebook: null,
+      instagram: null,
+      linkedin: null,
       rekvizitai: false,
       sodra: false,
     });
@@ -51,17 +77,52 @@ export function loadProfiles(): Record<string, CompanyProfile> {
 
   const sh = (sheets as Record<string, Sheet>)["Įmonės"];
   if (sh) {
-    const bi = sh.columns.indexOf("Pagrindinis brandas");
-    const fi = sh.columns.indexOf("Įregistruota");
-    const wi = sh.columns.indexOf("Svetainė");
+    const idx = (name: string) => sh.columns.indexOf(name);
+    // The sheet stores numeric codes as floats ("124099127.0"); strip the tail
+    // and treat empty / "null" as absent.
+    const clean = (v: unknown) => {
+      const s = String(v ?? "").trim();
+      return s && s.toLowerCase() !== "null" ? s.replace(/\.0+$/, "") : "";
+    };
+    const bi = idx("Pagrindinis brandas");
+    const C = {
+      founded: idx("Įregistruota"),
+      website: idx("Svetainė"),
+      code: idx("Kodas"),
+      vat: idx("PVM kodas"),
+      evrkCode: idx("EVRK v2 veiklos kodas"),
+      evrkActivity: idx("EVRK v2 veikla"),
+      address: idx("Adresas"),
+      city: idx("Miestas"),
+      email: idx("El. paštas"),
+      phone: idx("Telefonas"),
+      mobile: idx("Mobilus"),
+      rekvizitaiUrl: idx("Rekvizitai URL"),
+      facebook: idx("Facebook"),
+      instagram: idx("Instagram"),
+      linkedin: idx("LinkedIn"),
+    };
     for (const r of sh.rows) {
       const brand = String(r[bi] ?? "").trim();
       if (!brand) continue;
       const p = get(brand);
-      const founded = String(r[fi] ?? "").trim();
+      const founded = clean(r[C.founded]);
       if (founded) p.founded = founded;
-      const web = String(r[wi] ?? "").trim();
+      const web = clean(r[C.website]);
       if (web && /\./.test(web)) p.website = web;
+      p.code = clean(r[C.code]) || p.code;
+      p.vat = clean(r[C.vat]) || p.vat;
+      p.evrkCode = clean(r[C.evrkCode]) || p.evrkCode;
+      p.evrkActivity = clean(r[C.evrkActivity]) || p.evrkActivity;
+      p.address = clean(r[C.address]) || p.address;
+      p.city = clean(r[C.city]) || p.city;
+      p.email = clean(r[C.email]) || p.email;
+      // Landline first, else mobile; both come as bare digits.
+      p.phone = clean(r[C.phone]) || clean(r[C.mobile]) || p.phone;
+      p.rekvizitaiUrl = clean(r[C.rekvizitaiUrl]) || p.rekvizitaiUrl;
+      p.facebook = clean(r[C.facebook]) || p.facebook;
+      p.instagram = clean(r[C.instagram]) || p.instagram;
+      p.linkedin = clean(r[C.linkedin]) || p.linkedin;
     }
   }
 
