@@ -197,6 +197,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
         `<b>${r.year}</b><br>` +
         `Turnover €${chartFmt(r.turnover)}<br>` +
         `Revenue €${chartFmt(r.revenue)}<br>` +
+        (r.payroll != null ? `Payroll €${chartFmt(r.payroll)}<br>` : "") +
         `Net profit €${chartFmt(r.profit)}`,
     });
   };
