@@ -1,4 +1,5 @@
 import rcJson from "../../../data2/rc_bulk.json";
+import govJson from "../../../data2/gov_finance.json";
 import companiesJson from "../../../data2/companies.json";
 import { RestaurantsTable, type Row } from "./table";
 
@@ -16,24 +17,50 @@ const EVRK: Record<string, string> = {
  * company, older years kept for the row expansion.
  */
 export default function RestaurantsPage() {
+  // Merge the two registry channels per company. Precedence is gap-filling:
+  // gov (data.gov.lt) first, RC bulk only fills years gov doesn't have.
+  const merged = new Map<
+    string,
+    Map<number, { year: number; turnover: number | null; profit: number | null }>
+  >();
+  for (const src of [govJson.companies, rcJson.companies] as const) {
+    for (const c of src) {
+      if (!("financials" in c) || !c.financials) continue;
+      const years = merged.get(c.jarCode) ?? new Map();
+      merged.set(c.jarCode, years);
+      for (const f of c.financials)
+        if (!years.has(f.year))
+          years.set(f.year, {
+            year: f.year,
+            turnover: f.turnover,
+            profit: f.profit,
+          });
+    }
+  }
+  const taxesByJar = new Map(
+    govJson.companies.filter((c) => c.taxes?.length).map((c) => [c.jarCode, c.taxes]),
+  );
+
   const byJar = new Map(companiesJson.map((c) => [c.jarCode, c]));
-  const rows: Row[] = rcJson.companies.map((c) => {
-    const seed = byJar.get(c.jarCode);
-    const latest = c.financials[0];
-    return {
-      jarCode: c.jarCode,
-      name: seed?.name ?? c.brand ?? c.jarCode,
-      evrk: EVRK[seed?.evrk ?? ""] ?? seed?.evrk ?? "?",
-      year: latest.year,
-      turnover: latest.turnover,
-      profit: latest.profit,
-      years: c.financials.map((f) => ({
-        year: f.year,
-        turnover: f.turnover,
-        profit: f.profit,
-      })),
-    };
-  });
+  const rows: Row[] = [...merged.entries()]
+    .filter(([, byYear]) => byYear.size > 0)
+    .map(([jar, byYear]) => {
+      const seed = byJar.get(jar);
+      const years = [...byYear.values()].sort((a, b) => b.year - a.year);
+      // Newest FULL VMI year (throughMonth 12); a partial current year misleads.
+      const tax = taxesByJar.get(jar)?.find((t) => t.throughMonth === 12);
+      return {
+        jarCode: jar,
+        name: seed?.name ?? jar,
+        evrk: EVRK[seed?.evrk ?? ""] ?? seed?.evrk ?? "?",
+        year: years[0].year,
+        turnover: years[0].turnover,
+        profit: years[0].profit,
+        taxes: tax ? tax.ytd : null,
+        taxYear: tax?.year ?? null,
+        years,
+      };
+    });
 
   return (
     <main className="mx-auto w-full max-w-[1100px] px-6 py-8">
@@ -41,8 +68,8 @@ export default function RestaurantsPage() {
         Restaurants &amp; bars
       </h1>
       <p className="text-muted mb-6 text-sm">
-        {rows.length} of {companiesJson.length} food-service companies with a
-        filed statement · Registrų centras bulk dump, scraped{" "}
+        {rows.length} of {companiesJson.length} food-service companies with a filed
+        statement · Registrų centras (data.gov.lt + bulk dump) + VMI taxes, scraped{" "}
         {rcJson.scrapedAt.slice(0, 10)}
       </p>
       <RestaurantsTable rows={rows} />

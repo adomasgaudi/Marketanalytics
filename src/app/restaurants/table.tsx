@@ -8,16 +8,17 @@ export type Row = {
   year: number;
   turnover: number | null;
   profit: number | null;
+  taxes: number | null;
+  taxYear: number | null;
   years: { year: number; turnover: number | null; profit: number | null }[];
 };
 
-const eur = (n: number | null) =>
-  n == null ? "—" : n.toLocaleString("lt-LT") + " €";
+const eur = (n: number | null) => (n == null ? "—" : n.toLocaleString("lt-LT") + " €");
 
 /** Search + sort over the full set; only the top slice is rendered. */
 export function RestaurantsTable({ rows }: { rows: Row[] }) {
   const [q, setQ] = useState("");
-  const [sort, setSort] = useState<"turnover" | "profit">("turnover");
+  const [sort, setSort] = useState<"turnover" | "profit" | "taxes">("turnover");
   const [limit, setLimit] = useState(100);
 
   const shown = useMemo(() => {
@@ -36,7 +37,7 @@ export function RestaurantsTable({ rows }: { rows: Row[] }) {
           placeholder="Search name…"
           className="border-line bg-panel2 w-64 rounded-lg border px-3 py-1.5 text-sm"
         />
-        {(["turnover", "profit"] as const).map((k) => (
+        {(["turnover", "profit", "taxes"] as const).map((k) => (
           <button
             key={k}
             onClick={() => setSort(k)}
@@ -45,9 +46,7 @@ export function RestaurantsTable({ rows }: { rows: Row[] }) {
             by {k}
           </button>
         ))}
-        <span className="text-muted self-center text-sm">
-          {shown.length} companies
-        </span>
+        <span className="text-muted self-center text-sm">{shown.length} companies</span>
       </div>
       <table className="w-full text-sm">
         <thead>
@@ -57,7 +56,8 @@ export function RestaurantsTable({ rows }: { rows: Row[] }) {
             <th className="pr-2">Class</th>
             <th className="pr-2">FY</th>
             <th className="pr-2 text-right">Turnover</th>
-            <th className="text-right">Net profit</th>
+            <th className="pr-2 text-right">Net profit</th>
+            <th className="text-right">VMI taxes (full yr)</th>
           </tr>
         </thead>
         <tbody>
@@ -68,7 +68,13 @@ export function RestaurantsTable({ rows }: { rows: Row[] }) {
               <td className="text-muted pr-2">{r.evrk}</td>
               <td className="pr-2">{r.year}</td>
               <td className="pr-2 text-right tabular-nums">{eur(r.turnover)}</td>
-              <td className="text-right tabular-nums">{eur(r.profit)}</td>
+              <td className="pr-2 text-right tabular-nums">{eur(r.profit)}</td>
+              <td
+                className="text-right tabular-nums"
+                title={r.taxYear ? `VMI ${r.taxYear}` : undefined}
+              >
+                {eur(r.taxes == null ? null : Math.round(r.taxes))}
+              </td>
             </tr>
           ))}
         </tbody>
