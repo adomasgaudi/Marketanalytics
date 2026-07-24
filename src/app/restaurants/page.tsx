@@ -1,3 +1,6 @@
+import { Bloom } from "@/components/ui/bloom";
+import { Footer } from "@/components/ui/footer";
+import { TopNav } from "@/features/market-rough/TopNav";
 import rcJson from "../../../data2/rc_bulk.json";
 import govJson from "../../../data2/gov_finance.json";
 import companiesJson from "../../../data2/companies.json";
@@ -63,16 +66,30 @@ export default function RestaurantsPage() {
     });
 
   return (
-    <main className="mx-auto w-full max-w-[1100px] px-6 py-8">
-      <h1 className="mb-1 text-3xl font-extrabold tracking-tight">
-        Restaurants &amp; bars
-      </h1>
-      <p className="text-muted mb-6 text-sm">
-        {rows.length} of {companiesJson.length} food-service companies with a filed
-        statement · Registrų centras (data.gov.lt + bulk dump) + VMI taxes, scraped{" "}
-        {rcJson.scrapedAt.slice(0, 10)}
-      </p>
-      <RestaurantsTable rows={rows} />
+    <main>
+      <TopNav />
+      <div className="wrap mx-auto w-full max-w-[1100px] px-6 pt-6 pb-16">
+        <header className="relative isolate mt-1.5 mb-8">
+          <Bloom
+            color="accent"
+            opacity={16}
+            className="-top-24 -left-[20vw] h-[380px] w-[80vw]"
+          />
+          <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
+            Lithuanian food service · {companiesJson.length} companies tracked
+          </p>
+          <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
+            Restaurants &amp; bars
+          </h1>
+          <p className="text-muted mt-3 text-sm">
+            {rows.length} companies with a filed statement · Registrų centras (data.gov.lt
+            + bulk dump) + VMI taxes, scraped {rcJson.scrapedAt.slice(0, 10)}
+          </p>
+          <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
+        </header>
+        <RestaurantsTable rows={rows} />
+        <Footer />
+      </div>
     </main>
   );
 }
