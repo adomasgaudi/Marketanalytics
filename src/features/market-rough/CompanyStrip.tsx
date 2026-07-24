@@ -11,30 +11,39 @@ import { useDashboardParams } from "./useDashboardParams";
 /** Rows in the strip's grid — the F+←/→ column jump in BottomBar must match. */
 export const STRIP_ROWS = 3;
 
+const SORTS = ["turnover", "salary", "alphabetical"] as const;
+type Sort = (typeof SORTS)[number];
+const SORT_LABEL: Record<Sort, string> = {
+  turnover: "by turnover",
+  salary: "by salary",
+  alphabetical: "alphabetical",
+};
+
+/** Next item in a list, wrapping — shared cycle behavior of the header words. */
+function cycle<T>(list: readonly T[], current: T): T {
+  return list[(list.indexOf(current) + 1) % list.length];
+}
+
 /**
- * Every tracked agency on one scrolling line, largest first, each carrying its
- * turnover for the selected year. It answers the question the headline count
- * raises and then refuses to answer — "132 agencies, but WHICH?" — without
- * costing a page of vertical space.
- *
- * Follows the bottom bar's segment scope, so narrowing to PR narrows the strip
- * to the agencies that do PR, and says so in the count.
+ * Every tracked agency on one scrolling band. The whole header line is
+ * clickable: the scope word cycles segments, the year cycles years, the sort
+ * word cycles turnover → salary → A–Z. Chips TOGGLE into the compare pool
+ * (multi-select, held in the URL); "Open in dashboard" carries them over.
  */
 export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const [{ year, segment, companies }] = useDashboardParams(model.last);
+  const [{ year, segment, companies }, setParams] = useDashboardParams(model.last);
 
-  // Turnover by default, so the strip opens on the names worth knowing and a
-  // company's place along it is itself information; clicking the sort label
-  // flips to alphabetical for when you're LOOKING SOMEONE UP, not browsing.
-  const [alpha, setAlpha] = useState(false);
+  const [sort, setSort] = useState<Sort>("turnover");
   const rows = model.rows
     .filter((row) => row.year === year)
     .filter((row) => !segment || row.activities.includes(segment))
     .sort((a, b) =>
-      alpha
+      sort === "alphabetical"
         ? a.brand.localeCompare(b.brand, undefined, { sensitivity: "base" })
-        : (b.revenue ?? -1) - (a.revenue ?? -1),
+        : sort === "salary"
+          ? (b.avgSalary ?? -1) - (a.avgSalary ?? -1)
+          : (b.revenue ?? -1) - (a.revenue ?? -1),
     );
 
   // Keyboard (F+arrows in the bottom bar) moves the selection without touching
@@ -49,48 +58,85 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
 
   if (!rows.length) return null;
 
+  const word =
+    "hover:text-accent cursor-pointer underline decoration-dotted underline-offset-2 transition-colors";
+  const toggle = (brand: string) =>
+    setParams({
+      companies: companies.includes(brand)
+        ? companies.filter((b) => b !== brand)
+        : [...companies, brand],
+    });
+
   return (
     <section className="mb-10" aria-label="Tracked agencies">
       <div className="text-muted mb-2 flex items-baseline gap-2 text-[11px] font-semibold tracking-[.18em] uppercase">
-        <span>{segment ? `${segName(segment)} agencies` : "Every agency"}</span>
+        {/* Scope word: cycles "" → each segment → back. */}
+        <button
+          type="button"
+          title="Change segment"
+          className={word}
+          onClick={() =>
+            setParams({ segment: cycle(["", ...model.segments], segment ?? "") })
+          }
+        >
+          {segment ? `${segName(segment)} agencies` : "Every agency"}
+        </button>
         <span className="text-[10px] tracking-normal normal-case opacity-70">
-          {rows.length} · {year} ·{" "}
           <button
             type="button"
-            onClick={() => setAlpha((v) => !v)}
-            title="Toggle sort order"
-            className="hover:text-accent cursor-pointer underline decoration-dotted underline-offset-2 transition-colors"
+            title="Change year"
+            className={word}
+            onClick={() => setParams({ year: cycle(model.finYears, year) })}
           >
-            {alpha ? "alphabetical" : "by turnover"}
+            {year}
+          </button>{" "}
+          ·{" "}
+          <button
+            type="button"
+            onClick={() => setSort(cycle(SORTS, sort))}
+            title="Change sort order"
+            className={word}
+          >
+            {SORT_LABEL[sort]}
           </button>
         </span>
+        {companies.length > 0 && (
+          <Link
+            href={`/companies?companies=${companies.map(encodeURIComponent).join(",")}&year=${year}`}
+            className="text-accent text-[10px] tracking-normal normal-case hover:underline"
+          >
+            Open {companies.length} in dashboard →
+          </Link>
+        )}
       </div>
 
-      {/* THREE rows that scroll together, not one row that wraps. `grid-flow-col`
-          fills down-then-across, so the band moves as one and the ranking still
-          reads down each column then rightward. A wrapping flex would instead
-          run out of width, break to a second line, and only then scroll — which
-          puts rank 2 underneath rank 1 and hides the order.
-
-          Scrollbar hidden: the band is visibly cut off at the right edge, which
-          says "there is more" more quietly than a bar does. */}
+      {/* THREE rows that scroll together, not one row that wraps — the band
+          moves as one and ranking reads down each column then rightward.
+          Scrollbar hidden: the cut-off right edge says "there is more". */}
       <div
         ref={stripRef}
         className="-mx-1 grid [scrollbar-width:none] [grid-auto-columns:max-content] grid-flow-col grid-rows-3 gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden"
       >
         {rows.map((row) => (
-          <Link
+          <button
             key={row.brand}
+            type="button"
             data-selected={companies.includes(row.brand) || undefined}
-            href={`/companies?companies=${encodeURIComponent(row.brand)}&year=${year}`}
-            title={`${row.company} — ${row.activities.map(segName).join(", ") || "no segment"}`}
-            className={`border-line bg-panel hover:border-accent hover:text-accent flex flex-none items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors ${companies.includes(row.brand) ? "border-accent text-accent" : ""}`}
+            onClick={() => toggle(row.brand)}
+            title={`${row.company} — ${row.activities.map(segName).join(", ") || "no segment"} — click to select`}
+            className={`border-line bg-panel hover:border-accent hover:text-accent flex flex-none cursor-pointer items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors ${companies.includes(row.brand) ? "border-accent text-accent" : ""}`}
           >
             {row.brand}
             <span className="text-muted text-[11px] tabular-nums">
-              {row.revenue == null ? "—" : fmtEur(row.revenue)}
+              {sort === "salary"
+                ? row.avgSalary == null
+                  ? "—"
+                  : `€${row.avgSalary}/mo`
+                : row.revenue == null
+                  ? "—"
+                  : fmtEur(row.revenue)}
             </span>
-          </Link>
+          </button>
         ))}
       </div>
     </section>
