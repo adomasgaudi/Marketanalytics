@@ -8,15 +8,17 @@ export type RevBreakdown = {
   profitTax: number;
 };
 
-/** Split revenue-minus-net-profit into payroll+1.77%, opex, and profit tax. */
+/** Split revenue-minus-net-profit into payroll+1.77%, opex, and profit tax.
+    `customOpex` (from a company-declared revenue) replaces the 0.43 guess. */
 export function revBreakdown(
   revRest: number,
   payroll: number | null | undefined,
+  customOpex?: number | null,
 ): RevBreakdown | null {
   if (revRest <= 0 || payroll == null || payroll <= 0) return null;
 
   const employer = payroll * EMPLOYER_SODRA;
-  const opex = employer * OPEX_OF_LABOUR;
+  const opex = customOpex ?? employer * OPEX_OF_LABOUR;
   if (employer + opex >= revRest) {
     const scale = revRest / (employer + opex);
     return { employer: employer * scale, opex: opex * scale, profitTax: 0 };

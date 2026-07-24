@@ -1,4 +1,5 @@
 import classification from "../../../data2/classification.json";
+import { declaredRevenue } from "../explore/declared-data";
 import { COMPANIES } from "../explore/model-data";
 import { SODRA } from "../explore/sodra-data";
 import type { CompanyYear, MarketModel } from "./types";
@@ -64,6 +65,12 @@ function buildRows(): CompanyYear[] {
         nonSalaryCosts:
           revenue != null && salaryCosts != null ? revenue - salaryCosts : null,
         estimatedIncome: comp?.values.netRevenue?.[year] ?? null,
+        // Set only when the company itself declared its revenue — the model
+        // then knows real opex instead of assuming 43% of labour.
+        customOpex:
+          declaredRevenue(brand, year) != null
+            ? (comp?.values.opex?.[year] ?? null)
+            : null,
       });
     }
   }

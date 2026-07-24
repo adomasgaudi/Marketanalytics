@@ -19,6 +19,9 @@ export type CompanyYear = {
   nonSalaryCosts: number | null;
   /** Fee-based revenue. */
   estimatedIncome: number | null;
+  /** Opex re-solved from a company-declared revenue (data2/declared_revenue
+      .json). Null = no declaration; charts fall back to the 0.43 model. */
+  customOpex: number | null;
 };
 
 /** Indexes derived from the rows once, at load. */

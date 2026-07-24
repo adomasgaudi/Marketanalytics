@@ -234,7 +234,7 @@ export function CompanyPerYear({
   const part = (pick: (b: RevBreakdown) => number) => (r: CompanyYear) => {
     if (r.estimatedIncome == null) return null;
     const rest = Math.max(0, r.estimatedIncome - Math.max(0, r.profit ?? 0));
-    const parts = revBreakdown(rest, r.salaryCosts ?? null);
+    const parts = revBreakdown(rest, r.salaryCosts ?? null, r.customOpex);
     return parts ? pick(parts) : null;
   };
   const moneyRanks: MoneyFlowRanks = {
@@ -374,6 +374,7 @@ export function CompanyPerYear({
               revenue={scaleMoney(row.estimatedIncome)}
               profit={scaleMoney(row.profit)}
               payroll={scaleMoney(row.salaryCosts)}
+              customOpex={scaleMoney(row.customOpex)}
               prev={
                 prev
                   ? {
@@ -452,6 +453,7 @@ export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
             revenue: r.estimatedIncome ?? 0,
             profit: r.profit ?? 0,
             payroll: r.salaryCosts ?? null,
+            customOpex: r.customOpex,
           }))}
       />
       <DeepDive model={model} title="Compare financials" />

@@ -12,6 +12,8 @@ export type YearFlow = {
   profit: number;
   /** Sodra wage bill — bar subdivision only. */
   payroll?: number | null;
+  /** Opex solved from a company-declared revenue; replaces the 0.43 guess. */
+  customOpex?: number | null;
 };
 
 /** Chart-label format, as the legacy SVG engine: 1.94M / 653.5k — no €. */
@@ -72,6 +74,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
               revenue: s(r.revenue),
               profit: s(r.profit),
               payroll: r.payroll != null ? s(r.payroll) : r.payroll,
+              customOpex: r.customOpex != null ? s(r.customOpex) : r.customOpex,
             };
           })
         : rows,
@@ -326,7 +329,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                   const profit = Math.max(0, r.profit);
                   const revRest = Math.max(0, r.revenue - profit);
                   const turnRest = Math.max(0, r.turnover - r.revenue);
-                  const revParts = revBreakdown(revRest, r.payroll);
+                  const revParts = revBreakdown(revRest, r.payroll, r.customOpex);
                   const cx = x(i);
                   if (cx < m.l - bandW || cx > m.l + pw + bandW) return null;
                   const x0 = cx - barW / 2;

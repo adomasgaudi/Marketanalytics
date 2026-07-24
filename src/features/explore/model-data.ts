@@ -1,4 +1,5 @@
 import classification from "../../../data2/classification.json";
+import { declaredRevenue, DECLARED_SOURCE } from "./declared-data";
 import companiesJson from "../../../data2/companies.json";
 import { SODRA } from "./sodra-data";
 import govJson from "../../../data2/gov_finance.json";
@@ -309,6 +310,23 @@ export const COMPANIES: Company[] = (
         // revisited against evidence rather than argued about.
         values.impliedOpex[year] =
           Math.round(((turnover - beforeTax!) / employer - 1) * 100) / 100;
+      }
+
+      // Company-declared revenue: hard data beats the model. The declared
+      // figure replaces netRevenue outright, and opex stops being the 0.43
+      // guess — it becomes what the declared revenue leaves after labour and
+      // pre-tax profit (floored at 0 when the declaration disagrees harder).
+      const declared = declaredRevenue(entry.brand, year);
+      if (declared != null) {
+        values.netRevenue[year] = Math.round(declared.revenue);
+        if (beforeTax != null)
+          values.opex[year] = Math.max(
+            0,
+            Math.round(declared.revenue - employer - beforeTax),
+          );
+        (sources.netRevenue ??= {})[year] = { ...DECLARED_SOURCE, at: declared.at };
+        if (beforeTax != null)
+          (sources.opex ??= {})[year] = { ...DECLARED_SOURCE, at: declared.at };
       }
     }
 

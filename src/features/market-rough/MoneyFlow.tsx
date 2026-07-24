@@ -38,6 +38,8 @@ type Props = {
   profit: number | null;
   /** Sodra wage bill — subdivides the revenue band in the bar only. */
   payroll?: number | null;
+  /** Opex solved from a company-declared revenue; replaces the 0.43 guess. */
+  customOpex?: number | null;
   prev?: MoneyFlowPrev;
   /** Rank chip after the turnover headline (company view). */
   rank?: Rank | null;
@@ -118,6 +120,7 @@ export function MoneyFlow({
   yrLabel,
   formulas = {},
   payroll,
+  customOpex,
   ranks,
   actions,
 }: Props) {
@@ -148,7 +151,7 @@ export function MoneyFlow({
   // Bar bottom→top: Net profit, revenue sub-slices, pass-through turnover.
   const profitSeg = profit != null && profit > 0 ? profit : 0;
   const revRest = revenue != null ? Math.max(0, revenue - profitSeg) : 0;
-  const revParts = revBreakdown(revRest, payroll);
+  const revParts = revBreakdown(revRest, payroll, customOpex);
   // Raw values, not percentages: the SVG divides by the total itself, so no
   // rounding happens before it reaches the geometry. `fill` because an SVG
   // rect takes fill-*, not bg-*.

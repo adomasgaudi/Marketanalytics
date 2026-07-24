@@ -11,6 +11,7 @@ recoverable. It stays until the dashboard is moved over; it is not extended.
 | --- | --- |
 | `companies.json` | Which agencies exist. Hand-maintained: brand, legal name, jarCode, and where the code was found. Adding an agency is one line. The scrapers take their company set from here. |
 | `gov_finance.json` | Turnover, net and pre-tax profit per filed year (Registrų centras JAR) plus taxes paid (VMI), both via data.gov.lt. Written by `scripts/data/scrape_gov.py --all`. Rebuildable — delete it and re-scrape. |
+| `declared_revenue.json` | Agency revenue a company gave us directly. Hand-maintained; every entry says who gave it and when. Overrides the modelled netRevenue, and opex is re-solved from it instead of the 0.43 guess. |
 
 ## Rules
 
