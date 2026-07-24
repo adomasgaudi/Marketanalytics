@@ -572,16 +572,20 @@ export function ScatterChart({ model }: { model: MarketModel }) {
           right, away from either axis. */}
       <div className="mb-2 flex flex-wrap items-center justify-end gap-[7px]">
         <div className="flex flex-wrap gap-[7px]">
-          <Seg
-            label="Fit"
-            value={fitAll ? "all" : "view"}
-            onChange={(v) => setFitAll(v === "all")}
-            btnClassName="px-2 py-1 text-[11.5px]"
-            options={[
-              { value: "all", label: "All years" },
-              { value: "view", label: "This view" },
-            ]}
-          />
+          {/* Dev-only: fixed-ruler vs fit-to-view is a tuning control, not a
+              reading the owner wants visitors flipping. */}
+          {isDev && (
+            <Seg
+              label="Fit"
+              value={fitAll ? "all" : "view"}
+              onChange={(v) => setFitAll(v === "all")}
+              btnClassName="px-2 py-1 text-[11.5px]"
+              options={[
+                { value: "all", label: "All years" },
+                { value: "view", label: "This view" },
+              ]}
+            />
+          )}
           {isDev && (
             <Seg
               label="Trails"
