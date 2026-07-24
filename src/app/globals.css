@@ -639,23 +639,3 @@ html[data-mode="default"] [data-devcorner] {
     display: flex;
   }
 }
-
-/* Graph transition: fade plot content in when the data changes (year/segment
-   step), matching the scatter's canvas fade. Applied to a wrapper that carries
-   a data-signature `key`, so React remounts it and the animation replays. */
-@keyframes graphFade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-.graph-fade {
-  animation: graphFade 300ms ease-out;
-}
-@media (prefers-reduced-motion: reduce) {
-  .graph-fade {
-    animation: none;
-  }
-}

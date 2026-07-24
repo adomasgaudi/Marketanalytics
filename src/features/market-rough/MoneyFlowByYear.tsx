@@ -316,7 +316,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                 </g>
               ))}
 
-              <g key={sig} className="graph-fade" clipPath={`url(#${clipId}p)`}>
+              <g clipPath={`url(#${clipId}p)`}>
                 {data.map((r, i) => {
                   const profit = Math.max(0, r.profit);
                   const revRest = Math.max(0, r.revenue - profit);

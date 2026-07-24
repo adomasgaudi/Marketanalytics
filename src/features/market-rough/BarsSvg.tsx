@@ -260,7 +260,7 @@ export function BarsSvg({
             {xTitle}
           </text>
         )}
-        <g key={sig} className="graph-fade" clipPath={`url(#${clipId}p)`}>
+        <g clipPath={`url(#${clipId}p)`}>
           {rows.map((r, i) => {
             const cy = rowY(i);
             if (cy < m.t - bandH || cy > m.t + ph + bandH) return null;
@@ -294,6 +294,11 @@ export function BarsSvg({
                   height={barH}
                   rx="2"
                   fill={r.color}
+                  // Same element across data changes (stable key), so the SVG
+                  // geometry properties tween: the bar slides to its new length
+                  // rather than jumping. Chrome/Firefox/Safari animate x/width
+                  // as CSS geometry properties.
+                  style={{ transition: "x 400ms ease, y 400ms ease, width 400ms ease" }}
                 />
                 <text
                   x={nameX}
@@ -302,6 +307,7 @@ export function BarsSvg({
                   fontWeight="600"
                   fill="var(--color-ink)"
                   filter={`url(#${clipId}sh)`}
+                  style={{ transition: "x 400ms ease, y 400ms ease" }}
                 >
                   {r.label}
                 </text>
@@ -311,6 +317,7 @@ export function BarsSvg({
                   fontSize="9"
                   textAnchor={x1 >= base ? "start" : "end"}
                   fill="var(--color-muted)"
+                  style={{ transition: "x 400ms ease, y 400ms ease" }}
                 >
                   {r.valueText ?? fmt(r.value)}
                 </text>
