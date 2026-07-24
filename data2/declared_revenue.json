@@ -5,5 +5,415 @@
     "shape": "companies.<brand>.<year> = { revenue: <EUR int>, from: '<who gave it, how>', at: '<ISO date received>' }",
     "rule": "No entry without `from` and `at` - a declared figure with no traceable origin does not belong in data2."
   },
-  "companies": {}
+  "companies": {
+    "Adverum": {
+      "2022": {
+        "revenue": 947000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1085000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 845000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 855000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Arena Media": {
+      "2023": {
+        "revenue": 1459000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1113000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1429000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "BPN": {
+      "2023": {
+        "revenue": 2787000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 3481000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 3513000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Berta&Agency": {
+      "2022": {
+        "revenue": 776000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 729000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Bosanova": {
+      "2022": {
+        "revenue": 439000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 561000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 760000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1054000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Dentsu": {
+      "2023": {
+        "revenue": 3926000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 5893000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 3789000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Fabula": {
+      "2022": {
+        "revenue": 2275000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 2792000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 2915000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 2818000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Havas Media": {
+      "2023": {
+        "revenue": 1506000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1817000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1869000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Headline": {
+      "2022": {
+        "revenue": 833000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1155000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1005000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1010000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "INK": {
+      "2022": {
+        "revenue": 1387000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1436000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1343000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1624000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "IdeaPrima": {
+      "2022": {
+        "revenue": 1559000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1634000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1459000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1446000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Inspired UM": {
+      "2023": {
+        "revenue": 1902000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1448000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1558000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Integrity PR": {
+      "2022": {
+        "revenue": 1380000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1568000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1438000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1292000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Media House": {
+      "2023": {
+        "revenue": 2072000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1976000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 2409000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Mediacom": {
+      "2023": {
+        "revenue": 1043000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1193000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1074000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Omnicom": {
+      "2023": {
+        "revenue": 980000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1088000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1362000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Open Agency": {
+      "2023": {
+        "revenue": 1430000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1673000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1548000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Publicis groupe": {
+      "2023": {
+        "revenue": 1794000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 2025000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 2008000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Publicum": {
+      "2022": {
+        "revenue": 2432000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 2649000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 2655000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 2426000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "Via Media": {
+      "2023": {
+        "revenue": 1274000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1444000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1659000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "We Are Marketing": {
+      "2024": {
+        "revenue": 1106000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1159000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    },
+    "co:agency": {
+      "2022": {
+        "revenue": 1332000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2023": {
+        "revenue": 1331000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2024": {
+        "revenue": 1454000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      },
+      "2025": {
+        "revenue": 1776000,
+        "from": "Owner-supplied workbook 'Tikslus duomenys komunikacijos konsultantai' — exact figures from the companies",
+        "at": "2026-07-24"
+      }
+    }
+  }
 }
