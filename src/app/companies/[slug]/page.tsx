@@ -6,6 +6,7 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { segName } from "@/features/market-rough/segments";
 import { TopNav } from "@/features/market-rough/TopNav";
+import { declaredRevenue } from "@/features/explore/declared-data";
 import { SODRA } from "@/features/explore/sodra-data";
 import { slugify, slugIndex } from "@/lib/slug";
 
@@ -143,6 +144,7 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
               <tr className="text-muted border-line border-b text-left text-[11px] tracking-wider uppercase">
                 <th className="py-2 pr-3">Year</th>
                 <th className="py-2 pr-3">Turnover</th>
+                <th className="py-2 pr-3">Agency revenue</th>
                 <th className="py-2 pr-3">Profit</th>
                 <th className="py-2 pr-3">Employees</th>
                 <th className="py-2">Avg salary / mo</th>
@@ -153,6 +155,14 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
                 <tr key={y.year} className="border-line border-b">
                   <td className="py-2 pr-3 font-semibold">{y.year}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.revenue)}</td>
+                  <td className="py-2 pr-3 tabular-nums">
+                    {fmtEurFull(y.estimatedIncome)}
+                    {declaredRevenue(brand, y.year) != null && (
+                      <span className="text-accent ml-1" title="Company-declared figure">
+                        •
+                      </span>
+                    )}
+                  </td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.profit)}</td>
                   <td className="py-2 pr-3 tabular-nums">
                     {empRange[y.year] ?? fmtInt(y.employees)}
@@ -168,7 +178,9 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
         <p className="text-muted mt-2 text-[11.5px]">
           Sources: Registrų centras filings (turnover, profit) and Sodra (headcount,
           salaries). Employees and salary are the year&apos;s min–max across Sodra&apos;s
-          monthly figures; salaries are pre-tax monthly averages.
+          monthly figures; salaries are pre-tax monthly averages. Agency revenue marked{" "}
+          <span className="text-accent">•</span> was declared by the company itself;
+          unmarked figures are modelled from payroll and profit.
         </p>
 
         <h2 className="text-ink mt-10 mb-3 text-[18px] font-bold">Company facts</h2>
