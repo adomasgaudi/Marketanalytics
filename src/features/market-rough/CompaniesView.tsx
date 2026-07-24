@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { CompanyProfileCard } from "./CompanyProfile";
 import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
 import type { CompanyProfile } from "./profile";
 import { fmtEur, fmtPct } from "./format";
 import { moneyFormulas, sourceFormula } from "./Formula";
-import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
+import { KpiCard, type KpiCardData } from "./KpiCard";
+import { type MoneyFlowRanks } from "./MoneyFlow";
+import { type RevBreakdown, revBreakdown } from "./money-flow-breakdown";
 import { defaultBrand, rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
@@ -154,16 +156,6 @@ export function CompanyPerYear({
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
   const brand = focus && brands.includes(focus) ? focus : brands[0];
-  const [kpiMode, setKpiMode] = useState<KpiMode>("value");
-  // Legacy auto-flip: 8s after load the KPIs flip #→% once, unless touched.
-  const touched = useRef(false);
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (!touched.current) setKpiMode("change");
-    }, 8000);
-    return () => clearTimeout(t);
-  }, []);
-
   const row = model.byBrand[brand]?.[year];
   const prev = model.byBrand[brand]?.[year - 1];
 
@@ -184,6 +176,26 @@ export function CompanyPerYear({
     rankOf(model.rows, year, row, per(metric));
 
   const turnover = rank((r) => r.revenue);
+
+  // Ranks for every row of the money-flow card, so its "#" basis can answer
+  // "where does this company sit on payroll?" and not just on turnover. Payroll,
+  // opex and profit tax aren't stored fields — they are re-derived per candidate
+  // exactly as the card derives them, so a rank can never disagree with the
+  // figure it replaces.
+  const part = (pick: (b: RevBreakdown) => number) => (r: CompanyYear) => {
+    if (r.estimatedIncome == null) return null;
+    const rest = Math.max(0, r.estimatedIncome - Math.max(0, r.profit ?? 0));
+    const parts = revBreakdown(rest, r.salaryCosts ?? null);
+    return parts ? pick(parts) : null;
+  };
+  const moneyRanks: MoneyFlowRanks = {
+    T: turnover,
+    R: rank((r) => r.estimatedIncome),
+    P: rank((r) => r.profit),
+    payroll: rank(part((b) => b.employer)),
+    opex: rank(part((b) => b.opex)),
+    tax: rank(part((b) => b.profitTax)),
+  };
 
   const scaleMoney = (v: number | null) =>
     v == null
@@ -228,8 +240,12 @@ export function CompanyPerYear({
       </div>
     );
 
-  // Legacy company KPI cards: Revenue / Employees / Median salary / Turnover,
-  // each labelled "23→24", with YoY change, prev→cur range and a formula fold.
+  // Legacy company KPI cards: Revenue / Employees / Average salary / Turnover,
+  // "Average", not "Median": this is one company's own avgSalary — the mean of
+  // its 12 monthly Sodra avgWage figures. A per-company median is impossible,
+  // Sodra never publishes per-employee wages. The market-level "Median salary"
+  // elsewhere is a different figure: the median ACROSS these company averages.
+  // each labelled "→24", with YoY change and a formula fold.
   const hasFin = row.revenue != null;
   // 93 filings report employees:0 (20 brands). Per-employee then divides by a
   // zero denominator, every money figure nulls out, and MoneyFlow's own
@@ -243,16 +259,14 @@ export function CompanyPerYear({
       prev.employees != null ||
       prev.avgSalary != null)
   );
-  const yrLab = hasPrev
-    ? `${String(year - 1).slice(2)}→${String(year).slice(2)}`
-    : String(year);
+  const yrLab = hasPrev ? `→${String(year).slice(2)}` : String(year);
   const emp = row.employees != null ? Math.round(row.employees) : null;
   const sal = (row.avgSalary ?? 0) > 500 ? Math.round(row.avgSalary!) : null;
   const prevEmp = prev?.employees != null ? Math.round(prev.employees) : null;
   const prevSal = (prev?.avgSalary ?? 0) > 500 ? Math.round(prev!.avgSalary!) : null;
   const empYoY = row.employees != null && (prevEmp ?? 0) > 0;
-  // Must key off `sal`, not row.avgSalary: sal is null for sub-€500 noise, and
-  // the range text dereferences sal! whenever salYoY is true.
+  // Must key off `sal`, not row.avgSalary: sal is null for sub-€500 noise, so
+  // a YoY % on the raw field would show a change the card's value never shows.
   const salYoY = sal != null && (prevSal ?? 0) > 0;
 
   // Revenue and Turnover are already in the money-flow card above — only the
@@ -263,11 +277,6 @@ export function CompanyPerYear({
       label: `Employees ${yrLab}`,
       valueText: emp != null ? emp.toLocaleString() : "–",
       changeText: empYoY ? fmtPct(row.employees! / prevEmp! - 1) : "—",
-      rangeText: empYoY
-        ? `${prevEmp!.toLocaleString()} → ${emp!.toLocaleString()}`
-        : emp != null
-          ? emp.toLocaleString()
-          : "–",
       changeCls: empYoY ? (row.employees! >= prevEmp! ? "pos" : "neg") : "",
       formulas: [
         sourceFormula(
@@ -279,14 +288,9 @@ export function CompanyPerYear({
       ],
     },
     {
-      label: `Median salary ${yrLab}`,
+      label: `Average salary ${yrLab}`,
       valueText: sal != null ? `€${sal.toLocaleString()}/mo` : "–",
       changeText: salYoY ? fmtPct(row.avgSalary! / prevSal! - 1) : "—",
-      rangeText: salYoY
-        ? `€${prevSal!.toLocaleString()}/mo → €${sal!.toLocaleString()}/mo`
-        : sal != null
-          ? `€${sal.toLocaleString()}/mo`
-          : "–",
       changeCls: salYoY ? (row.avgSalary! >= prevSal! ? "pos" : "neg") : "",
       formulas: [
         sourceFormula(
@@ -333,7 +337,7 @@ export function CompanyPerYear({
                   : {}
               }
               formulas={moneyFormulas({
-              source: src,
+                source: src,
                 div:
                   perEmployee && (row.employees ?? 0) > 0
                     ? {
@@ -351,6 +355,7 @@ export function CompanyPerYear({
                 },
               })}
               rank={perEmployee ? null : turnover}
+              ranks={moneyRanks}
               tag={
                 perEmployee && (row.employees ?? 0) > 0
                   ? `per employee · ${Math.round(row.employees!)} staff`
@@ -360,16 +365,9 @@ export function CompanyPerYear({
           )}
         </div>
         <div className="md:w-[340px] md:flex-none">
-          <KpiModeToggle
-            mode={kpiMode}
-            onChange={(m) => {
-              touched.current = true;
-              setKpiMode(m);
-            }}
-          />
           <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:grid-cols-2">
             {cards.map((card) => (
-              <KpiCard key={card.label} card={card} mode={kpiMode} />
+              <KpiCard key={card.label} card={card} />
             ))}
           </div>
         </div>

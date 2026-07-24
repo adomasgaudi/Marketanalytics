@@ -86,6 +86,45 @@ export const SEG_COLORS_HARMONY_DARK: Record<string, string> = {
   Renginiai: "#976bc8",
 };
 
+/**
+ * LINE palette. Harmony deliberately compresses hue — nine segments inside one
+ * violet-to-teal band — which is right for a labelled donut, where each slice
+ * is a large adjacent area and low chroma reads as refined.
+ *
+ * A 2px line has a fraction of that area, so the same colours collapse: three
+ * of them read as the same grey-purple and the chart becomes undecipherable.
+ * Line work needs the opposite treatment — hue spread right around the wheel,
+ * chroma high, and LIGHTNESS alternated so neighbours differ in value as well
+ * as hue (which is what keeps them apart in greyscale and for the ~8% of men
+ * with red-green deficiency).
+ *
+ * Segment ORDER matches the harmony sets, so a segment keeps a recognisable
+ * position in the sequence across both palettes.
+ */
+export const SEG_COLORS_LINE_LIGHT: Record<string, string> = {
+  Media: "#7c3aed", // violet
+  "Digital media": "#0369a1", // deep sky
+  Kūryba: "#c2410c", // burnt orange
+  PR: "#0891b2", // cyan
+  "Production house": "#a21caf", // magenta
+  BTL: "#15803d", // green
+  PA: "#b45309", // amber
+  Konsultantai: "#1d4ed8", // strong blue
+  Renginiai: "#be123c", // crimson
+};
+
+export const SEG_COLORS_LINE_DARK: Record<string, string> = {
+  Media: "#a78bfa", // violet
+  "Digital media": "#38bdf8", // sky
+  Kūryba: "#fb923c", // orange
+  PR: "#22d3ee", // cyan
+  "Production house": "#e879f9", // magenta
+  BTL: "#4ade80", // green
+  PA: "#fbbf24", // amber
+  Konsultantai: "#60a5fa", // blue
+  Renginiai: "#fb7185", // rose
+};
+
 export type SegPalette = "harmony" | "spectral";
 
 /** Light set is the SSR/default export — see useSegColors() for live theming. */

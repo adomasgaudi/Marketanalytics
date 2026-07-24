@@ -252,7 +252,14 @@ export function BottomBar({
   // popup slot as the flash, and wins while the pointer is on a button.
   const [hint, setHint] = useState<string | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const segmentDrag = useRef({ active: false, startX: 0, moved: false });
+  const segmentDrag = useRef({
+    active: false,
+    startX: 0,
+    startY: 0,
+    moved: false,
+    /** Steps already applied this drag, so the same pixel is not counted twice. */
+    steps: 0,
+  });
   const showFlash = (label: string) => {
     setFlash(label);
     if (flashTimer.current) clearTimeout(flashTimer.current);
@@ -263,26 +270,45 @@ export function BottomBar({
     setSegmentOpen(false);
     showFlash(`Segment: ${next ? segName(next) : "All segments"}`);
   };
+  /**
+   * Drag the picker to walk the segments — CONTINUOUSLY, one per ~40px, rather
+   * than a single step on release. Vertical is the primary axis because that is
+   * what the arrow keys bind (up/down = segment), so the two gestures agree;
+   * horizontal still works for anyone who reads the control as a slider.
+   *
+   * Direction is "natural": dragging DOWN pulls the list down, so the selection
+   * moves toward the START, the way a touch surface moves content rather than a
+   * cursor. `moved` suppresses the click that would otherwise open the dropdown
+   * at the end of a drag.
+   */
+  const STEP_PX = 40;
   const dragSegment = {
     onPointerDown: (event: React.PointerEvent<HTMLButtonElement>) => {
-      segmentDrag.current = { active: true, startX: event.clientX, moved: false };
+      segmentDrag.current = {
+        active: true,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+        steps: 0,
+      };
       event.currentTarget.setPointerCapture(event.pointerId);
     },
     onPointerMove: (event: React.PointerEvent<HTMLButtonElement>) => {
-      if (Math.abs(event.clientX - segmentDrag.current.startX) > 24)
-        segmentDrag.current.moved = true;
-    },
-    onPointerUp: (event: React.PointerEvent<HTMLButtonElement>) => {
       const drag = segmentDrag.current;
-      drag.active = false;
-      if (!drag.moved) return;
-      selectSegment(
-        stepIn(
-          ["", ...model.segments],
-          segment ?? "",
-          event.clientX < drag.startX ? 1 : -1,
-        ),
-      );
+      if (!drag.active) return;
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      // Whichever axis the hand actually moved along.
+      const delta = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
+      if (Math.abs(delta) > 8) drag.moved = true;
+      const steps = Math.trunc(delta / STEP_PX);
+      if (steps === drag.steps) return;
+      const dir = steps > drag.steps ? -1 : 1;
+      drag.steps = steps;
+      selectSegment(stepIn(["", ...model.segments], segment ?? "", dir));
+    },
+    onPointerUp: () => {
+      segmentDrag.current.active = false;
     },
   };
   useEffect(
@@ -296,10 +322,56 @@ export function BottomBar({
   const trackRef = useRef<HTMLDivElement>(null);
   const activeYearRef = useRef<HTMLButtonElement>(null);
   const scrollEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** rAF gate: at most one year update per painted frame, however many scroll
+      events the browser fires in between. */
+  const scrollFrame = useRef(0);
+  /** True while a drag/momentum scroll is in flight, so the centring effect
+      leaves the track alone. */
+  const userScrolling = useRef(false);
   // While we are centring the active pill, ignore scroll-end selection.
   const centringYear = useRef(false);
   const hasCentredYear = useRef(false);
   const dragScroll = useDragScroll(trackRef);
+
+  /**
+   * Stepping a year or segment re-lays everything above the chart you were
+   * reading — the insight list gains a row, the money-flow legend loses one —
+   * and that chart slides out from under you. So pin it: note where the card
+   * you are looking at sits before the change, and scroll by the same delta
+   * once React has committed. The browser's own scroll anchoring doesn't reach
+   * this, because the whole subtree re-renders.
+   */
+  const pinned = useRef<{ el: HTMLElement; top: number } | null>(null);
+  const pinView = () => {
+    // The card across the MIDDLE of the viewport — what you are actually
+    // reading. Anchoring on whatever crossed the TOP edge instead pinned the
+    // card ABOVE the one in view, which is why the scatter still slid away and
+    // the donut above it took its place. Falls back to the nearest card when
+    // none spans the midpoint.
+    const mid = window.innerHeight / 2;
+    let owner: HTMLElement | null = null;
+    let nearest = Infinity;
+    for (const card of document.querySelectorAll<HTMLElement>(".card")) {
+      const box = card.getBoundingClientRect();
+      const gap =
+        box.top <= mid && box.bottom >= mid
+          ? 0
+          : Math.min(Math.abs(box.top - mid), Math.abs(box.bottom - mid));
+      if (gap < nearest) {
+        nearest = gap;
+        owner = card;
+      }
+    }
+    pinned.current = owner ? { el: owner, top: owner.getBoundingClientRect().top } : null;
+  };
+  useEffect(() => {
+    const hold = pinned.current;
+    pinned.current = null;
+    // isConnected: a segment step can unmount the very card that was pinned.
+    if (!hold?.el.isConnected) return;
+    const drift = hold.el.getBoundingClientRect().top - hold.top;
+    if (drift) window.scrollBy(0, drift);
+  }, [year, segment]);
 
   const centreActiveYear = (smooth: boolean) => {
     const track = trackRef.current;
@@ -310,9 +382,12 @@ export function BottomBar({
       left: pill.offsetLeft - track.clientWidth / 2 + pill.offsetWidth / 2,
       behavior: smooth ? "smooth" : "instant",
     });
-    window.setTimeout(() => {
-      centringYear.current = false;
-    }, smooth ? 450 : 50);
+    window.setTimeout(
+      () => {
+        centringYear.current = false;
+      },
+      smooth ? 450 : 50,
+    );
   };
 
   const pickNearestYear = () => {
@@ -331,23 +406,50 @@ export function BottomBar({
     if (Number.isFinite(next) && next !== year) setParams({ year: next });
   };
 
+  /**
+   * The year follows the track LIVE, one update per frame, rather than waiting
+   * 150ms after the finger lifts. The debounce made the carousel feel like a
+   * form you submit — you scrolled, nothing happened, then the page changed.
+   *
+   * Two things keep that from fighting the user: the rAF gate means at most one
+   * update per painted frame however fast the scroll events arrive, and
+   * `userScrolling` suppresses the centring effect while a drag is in progress,
+   * so the track is never yanked out from under the finger. CSS scroll-snap
+   * settles it on the right pill at the end, which is what the explicit
+   * re-centre used to be for.
+   */
   const onTrackScroll = () => {
+    userScrolling.current = true;
     if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
-    scrollEndTimer.current = setTimeout(pickNearestYear, 150);
+    scrollEndTimer.current = setTimeout(() => {
+      userScrolling.current = false;
+    }, 180);
+    if (scrollFrame.current) return;
+    scrollFrame.current = requestAnimationFrame(() => {
+      scrollFrame.current = 0;
+      pickNearestYear();
+    });
   };
   // Wheel anywhere over the track picks the next/previous year; the centring
   // effect below then pulls it into view, so the track scrolls as a side effect.
-  useWheelStep(trackRef, (dir) => setParams({ year: stepIn(model.finYears, year, dir) }));
+  useWheelStep(trackRef, (dir) => {
+    pinView();
+    setParams({ year: stepIn(model.finYears, year, dir) });
+  });
   // Same gesture on the segment picker. "" is the All-segments entry, so it
   // has to be part of the list the wheel walks.
   const segmentRef = useRef<HTMLDivElement>(null);
-  useWheelStep(segmentRef, (dir) =>
-    selectSegment(stepIn(["", ...model.segments], segment ?? "", dir)),
-  );
+  useWheelStep(segmentRef, (dir) => {
+    pinView();
+    // Negated to match the drag: both gestures on this control move the list,
+    // not a cursor through it.
+    selectSegment(stepIn(["", ...model.segments], segment ?? "", -dir as 1 | -1));
+  });
   // Keyboard mirror of the two wheel gestures. ←/→ only while the year track is
   // actually on screen (the all-years view hides it), ↑/↓ only on the Markets
   // page, which is the one that carries a segment picker.
   useArrowKeys((key) => {
+    pinView();
     if (key === "ArrowLeft" || key === "ArrowRight") {
       if (view === "all") return;
       setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
@@ -360,13 +462,19 @@ export function BottomBar({
 
   useEffect(() => {
     if (view === "all") return;
+    // A year change that CAME from the track must not re-scroll the track —
+    // that is the finger-fighting the live update would otherwise cause.
+    if (userScrolling.current) return;
     centreActiveYear(hasCentredYear.current);
     hasCentredYear.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, view]);
 
   useEffect(
-    () => () => void (scrollEndTimer.current && clearTimeout(scrollEndTimer.current)),
+    () => () => {
+      if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
+      if (scrollFrame.current) cancelAnimationFrame(scrollFrame.current);
+    },
     [],
   );
 
@@ -397,7 +505,12 @@ export function BottomBar({
       {/* One line: abbreviated year ticks + icon-only basis leave room for the
           segment select, so nothing wraps to a second row. On desktop there is
           spare width, so the three groups spread across the bar. */}
-      <div className="flex flex-nowrap items-center gap-x-2 sm:gap-x-4 md:gap-x-8">
+      {/* Phone: a 3-column grid, so the segment picker sits dead centre with
+          the year track and the basis icons balanced either side. As a flex row
+          the track was flex-1 and swallowed the spare width, which pushed the
+          picker off-centre. From sm up there is room to spare and the flex row
+          spreads the three groups across the bar. */}
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 sm:flex sm:flex-nowrap sm:gap-x-4 md:gap-x-8">
         {/* The year row only makes sense per-year — all-years mode hides it.
             Elastic rather than a fixed fraction: the segment select and basis
             toggle are flex-none, so they claim their natural width first and
@@ -415,12 +528,14 @@ export function BottomBar({
             onScroll={onTrackScroll}
             className="flex w-full min-w-0 snap-x snap-mandatory scroll-px-[50%] [scrollbar-width:none] items-center gap-1 overflow-x-auto overscroll-x-contain select-none sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
           >
-            {/* Half-track spacers so the FIRST and LAST year can reach the
-                centre. Without them an edge year can never scroll to the
-                middle, so the carousel could only ever settle on an inner year
-                — the side years were tap-only. No data-year/snap: they are
-                dead space the settle logic and native snap both ignore. */}
-            <div aria-hidden className="pointer-events-none w-1/2 flex-none" />
+            {/* Spacers so the FIRST and LAST year can reach the centre AND
+                overshoot it. Without any, an edge year could never reach the
+                middle and the side years were tap-only. At exactly half the
+                track they stop dead on centre, which reads as hitting a wall
+                mid-swipe; the extra 64px gives the rubber-band room a carousel
+                is expected to have. No data-year/snap: dead space that both the
+                settle logic and native snap ignore. */}
+            <div aria-hidden className="pointer-events-none w-[calc(50%+64px)] flex-none" />
             {model.finYears.map((option) => (
               <button
                 key={option}
@@ -457,7 +572,7 @@ export function BottomBar({
                 <span className="hidden md:inline">{option}</span>
               </button>
             ))}
-            <div aria-hidden className="pointer-events-none w-1/2 flex-none" />
+            <div aria-hidden className="pointer-events-none w-[calc(50%+64px)] flex-none" />
           </div>
 
           {/* Carousel bubbles: one dot per year so the count and the current
@@ -483,7 +598,7 @@ export function BottomBar({
         {mode === "market" && (
           <div
             ref={segmentRef}
-            className="segment-picker"
+            className="segment-picker justify-self-center"
             data-density={density === "icon" ? "compact" : "expanded"}
           >
             <button
@@ -551,7 +666,7 @@ export function BottomBar({
         {/* The basis control can't shrink (nowrap labels, ~340px wide), so on a
             phone it used to stretch the flex line and push the year track off
             screen. Its own scroll box keeps the overflow local. */}
-        <div className="relative max-w-full min-w-0 shrink [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div className="relative max-w-full min-w-0 shrink justify-self-end [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {mode === "market" ? (
             <Seg
               label="Market basis"

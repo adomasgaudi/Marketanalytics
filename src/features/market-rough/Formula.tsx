@@ -162,7 +162,49 @@ export type MoneyBasis = {
       explains itself: the two datasets build that number in genuinely
       different ways, so one explanation cannot serve both. */
   source?: "legacy" | "rebuilt";
+  /** Which companies were summed. Without it the fold explained how ONE
+      company's figure is built while the card showed a market aggregate, and
+      said the same thing whichever segment or basis was selected. */
+  scope?: { label: string; companies: string };
 };
+
+/**
+ * The aggregation step: which rows were summed, and what the sum was divided
+ * by. Prepended to a market figure's fold so the explanation matches the
+ * controls — change the segment or the basis and this line changes with it.
+ */
+function marketFormula(
+  code: string,
+  metric: string,
+  { div, scope, values }: MoneyBasis,
+  shown?: string,
+): Formula {
+  return {
+    name: div ? `${metric} — summed, then divided` : `${metric} — summed`,
+    math: (
+      <>
+        <V c={code} />
+        <Op o="=" />
+        <V c="Σ" />
+        {div && (
+          <>
+            <Op o="÷" />
+            <V c={div.code} />
+          </>
+        )}
+      </>
+    ),
+    vars: [
+      { code, label: `${metric.toLowerCase()} shown`, value: shown ?? values?.T },
+      {
+        code: "Σ",
+        label: `${metric.toLowerCase()} of every company in ${scope?.label ?? "the market"}`,
+        value: scope?.companies ? `${scope.companies} companies` : undefined,
+      },
+      ...(div ? [{ code: div.code, label: div.label, value: div.value }] : []),
+    ],
+  };
+}
 
 /**
  * The three money-flow figures. Turnover and net profit are filed — source only.
@@ -172,9 +214,14 @@ export function moneyFormulas(
   basis: MoneyBasis = {},
 ): Record<"T" | "R" | "P", Formula[]> {
   const src = basis.source ?? "rebuilt";
+  // Market cards aggregate; a company card does not. Only the former needs the
+  // extra step, and it must be FIRST — it is what the figure on the card is.
+  const agg = (code: "T" | "R" | "P", metric: string): Formula[] =>
+    basis.sum ? [marketFormula(code, metric, basis, basis.values?.[code])] : [];
   return {
-    T: [sourceFormula("Turnover", "revenue", basis.values?.T, src)],
+    T: [...agg("T", "Turnover"), sourceFormula("Turnover", "revenue", basis.values?.T, src)],
     R: [
+      ...agg("R", "Revenue"),
       src === "legacy"
         ? {
             name: "…how the figure was reached",
@@ -237,7 +284,10 @@ export function moneyFormulas(
             ],
           },
     ],
-    P: [sourceFormula("Net profit", "profit", basis.values?.P, src)],
+    P: [
+      ...agg("P", "Net profit"),
+      sourceFormula("Net profit", "profit", basis.values?.P, src),
+    ],
   };
 }
 

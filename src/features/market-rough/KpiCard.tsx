@@ -10,33 +10,36 @@ export type KpiCardData = {
   label: string;
   valueText: string;
   changeText: string;
-  /** "€760k → €714k" — shown as the sub line in % mode. */
-  rangeText: string;
   changeCls: "pos" | "neg" | "";
   /** One entry per distinct formula — a compound explanation ("X ÷ N. YoY =
       …") is two formulas, not one sentence. */
   formulas?: Formula[];
 };
 
-export function KpiCard({ card, mode }: { card: KpiCardData; mode: KpiMode }) {
-  const showChange = mode === "change";
-  const main = showChange ? card.changeText : card.valueText;
-  const sub = showChange ? card.rangeText : card.changeText;
-
+/**
+ * The value and its change TOGETHER — the toggle that used to swap them is
+ * gone. Making the reader flip a switch to see the other half meant they could
+ * never compare a figure against its own movement, and the change is only ever
+ * a few characters: it fits beside the number it belongs to.
+ */
+export function KpiCard({ card }: { card: KpiCardData; mode?: KpiMode }) {
   return (
     <article className="border-line bg-panel rounded-[10px] border px-[13px] py-[11px]">
       <div className="text-muted text-[11px] tracking-[.05em] uppercase">
         {card.label}
       </div>
-      <div className="mt-0.5 text-[21px] font-bold">{main}</div>
-      <div
-        className={cn(
-          "mt-0.5 text-[12px]",
-          card.changeCls === "pos" && "text-green",
-          card.changeCls === "neg" && "text-red",
-        )}
-      >
-        {sub}
+      <div className="mt-0.5 flex items-baseline gap-1.5">
+        <span className="text-[21px] font-bold">{card.valueText}</span>
+        <span
+          className={cn(
+            "text-[13px] font-semibold",
+            card.changeCls === "pos" && "text-green",
+            card.changeCls === "neg" && "text-red",
+            !card.changeCls && "text-muted",
+          )}
+        >
+          {card.changeText}
+        </span>
       </div>
       {!!card.formulas?.length && <FormulaPopover formulas={card.formulas} />}
     </article>

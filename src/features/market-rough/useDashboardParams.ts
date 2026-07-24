@@ -20,6 +20,8 @@ export type Basis = (typeof BASES)[number];
 // Order IS the rendering order of the segmented control: whole first because
 // it is the default and the largest reading, then the two ways of dividing it.
 export const MARKET_MODES = ["whole", "avg", "emp"] as const;
+export const PERIODS = ["year", "month"] as const;
+export type Period = (typeof PERIODS)[number];
 export type MarketMode = (typeof MARKET_MODES)[number];
 
 /**
@@ -66,5 +68,15 @@ export function useDashboardParams(defaultYear: number) {
     /** Scopes the cash-flow panel to one service segment; "" = whole market. */
     segment: parseAsString.withDefault(""),
     src: parseAsStringLiteral(SOURCES).withDefault("rebuilt"),
+    /**
+     * Time unit for money figures. A SEPARATE axis from `market`: it composes
+     * with all three of them, so "per company per month" is a reading and had
+     * to stop being a fourth mutually-exclusive basis.
+     *
+     * "month" is the year over twelve — a run-rate, NOT a measured month.
+     * Nothing here carries monthly turnover or profit; those are annual
+     * registry filings. Sodra is monthly, but these cards aggregate a year.
+     */
+    per: parseAsStringLiteral(PERIODS).withDefault("year"),
   });
 }

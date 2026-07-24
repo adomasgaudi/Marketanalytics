@@ -26,11 +26,12 @@
   --color-chart-bg: #ffffff;
   --color-zebra: rgb(0 0 0 / 2.2%);
   /* Money-flow stack: rest-of-revenue vs rest-of-turnover. */
-  --color-mf-rev: #5e6678;
+  --color-mf-rev: #a8822f;
   --color-mf-rev-labour: #4b5563;
   --color-mf-rev-opex: #6b7280;
-  --color-mf-rev-tax: #5a6e62;
+  --color-mf-rev-tax: #8b929c;
   --color-mf-turn: #c2c8d2;
+  --color-mf-turn-line: #14306f;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -63,11 +64,12 @@
   --color-grid: #2e3648;
   --color-chart-bg: #171b24;
   --color-zebra: rgb(255 255 255 / 1.5%);
-  --color-mf-rev: #7d8696;
+  --color-mf-rev: #c9a34a;
   --color-mf-rev-labour: #5c6678;
   --color-mf-rev-opex: #7b8698;
-  --color-mf-rev-tax: #6b8278;
-  --color-mf-turn: #c2c8d2;
+  --color-mf-rev-tax: #99a2b2;
+  --color-mf-turn: #aeb6c4;
+  --color-mf-turn-line: #3567c8;
 }
 
 [data-palette="ocean"] {
@@ -167,8 +169,9 @@ body {
   --color-grid: #e9ecf2;
   --color-chart-bg: #ffffff;
   --color-zebra: rgb(0 0 0 / 2%);
-  --color-mf-rev: #596172;
-  --color-mf-turn: #c5cbd6;
+  --color-mf-rev: #a8822f;
+  --color-mf-turn: #c2c8d2;
+  --color-mf-turn-line: #14306f;
 }
 
 /* Dark · classic — deeper, slightly cool ground; panels separate by value,
@@ -190,8 +193,9 @@ body {
   --color-grid: #1d2330;
   --color-chart-bg: #0a0c11;
   --color-zebra: rgb(255 255 255 / 2%);
-  --color-mf-rev: #7b8598;
-  --color-mf-turn: #b9c0cd;
+  --color-mf-rev: #c9a34a;
+  --color-mf-turn: #aeb6c4;
+  --color-mf-turn-line: #3567c8;
 }
 
 /* Light · ocean — teal accent, greens pulled toward it so the family reads
@@ -300,6 +304,9 @@ html[data-mode="default"] [data-devcorner] {
   flex: none;
 }
 .segment-picker-trigger {
+  /* The picker owns vertical drags (they walk the segments), so the browser
+     must not treat one as a page scroll and steal the pointer mid-gesture. */
+  touch-action: none;
   display: grid;
   width: 44px;
   height: 44px;
@@ -616,5 +623,19 @@ html[data-mode="default"] [data-devcorner] {
   [data-skin="refined"] *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* The arrow-key hint is about a KEYBOARD, so width is the wrong test — an iPad
+   at 820px passes a md: breakpoint and has no arrow keys. `pointer: fine` plus
+   `hover: hover` means a mouse or trackpad, which in practice means a computer;
+   touch devices report `coarse` and no hover. The width clause stays only so a
+   narrow desktop window does not squeeze it. */
+.kbd-hint {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .kbd-hint {
+    display: flex;
   }
 }

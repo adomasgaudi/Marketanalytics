@@ -5,7 +5,6 @@ import { Pill, PillRow } from "@/components/ui/pills";
 import { type BarRow, BarsSvg } from "./BarsSvg";
 import { fmtEurFull, fmtInt } from "./format";
 import { margin } from "./metrics";
-import { EngTag } from "./SegmentChart";
 import { segName } from "./segments";
 import { useSegColors } from "./useSegColors";
 import type { CompanyYear, MarketModel } from "./types";
@@ -161,7 +160,6 @@ export function RankingsChart({ model: legacyModel }: { model: MarketModel }) {
           </p>
         ) : (
           <div className="chartbox relative" style={{ height }}>
-            <EngTag label="SVG" />
             <BarsSvg
               rows={bars}
               fmt={tfmt}

@@ -51,30 +51,39 @@ export function CompanyProfileCard({
     : (years.map((y) => mine[y]).find((r) => r.activities?.length)?.activities ?? []);
   const main = row?.mainSegment ?? acts[0];
 
+  /** One coloured dot plus its segment name. */
+  const SegDot = ({ seg, bold }: { seg: string; bold?: boolean }) => (
+    <span className="mr-1.5 whitespace-nowrap">
+      <span
+        className="mr-1 inline-block h-2 w-2 rounded-full align-[-1px]"
+        style={{ background: SEG_COLORS[seg] ?? "#888" }}
+      />
+      <span className={bold ? "font-bold" : "text-muted font-normal"}>
+        {segName(seg)}
+      </span>
+    </span>
+  );
+
   const rows: [string, React.ReactNode][] = [
     ["CEO", profile?.ceo ?? <Nd />],
     ["Founded", profile?.founded ?? <Nd />],
     ["Employees", row?.employees != null ? Math.round(row.employees) : <Nd />],
+    // The main segment gets its own line. Inline, an "main" tag after one of
+    // four names was easy to miss, and the one segment a company is actually
+    // known for is the thing a reader wants first.
     [
-      "Segment",
-      acts.length ? (
+      "Main segment",
+      main ? <SegDot seg={main} bold /> : <Nd />,
+    ],
+    [
+      "Also in",
+      acts.filter((s) => s !== main).length ? (
         <span>
-          {acts.map((s) => (
-            <span key={s} className="mr-1.5">
-              <span
-                className="mr-1 inline-block h-2 w-2 rounded-full align-[-1px]"
-                style={{ background: SEG_COLORS[s] ?? "#888" }}
-              />
-              <span className={s === main ? "font-bold" : "text-muted font-normal"}>
-                {segName(s)}
-              </span>
-              {s === main && acts.length > 1 && (
-                <span className="text-muted ml-0.5 text-[10px] font-semibold tracking-wide uppercase">
-                  main
-                </span>
-              )}
-            </span>
-          ))}
+          {acts
+            .filter((s) => s !== main)
+            .map((s) => (
+              <SegDot key={s} seg={s} />
+            ))}
         </span>
       ) : (
         <Nd />

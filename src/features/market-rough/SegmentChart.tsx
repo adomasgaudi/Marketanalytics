@@ -4,7 +4,6 @@ import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
 import { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Seg } from "@/components/ui/seg";
-import { BarsSvg } from "./BarsSvg";
 import { fmtEur } from "./format";
 import {
   basisWord,
@@ -16,20 +15,12 @@ import {
   segMetricVal,
   segName,
 } from "./segments";
+import { PeriodToggle } from "./PeriodToggle";
 import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 
 Chart.register(ArcElement, Tooltip, Legend);
-
-/** The tiny engine badge in the chart box's top-left corner (legacy .eng-tag). */
-export function EngTag({ label }: { label: string }) {
-  return (
-    <span className="bg-panel2 text-muted pointer-events-none absolute top-1 left-1 z-[7] rounded-[3px] px-1 py-0.5 text-[8px] font-semibold tracking-[.04em] opacity-70">
-      {label}
-    </span>
-  );
-}
 
 /** One ring's worth of on-slice text: `lines[i]` is drawn stacked in slice `i`,
  *  but only where the slice holds at least `min` percent of the circle. */
@@ -144,7 +135,11 @@ function DonutLegend({
   items: { key: string; text: string; value: string; color: string }[];
 }) {
   return (
-    <ul className="absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex">
+    // justify-center-safe, not justify-center: a centred flex column that
+    // overflows spills off BOTH ends, and the rows above the top edge cannot be
+    // scrolled back to. `safe` centres only while the list fits and falls back
+    // to start-aligned once it doesn't, so the first company is always reachable.
+    <ul className="absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center-safe gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex">
       {items.map((item) => (
         <li key={item.key} className="flex items-start gap-1.5 leading-[1.35]">
           <span
@@ -161,14 +156,35 @@ function DonutLegend({
 
 /** "{year} Revenue by segment" — doughnut or SVG bars, %/€, follows year + basis. */
 export function SegmentChart({ model }: { model: MarketModel }) {
-  const [{ year, market, segment }] = useDashboardParams(model.last);
+  const [{ year, market, segment, per }] = useDashboardParams(model.last);
   const SEG_COLORS = useSegColors();
-  const [type, setType] = useState<"doughnut" | "bars">("doughnut");
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   const [show, setShow] = useState<"pct" | "eur">("pct");
 
-  const basis: SegBasis =
-    market === "avg" ? "company" : market === "emp" ? "emp" : "total";
+  /**
+   * The aggregation basis is a way of comparing SEGMENTS with each other —
+   * whole, median company, median per employee. Scoped to one segment the
+   * donut stops comparing segments and starts listing companies, and a
+   * per-company reading of a per-company list is not a thing.
+   *
+   * Applying it anyway was not merely redundant, it was wrong: "company" made
+   * the segment's value its MEDIAN, and the company ring was then rescaled so
+   * its slices summed to that median. Every company was drawn at its real
+   * figure x (median / sum) — Fabula's EUR 2.7M appeared as EUR 48k, a number
+   * that is neither its revenue nor an average of anything.
+   */
+  const basis: SegBasis = segment
+    ? // "per company" is the only reading with nothing to say about a list of
+      // companies. "Per employee" still divides each company by its own
+      // headcount, which reorders them, so it is kept.
+      market === "emp"
+      ? "emp"
+      : "total"
+    : market === "avg"
+      ? "company"
+      : market === "emp"
+        ? "emp"
+        : "total";
 
   // Fixed segment order AND fixed length: every segment always occupies its
   // own slot, reporting years contribute 0. Slices therefore keep both their
@@ -179,9 +195,13 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   // circle and the inner ring becomes the readable half: its companies. The
   // two-ring shape is kept rather than swapped, so the picker reads as a zoom.
   const shownSegments = segment ? [segment] : model.segments;
+  // The year over twelve, applied AFTER the basis so it composes with it —
+  // exactly as on the money-flow card. Ratio metrics (margin, salary) are
+  // already per-month or unitless, so they are left alone.
+  const months = per === "month" && !SEG_METRICS[metric].ratio ? 12 : 1;
   const rows = shownSegments.map((s) => {
     const v = segMetricVal(model.rows, s, metric, basis, year);
-    return { s, v: v ?? 0, has: v != null };
+    return { s, v: v == null ? 0 : v / months, has: v != null };
   });
 
   const shareTotal = segmentShareTotal(
@@ -192,9 +212,21 @@ export function SegmentChart({ model }: { model: MarketModel }) {
     segment ?? null,
     rows.map((o) => o.v),
   );
+  // Scoped: the segment's own total. Per employee that must be the WEIGHTED
+  // figure — total revenue over total headcount — not the sum of the slices,
+  // because adding up per-employee ratios gives a number nobody earns.
+  const scopedRows = segment
+    ? model.rows.filter((d) => d.year === year && d.activities.includes(segment))
+    : [];
   const centreValue = segment
-    ? Math.max(0, rows[0]?.v ?? 0)
-    : marketMetricTotal(model.rows, metric, basis, year);
+    ? basis === "emp"
+      ? (() => {
+          const v = scopedRows.reduce((sum, d) => sum + (SEG_METRICS[metric].f(d) ?? 0), 0);
+          const e = scopedRows.reduce((sum, d) => sum + (d.employees ?? 0), 0);
+          return e > 0 ? v / e / months : 0;
+        })()
+      : Math.max(0, rows[0]?.v ?? 0)
+    : marketMetricTotal(model.rows, metric, basis, year) / months;
   const pct = (i: number) => (Math.max(0, rows[i].v) / shareTotal) * 100;
   const shown = (i: number) =>
     show === "pct" ? `${pct(i).toFixed(pct(i) < 10 ? 1 : 0)}%` : fmtEur(rows[i].v);
@@ -204,39 +236,41 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   // Inner company ring only when scoped to one segment — in All Segments the
   // same brand can sit in several slices and would be drawn multiple times.
   const companySlices = rows.flatMap((segmentRow) => {
-        const brands = [
-          ...new Set(
-            model.rows
-              .filter((d) => d.activities.includes(segmentRow.s))
-              .map((d) => d.brand),
-          ),
-        ].sort();
-        const valuesByBrand = new Map(
-          model.rows
-            .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
-            .map((d) => {
-              const raw = SEG_METRICS[metric].f(d);
-              const value =
-                raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
-              return [d.brand, Math.max(0, value)] as const;
-            }),
-        );
-        const companyTotal = [...valuesByBrand.values()].reduce(
-          (sum, value) => sum + value,
-          0,
-        );
-        const displayedSegmentValue = Math.max(0, segmentRow.v);
-        return brands.map((brand, i) => {
-          const value = valuesByBrand.get(brand) ?? 0;
-          return {
-            value:
-              companyTotal > 0 && displayedSegmentValue > 0
-                ? (value / companyTotal) * displayedSegmentValue
-                : 0,
-            brand,
-            color: tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length),
-          };
-        });
+    const brands = [
+      ...new Set(
+        model.rows.filter((d) => d.activities.includes(segmentRow.s)).map((d) => d.brand),
+      ),
+    ].sort();
+    const valuesByBrand = new Map(
+      model.rows
+        .filter((d) => d.year === year && d.activities.includes(segmentRow.s))
+        .map((d) => {
+          const raw = SEG_METRICS[metric].f(d);
+          const value =
+            raw == null ? 0 : basis === "emp" ? raw / Math.max(d.employees ?? 0, 1) : raw;
+          // Same divisor the segment ring used, or the inner ring would be
+          // twelve times the outer one.
+          return [d.brand, Math.max(0, value) / months] as const;
+        }),
+    );
+    const companyTotal = [...valuesByBrand.values()].reduce(
+      (sum, value) => sum + value,
+      0,
+    );
+    // Scoped to one segment the slices ARE the figures — no rescaling, so a
+    // company reads its own value. Unscoped they are still normalised into
+    // their segment's arc, which is what makes the inner ring line up with the
+    // outer one.
+    const displayedSegmentValue = Math.max(0, segmentRow.v);
+    const rescale = !segment && companyTotal > 0 && displayedSegmentValue > 0;
+    return brands.map((brand, i) => {
+      const value = valuesByBrand.get(brand) ?? 0;
+      return {
+        value: rescale ? (value / companyTotal) * displayedSegmentValue : value,
+        brand,
+        color: tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length),
+      };
+    });
   });
 
   // Company shares of the ring, for the on-slice labels and the legend.
@@ -271,16 +305,6 @@ export function SegmentChart({ model }: { model: MarketModel }) {
       {/* Legacy .seg-row: three joined .seg groups, 7px gap, 10px below. */}
       <div className="mb-2.5 flex flex-wrap gap-[7px]">
         <Seg
-          label="Chart type"
-          value={type}
-          onChange={setType}
-          btnClassName="px-2 py-1 text-[11.5px]"
-          options={[
-            { value: "doughnut", label: "Doughnut" },
-            { value: "bars", label: "Bars" },
-          ]}
-        />
-        <Seg
           label="Metric"
           value={metric}
           onChange={setMetric}
@@ -301,13 +325,18 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             { value: "eur", label: "€" },
           ]}
         />
+        {/* Same year/month unit as the money-flow card, reading the same URL
+            param, so the two never disagree about the period on screen. Shown
+            in % mode too: the shares are indeed identical either way, but the
+            CENTRE figure is always in euro, so the toggle still changes it. */}
+        <PeriodToggle defaultYear={model.last} />
       </div>
 
       {!rows.some((o) => o.has) ? (
         <p className="text-muted p-6 text-center text-[13px]">
           No companies have reported {year} figures yet.
         </p>
-      ) : type === "doughnut" ? (
+      ) : (
         // The canvas stays a DIRECT child of the sized box — Chart.js measures
         // its parent, and wrapping it in another div (flex item or absolute)
         // leaves it measuring a box that isn't laid out yet, which collapses
@@ -315,7 +344,6 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         // being a fixed width it can never resize the canvas or shift the
         // donut sideways.
         <div className="chartbox relative h-[340px] sm:pr-[176px]">
-          <EngTag label="Chart.js" />
           <Doughnut
             // Remount whenever the SLICE COUNT changes — i.e. when the segment
             // scope changes. Chart.js tweens arcs between updates; if the
@@ -426,34 +454,6 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                     }))
                     .filter((e) => e.sort >= 0)
             }
-          />
-        </div>
-      ) : (
-        <div className="chartbox relative h-[340px]">
-          <EngTag label="SVG" />
-          <BarsSvg
-            rows={rows
-              .map((o, i) => ({
-                label: segName(o.s),
-                value: show === "pct" ? pct(i) : o.v,
-                color: SEG_COLORS[o.s] ?? "#888",
-                has: o.has,
-              }))
-              .filter((r) => r.has)}
-            fmt={show === "pct" ? (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}%` : fmtEur}
-            xTitle={
-              show === "pct"
-                ? segment
-                  ? "Share of segment, %"
-                  : "Share of whole market, %"
-                : `${basis === "total" ? "Total" : "Median"} ${SEG_METRICS[metric].short}, €`
-            }
-            tip={(r) => {
-              const i = rows.findIndex((o) => segName(o.s) === r.label);
-              return show === "pct"
-                ? `<b>${r.label}</b>: ${r.value.toFixed(1)}% (${fmtEur(rows[i]?.v)})`
-                : `<b>${r.label}</b>: ${fmtEur(r.value)} (${basisWord(basis)})`;
-            }}
           />
         </div>
       )}

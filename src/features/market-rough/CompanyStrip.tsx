@@ -38,10 +38,15 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
         </span>
       </div>
 
-      {/* One line, scrolled horizontally. The scrollbar is hidden because the
-          row is visibly cut off at the right edge, which says "there is more"
-          more quietly than a bar does. */}
-      <div className="-mx-1 flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden">
+      {/* TWO rows that scroll together, not one row that wraps. `grid-flow-col`
+          fills down-then-across, so the pair moves as a single band and the
+          ranking still reads left to right. A wrapping flex would instead run
+          out of width, break to a second line, and only then scroll — which
+          puts rank 2 underneath rank 1 and hides the order.
+
+          Scrollbar hidden: the band is visibly cut off at the right edge, which
+          says "there is more" more quietly than a bar does. */}
+      <div className="-mx-1 grid grid-flow-col grid-rows-2 [grid-auto-columns:max-content] [scrollbar-width:none] gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden">
         {rows.map((row) => (
           <Link
             key={row.brand}

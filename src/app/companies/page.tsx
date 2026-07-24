@@ -2,6 +2,7 @@ import { Bloom } from "@/components/ui/bloom";
 import { Footer } from "@/components/ui/footer";
 import { CollapsibleCard } from "@/components/ui/group";
 import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
+import { ArrowKeysHint } from "@/features/market-rough/ArrowKeysHint";
 import { BottomBar } from "@/features/market-rough/BottomBar";
 import {
   CompanyAllTime,
@@ -41,6 +42,8 @@ export default function CompaniesPage() {
           <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
             Companies <ViewWord scope="co" />
           </h1>
+          {/* No segment picker on this page, so the vertical pair is inert. */}
+          <ArrowKeysHint className="mt-6" />
           <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
         </header>
 

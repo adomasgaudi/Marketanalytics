@@ -8,6 +8,8 @@ import {
   SEG_COLORS_HARMONY_DARK,
   SEG_COLORS_HARMONY_LIGHT,
   SEG_COLORS_LIGHT,
+  SEG_COLORS_LINE_DARK,
+  SEG_COLORS_LINE_LIGHT,
 } from "./segments";
 
 /**
@@ -46,12 +48,26 @@ export function useCmpColor(): (i: number) => string {
  * separately validated against its own surface (see segments.ts), so charts
  * re-read on a change rather than reusing one set everywhere.
  *
- * data-seg-palette is absent by default, which means "harmony"; the settings
- * menu writes "spectral" to switch back to the original set.
+ * data-seg-palette is absent by default, which means "spectral" — the set that
+ * actually separates nine categories. The settings menu writes "harmony" to
+ * opt into the muted set.
  */
 export function useSegColors(): Record<string, string> {
   const dark = useDarkTheme();
-  const spectral = useRootAttr("data-seg-palette", null) === "spectral";
-  if (spectral) return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
+  const harmony = useRootAttr("data-seg-palette", null) === "harmony";
+  if (!harmony) return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
   return dark ? SEG_COLORS_HARMONY_DARK : SEG_COLORS_HARMONY_LIGHT;
+}
+
+/**
+ * Palette for LINE charts. A line carries a fraction of a slice's area, so the
+ * harmony set — which trades hue separation for tonal calm — stops being
+ * decipherable there. Spectral already separates well, so it is used as-is;
+ * only harmony needs the line-specific replacement.
+ */
+export function useSegLineColors(): Record<string, string> {
+  const dark = useDarkTheme();
+  const harmony = useRootAttr("data-seg-palette", null) === "harmony";
+  if (!harmony) return dark ? SEG_COLORS_DARK : SEG_COLORS_LIGHT;
+  return dark ? SEG_COLORS_LINE_DARK : SEG_COLORS_LINE_LIGHT;
 }

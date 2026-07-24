@@ -59,9 +59,19 @@ export function TopCards({ model }: { model: MarketModel }) {
             {count}
           </span>
           <span className="text-muted text-[13px]">
-            {segment
-              ? `in ${segName(segment)}`
-              : `across ${model.segments.length} service segments`}
+            {segment ? (
+              `in ${segName(segment)}`
+            ) : (
+              <>
+                across{" "}
+                {/* The count carries the scope of the whole dataset, so it is
+                    sized to be read rather than skimmed past. */}
+                <span className="text-ink text-[17px] font-semibold tabular-nums">
+                  {model.segments.length}
+                </span>{" "}
+                service segments
+              </>
+            )}
           </span>
         </div>
       </div>

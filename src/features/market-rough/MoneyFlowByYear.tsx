@@ -259,7 +259,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
               {[
                 ["var(--color-green)", "Net profit"],
                 ["var(--color-mf-rev)", "Revenue"],
-                ["var(--color-mf-turn)", "Turnover"],
+                ["var(--color-mf-turn-line)", "Turnover"],
               ].map(([color, label], i) => (
                 <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
                   <rect width="9" height="9" rx="2" fill={color} />
@@ -319,8 +319,25 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       return el;
                     });
                   };
+                  const barR = 4;
+                  const barTop = yTurnTop;
+                  const barH = Math.max(0, y(0) - barTop);
                   return (
                     <g key={r.year}>
+                      {/* The stack's fills are clipped to the SAME rounded rect
+                          the outline traces. Without this the square-cornered
+                          bands poked out past the rounded stroke and the whole
+                          bar read as a selection box rather than a chart. */}
+                      <clipPath id={`${clipId}b${r.year}`}>
+                        <rect
+                          x={x0}
+                          y={barTop}
+                          width={barW}
+                          height={barH}
+                          rx={barR}
+                        />
+                      </clipPath>
+                      <g clipPath={`url(#${clipId}b${r.year})`}>
                       <rect
                         x={x0}
                         y={yProfitTop}
@@ -336,6 +353,35 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         height={Math.max(0, yRevTop - yTurnTop)}
                         fill="var(--color-mf-turn)"
                       />
+                      </g>
+                      {/* Turnover is the whole stack, so it is drawn as the
+                          stack's outline rather than as a band — same as the
+                          per-year card, where blue marks the outer boundary. */}
+                      <rect
+                        x={x0 + 1}
+                        y={barTop + 1}
+                        width={Math.max(0, barW - 2)}
+                        height={Math.max(0, barH - 2)}
+                        fill="none"
+                        stroke="var(--color-mf-turn-line)"
+                        strokeWidth={2}
+                        rx={barR - 1}
+                      />
+                      {/* A hairline companion bar carrying revenue alone. The
+                          stack already contains it, but split three ways and
+                          starting off the axis — so its year-on-year shape was
+                          unreadable. Beside the stack, on the same scale, it
+                          is a second series you can actually follow. */}
+                      {r.revenue > 0 && (
+                        <rect
+                          x={x0 + barW + 2}
+                          y={y(r.revenue)}
+                          width={Math.max(4, Math.round(barW * 0.16))}
+                          height={Math.max(0, y(0) - y(r.revenue))}
+                          rx={2}
+                          fill="var(--color-gold)"
+                        />
+                      )}
                       <text
                         x={cx}
                         y={yTurnTop - 5}
@@ -348,8 +394,11 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       </text>
                       {yoy != null && (
                         <text
-                          x={cx}
-                          y={yTurnTop - 18}
+                          // Midway to the previous bar, at the higher of the
+                          // two tops: a change belongs between the years it
+                          // compares, not over one of them.
+                          x={(x(i - 1) + cx) / 2}
+                          y={Math.min(yTurnTop, y(rows[i - 1].turnover)) - 8}
                           textAnchor="middle"
                           fontSize="9"
                           fontWeight="600"

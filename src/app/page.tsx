@@ -1,6 +1,7 @@
 import { Footer } from "@/components/ui/footer";
 import { ViewGroupCard } from "@/features/market-rough/ViewSync";
 import { HeroTitle } from "@/features/market-rough/HeroTitle";
+import { ArrowKeysHint } from "@/features/market-rough/ArrowKeysHint";
 import { BottomBar } from "@/features/market-rough/BottomBar";
 import { CompanyStrip } from "@/features/market-rough/CompanyStrip";
 import { loadMarketData } from "@/features/market-rough/data";
@@ -53,12 +54,13 @@ export default function MarketsPage() {
             Lithuanian marketing &amp; communications · {model.years[0]}–
             {model.years[model.years.length - 1]}
           </p>
-          <HeroTitle defaultYear={model.last} />
+          <HeroTitle defaultYear={model.last} segments={model.segments.length} />
           {/* Freshness marker: newest entry in the data-change audit log. */}
           <p className="text-muted mt-3 flex items-center gap-1.5 text-[11.5px]">
             <span className="bg-green inline-block h-1.5 w-1.5 rounded-full" />
             Data updated {lastUpdated()}
           </p>
+          <ArrowKeysHint vertical="segment" className="mt-6" />
           <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
         </header>
 

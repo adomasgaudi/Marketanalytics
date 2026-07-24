@@ -375,6 +375,30 @@ export function LineChart({
                   s.data.map((p) => (
                     <circle key={p.x} cx={px(p.x)} cy={py(p.y)} r="3" fill={s.color} />
                   ))}
+                {/* The series name at the end of its own line. Matching a
+                    legend swatch to one of nine similar lines is a task the
+                    reader should not have to do — the label rides the line. */}
+                {(() => {
+                  const last = s.data[s.data.length - 1];
+                  if (!last) return null;
+                  const lx = px(last.x);
+                  const ly = py(last.y);
+                  if (lx < m.l || lx > m.l + pw || ly < m.t || ly > m.t + ph) return null;
+                  return (
+                    <text
+                      x={lx + 6}
+                      y={ly + 3}
+                      fontSize="10"
+                      fontWeight="700"
+                      fill={s.color}
+                      style={{ paintOrder: "stroke" }}
+                      stroke="var(--color-chart-bg)"
+                      strokeWidth={3}
+                    >
+                      {s.label}
+                    </text>
+                  );
+                })()}
               </g>
             ))}
           </g>

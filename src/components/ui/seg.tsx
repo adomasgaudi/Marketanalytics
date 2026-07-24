@@ -35,7 +35,7 @@ export function Seg<T extends string>({
       role="group"
       aria-label={label}
       className={cn(
-        "seg-group border-line inline-flex overflow-hidden rounded-[8px] border",
+        "seg-group group/seg border-line inline-flex overflow-hidden rounded-[8px] border",
         className,
       )}
     >
@@ -52,7 +52,10 @@ export function Seg<T extends string>({
           onBlur={() => onHoverChange?.(null)}
           data-on={option.value === value}
           className={cn(
+            // Dividers follow the axis: a vertical group (`flex-col` passed in
+            // className) needs them under each button, not beside it.
             "seg-btn border-line cursor-pointer border-r px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors last:border-r-0",
+            "group-[.flex-col]/seg:border-r-0 group-[.flex-col]/seg:border-b group-[.flex-col]/seg:last:border-b-0",
             option.value === value
               ? "bg-accent text-white"
               : "bg-panel2 text-muted hover:text-ink",

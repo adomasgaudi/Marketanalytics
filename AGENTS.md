@@ -162,6 +162,16 @@ own — the shape is 30 words, then 300.
 
 <br />
 
+## Figures come from `data2/` — always
+
+`data/` is the frozen legacy set: numbers typed, pasted or estimated years ago
+whose origin is no longer recoverable. Do not read from it for new work and do
+not extend it. Every figure in `data2/` traces to a public registry — see
+[data2/README.md](data2/README.md). Sole live exception, named there:
+`data/sodra/<slug>.json`, which the legacy `/explore` page still reads in place.
+
+<br />
+
 ## Read before scraping ANY company figures
 
 [docs/pr-scrape/SCRAPE-registry-data.md](docs/pr-scrape/SCRAPE-registry-data.md) — the official sources, and the four things that will silently corrupt your data if you don't know them.

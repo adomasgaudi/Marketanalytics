@@ -38,7 +38,12 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [palette, setPalette] = useState<Palette>("classic");
   // Doughnut/bars segment colours. "harmony" (default) is the muted validated
   // set; "spectral" restores the original saturated one. See segments.ts.
-  const [segPalette, setSegPalette] = useState<SegPalette>("harmony");
+  // Spectral is the default: it separates nine categories, which is what these
+  // charts are for. Harmony trades that separation for tonal calm and is kept
+  // as an opt-in. NOTE the storage key changed with the flip — the old one had
+  // "harmony" written into it on every render, so re-using it would have
+  // pinned every existing visitor to the old default forever.
+  const [segPalette, setSegPalette] = useState<SegPalette>("spectral");
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
   // Which dataset the money figures come from. In the URL so a comparison is
@@ -55,7 +60,7 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       const saved = localStorage.getItem("palette");
       if (saved && (PALETTES as readonly string[]).includes(saved))
         setPalette(saved as Palette);
-      if (localStorage.getItem("segPalette") === "spectral") setSegPalette("spectral");
+      if (localStorage.getItem("segPalette2") === "harmony") setSegPalette("harmony");
       if (localStorage.getItem("viewMode") === "dev") setMode("dev");
       if (localStorage.getItem("graphPan") === "on") setGraphPan(true);
     } catch {}
@@ -69,10 +74,11 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
     else root.removeAttribute("data-palette");
     root.setAttribute("data-mode", mode);
     // Absent attribute means "harmony" — only the opt-out is written.
-    if (segPalette === "spectral") root.setAttribute("data-seg-palette", "spectral");
+    // Absent means the default; only the opt-out is written.
+    if (segPalette === "harmony") root.setAttribute("data-seg-palette", "harmony");
     else root.removeAttribute("data-seg-palette");
     try {
-      localStorage.setItem("segPalette", segPalette);
+      localStorage.setItem("segPalette2", segPalette);
       localStorage.setItem("theme", theme);
       localStorage.setItem("palette", palette);
       localStorage.setItem("viewMode", mode);

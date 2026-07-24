@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { fmtEur, fmtInt } from "./format";
 import { LineChart, type LineSeries } from "./LineChart";
@@ -15,7 +15,7 @@ import {
 } from "./segments";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
-import { useSegColors } from "./useSegColors";
+import { useSegLineColors } from "./useSegColors";
 
 const TREND_METRICS: SegMetricKey[] = [
   "revenue",
@@ -36,10 +36,31 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
   );
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  // A dropdown that only closes by re-clicking its own button is a trap — it
+  // covers the chart it filters. Bound on pointerdown, not click, so the list
+  // is gone before the click lands on whatever is underneath. The button itself
+  // is inside the ref, so its own toggle still works rather than firing twice.
+  const pickerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const onOutside = (e: PointerEvent) => {
+      if (!pickerRef.current?.contains(e.target as Node)) setPickerOpen(false);
+    };
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPickerOpen(false);
+    };
+    document.addEventListener("pointerdown", onOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("pointerdown", onOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [pickerOpen]);
+
   const basis: SegBasis =
     market === "avg" ? "company" : market === "emp" ? "emp" : "total";
   const fmt = metric === "employees" ? fmtInt : fmtEur;
-  const SEG_COLORS = useSegColors();
+  const SEG_COLORS = useSegLineColors();
 
   // Legacy renderRevSegAll: series ordered by their latest-year value, and
   // 5/95 + 25/75 percentile bands for avgSalary when ≤2 segments are picked.
@@ -91,50 +112,55 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
     <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h3 className="mb-2 text-[15px] font-semibold">Financial metrics by segment</h3>
 
-      {/* Legacy segment picker: a select-style dropdown + removable chips + Clear all. */}
-      <div className="relative mb-2">
-        <button
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded={pickerOpen}
-          onClick={() => setPickerOpen((v) => !v)}
-          className="border-line bg-panel2 text-ink flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-[13px] font-semibold"
-        >
-          <span>{segs.size ? [...segs].map(segName).join(", ") : "Add segment"}</span>
-          <span className="text-muted text-[10px]">▼</span>
-        </button>
-        {pickerOpen && (
-          <div
-            role="listbox"
-            aria-multiselectable="true"
-            className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 left-0 z-20 max-h-[240px] overflow-y-auto rounded-lg border p-1.5 shadow-[0_4px_20px_rgba(0,0,0,.4)]"
-          >
-            {model.segments.map((s) => (
-              <button
-                key={s}
-                type="button"
-                role="option"
-                aria-selected={segs.has(s)}
-                onClick={() =>
-                  setSegs((old) => {
-                    const next = new Set(old);
-                    if (next.has(s)) next.delete(s);
-                    else next.add(s);
-                    return next;
-                  })
-                }
-                className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-[7px] text-left text-[13px] ${
-                  segs.has(s) ? "text-accent font-semibold" : "text-ink"
-                } hover:bg-panel2`}
-              >
-                <span className="w-3">{segs.has(s) ? "✓" : ""}</span>
-                {segName(s)}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Picker, chips and metric on ONE wrapping row — three stacked full-width
+          rows of controls pushed the chart they configure off the screen. The
+          dropdown sizes to its content instead of the card, and the panel it
+          opens keeps a usable width of its own. */}
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        <div className="relative" ref={pickerRef}>
+          <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded={pickerOpen}
+            onClick={() => setPickerOpen((v) => !v)}
+            className="border-line bg-panel2 text-ink flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-[13px] font-semibold"
+          >
+            <span className="max-w-[220px] truncate">
+              {segs.size ? [...segs].map(segName).join(", ") : "Add segment"}
+            </span>
+            <span className="text-muted text-[10px]">▼</span>
+          </button>
+          {pickerOpen && (
+            <div
+              role="listbox"
+              aria-multiselectable="true"
+              className="border-line bg-panel absolute top-[calc(100%+4px)] left-0 z-20 max-h-[240px] w-[240px] overflow-y-auto rounded-lg border p-1.5 shadow-[0_4px_20px_rgba(0,0,0,.4)]"
+            >
+              {model.segments.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="option"
+                  aria-selected={segs.has(s)}
+                  onClick={() =>
+                    setSegs((old) => {
+                      const next = new Set(old);
+                      if (next.has(s)) next.delete(s);
+                      else next.add(s);
+                      return next;
+                    })
+                  }
+                  className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-[7px] text-left text-[13px] ${
+                    segs.has(s) ? "text-accent font-semibold" : "text-ink"
+                  } hover:bg-panel2`}
+                >
+                  <span className="w-3">{segs.has(s) ? "✓" : ""}</span>
+                  {segName(s)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => setSegs(new Set())}
@@ -143,9 +169,17 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
           Clear all
         </button>
         {[...segs].map((s) => (
+          /* Each chip wears its own line's colour, not one shared accent: the
+             chip is how you find that line in the chart, and nine identical
+             gold chips made the reader match by name instead of by sight. */
           <span
             key={s}
-            className="border-accent/40 bg-accent/10 text-accent flex items-center gap-1.5 rounded-md border px-2 py-1 text-[12px] font-semibold"
+            className="flex items-center gap-1.5 rounded-md border px-2 py-1 text-[12px] font-semibold"
+            style={{
+              color: SEG_COLORS[s] ?? "var(--color-muted)",
+              borderColor: `color-mix(in srgb, ${SEG_COLORS[s] ?? "#888"} 45%, transparent)`,
+              background: `color-mix(in srgb, ${SEG_COLORS[s] ?? "#888"} 12%, transparent)`,
+            }}
           >
             <span
               className="inline-block h-2 w-2 rounded-[2px]"
@@ -168,9 +202,6 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
             </button>
           </span>
         ))}
-      </div>
-
-      <div className="mb-3">
         <Seg
           label="Financial metric"
           value={metric}

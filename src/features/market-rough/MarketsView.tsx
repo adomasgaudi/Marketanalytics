@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
 import { Frac, moneyFormulas, Op, V } from "./Formula";
 import { Insights } from "./Insights";
-import { KpiCard, type KpiCardData, type KpiMode, KpiModeToggle } from "./KpiCard";
+import { KpiCard, type KpiCardData } from "./KpiCard";
 import { marketTotals, medianSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
+import { PeriodToggle } from "./PeriodToggle";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
 import { ScatterScrub } from "./ScatterScrub";
@@ -21,10 +21,7 @@ import { useDashboardParams } from "./useDashboardParams";
 export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
   // Rebuilt figures by default; every child below is handed this same model.
   const model = useSourcedModel(legacyModel);
-  const [{ year, market, segment, src }] = useDashboardParams(model.last);
-  // €/% is ephemeral UI, not page identity — it stays out of the URL.
-  const [kpiMode, setKpiMode] = useState<KpiMode>("value");
-
+  const [{ year, market, segment, src, per }] = useDashboardParams(model.last);
   // The bottom-bar segment scope narrows the row set every figure on this
   // panel is derived from — totals, salary and the money-flow alike.
   const rows = segment
@@ -36,19 +33,21 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
   const cur = marketTotals(rows, year);
   const prev = marketTotals(rows, year - 1);
   const hasPrev = prev.count > 0;
-  // The first year has nothing to compare against, so % is force-reverted to €
-  // rather than left showing a grid of em-dashes.
-  const shownMode: KpiMode = hasPrev ? kpiMode : "value";
 
-  // Three views of the same money: ÷ companies, ÷ employees, or raw totals.
-  const div = market === "avg" ? cur.count : market === "emp" ? cur.employees : 1;
-  const divPrev = market === "avg" ? prev.count : market === "emp" ? prev.employees : 1;
+  // Two independent divisions, multiplied: HOW the market is split (companies
+  // / employees / not at all) and over WHAT PERIOD. They compose, so "per
+  // company per month" is a reading rather than a fourth exclusive basis.
+  const months = per === "month" ? 12 : 1;
+  const div =
+    (market === "avg" ? cur.count : market === "emp" ? cur.employees : 1) * months;
+  const divPrev =
+    (market === "avg" ? prev.count : market === "emp" ? prev.employees : 1) * months;
   const scale = (value: number) => (div > 0 ? value / div : 0);
   const scalePrev = (value: number) => (divPrev > 0 ? value / divPrev : 0);
 
   // "24→25" range label, as the legacy cards title themselves.
   const y2 = String(year).slice(2);
-  const yrLabel = hasPrev ? `${String(year - 1).slice(2)}→${y2}` : String(year);
+  const yrLabel = hasPrev ? `→${y2}` : String(year);
 
   const yoyCard = (
     label: string,
@@ -61,7 +60,6 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
       label: `${label} ${yrLabel}`,
       valueText: fmt(curVal),
       changeText: ratio == null ? "—" : fmtPct(ratio),
-      rangeText: hasPrev ? `${fmt(prevVal)} → ${fmt(curVal)}` : fmt(curVal),
       changeCls: ratio != null && ratio < 0 ? "neg" : "pos",
       formulas: [],
     };
@@ -181,10 +179,17 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
       <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
         <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
           <MoneyFlow
+            actions={<PeriodToggle defaultYear={model.last} />}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             formulas={moneyFormulas({
               source: src,
               sum: true,
+              // Names the rows actually summed, so the fold changes with the
+              // segment picker instead of always describing the whole market.
+              scope: {
+                label: segment ? `the ${segName(segment)} segment` : "the whole market",
+                companies: String(cur.count),
+              },
               div:
                 market === "avg"
                   ? {
@@ -223,10 +228,9 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
           />
         </div>
         <div className="md:w-[340px] md:flex-none">
-          <KpiModeToggle mode={shownMode} onChange={setKpiMode} changeDisabled={!hasPrev} />
           <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2.5 md:grid-cols-2">
             {cards.map((card) => (
-              <KpiCard key={card.label} card={card} mode={shownMode} />
+              <KpiCard key={card.label} card={card} />
             ))}
           </div>
         </div>
@@ -269,6 +273,10 @@ export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
       />
       <SegmentTrends model={model} />
       <ScatterScrub model={model} />
+      {/* The same bubble field as the per-year panel. It still draws one year —
+          the one the bottom bar last held — but its axes span every year, so it
+          reads as a fixed frame here rather than a per-year snapshot. */}
+      <ScatterChart model={model} />
     </div>
   );
 }

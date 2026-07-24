@@ -5,7 +5,6 @@ import { type BarRow, BarsSvg } from "./BarsSvg";
 import { cmpColor } from "./CompanySelector";
 import { fmtEur, fmtInt } from "./format";
 import { type KpiMode, KpiModeToggle } from "./KpiCard";
-import { EngTag } from "./SegmentChart";
 import { margin, type Rank, rankOf } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
 
@@ -130,7 +129,6 @@ export function RankVsMarket({
         <KpiModeToggle mode={mode} onChange={setMode} />
       </div>
       <div className="chartbox relative" style={{ height }}>
-        <EngTag label="SVG" />
         <BarsSvg
           rows={bars}
           fmt={(v) => String(Math.round(v))}
