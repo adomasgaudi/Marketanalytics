@@ -13,6 +13,8 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { RankingsChart } from "@/features/market-rough/RankingsChart";
 import { TopNav } from "@/features/market-rough/TopNav";
+import { slugify } from "@/lib/slug";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -92,6 +94,26 @@ export default function CompaniesPage() {
         >
           Explore the raw data &amp; sources →
         </a>
+
+        {/* Server-rendered directory: the crawlable path into the 132 static
+            company pages (the charts above are invisible to search engines). */}
+        <section className="mt-12" aria-label="Agency directory">
+          <h2 className="text-muted mb-3 text-[11px] font-semibold tracking-[.18em] uppercase">
+            Agency directory
+          </h2>
+          <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-[12.5px]">
+            {model.brands.map((brand) => (
+              <li key={brand}>
+                <Link
+                  href={`/companies/${slugify(brand)}`}
+                  className="text-muted hover:text-accent transition-colors"
+                >
+                  {brand}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
         <Footer />
       </div>
       <BottomBar model={model} mode="company" />
