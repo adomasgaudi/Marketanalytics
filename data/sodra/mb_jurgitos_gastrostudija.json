@@ -1,0 +1,123 @@
+{
+ "jarCode": "307035099",
+ "sodraCode": 4295014,
+ "name": "MB JURGITOS GASTROSTUDIJA",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kupiškio r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1194.0,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202412,
+   "avgWage": 741.78,
+   "numInsured": 4,
+   "tax": 649.7
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 839.83,
+   "numInsured": 4,
+   "tax": 775.41
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202509,
+   "avgWage": 1000.0,
+   "numInsured": 5,
+   "tax": 1173.59
+  },
+  {
+   "month": 202510,
+   "avgWage": 1102.0,
+   "numInsured": 5,
+   "tax": 1297.37
+  },
+  {
+   "month": 202511,
+   "avgWage": 869.25,
+   "numInsured": 8,
+   "tax": 1607.65
+  },
+  {
+   "month": 202512,
+   "avgWage": 849.63,
+   "numInsured": 8,
+   "tax": 1578.38
+  },
+  {
+   "month": 202601,
+   "avgWage": 884.57,
+   "numInsured": 7,
+   "tax": 1428.09
+  },
+  {
+   "month": 202602,
+   "avgWage": 974.29,
+   "numInsured": 7,
+   "tax": 1556.51
+  },
+  {
+   "month": 202603,
+   "avgWage": 1194.0,
+   "numInsured": 5,
+   "tax": 1304.61
+  },
+  {
+   "month": 202604,
+   "avgWage": 1194.0,
+   "numInsured": 5,
+   "tax": 1304.61
+  },
+  {
+   "month": 202605,
+   "avgWage": 1194.0,
+   "numInsured": 5,
+   "tax": 1304.61
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

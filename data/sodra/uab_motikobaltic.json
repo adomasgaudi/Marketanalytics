@@ -1,0 +1,81 @@
+{
+ "jarCode": "307131635",
+ "sodraCode": 4334282,
+ "name": "UAB MOTIKOBALTIC",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202603,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 630.54,
+   "numInsured": 5,
+   "tax": 721.12
+  },
+  {
+   "month": 202506,
+   "avgWage": 637.18,
+   "numInsured": 8,
+   "tax": 1129.27
+  },
+  {
+   "month": 202507,
+   "avgWage": 982.3,
+   "numInsured": 8,
+   "tax": 1715.33
+  },
+  {
+   "month": 202508,
+   "avgWage": 841.0,
+   "numInsured": 8,
+   "tax": 1504.61
+  },
+  {
+   "month": 202509,
+   "avgWage": 585.08,
+   "numInsured": 8,
+   "tax": 1047.74
+  },
+  {
+   "month": 202510,
+   "avgWage": 596.73,
+   "numInsured": 5,
+   "tax": 667.63
+  },
+  {
+   "month": 202511,
+   "avgWage": 709.33,
+   "numInsured": 4,
+   "tax": 665.84
+  },
+  {
+   "month": 202512,
+   "avgWage": 903.15,
+   "numInsured": 4,
+   "tax": 823.92
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

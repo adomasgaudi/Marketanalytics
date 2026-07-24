@@ -1,0 +1,105 @@
+{
+ "jarCode": "306652749",
+ "sodraCode": 4176304,
+ "name": "UAB FINIKIJA",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Druskininkų sav.",
+ "latest": {
+  "month": 202504,
+  "avgWage": 601.12,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202402,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202403,
+   "avgWage": 331.57,
+   "numInsured": 5,
+   "tax": 352.63
+  },
+  {
+   "month": 202404,
+   "avgWage": 398.35,
+   "numInsured": 9,
+   "tax": 762.57
+  },
+  {
+   "month": 202405,
+   "avgWage": 574.27,
+   "numInsured": 8,
+   "tax": 977.18
+  },
+  {
+   "month": 202406,
+   "avgWage": 378.61,
+   "numInsured": 8,
+   "tax": 644.24
+  },
+  {
+   "month": 202407,
+   "avgWage": 366.79,
+   "numInsured": 8,
+   "tax": 624.12
+  },
+  {
+   "month": 202408,
+   "avgWage": 415.19,
+   "numInsured": 5,
+   "tax": 441.55
+  },
+  {
+   "month": 202409,
+   "avgWage": 332.56,
+   "numInsured": 5,
+   "tax": 353.67
+  },
+  {
+   "month": 202410,
+   "avgWage": 321.4,
+   "numInsured": 5,
+   "tax": 341.81
+  },
+  {
+   "month": 202411,
+   "avgWage": 314.62,
+   "numInsured": 6,
+   "tax": 401.51
+  },
+  {
+   "month": 202412,
+   "avgWage": 369.26,
+   "numInsured": 5,
+   "tax": 392.72
+  },
+  {
+   "month": 202501,
+   "avgWage": 357.83,
+   "numInsured": 5,
+   "tax": 387.89
+  },
+  {
+   "month": 202502,
+   "avgWage": 359.37,
+   "numInsured": 5,
+   "tax": 386.67
+  },
+  {
+   "month": 202503,
+   "avgWage": 344.49,
+   "numInsured": 5,
+   "tax": 372.48
+  },
+  {
+   "month": 202504,
+   "avgWage": 601.12,
+   "numInsured": 5,
+   "tax": 651.79
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

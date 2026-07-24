@@ -1,0 +1,33 @@
+{
+ "jarCode": "135931283",
+ "sodraCode": 807510,
+ "name": "UAB RIMLESTĖ",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 201703,
+  "avgWage": 395.49,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 333.39,
+   "numInsured": 6,
+   "tax": 805.77
+  },
+  {
+   "month": 201702,
+   "avgWage": 309.18,
+   "numInsured": 6,
+   "tax": 747.09
+  },
+  {
+   "month": 201703,
+   "avgWage": 395.49,
+   "numInsured": 5,
+   "tax": 798.67
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

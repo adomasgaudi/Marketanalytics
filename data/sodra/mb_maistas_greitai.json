@@ -1,0 +1,183 @@
+{
+ "jarCode": "306665305",
+ "sodraCode": 4182328,
+ "name": "MB MAISTAS GREITAI",
+ "ecoActName": "Nespecializuota mažmeninė prekyba daugiausia maisto produktais, gėrimais ar tabako gaminiais",
+ "municipality": "Utenos r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1342.12,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202402,
+   "avgWage": 918.85,
+   "numInsured": 4,
+   "tax": 810.23
+  },
+  {
+   "month": 202403,
+   "avgWage": 954.24,
+   "numInsured": 4,
+   "tax": 811.88
+  },
+  {
+   "month": 202404,
+   "avgWage": 1044.57,
+   "numInsured": 4,
+   "tax": 888.71
+  },
+  {
+   "month": 202405,
+   "avgWage": 1022.4,
+   "numInsured": 4,
+   "tax": 902.58
+  },
+  {
+   "month": 202406,
+   "avgWage": 1034.01,
+   "numInsured": 4,
+   "tax": 908.37
+  },
+  {
+   "month": 202407,
+   "avgWage": 1096.24,
+   "numInsured": 4,
+   "tax": 969.49
+  },
+  {
+   "month": 202408,
+   "avgWage": 974.82,
+   "numInsured": 4,
+   "tax": 862.26
+  },
+  {
+   "month": 202409,
+   "avgWage": 886.08,
+   "numInsured": 4,
+   "tax": 784.57
+  },
+  {
+   "month": 202410,
+   "avgWage": 1056.48,
+   "numInsured": 4,
+   "tax": 929.53
+  },
+  {
+   "month": 202411,
+   "avgWage": 783.84,
+   "numInsured": 4,
+   "tax": 695.53
+  },
+  {
+   "month": 202412,
+   "avgWage": 886.08,
+   "numInsured": 4,
+   "tax": 782.51
+  },
+  {
+   "month": 202501,
+   "avgWage": 1021.12,
+   "numInsured": 4,
+   "tax": 901.02
+  },
+  {
+   "month": 202502,
+   "avgWage": 1011.2,
+   "numInsured": 6,
+   "tax": 1355.01
+  },
+  {
+   "month": 202503,
+   "avgWage": 1181.23,
+   "numInsured": 6,
+   "tax": 1577.26
+  },
+  {
+   "month": 202504,
+   "avgWage": 1074.13,
+   "numInsured": 6,
+   "tax": 1435.31
+  },
+  {
+   "month": 202505,
+   "avgWage": 1203.2,
+   "numInsured": 6,
+   "tax": 1609.25
+  },
+  {
+   "month": 202506,
+   "avgWage": 1216.0,
+   "numInsured": 6,
+   "tax": 1620.98
+  },
+  {
+   "month": 202507,
+   "avgWage": 1123.47,
+   "numInsured": 6,
+   "tax": 1492.3
+  },
+  {
+   "month": 202508,
+   "avgWage": 1156.78,
+   "numInsured": 6,
+   "tax": 1547.72
+  },
+  {
+   "month": 202509,
+   "avgWage": 1139.2,
+   "numInsured": 6,
+   "tax": 1518.36
+  },
+  {
+   "month": 202510,
+   "avgWage": 1139.2,
+   "numInsured": 6,
+   "tax": 1525.28
+  },
+  {
+   "month": 202511,
+   "avgWage": 1118.1,
+   "numInsured": 6,
+   "tax": 1491.43
+  },
+  {
+   "month": 202512,
+   "avgWage": 1035.73,
+   "numInsured": 6,
+   "tax": 1386.12
+  },
+  {
+   "month": 202601,
+   "avgWage": 1344.2,
+   "numInsured": 7,
+   "tax": 2076.02
+  },
+  {
+   "month": 202602,
+   "avgWage": 1235.2,
+   "numInsured": 6,
+   "tax": 1612.15
+  },
+  {
+   "month": 202603,
+   "avgWage": 1278.0,
+   "numInsured": 6,
+   "tax": 1669.31
+  },
+  {
+   "month": 202604,
+   "avgWage": 1428.84,
+   "numInsured": 6,
+   "tax": 1861.83
+  },
+  {
+   "month": 202605,
+   "avgWage": 1342.12,
+   "numInsured": 6,
+   "tax": 1749.92
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

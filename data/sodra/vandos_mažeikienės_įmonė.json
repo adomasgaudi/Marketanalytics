@@ -1,0 +1,129 @@
+{
+ "jarCode": "135268240",
+ "sodraCode": 496981,
+ "name": "VANDOS MAŽEIKIENĖS ĮMONĖ",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 201809,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201703,
+   "avgWage": 271.89,
+   "numInsured": 4,
+   "tax": 445.33
+  },
+  {
+   "month": 201704,
+   "avgWage": 281.25,
+   "numInsured": 4,
+   "tax": 460.43
+  },
+  {
+   "month": 201705,
+   "avgWage": 274.86,
+   "numInsured": 4,
+   "tax": 449.55
+  },
+  {
+   "month": 201706,
+   "avgWage": 258.23,
+   "numInsured": 5,
+   "tax": 528.72
+  },
+  {
+   "month": 201707,
+   "avgWage": 272.12,
+   "numInsured": 5,
+   "tax": 554.09
+  },
+  {
+   "month": 201708,
+   "avgWage": 318.86,
+   "numInsured": 5,
+   "tax": 649.82
+  },
+  {
+   "month": 201709,
+   "avgWage": 280.66,
+   "numInsured": 4,
+   "tax": 459.42
+  },
+  {
+   "month": 201710,
+   "avgWage": 252.82,
+   "numInsured": 4,
+   "tax": 413.27
+  },
+  {
+   "month": 201711,
+   "avgWage": 240.06,
+   "numInsured": 4,
+   "tax": 392.77
+  },
+  {
+   "month": 201712,
+   "avgWage": 246.25,
+   "numInsured": 4,
+   "tax": 403.28
+  },
+  {
+   "month": 201801,
+   "avgWage": 259.85,
+   "numInsured": 6,
+   "tax": 635.65
+  },
+  {
+   "month": 201802,
+   "avgWage": 104.22,
+   "numInsured": 4,
+   "tax": 167.51
+  },
+  {
+   "month": 201803,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201804,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201805,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201806,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201807,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201808,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201809,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

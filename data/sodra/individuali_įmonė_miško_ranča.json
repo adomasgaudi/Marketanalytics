@@ -1,0 +1,105 @@
+{
+ "jarCode": "307019344",
+ "sodraCode": 4287197,
+ "name": "INDIVIDUALI ĮMONĖ \"MIŠKO RANČA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Telšių r. sav.",
+ "latest": {
+  "month": 202601,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": 494.43,
+   "numInsured": 7,
+   "tax": 808.84
+  },
+  {
+   "month": 202502,
+   "avgWage": 596.07,
+   "numInsured": 4,
+   "tax": 547.52
+  },
+  {
+   "month": 202503,
+   "avgWage": 598.9,
+   "numInsured": 5,
+   "tax": 656.7
+  },
+  {
+   "month": 202504,
+   "avgWage": 882.3,
+   "numInsured": 5,
+   "tax": 1000.6
+  },
+  {
+   "month": 202505,
+   "avgWage": 882.3,
+   "numInsured": 5,
+   "tax": 1000.6
+  },
+  {
+   "month": 202506,
+   "avgWage": 958.25,
+   "numInsured": 6,
+   "tax": 1325.32
+  },
+  {
+   "month": 202507,
+   "avgWage": 395.39,
+   "numInsured": 6,
+   "tax": 541.18
+  },
+  {
+   "month": 202508,
+   "avgWage": 747.97,
+   "numInsured": 5,
+   "tax": 878.42
+  },
+  {
+   "month": 202509,
+   "avgWage": 870.26,
+   "numInsured": 4,
+   "tax": 802.75
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

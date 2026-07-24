@@ -1,0 +1,207 @@
+{
+ "jarCode": "306381899",
+ "sodraCode": 4137035,
+ "name": "MB DAGI CATERING",
+ "ecoActName": "Pagaminto valgio tiekimas renginiams",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1065.39,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202309,
+   "avgWage": 486.43,
+   "numInsured": 5,
+   "tax": 534.84
+  },
+  {
+   "month": 202310,
+   "avgWage": 647.08,
+   "numInsured": 6,
+   "tax": 886.2
+  },
+  {
+   "month": 202311,
+   "avgWage": 563.48,
+   "numInsured": 7,
+   "tax": 901.23
+  },
+  {
+   "month": 202312,
+   "avgWage": 762.97,
+   "numInsured": 5,
+   "tax": 870.1
+  },
+  {
+   "month": 202401,
+   "avgWage": 652.51,
+   "numInsured": 6,
+   "tax": 893.82
+  },
+  {
+   "month": 202402,
+   "avgWage": 627.45,
+   "numInsured": 6,
+   "tax": 868.13
+  },
+  {
+   "month": 202403,
+   "avgWage": 705.31,
+   "numInsured": 6,
+   "tax": 975.51
+  },
+  {
+   "month": 202404,
+   "avgWage": 737.05,
+   "numInsured": 5,
+   "tax": 842.54
+  },
+  {
+   "month": 202405,
+   "avgWage": 899.42,
+   "numInsured": 6,
+   "tax": 1245.63
+  },
+  {
+   "month": 202406,
+   "avgWage": 827.91,
+   "numInsured": 6,
+   "tax": 1154.36
+  },
+  {
+   "month": 202407,
+   "avgWage": 833.11,
+   "numInsured": 6,
+   "tax": 1161.0
+  },
+  {
+   "month": 202408,
+   "avgWage": 973.01,
+   "numInsured": 6,
+   "tax": 1339.53
+  },
+  {
+   "month": 202409,
+   "avgWage": 901.75,
+   "numInsured": 6,
+   "tax": 1251.08
+  },
+  {
+   "month": 202410,
+   "avgWage": 1025.43,
+   "numInsured": 6,
+   "tax": 1421.07
+  },
+  {
+   "month": 202411,
+   "avgWage": 934.76,
+   "numInsured": 6,
+   "tax": 1293.2
+  },
+  {
+   "month": 202412,
+   "avgWage": 1078.94,
+   "numInsured": 6,
+   "tax": 1474.71
+  },
+  {
+   "month": 202501,
+   "avgWage": 905.77,
+   "numInsured": 6,
+   "tax": 1253.71
+  },
+  {
+   "month": 202502,
+   "avgWage": 763.13,
+   "numInsured": 5,
+   "tax": 891.79
+  },
+  {
+   "month": 202503,
+   "avgWage": 799.69,
+   "numInsured": 5,
+   "tax": 909.16
+  },
+  {
+   "month": 202504,
+   "avgWage": 922.4,
+   "numInsured": 6,
+   "tax": 1263.77
+  },
+  {
+   "month": 202505,
+   "avgWage": 1163.86,
+   "numInsured": 6,
+   "tax": 1601.3
+  },
+  {
+   "month": 202506,
+   "avgWage": 934.83,
+   "numInsured": 5,
+   "tax": 1052.88
+  },
+  {
+   "month": 202507,
+   "avgWage": 937.95,
+   "numInsured": 5,
+   "tax": 1056.2
+  },
+  {
+   "month": 202508,
+   "avgWage": 1200.61,
+   "numInsured": 5,
+   "tax": 1335.54
+  },
+  {
+   "month": 202509,
+   "avgWage": 929.87,
+   "numInsured": 5,
+   "tax": 1047.61
+  },
+  {
+   "month": 202511,
+   "avgWage": 908.16,
+   "numInsured": 5,
+   "tax": 1024.51
+  },
+  {
+   "month": 202512,
+   "avgWage": 1137.57,
+   "numInsured": 5,
+   "tax": 1268.5
+  },
+  {
+   "month": 202601,
+   "avgWage": 960.34,
+   "numInsured": 5,
+   "tax": 1077.08
+  },
+  {
+   "month": 202602,
+   "avgWage": 1167.99,
+   "numInsured": 5,
+   "tax": 1300.85
+  },
+  {
+   "month": 202603,
+   "avgWage": 1066.84,
+   "numInsured": 5,
+   "tax": 1134.59
+  },
+  {
+   "month": 202604,
+   "avgWage": 1027.4,
+   "numInsured": 5,
+   "tax": 1092.65
+  },
+  {
+   "month": 202605,
+   "avgWage": 1065.39,
+   "numInsured": 5,
+   "tax": 1133.04
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

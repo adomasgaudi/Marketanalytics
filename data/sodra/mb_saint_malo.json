@@ -1,0 +1,99 @@
+{
+ "jarCode": "306635536",
+ "sodraCode": 4171620,
+ "name": "MB \"SAINT-MALO\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1683.44,
+  "numInsured": 40
+ },
+ "months": [
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 1401.69,
+   "numInsured": 5,
+   "tax": 1666.7
+  },
+  {
+   "month": 202506,
+   "avgWage": 1199.31,
+   "numInsured": 38,
+   "tax": 10829.46
+  },
+  {
+   "month": 202507,
+   "avgWage": 1597.14,
+   "numInsured": 37,
+   "tax": 14007.33
+  },
+  {
+   "month": 202508,
+   "avgWage": 1576.97,
+   "numInsured": 36,
+   "tax": 13511.3
+  },
+  {
+   "month": 202509,
+   "avgWage": 1627.38,
+   "numInsured": 38,
+   "tax": 14691.15
+  },
+  {
+   "month": 202510,
+   "avgWage": 1591.82,
+   "numInsured": 43,
+   "tax": 16306.29
+  },
+  {
+   "month": 202511,
+   "avgWage": 1425.51,
+   "numInsured": 42,
+   "tax": 14271.97
+  },
+  {
+   "month": 202512,
+   "avgWage": 1421.4,
+   "numInsured": 43,
+   "tax": 14593.91
+  },
+  {
+   "month": 202601,
+   "avgWage": 1335.57,
+   "numInsured": 43,
+   "tax": 13661.11
+  },
+  {
+   "month": 202602,
+   "avgWage": 1263.3,
+   "numInsured": 42,
+   "tax": 12568.3
+  },
+  {
+   "month": 202603,
+   "avgWage": 1503.29,
+   "numInsured": 41,
+   "tax": 13929.81
+  },
+  {
+   "month": 202604,
+   "avgWage": 1477.3,
+   "numInsured": 43,
+   "tax": 14319.13
+  },
+  {
+   "month": 202605,
+   "avgWage": 1683.44,
+   "numInsured": 40,
+   "tax": 15165.56
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

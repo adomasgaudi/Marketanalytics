@@ -1,0 +1,87 @@
+{
+ "jarCode": "306745712",
+ "sodraCode": 4233702,
+ "name": "MB \"ELEKTRINĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202512,
+  "avgWage": 377.02,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202407,
+   "avgWage": 1170.22,
+   "numInsured": 13,
+   "tax": 3620.48
+  },
+  {
+   "month": 202408,
+   "avgWage": 1087.33,
+   "numInsured": 18,
+   "tax": 4626.61
+  },
+  {
+   "month": 202409,
+   "avgWage": 1197.31,
+   "numInsured": 18,
+   "tax": 5078.42
+  },
+  {
+   "month": 202410,
+   "avgWage": 797.4,
+   "numInsured": 8,
+   "tax": 1512.88
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 806.58,
+   "numInsured": 13,
+   "tax": 2420.61
+  },
+  {
+   "month": 202506,
+   "avgWage": 966.06,
+   "numInsured": 16,
+   "tax": 3593.73
+  },
+  {
+   "month": 202507,
+   "avgWage": 986.88,
+   "numInsured": 18,
+   "tax": 4093.84
+  },
+  {
+   "month": 202508,
+   "avgWage": 939.68,
+   "numInsured": 27,
+   "tax": 5819.4
+  },
+  {
+   "month": 202509,
+   "avgWage": 876.87,
+   "numInsured": 22,
+   "tax": 4503.23
+  },
+  {
+   "month": 202512,
+   "avgWage": 377.02,
+   "numInsured": 4,
+   "tax": 331.62
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

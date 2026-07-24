@@ -1,0 +1,141 @@
+{
+ "jarCode": "306714930",
+ "sodraCode": 4202972,
+ "name": "BURBEKLIS, UAB",
+ "ecoActName": "Pagaminto valgio tiekimas renginiams",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202409,
+   "avgWage": 445.17,
+   "numInsured": 5,
+   "tax": 523.52
+  },
+  {
+   "month": 202410,
+   "avgWage": 803.86,
+   "numInsured": 6,
+   "tax": 1131.6
+  },
+  {
+   "month": 202411,
+   "avgWage": 716.34,
+   "numInsured": 6,
+   "tax": 985.3
+  },
+  {
+   "month": 202412,
+   "avgWage": 797.16,
+   "numInsured": 6,
+   "tax": 1085.06
+  },
+  {
+   "month": 202501,
+   "avgWage": 881.02,
+   "numInsured": 7,
+   "tax": 1390.93
+  },
+  {
+   "month": 202502,
+   "avgWage": 754.73,
+   "numInsured": 5,
+   "tax": 808.9
+  },
+  {
+   "month": 202503,
+   "avgWage": 988.39,
+   "numInsured": 5,
+   "tax": 1074.47
+  },
+  {
+   "month": 202504,
+   "avgWage": 960.4,
+   "numInsured": 6,
+   "tax": 1297.47
+  },
+  {
+   "month": 202505,
+   "avgWage": 717.96,
+   "numInsured": 7,
+   "tax": 1132.89
+  },
+  {
+   "month": 202506,
+   "avgWage": 799.15,
+   "numInsured": 4,
+   "tax": 713.94
+  },
+  {
+   "month": 202507,
+   "avgWage": 831.0,
+   "numInsured": 4,
+   "tax": 777.77
+  },
+  {
+   "month": 202508,
+   "avgWage": 1264.92,
+   "numInsured": 4,
+   "tax": 1197.68
+  },
+  {
+   "month": 202509,
+   "avgWage": 1227.42,
+   "numInsured": 4,
+   "tax": 1159.57
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": 1037.36,
+   "numInsured": 4,
+   "tax": 976.59
+  },
+  {
+   "month": 202512,
+   "avgWage": 1121.53,
+   "numInsured": 4,
+   "tax": 1058.67
+  },
+  {
+   "month": 202601,
+   "avgWage": 977.11,
+   "numInsured": 4,
+   "tax": 901.21
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": 1200.3,
+   "numInsured": 4,
+   "tax": 1033.48
+  },
+  {
+   "month": 202604,
+   "avgWage": 1360.32,
+   "numInsured": 4,
+   "tax": 1174.92
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

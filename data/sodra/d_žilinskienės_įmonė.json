@@ -1,0 +1,129 @@
+{
+ "jarCode": "148253391",
+ "sodraCode": 216248,
+ "name": "D. ŽILINSKIENĖS ĮMONĖ",
+ "ecoActName": "Kitų maitinimo paslaugų teikimas",
+ "municipality": "Panevėžio m. sav.",
+ "latest": {
+  "month": 201807,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 248.3,
+   "numInsured": 6,
+   "tax": 604.47
+  },
+  {
+   "month": 201702,
+   "avgWage": 244.51,
+   "numInsured": 6,
+   "tax": 597.06
+  },
+  {
+   "month": 201703,
+   "avgWage": 253.33,
+   "numInsured": 6,
+   "tax": 618.32
+  },
+  {
+   "month": 201704,
+   "avgWage": 187.34,
+   "numInsured": 6,
+   "tax": 452.69
+  },
+  {
+   "month": 201705,
+   "avgWage": 307.31,
+   "numInsured": 6,
+   "tax": 750.87
+  },
+  {
+   "month": 201706,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201707,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201708,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201709,
+   "avgWage": 286.39,
+   "numInsured": 4,
+   "tax": 468.28
+  },
+  {
+   "month": 201710,
+   "avgWage": 268.58,
+   "numInsured": 4,
+   "tax": 438.2
+  },
+  {
+   "month": 201711,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201712,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201801,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201802,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201803,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201804,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201805,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201806,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201807,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

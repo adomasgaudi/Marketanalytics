@@ -1,0 +1,105 @@
+{
+ "jarCode": "306438706",
+ "sodraCode": 4147324,
+ "name": "UAB \"SIELOS NAMAI LAPĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": 1639.98,
+   "numInsured": 7,
+   "tax": 2616.91
+  },
+  {
+   "month": 202505,
+   "avgWage": 2049.51,
+   "numInsured": 7,
+   "tax": 3275.25
+  },
+  {
+   "month": 202506,
+   "avgWage": 1837.62,
+   "numInsured": 7,
+   "tax": 2917.77
+  },
+  {
+   "month": 202507,
+   "avgWage": 1585.39,
+   "numInsured": 9,
+   "tax": 3219.27
+  },
+  {
+   "month": 202508,
+   "avgWage": 1573.06,
+   "numInsured": 9,
+   "tax": 3217.01
+  },
+  {
+   "month": 202509,
+   "avgWage": 1256.35,
+   "numInsured": 11,
+   "tax": 3076.49
+  },
+  {
+   "month": 202510,
+   "avgWage": 908.69,
+   "numInsured": 10,
+   "tax": 1980.66
+  },
+  {
+   "month": 202511,
+   "avgWage": 1201.48,
+   "numInsured": 7,
+   "tax": 1867.51
+  },
+  {
+   "month": 202512,
+   "avgWage": 1200.88,
+   "numInsured": 7,
+   "tax": 1856.53
+  },
+  {
+   "month": 202601,
+   "avgWage": 784.41,
+   "numInsured": 6,
+   "tax": 1016.09
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

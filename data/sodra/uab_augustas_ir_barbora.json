@@ -1,0 +1,213 @@
+{
+ "jarCode": "306310884",
+ "sodraCode": 4091655,
+ "name": "UAB AUGUSTAS IR BARBORA",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 749.34,
+  "numInsured": 11
+ },
+ "months": [
+  {
+   "month": 202309,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202310,
+   "avgWage": 809.77,
+   "numInsured": 10,
+   "tax": 1886.89
+  },
+  {
+   "month": 202311,
+   "avgWage": 828.65,
+   "numInsured": 12,
+   "tax": 2345.99
+  },
+  {
+   "month": 202312,
+   "avgWage": 1462.28,
+   "numInsured": 12,
+   "tax": 4127.55
+  },
+  {
+   "month": 202401,
+   "avgWage": 1238.67,
+   "numInsured": 10,
+   "tax": 2958.34
+  },
+  {
+   "month": 202402,
+   "avgWage": 1173.21,
+   "numInsured": 10,
+   "tax": 2794.84
+  },
+  {
+   "month": 202403,
+   "avgWage": 1303.69,
+   "numInsured": 10,
+   "tax": 3122.77
+  },
+  {
+   "month": 202404,
+   "avgWage": 1157.09,
+   "numInsured": 12,
+   "tax": 3320.38
+  },
+  {
+   "month": 202405,
+   "avgWage": 1239.39,
+   "numInsured": 15,
+   "tax": 4434.56
+  },
+  {
+   "month": 202406,
+   "avgWage": 1042.88,
+   "numInsured": 14,
+   "tax": 3449.89
+  },
+  {
+   "month": 202407,
+   "avgWage": 1253.66,
+   "numInsured": 12,
+   "tax": 3542.61
+  },
+  {
+   "month": 202408,
+   "avgWage": 1617.4,
+   "numInsured": 11,
+   "tax": 4185.92
+  },
+  {
+   "month": 202409,
+   "avgWage": 1754.11,
+   "numInsured": 9,
+   "tax": 3793.48
+  },
+  {
+   "month": 202410,
+   "avgWage": 1964.53,
+   "numInsured": 7,
+   "tax": 3337.52
+  },
+  {
+   "month": 202411,
+   "avgWage": 1911.95,
+   "numInsured": 6,
+   "tax": 2784.19
+  },
+  {
+   "month": 202412,
+   "avgWage": 1907.07,
+   "numInsured": 7,
+   "tax": 3208.06
+  },
+  {
+   "month": 202501,
+   "avgWage": 758.99,
+   "numInsured": 10,
+   "tax": 1793.13
+  },
+  {
+   "month": 202502,
+   "avgWage": 1006.12,
+   "numInsured": 11,
+   "tax": 2619.22
+  },
+  {
+   "month": 202503,
+   "avgWage": 1165.7,
+   "numInsured": 12,
+   "tax": 3228.09
+  },
+  {
+   "month": 202504,
+   "avgWage": 1065.06,
+   "numInsured": 15,
+   "tax": 3709.13
+  },
+  {
+   "month": 202505,
+   "avgWage": 957.47,
+   "numInsured": 13,
+   "tax": 2770.95
+  },
+  {
+   "month": 202506,
+   "avgWage": 565.14,
+   "numInsured": 14,
+   "tax": 1771.6
+  },
+  {
+   "month": 202507,
+   "avgWage": 712.32,
+   "numInsured": 11,
+   "tax": 1775.33
+  },
+  {
+   "month": 202508,
+   "avgWage": 1049.17,
+   "numInsured": 9,
+   "tax": 2159.11
+  },
+  {
+   "month": 202509,
+   "avgWage": 714.67,
+   "numInsured": 9,
+   "tax": 1468.6
+  },
+  {
+   "month": 202510,
+   "avgWage": 546.98,
+   "numInsured": 9,
+   "tax": 1136.84
+  },
+  {
+   "month": 202511,
+   "avgWage": 672.04,
+   "numInsured": 8,
+   "tax": 1223.77
+  },
+  {
+   "month": 202512,
+   "avgWage": 674.07,
+   "numInsured": 7,
+   "tax": 1120.98
+  },
+  {
+   "month": 202601,
+   "avgWage": 611.81,
+   "numInsured": 8,
+   "tax": 1165.28
+  },
+  {
+   "month": 202602,
+   "avgWage": 541.2,
+   "numInsured": 11,
+   "tax": 1388.5
+  },
+  {
+   "month": 202603,
+   "avgWage": 916.07,
+   "numInsured": 10,
+   "tax": 2070.31
+  },
+  {
+   "month": 202604,
+   "avgWage": 712.13,
+   "numInsured": 11,
+   "tax": 1780.19
+  },
+  {
+   "month": 202605,
+   "avgWage": 749.34,
+   "numInsured": 11,
+   "tax": 1851.46
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

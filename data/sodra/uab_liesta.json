@@ -1,0 +1,87 @@
+{
+ "jarCode": "306841454",
+ "sodraCode": 4243608,
+ "name": "UAB \"LIESTA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Šiaulių m. sav.",
+ "latest": {
+  "month": 202506,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202407,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": 452.76,
+   "numInsured": 7,
+   "tax": 746.71
+  },
+  {
+   "month": 202411,
+   "avgWage": 985.47,
+   "numInsured": 7,
+   "tax": 1614.46
+  },
+  {
+   "month": 202412,
+   "avgWage": 729.29,
+   "numInsured": 8,
+   "tax": 1389.81
+  },
+  {
+   "month": 202501,
+   "avgWage": 883.03,
+   "numInsured": 7,
+   "tax": 1470.83
+  },
+  {
+   "month": 202502,
+   "avgWage": 869.72,
+   "numInsured": 5,
+   "tax": 1028.16
+  },
+  {
+   "month": 202503,
+   "avgWage": 995.34,
+   "numInsured": 4,
+   "tax": 934.84
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

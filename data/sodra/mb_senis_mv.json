@@ -1,0 +1,33 @@
+{
+ "jarCode": "306766770",
+ "sodraCode": 4235647,
+ "name": "MB SENIS MV",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Neringos sav.",
+ "latest": {
+  "month": 202508,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202506,
+   "avgWage": 762.65,
+   "numInsured": 5,
+   "tax": 881.79
+  },
+  {
+   "month": 202507,
+   "avgWage": 1058.37,
+   "numInsured": 9,
+   "tax": 2160.83
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

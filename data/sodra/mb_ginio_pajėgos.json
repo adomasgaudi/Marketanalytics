@@ -1,0 +1,87 @@
+{
+ "jarCode": "307006336",
+ "sodraCode": 4281736,
+ "name": "MB GINIO PAJĖGOS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202601,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202501,
+   "avgWage": 530.98,
+   "numInsured": 5,
+   "tax": 572.71
+  },
+  {
+   "month": 202502,
+   "avgWage": 747.4,
+   "numInsured": 7,
+   "tax": 1156.83
+  },
+  {
+   "month": 202503,
+   "avgWage": 746.97,
+   "numInsured": 7,
+   "tax": 1155.99
+  },
+  {
+   "month": 202504,
+   "avgWage": 646.1,
+   "numInsured": 4,
+   "tax": 549.69
+  },
+  {
+   "month": 202505,
+   "avgWage": 728.86,
+   "numInsured": 5,
+   "tax": 789.7
+  },
+  {
+   "month": 202506,
+   "avgWage": 748.29,
+   "numInsured": 4,
+   "tax": 659.76
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": 1260.23,
+   "numInsured": 6,
+   "tax": 1775.38
+  },
+  {
+   "month": 202512,
+   "avgWage": 800.16,
+   "numInsured": 7,
+   "tax": 1309.62
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

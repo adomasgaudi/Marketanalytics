@@ -1,0 +1,141 @@
+{
+ "jarCode": "306961119",
+ "sodraCode": 4254815,
+ "name": "MAŽOJI BENDRIJA PONAS BRIEDIS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Švenčionių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1674.07,
+  "numInsured": 9
+ },
+ "months": [
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 1042.77,
+   "numInsured": 8,
+   "tax": 1932.61
+  },
+  {
+   "month": 202507,
+   "avgWage": 1537.84,
+   "numInsured": 6,
+   "tax": 2202.06
+  },
+  {
+   "month": 202508,
+   "avgWage": 1904.3,
+   "numInsured": 5,
+   "tax": 2310.87
+  },
+  {
+   "month": 202509,
+   "avgWage": 1984.89,
+   "numInsured": 6,
+   "tax": 2861.63
+  },
+  {
+   "month": 202510,
+   "avgWage": 1656.31,
+   "numInsured": 6,
+   "tax": 2378.69
+  },
+  {
+   "month": 202511,
+   "avgWage": 2328.13,
+   "numInsured": 6,
+   "tax": 3346.41
+  },
+  {
+   "month": 202512,
+   "avgWage": 1862.52,
+   "numInsured": 6,
+   "tax": 2673.28
+  },
+  {
+   "month": 202601,
+   "avgWage": 1677.83,
+   "numInsured": 7,
+   "tax": 2815.37
+  },
+  {
+   "month": 202602,
+   "avgWage": 1907.62,
+   "numInsured": 6,
+   "tax": 2695.04
+  },
+  {
+   "month": 202603,
+   "avgWage": 1575.58,
+   "numInsured": 7,
+   "tax": 2475.28
+  },
+  {
+   "month": 202604,
+   "avgWage": 1613.45,
+   "numInsured": 8,
+   "tax": 2879.88
+  },
+  {
+   "month": 202605,
+   "avgWage": 1674.07,
+   "numInsured": 9,
+   "tax": 3302.01
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

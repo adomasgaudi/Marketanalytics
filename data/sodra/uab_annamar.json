@@ -1,0 +1,63 @@
+{
+ "jarCode": "306968291",
+ "sodraCode": 4260518,
+ "name": "UAB ANNAMAR",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202506,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": 768.99,
+   "numInsured": 33,
+   "tax": 5756.46
+  },
+  {
+   "month": 202502,
+   "avgWage": 953.65,
+   "numInsured": 35,
+   "tax": 7611.7
+  },
+  {
+   "month": 202503,
+   "avgWage": 958.99,
+   "numInsured": 35,
+   "tax": 7685.92
+  },
+  {
+   "month": 202504,
+   "avgWage": 1043.66,
+   "numInsured": 32,
+   "tax": 7708.02
+  },
+  {
+   "month": 202505,
+   "avgWage": 1769.16,
+   "numInsured": 4,
+   "tax": 1580.53
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,57 @@
+{
+ "jarCode": "306701801",
+ "sodraCode": 4199885,
+ "name": "UAB PAJŪRIO SKONIAI",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202409,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202403,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202404,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": 411.29,
+   "numInsured": 9,
+   "tax": 797.19
+  },
+  {
+   "month": 202407,
+   "avgWage": 951.42,
+   "numInsured": 8,
+   "tax": 1709.08
+  },
+  {
+   "month": 202408,
+   "avgWage": 400.49,
+   "numInsured": 9,
+   "tax": 772.63
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,39 @@
+{
+ "jarCode": "306307411",
+ "sodraCode": 4090106,
+ "name": "MB FORTŪNA FOOD",
+ "ecoActName": "Maitinimo teikimo ir gėrimų tiekimo veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202308,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202306,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202307,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202308,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202309,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

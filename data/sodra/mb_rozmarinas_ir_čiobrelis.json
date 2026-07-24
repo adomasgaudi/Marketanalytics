@@ -1,0 +1,63 @@
+{
+ "jarCode": "306837872",
+ "sodraCode": 4243343,
+ "name": "MB ROZMARINAS IR ČIOBRELIS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Marijampolės sav.",
+ "latest": {
+  "month": 202512,
+  "avgWage": 0.0,
+  "numInsured": 3
+ },
+ "months": [
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 887.79,
+   "numInsured": 4,
+   "tax": 786.48
+  },
+  {
+   "month": 202507,
+   "avgWage": 819.46,
+   "numInsured": 4,
+   "tax": 728.33
+  },
+  {
+   "month": 202508,
+   "avgWage": 917.41,
+   "numInsured": 4,
+   "tax": 817.02
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,117 @@
+{
+ "jarCode": "307039343",
+ "sodraCode": 4298081,
+ "name": "UAB RUBUMBA",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 3
+ },
+ "months": [
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": 120.68,
+   "numInsured": 5,
+   "tax": 129.3
+  },
+  {
+   "month": 202505,
+   "avgWage": 104.9,
+   "numInsured": 4,
+   "tax": 90.78
+  },
+  {
+   "month": 202506,
+   "avgWage": 164.15,
+   "numInsured": 4,
+   "tax": 142.74
+  },
+  {
+   "month": 202507,
+   "avgWage": 154.58,
+   "numInsured": 5,
+   "tax": 182.6
+  },
+  {
+   "month": 202508,
+   "avgWage": 327.15,
+   "numInsured": 4,
+   "tax": 300.24
+  },
+  {
+   "month": 202509,
+   "avgWage": 236.2,
+   "numInsured": 5,
+   "tax": 270.79
+  },
+  {
+   "month": 202510,
+   "avgWage": 341.55,
+   "numInsured": 4,
+   "tax": 310.94
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": 421.52,
+   "numInsured": 4,
+   "tax": 365.54
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,75 @@
+{
+ "jarCode": "306674610",
+ "sodraCode": 4189807,
+ "name": "MB NESTON",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Palangos m. sav.",
+ "latest": {
+  "month": 202509,
+  "avgWage": 228.93,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202405,
+   "avgWage": 357.0,
+   "numInsured": 4,
+   "tax": 320.82
+  },
+  {
+   "month": 202406,
+   "avgWage": 550.84,
+   "numInsured": 8,
+   "tax": 970.93
+  },
+  {
+   "month": 202407,
+   "avgWage": 722.21,
+   "numInsured": 9,
+   "tax": 1450.39
+  },
+  {
+   "month": 202408,
+   "avgWage": 990.25,
+   "numInsured": 9,
+   "tax": 2010.64
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 176.81,
+   "numInsured": 5,
+   "tax": 194.41
+  },
+  {
+   "month": 202507,
+   "avgWage": 772.44,
+   "numInsured": 9,
+   "tax": 1528.73
+  },
+  {
+   "month": 202508,
+   "avgWage": 903.92,
+   "numInsured": 8,
+   "tax": 1590.19
+  },
+  {
+   "month": 202509,
+   "avgWage": 228.93,
+   "numInsured": 6,
+   "tax": 302.06
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

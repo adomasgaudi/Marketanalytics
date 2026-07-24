@@ -1,0 +1,87 @@
+{
+ "jarCode": "307117023",
+ "sodraCode": 4329782,
+ "name": "UAB BŪNA IR TAIP",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202604,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 746.41,
+   "numInsured": 13,
+   "tax": 2250.55
+  },
+  {
+   "month": 202507,
+   "avgWage": 797.19,
+   "numInsured": 13,
+   "tax": 2431.89
+  },
+  {
+   "month": 202508,
+   "avgWage": 705.65,
+   "numInsured": 15,
+   "tax": 2482.83
+  },
+  {
+   "month": 202509,
+   "avgWage": 816.0,
+   "numInsured": 13,
+   "tax": 2491.18
+  },
+  {
+   "month": 202510,
+   "avgWage": 766.41,
+   "numInsured": 13,
+   "tax": 2324.72
+  },
+  {
+   "month": 202511,
+   "avgWage": 483.67,
+   "numInsured": 9,
+   "tax": 1020.19
+  },
+  {
+   "month": 202512,
+   "avgWage": 389.93,
+   "numInsured": 8,
+   "tax": 739.43
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": 559.66,
+   "numInsured": 7,
+   "tax": 860.51
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,123 @@
+{
+ "jarCode": "307028051",
+ "sodraCode": 4292618,
+ "name": "UAB \"GRILINĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Klaipėdos r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1009.8,
+  "numInsured": 23
+ },
+ "months": [
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": 297.73,
+   "numInsured": 12,
+   "tax": 845.33
+  },
+  {
+   "month": 202503,
+   "avgWage": 1108.92,
+   "numInsured": 16,
+   "tax": 4095.17
+  },
+  {
+   "month": 202504,
+   "avgWage": 871.75,
+   "numInsured": 22,
+   "tax": 4356.13
+  },
+  {
+   "month": 202505,
+   "avgWage": 1076.12,
+   "numInsured": 22,
+   "tax": 5274.23
+  },
+  {
+   "month": 202506,
+   "avgWage": 950.6,
+   "numInsured": 26,
+   "tax": 5530.94
+  },
+  {
+   "month": 202507,
+   "avgWage": 1081.38,
+   "numInsured": 24,
+   "tax": 6068.43
+  },
+  {
+   "month": 202508,
+   "avgWage": 1061.15,
+   "numInsured": 21,
+   "tax": 5210.93
+  },
+  {
+   "month": 202509,
+   "avgWage": 1053.25,
+   "numInsured": 22,
+   "tax": 5396.05
+  },
+  {
+   "month": 202510,
+   "avgWage": 1048.49,
+   "numInsured": 23,
+   "tax": 5595.91
+  },
+  {
+   "month": 202511,
+   "avgWage": 1099.53,
+   "numInsured": 22,
+   "tax": 5601.12
+  },
+  {
+   "month": 202512,
+   "avgWage": 1130.91,
+   "numInsured": 24,
+   "tax": 6317.14
+  },
+  {
+   "month": 202601,
+   "avgWage": 1196.55,
+   "numInsured": 24,
+   "tax": 6662.52
+  },
+  {
+   "month": 202602,
+   "avgWage": 1192.39,
+   "numInsured": 22,
+   "tax": 6132.93
+  },
+  {
+   "month": 202603,
+   "avgWage": 1248.17,
+   "numInsured": 23,
+   "tax": 6495.24
+  },
+  {
+   "month": 202604,
+   "avgWage": 1119.57,
+   "numInsured": 23,
+   "tax": 5844.85
+  },
+  {
+   "month": 202605,
+   "avgWage": 1009.8,
+   "numInsured": 23,
+   "tax": 5273.97
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

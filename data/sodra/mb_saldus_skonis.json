@@ -1,0 +1,111 @@
+{
+ "jarCode": "307014977",
+ "sodraCode": 4285091,
+ "name": "MB \"SALDUS SKONIS\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 932.43,
+  "numInsured": 8
+ },
+ "months": [
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 538.05,
+   "numInsured": 5,
+   "tax": 587.28
+  },
+  {
+   "month": 202507,
+   "avgWage": 780.11,
+   "numInsured": 7,
+   "tax": 1220.94
+  },
+  {
+   "month": 202508,
+   "avgWage": 749.94,
+   "numInsured": 7,
+   "tax": 1179.41
+  },
+  {
+   "month": 202509,
+   "avgWage": 984.54,
+   "numInsured": 6,
+   "tax": 1325.54
+  },
+  {
+   "month": 202510,
+   "avgWage": 1104.89,
+   "numInsured": 5,
+   "tax": 1247.22
+  },
+  {
+   "month": 202511,
+   "avgWage": 1093.37,
+   "numInsured": 5,
+   "tax": 1225.6
+  },
+  {
+   "month": 202512,
+   "avgWage": 832.96,
+   "numInsured": 6,
+   "tax": 1122.87
+  },
+  {
+   "month": 202601,
+   "avgWage": 947.94,
+   "numInsured": 6,
+   "tax": 1266.2
+  },
+  {
+   "month": 202602,
+   "avgWage": 1021.99,
+   "numInsured": 6,
+   "tax": 1390.89
+  },
+  {
+   "month": 202603,
+   "avgWage": 957.99,
+   "numInsured": 7,
+   "tax": 1461.65
+  },
+  {
+   "month": 202604,
+   "avgWage": 950.87,
+   "numInsured": 7,
+   "tax": 1451.07
+  },
+  {
+   "month": 202605,
+   "avgWage": 932.43,
+   "numInsured": 8,
+   "tax": 1622.46
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

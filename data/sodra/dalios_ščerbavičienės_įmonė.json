@@ -1,0 +1,75 @@
+{
+ "jarCode": "135608593",
+ "sodraCode": 432307,
+ "name": "DALIOS ŠČERBAVIČIENĖS ĮMONĖ",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 201710,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 202.24,
+   "numInsured": 4,
+   "tax": 336.42
+  },
+  {
+   "month": 201702,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201703,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201704,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201705,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201706,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201707,
+   "avgWage": 201.88,
+   "numInsured": 4,
+   "tax": 335.85
+  },
+  {
+   "month": 201708,
+   "avgWage": 203.06,
+   "numInsured": 4,
+   "tax": 337.87
+  },
+  {
+   "month": 201709,
+   "avgWage": 483.55,
+   "numInsured": 4,
+   "tax": 808.29
+  },
+  {
+   "month": 201710,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

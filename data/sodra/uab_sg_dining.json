@@ -1,0 +1,93 @@
+{
+ "jarCode": "307004755",
+ "sodraCode": 4277462,
+ "name": "UAB \"SG DINING\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1196.86,
+  "numInsured": 17
+ },
+ "months": [
+  {
+   "month": 202505,
+   "avgWage": 242.92,
+   "numInsured": 5,
+   "tax": 266.49
+  },
+  {
+   "month": 202506,
+   "avgWage": 569.14,
+   "numInsured": 7,
+   "tax": 896.87
+  },
+  {
+   "month": 202507,
+   "avgWage": 870.89,
+   "numInsured": 13,
+   "tax": 2609.0
+  },
+  {
+   "month": 202508,
+   "avgWage": 988.4,
+   "numInsured": 12,
+   "tax": 2731.09
+  },
+  {
+   "month": 202509,
+   "avgWage": 832.29,
+   "numInsured": 16,
+   "tax": 3101.89
+  },
+  {
+   "month": 202510,
+   "avgWage": 1208.31,
+   "numInsured": 16,
+   "tax": 4498.64
+  },
+  {
+   "month": 202511,
+   "avgWage": 1178.1,
+   "numInsured": 16,
+   "tax": 4371.43
+  },
+  {
+   "month": 202512,
+   "avgWage": 1048.71,
+   "numInsured": 17,
+   "tax": 4107.47
+  },
+  {
+   "month": 202601,
+   "avgWage": 1250.87,
+   "numInsured": 15,
+   "tax": 4334.13
+  },
+  {
+   "month": 202602,
+   "avgWage": 1224.74,
+   "numInsured": 15,
+   "tax": 4212.13
+  },
+  {
+   "month": 202603,
+   "avgWage": 1214.74,
+   "numInsured": 19,
+   "tax": 5217.26
+  },
+  {
+   "month": 202604,
+   "avgWage": 1262.74,
+   "numInsured": 15,
+   "tax": 4268.59
+  },
+  {
+   "month": 202605,
+   "avgWage": 1196.86,
+   "numInsured": 17,
+   "tax": 4573.27
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

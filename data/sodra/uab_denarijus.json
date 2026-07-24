@@ -1,0 +1,111 @@
+{
+ "jarCode": "307074554",
+ "sodraCode": 4309724,
+ "name": "UAB \"DENARIJUS\"",
+ "ecoActName": "Pagaminto valgio tiekimas renginiams",
+ "municipality": "Anykščių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1197.42,
+  "numInsured": 9
+ },
+ "months": [
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": 241.57,
+   "numInsured": 5,
+   "tax": 282.77
+  },
+  {
+   "month": 202505,
+   "avgWage": 848.1,
+   "numInsured": 9,
+   "tax": 1806.7
+  },
+  {
+   "month": 202506,
+   "avgWage": 1110.89,
+   "numInsured": 8,
+   "tax": 2066.79
+  },
+  {
+   "month": 202507,
+   "avgWage": 992.01,
+   "numInsured": 9,
+   "tax": 2076.72
+  },
+  {
+   "month": 202508,
+   "avgWage": 1180.49,
+   "numInsured": 9,
+   "tax": 2488.42
+  },
+  {
+   "month": 202509,
+   "avgWage": 1180.49,
+   "numInsured": 9,
+   "tax": 2488.42
+  },
+  {
+   "month": 202510,
+   "avgWage": 1140.29,
+   "numInsured": 9,
+   "tax": 2400.62
+  },
+  {
+   "month": 202511,
+   "avgWage": 1146.6,
+   "numInsured": 9,
+   "tax": 2414.39
+  },
+  {
+   "month": 202512,
+   "avgWage": 1168.84,
+   "numInsured": 9,
+   "tax": 2462.98
+  },
+  {
+   "month": 202601,
+   "avgWage": 1175.34,
+   "numInsured": 9,
+   "tax": 2478.54
+  },
+  {
+   "month": 202602,
+   "avgWage": 1178.92,
+   "numInsured": 9,
+   "tax": 2486.34
+  },
+  {
+   "month": 202603,
+   "avgWage": 1197.08,
+   "numInsured": 9,
+   "tax": 2366.34
+  },
+  {
+   "month": 202604,
+   "avgWage": 1122.65,
+   "numInsured": 9,
+   "tax": 2223.85
+  },
+  {
+   "month": 202605,
+   "avgWage": 1197.42,
+   "numInsured": 9,
+   "tax": 2367.0
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

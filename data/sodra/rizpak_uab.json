@@ -1,0 +1,123 @@
+{
+ "jarCode": "306556708",
+ "sodraCode": 4157037,
+ "name": "RIZPAK UAB",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Prienų r. sav.",
+ "latest": {
+  "month": 202506,
+  "avgWage": 783.72,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202401,
+   "avgWage": 287.0,
+   "numInsured": 6,
+   "tax": 366.28
+  },
+  {
+   "month": 202402,
+   "avgWage": 462.19,
+   "numInsured": 6,
+   "tax": 589.86
+  },
+  {
+   "month": 202403,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202404,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202407,
+   "avgWage": 326.11,
+   "numInsured": 4,
+   "tax": 305.18
+  },
+  {
+   "month": 202408,
+   "avgWage": 442.68,
+   "numInsured": 4,
+   "tax": 404.36
+  },
+  {
+   "month": 202409,
+   "avgWage": 193.1,
+   "numInsured": 7,
+   "tax": 307.5
+  },
+  {
+   "month": 202410,
+   "avgWage": 319.51,
+   "numInsured": 6,
+   "tax": 421.63
+  },
+  {
+   "month": 202411,
+   "avgWage": 425.47,
+   "numInsured": 5,
+   "tax": 487.96
+  },
+  {
+   "month": 202412,
+   "avgWage": 366.55,
+   "numInsured": 5,
+   "tax": 423.5
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 928.25,
+   "numInsured": 4,
+   "tax": 789.76
+  },
+  {
+   "month": 202506,
+   "avgWage": 783.72,
+   "numInsured": 5,
+   "tax": 837.24
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

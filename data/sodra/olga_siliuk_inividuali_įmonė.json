@@ -1,0 +1,189 @@
+{
+ "jarCode": "306343286",
+ "sodraCode": 4119893,
+ "name": "OLGA SILIUK INIVIDUALI ĮMONĖ",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Šalčininkų r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1387.65,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202401,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202402,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202403,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202404,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202407,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": 980.51,
+   "numInsured": 6,
+   "tax": 1398.1
+  },
+  {
+   "month": 202509,
+   "avgWage": 1008.23,
+   "numInsured": 5,
+   "tax": 1192.06
+  },
+  {
+   "month": 202510,
+   "avgWage": 880.11,
+   "numInsured": 5,
+   "tax": 1036.98
+  },
+  {
+   "month": 202511,
+   "avgWage": 856.62,
+   "numInsured": 4,
+   "tax": 831.6
+  },
+  {
+   "month": 202512,
+   "avgWage": 897.13,
+   "numInsured": 4,
+   "tax": 842.9
+  },
+  {
+   "month": 202601,
+   "avgWage": 1116.95,
+   "numInsured": 4,
+   "tax": 1049.74
+  },
+  {
+   "month": 202602,
+   "avgWage": 1092.05,
+   "numInsured": 4,
+   "tax": 1025.56
+  },
+  {
+   "month": 202603,
+   "avgWage": 1183.07,
+   "numInsured": 4,
+   "tax": 1043.93
+  },
+  {
+   "month": 202604,
+   "avgWage": 1137.84,
+   "numInsured": 5,
+   "tax": 1245.61
+  },
+  {
+   "month": 202605,
+   "avgWage": 1387.65,
+   "numInsured": 5,
+   "tax": 1510.65
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

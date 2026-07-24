@@ -1,0 +1,63 @@
+{
+ "jarCode": "306338823",
+ "sodraCode": 4118096,
+ "name": "MB \"ARABIA ITALIA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202409,
+  "avgWage": 704.62,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202401,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202402,
+   "avgWage": 523.19,
+   "numInsured": 4,
+   "tax": 486.3
+  },
+  {
+   "month": 202404,
+   "avgWage": 619.75,
+   "numInsured": 4,
+   "tax": 569.6
+  },
+  {
+   "month": 202405,
+   "avgWage": 626.94,
+   "numInsured": 6,
+   "tax": 847.88
+  },
+  {
+   "month": 202406,
+   "avgWage": 710.39,
+   "numInsured": 5,
+   "tax": 797.3
+  },
+  {
+   "month": 202407,
+   "avgWage": 635.19,
+   "numInsured": 4,
+   "tax": 570.62
+  },
+  {
+   "month": 202408,
+   "avgWage": 718.47,
+   "numInsured": 4,
+   "tax": 611.28
+  },
+  {
+   "month": 202409,
+   "avgWage": 704.62,
+   "numInsured": 4,
+   "tax": 599.49
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

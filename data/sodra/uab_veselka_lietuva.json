@@ -1,0 +1,129 @@
+{
+ "jarCode": "306933707",
+ "sodraCode": 4249224,
+ "name": "UAB \"VESELKA LIETUVA\"",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202602,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 568.82,
+   "numInsured": 8,
+   "tax": 1061.71
+  },
+  {
+   "month": 202507,
+   "avgWage": 615.8,
+   "numInsured": 12,
+   "tax": 1736.04
+  },
+  {
+   "month": 202508,
+   "avgWage": 2082.36,
+   "numInsured": 6,
+   "tax": 2888.6
+  },
+  {
+   "month": 202509,
+   "avgWage": 1436.57,
+   "numInsured": 6,
+   "tax": 1959.96
+  },
+  {
+   "month": 202510,
+   "avgWage": 1294.41,
+   "numInsured": 4,
+   "tax": 1118.03
+  },
+  {
+   "month": 202511,
+   "avgWage": 964.18,
+   "numInsured": 4,
+   "tax": 822.84
+  },
+  {
+   "month": 202512,
+   "avgWage": 1378.74,
+   "numInsured": 4,
+   "tax": 1175.55
+  },
+  {
+   "month": 202601,
+   "avgWage": 2616.19,
+   "numInsured": 4,
+   "tax": 2228.37
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

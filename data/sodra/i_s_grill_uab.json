@@ -1,0 +1,45 @@
+{
+ "jarCode": "306726886",
+ "sodraCode": 4208515,
+ "name": "I&S GRILL, UAB",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202503,
+  "avgWage": 754.85,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": 524.67,
+   "numInsured": 6,
+   "tax": 681.82
+  },
+  {
+   "month": 202412,
+   "avgWage": 731.58,
+   "numInsured": 8,
+   "tax": 1274.54
+  },
+  {
+   "month": 202501,
+   "avgWage": 679.36,
+   "numInsured": 9,
+   "tax": 1358.48
+  },
+  {
+   "month": 202502,
+   "avgWage": 584.13,
+   "numInsured": 7,
+   "tax": 897.47
+  },
+  {
+   "month": 202503,
+   "avgWage": 754.85,
+   "numInsured": 4,
+   "tax": 659.56
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

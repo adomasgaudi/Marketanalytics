@@ -1,0 +1,693 @@
+{
+ "jarCode": "135139384",
+ "sodraCode": 450381,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ \"VERUS GUSTUS\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1480.6,
+  "numInsured": 125
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 463.62,
+   "numInsured": 135,
+   "tax": 25748.34
+  },
+  {
+   "month": 201702,
+   "avgWage": 444.45,
+   "numInsured": 133,
+   "tax": 24283.21
+  },
+  {
+   "month": 201703,
+   "avgWage": 479.78,
+   "numInsured": 136,
+   "tax": 26802.45
+  },
+  {
+   "month": 201704,
+   "avgWage": 475.59,
+   "numInsured": 139,
+   "tax": 27173.62
+  },
+  {
+   "month": 201705,
+   "avgWage": 476.75,
+   "numInsured": 150,
+   "tax": 29401.42
+  },
+  {
+   "month": 201706,
+   "avgWage": 450.05,
+   "numInsured": 163,
+   "tax": 30127.22
+  },
+  {
+   "month": 201707,
+   "avgWage": 518.37,
+   "numInsured": 153,
+   "tax": 32553.94
+  },
+  {
+   "month": 201708,
+   "avgWage": 526.22,
+   "numInsured": 147,
+   "tax": 31811.47
+  },
+  {
+   "month": 201709,
+   "avgWage": 489.86,
+   "numInsured": 143,
+   "tax": 28790.8
+  },
+  {
+   "month": 201710,
+   "avgWage": 486.4,
+   "numInsured": 142,
+   "tax": 28419.01
+  },
+  {
+   "month": 201711,
+   "avgWage": 484.31,
+   "numInsured": 133,
+   "tax": 26486.4
+  },
+  {
+   "month": 201712,
+   "avgWage": 509.92,
+   "numInsured": 128,
+   "tax": 26798.73
+  },
+  {
+   "month": 201801,
+   "avgWage": 483.84,
+   "numInsured": 137,
+   "tax": 27241.3
+  },
+  {
+   "month": 201802,
+   "avgWage": 449.02,
+   "numInsured": 136,
+   "tax": 25126.27
+  },
+  {
+   "month": 201803,
+   "avgWage": 503.56,
+   "numInsured": 129,
+   "tax": 26682.91
+  },
+  {
+   "month": 201804,
+   "avgWage": 505.42,
+   "numInsured": 131,
+   "tax": 27174.39
+  },
+  {
+   "month": 201805,
+   "avgWage": 509.17,
+   "numInsured": 149,
+   "tax": 31112.47
+  },
+  {
+   "month": 201806,
+   "avgWage": 488.51,
+   "numInsured": 166,
+   "tax": 33210.37
+  },
+  {
+   "month": 201807,
+   "avgWage": 515.72,
+   "numInsured": 169,
+   "tax": 35685.68
+  },
+  {
+   "month": 201808,
+   "avgWage": 551.52,
+   "numInsured": 155,
+   "tax": 35066.92
+  },
+  {
+   "month": 201809,
+   "avgWage": 499.45,
+   "numInsured": 132,
+   "tax": 27092.25
+  },
+  {
+   "month": 201810,
+   "avgWage": 482.56,
+   "numInsured": 134,
+   "tax": 26613.21
+  },
+  {
+   "month": 201811,
+   "avgWage": 462.48,
+   "numInsured": 135,
+   "tax": 25684.91
+  },
+  {
+   "month": 201812,
+   "avgWage": 490.59,
+   "numInsured": 128,
+   "tax": 25825.78
+  },
+  {
+   "month": 201901,
+   "avgWage": 631.1,
+   "numInsured": 126,
+   "tax": 18554.8
+  },
+  {
+   "month": 201902,
+   "avgWage": 586.41,
+   "numInsured": 132,
+   "tax": 17997.87
+  },
+  {
+   "month": 201903,
+   "avgWage": 636.42,
+   "numInsured": 130,
+   "tax": 19026.52
+  },
+  {
+   "month": 201904,
+   "avgWage": 579.12,
+   "numInsured": 135,
+   "tax": 17827.64
+  },
+  {
+   "month": 201905,
+   "avgWage": 634.45,
+   "numInsured": 128,
+   "tax": 18638.2
+  },
+  {
+   "month": 201906,
+   "avgWage": 600.91,
+   "numInsured": 159,
+   "tax": 21598.42
+  },
+  {
+   "month": 201907,
+   "avgWage": 695.28,
+   "numInsured": 148,
+   "tax": 23202.24
+  },
+  {
+   "month": 201908,
+   "avgWage": 719.05,
+   "numInsured": 142,
+   "tax": 23022.9
+  },
+  {
+   "month": 201909,
+   "avgWage": 682.78,
+   "numInsured": 115,
+   "tax": 17783.82
+  },
+  {
+   "month": 201910,
+   "avgWage": 715.05,
+   "numInsured": 111,
+   "tax": 17934.97
+  },
+  {
+   "month": 201911,
+   "avgWage": 710.41,
+   "numInsured": 116,
+   "tax": 18641.55
+  },
+  {
+   "month": 201912,
+   "avgWage": 693.62,
+   "numInsured": 140,
+   "tax": 21969.02
+  },
+  {
+   "month": 202001,
+   "avgWage": 687.73,
+   "numInsured": 141,
+   "tax": 21999.55
+  },
+  {
+   "month": 202002,
+   "avgWage": 678.81,
+   "numInsured": 144,
+   "tax": 22240.58
+  },
+  {
+   "month": 202003,
+   "avgWage": 464.13,
+   "numInsured": 132,
+   "tax": 13937.17
+  },
+  {
+   "month": 202004,
+   "avgWage": 533.59,
+   "numInsured": 90,
+   "tax": 10899.53
+  },
+  {
+   "month": 202005,
+   "avgWage": 610.31,
+   "numInsured": 106,
+   "tax": 14720.86
+  },
+  {
+   "month": 202006,
+   "avgWage": 756.49,
+   "numInsured": 141,
+   "tax": 24300.93
+  },
+  {
+   "month": 202007,
+   "avgWage": 855.98,
+   "numInsured": 152,
+   "tax": 29723.12
+  },
+  {
+   "month": 202008,
+   "avgWage": 827.57,
+   "numInsured": 151,
+   "tax": 28559.47
+  },
+  {
+   "month": 202009,
+   "avgWage": 751.31,
+   "numInsured": 132,
+   "tax": 22791.71
+  },
+  {
+   "month": 202010,
+   "avgWage": 837.61,
+   "numInsured": 111,
+   "tax": 21417.91
+  },
+  {
+   "month": 202011,
+   "avgWage": 626.62,
+   "numInsured": 108,
+   "tax": 15608.19
+  },
+  {
+   "month": 202012,
+   "avgWage": 643.99,
+   "numInsured": 99,
+   "tax": 14659.89
+  },
+  {
+   "month": 202101,
+   "avgWage": 684.49,
+   "numInsured": 94,
+   "tax": 14879.04
+  },
+  {
+   "month": 202102,
+   "avgWage": 707.47,
+   "numInsured": 92,
+   "tax": 14930.76
+  },
+  {
+   "month": 202103,
+   "avgWage": 706.92,
+   "numInsured": 92,
+   "tax": 15024.87
+  },
+  {
+   "month": 202104,
+   "avgWage": 727.73,
+   "numInsured": 91,
+   "tax": 15242.07
+  },
+  {
+   "month": 202105,
+   "avgWage": 817.37,
+   "numInsured": 103,
+   "tax": 19444.69
+  },
+  {
+   "month": 202106,
+   "avgWage": 878.71,
+   "numInsured": 132,
+   "tax": 26634.22
+  },
+  {
+   "month": 202107,
+   "avgWage": 965.87,
+   "numInsured": 150,
+   "tax": 33255.67
+  },
+  {
+   "month": 202108,
+   "avgWage": 1017.79,
+   "numInsured": 138,
+   "tax": 32137.93
+  },
+  {
+   "month": 202109,
+   "avgWage": 971.77,
+   "numInsured": 127,
+   "tax": 28462.69
+  },
+  {
+   "month": 202110,
+   "avgWage": 990.23,
+   "numInsured": 107,
+   "tax": 24175.4
+  },
+  {
+   "month": 202111,
+   "avgWage": 949.72,
+   "numInsured": 108,
+   "tax": 23419.27
+  },
+  {
+   "month": 202112,
+   "avgWage": 1055.76,
+   "numInsured": 107,
+   "tax": 25880.14
+  },
+  {
+   "month": 202201,
+   "avgWage": 1003.04,
+   "numInsured": 108,
+   "tax": 24776.91
+  },
+  {
+   "month": 202202,
+   "avgWage": 951.17,
+   "numInsured": 110,
+   "tax": 23879.92
+  },
+  {
+   "month": 202203,
+   "avgWage": 1022.0,
+   "numInsured": 127,
+   "tax": 29790.76
+  },
+  {
+   "month": 202204,
+   "avgWage": 1010.76,
+   "numInsured": 125,
+   "tax": 28779.55
+  },
+  {
+   "month": 202205,
+   "avgWage": 1098.82,
+   "numInsured": 144,
+   "tax": 36012.3
+  },
+  {
+   "month": 202206,
+   "avgWage": 1009.48,
+   "numInsured": 178,
+   "tax": 40806.71
+  },
+  {
+   "month": 202207,
+   "avgWage": 1204.06,
+   "numInsured": 154,
+   "tax": 42309.53
+  },
+  {
+   "month": 202208,
+   "avgWage": 1226.22,
+   "numInsured": 145,
+   "tax": 40633.13
+  },
+  {
+   "month": 202209,
+   "avgWage": 1131.97,
+   "numInsured": 133,
+   "tax": 34652.93
+  },
+  {
+   "month": 202210,
+   "avgWage": 1102.04,
+   "numInsured": 120,
+   "tax": 30331.48
+  },
+  {
+   "month": 202211,
+   "avgWage": 1128.9,
+   "numInsured": 111,
+   "tax": 28598.15
+  },
+  {
+   "month": 202212,
+   "avgWage": 1124.0,
+   "numInsured": 116,
+   "tax": 29762.53
+  },
+  {
+   "month": 202301,
+   "avgWage": 1152.36,
+   "numInsured": 113,
+   "tax": 29918.41
+  },
+  {
+   "month": 202302,
+   "avgWage": 1132.35,
+   "numInsured": 109,
+   "tax": 28414.82
+  },
+  {
+   "month": 202303,
+   "avgWage": 1242.16,
+   "numInsured": 106,
+   "tax": 30359.35
+  },
+  {
+   "month": 202304,
+   "avgWage": 1179.88,
+   "numInsured": 102,
+   "tax": 27543.67
+  },
+  {
+   "month": 202305,
+   "avgWage": 1318.49,
+   "numInsured": 121,
+   "tax": 36333.03
+  },
+  {
+   "month": 202306,
+   "avgWage": 1285.88,
+   "numInsured": 132,
+   "tax": 38621.44
+  },
+  {
+   "month": 202307,
+   "avgWage": 1306.29,
+   "numInsured": 138,
+   "tax": 40925.83
+  },
+  {
+   "month": 202308,
+   "avgWage": 1402.54,
+   "numInsured": 136,
+   "tax": 43263.38
+  },
+  {
+   "month": 202309,
+   "avgWage": 1324.61,
+   "numInsured": 121,
+   "tax": 36585.52
+  },
+  {
+   "month": 202310,
+   "avgWage": 1315.7,
+   "numInsured": 110,
+   "tax": 33113.74
+  },
+  {
+   "month": 202311,
+   "avgWage": 1250.28,
+   "numInsured": 109,
+   "tax": 31327.36
+  },
+  {
+   "month": 202312,
+   "avgWage": 1194.41,
+   "numInsured": 105,
+   "tax": 28782.31
+  },
+  {
+   "month": 202401,
+   "avgWage": 1241.44,
+   "numInsured": 104,
+   "tax": 29654.48
+  },
+  {
+   "month": 202402,
+   "avgWage": 1225.55,
+   "numInsured": 102,
+   "tax": 28802.4
+  },
+  {
+   "month": 202403,
+   "avgWage": 1275.81,
+   "numInsured": 108,
+   "tax": 31698.54
+  },
+  {
+   "month": 202404,
+   "avgWage": 1234.54,
+   "numInsured": 111,
+   "tax": 31476.0
+  },
+  {
+   "month": 202405,
+   "avgWage": 1321.09,
+   "numInsured": 123,
+   "tax": 37333.27
+  },
+  {
+   "month": 202406,
+   "avgWage": 1266.7,
+   "numInsured": 129,
+   "tax": 37363.19
+  },
+  {
+   "month": 202407,
+   "avgWage": 1401.29,
+   "numInsured": 141,
+   "tax": 44968.7
+  },
+  {
+   "month": 202408,
+   "avgWage": 1395.58,
+   "numInsured": 129,
+   "tax": 41103.23
+  },
+  {
+   "month": 202409,
+   "avgWage": 1339.02,
+   "numInsured": 115,
+   "tax": 35444.18
+  },
+  {
+   "month": 202410,
+   "avgWage": 1348.68,
+   "numInsured": 106,
+   "tax": 32924.11
+  },
+  {
+   "month": 202411,
+   "avgWage": 1397.25,
+   "numInsured": 108,
+   "tax": 34702.23
+  },
+  {
+   "month": 202412,
+   "avgWage": 1303.75,
+   "numInsured": 88,
+   "tax": 26294.31
+  },
+  {
+   "month": 202501,
+   "avgWage": 1331.22,
+   "numInsured": 86,
+   "tax": 26245.9
+  },
+  {
+   "month": 202502,
+   "avgWage": 1236.46,
+   "numInsured": 111,
+   "tax": 31556.35
+  },
+  {
+   "month": 202503,
+   "avgWage": 1300.84,
+   "numInsured": 110,
+   "tax": 32901.41
+  },
+  {
+   "month": 202504,
+   "avgWage": 1303.2,
+   "numInsured": 116,
+   "tax": 34671.93
+  },
+  {
+   "month": 202505,
+   "avgWage": 1366.51,
+   "numInsured": 129,
+   "tax": 40438.23
+  },
+  {
+   "month": 202506,
+   "avgWage": 1394.81,
+   "numInsured": 137,
+   "tax": 43618.6
+  },
+  {
+   "month": 202507,
+   "avgWage": 1527.91,
+   "numInsured": 136,
+   "tax": 47176.13
+  },
+  {
+   "month": 202508,
+   "avgWage": 1508.17,
+   "numInsured": 134,
+   "tax": 45786.48
+  },
+  {
+   "month": 202509,
+   "avgWage": 1453.85,
+   "numInsured": 118,
+   "tax": 39324.63
+  },
+  {
+   "month": 202510,
+   "avgWage": 1380.45,
+   "numInsured": 112,
+   "tax": 35431.65
+  },
+  {
+   "month": 202511,
+   "avgWage": 1412.61,
+   "numInsured": 110,
+   "tax": 35712.23
+  },
+  {
+   "month": 202512,
+   "avgWage": 1512.37,
+   "numInsured": 110,
+   "tax": 38330.18
+  },
+  {
+   "month": 202601,
+   "avgWage": 1438.25,
+   "numInsured": 111,
+   "tax": 36622.36
+  },
+  {
+   "month": 202602,
+   "avgWage": 1382.52,
+   "numInsured": 112,
+   "tax": 35248.09
+  },
+  {
+   "month": 202603,
+   "avgWage": 1462.81,
+   "numInsured": 117,
+   "tax": 37722.07
+  },
+  {
+   "month": 202604,
+   "avgWage": 1486.69,
+   "numInsured": 115,
+   "tax": 37612.99
+  },
+  {
+   "month": 202605,
+   "avgWage": 1480.6,
+   "numInsured": 125,
+   "tax": 40499.69
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,33 @@
+{
+ "jarCode": "306656306",
+ "sodraCode": 4180880,
+ "name": "MB \"SIAUTI\"",
+ "ecoActName": "Mobilių maitinimo paslaugų teikimas",
+ "municipality": "Kauno r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1576.14,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": 1230.59,
+   "numInsured": 6,
+   "tax": 1587.88
+  },
+  {
+   "month": 202605,
+   "avgWage": 1576.14,
+   "numInsured": 6,
+   "tax": 2092.59
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

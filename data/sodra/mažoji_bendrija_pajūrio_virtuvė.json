@@ -1,0 +1,51 @@
+{
+ "jarCode": "306318742",
+ "sodraCode": 4103606,
+ "name": "MAŽOJI BENDRIJA \"PAJŪRIO VIRTUVĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202508,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202306,
+   "avgWage": 550.32,
+   "numInsured": 4,
+   "tax": 501.09
+  },
+  {
+   "month": 202307,
+   "avgWage": 824.21,
+   "numInsured": 8,
+   "tax": 1474.71
+  },
+  {
+   "month": 202308,
+   "avgWage": 519.44,
+   "numInsured": 8,
+   "tax": 929.09
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

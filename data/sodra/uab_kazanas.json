@@ -1,0 +1,93 @@
+{
+ "jarCode": "306799247",
+ "sodraCode": 4237219,
+ "name": "UAB \"KAZANAS\"",
+ "ecoActName": "Maisto ir gėrimų tiekimas pagal sutartį ir kitų maitinimo paslaugų veikla",
+ "municipality": "Šiaulių m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1190.83,
+  "numInsured": 10
+ },
+ "months": [
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": 1040.0,
+   "numInsured": 5,
+   "tax": 1137.25
+  },
+  {
+   "month": 202508,
+   "avgWage": 675.9,
+   "numInsured": 7,
+   "tax": 1020.38
+  },
+  {
+   "month": 202509,
+   "avgWage": 666.03,
+   "numInsured": 7,
+   "tax": 1023.94
+  },
+  {
+   "month": 202510,
+   "avgWage": 724.74,
+   "numInsured": 7,
+   "tax": 1110.29
+  },
+  {
+   "month": 202511,
+   "avgWage": 752.01,
+   "numInsured": 7,
+   "tax": 1143.07
+  },
+  {
+   "month": 202512,
+   "avgWage": 835.3,
+   "numInsured": 7,
+   "tax": 1284.26
+  },
+  {
+   "month": 202601,
+   "avgWage": 852.32,
+   "numInsured": 8,
+   "tax": 1509.67
+  },
+  {
+   "month": 202602,
+   "avgWage": 1436.99,
+   "numInsured": 7,
+   "tax": 2207.05
+  },
+  {
+   "month": 202603,
+   "avgWage": 992.32,
+   "numInsured": 9,
+   "tax": 1917.75
+  },
+  {
+   "month": 202604,
+   "avgWage": 1065.79,
+   "numInsured": 9,
+   "tax": 2074.9
+  },
+  {
+   "month": 202605,
+   "avgWage": 1190.83,
+   "numInsured": 10,
+   "tax": 2555.4
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

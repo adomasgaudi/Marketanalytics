@@ -1,0 +1,117 @@
+{
+ "jarCode": "306645651",
+ "sodraCode": 4173875,
+ "name": "UAB \"ORASOLA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202602,
+  "avgWage": 3051.55,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202406,
+   "avgWage": 686.21,
+   "numInsured": 26,
+   "tax": 3926.98
+  },
+  {
+   "month": 202407,
+   "avgWage": 700.55,
+   "numInsured": 32,
+   "tax": 4984.55
+  },
+  {
+   "month": 202408,
+   "avgWage": 776.73,
+   "numInsured": 29,
+   "tax": 5056.03
+  },
+  {
+   "month": 202409,
+   "avgWage": 825.31,
+   "numInsured": 20,
+   "tax": 3776.34
+  },
+  {
+   "month": 202410,
+   "avgWage": 726.59,
+   "numInsured": 15,
+   "tax": 2532.18
+  },
+  {
+   "month": 202411,
+   "avgWage": 1311.01,
+   "numInsured": 9,
+   "tax": 2794.7
+  },
+  {
+   "month": 202412,
+   "avgWage": 1287.62,
+   "numInsured": 6,
+   "tax": 1825.66
+  },
+  {
+   "month": 202501,
+   "avgWage": 1153.22,
+   "numInsured": 5,
+   "tax": 1393.91
+  },
+  {
+   "month": 202502,
+   "avgWage": 721.76,
+   "numInsured": 6,
+   "tax": 1031.41
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 1025.84,
+   "numInsured": 11,
+   "tax": 2606.83
+  },
+  {
+   "month": 202506,
+   "avgWage": 1010.81,
+   "numInsured": 26,
+   "tax": 5921.66
+  },
+  {
+   "month": 202507,
+   "avgWage": 242.44,
+   "numInsured": 4,
+   "tax": 208.13
+  },
+  {
+   "month": 202508,
+   "avgWage": 1127.5,
+   "numInsured": 25,
+   "tax": 6422.8
+  },
+  {
+   "month": 202509,
+   "avgWage": 618.4,
+   "numInsured": 6,
+   "tax": 859.31
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": 3051.55,
+   "numInsured": 6,
+   "tax": 4287.91
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

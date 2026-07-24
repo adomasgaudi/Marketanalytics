@@ -1,0 +1,129 @@
+{
+ "jarCode": "306735230",
+ "sodraCode": 4210882,
+ "name": "MB MAISTO SVAJONĖ",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202511,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": 1468.28,
+   "numInsured": 4,
+   "tax": 1331.79
+  },
+  {
+   "month": 202407,
+   "avgWage": 1301.65,
+   "numInsured": 4,
+   "tax": 1233.71
+  },
+  {
+   "month": 202408,
+   "avgWage": 1310.44,
+   "numInsured": 4,
+   "tax": 1237.12
+  },
+  {
+   "month": 202409,
+   "avgWage": 779.43,
+   "numInsured": 5,
+   "tax": 928.2
+  },
+  {
+   "month": 202410,
+   "avgWage": 1280.2,
+   "numInsured": 4,
+   "tax": 1229.49
+  },
+  {
+   "month": 202411,
+   "avgWage": 367.95,
+   "numInsured": 4,
+   "tax": 356.37
+  },
+  {
+   "month": 202412,
+   "avgWage": 900.66,
+   "numInsured": 4,
+   "tax": 859.07
+  },
+  {
+   "month": 202501,
+   "avgWage": 1100.43,
+   "numInsured": 5,
+   "tax": 1316.16
+  },
+  {
+   "month": 202502,
+   "avgWage": 1063.9,
+   "numInsured": 4,
+   "tax": 1018.1
+  },
+  {
+   "month": 202503,
+   "avgWage": 921.42,
+   "numInsured": 6,
+   "tax": 1312.84
+  },
+  {
+   "month": 202504,
+   "avgWage": 1179.66,
+   "numInsured": 5,
+   "tax": 1396.82
+  },
+  {
+   "month": 202505,
+   "avgWage": 1548.26,
+   "numInsured": 5,
+   "tax": 1852.34
+  },
+  {
+   "month": 202506,
+   "avgWage": 1263.92,
+   "numInsured": 6,
+   "tax": 1809.66
+  },
+  {
+   "month": 202507,
+   "avgWage": 1591.29,
+   "numInsured": 5,
+   "tax": 1894.79
+  },
+  {
+   "month": 202508,
+   "avgWage": 1510.84,
+   "numInsured": 5,
+   "tax": 1820.61
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

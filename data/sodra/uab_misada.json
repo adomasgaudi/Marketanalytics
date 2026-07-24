@@ -1,0 +1,87 @@
+{
+ "jarCode": "306401661",
+ "sodraCode": 4142802,
+ "name": "UAB MISADA",
+ "ecoActName": "Nespecializuotos mažmeninės prekybos tarpininkavimo paslaugų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202409,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202309,
+   "avgWage": 734.66,
+   "numInsured": 7,
+   "tax": 1237.45
+  },
+  {
+   "month": 202310,
+   "avgWage": 1114.61,
+   "numInsured": 9,
+   "tax": 2419.79
+  },
+  {
+   "month": 202311,
+   "avgWage": 834.0,
+   "numInsured": 10,
+   "tax": 2017.64
+  },
+  {
+   "month": 202312,
+   "avgWage": 1028.18,
+   "numInsured": 9,
+   "tax": 2245.87
+  },
+  {
+   "month": 202401,
+   "avgWage": 825.05,
+   "numInsured": 10,
+   "tax": 1988.44
+  },
+  {
+   "month": 202402,
+   "avgWage": 783.35,
+   "numInsured": 9,
+   "tax": 1697.31
+  },
+  {
+   "month": 202403,
+   "avgWage": 844.02,
+   "numInsured": 8,
+   "tax": 1638.74
+  },
+  {
+   "month": 202404,
+   "avgWage": 910.72,
+   "numInsured": 8,
+   "tax": 1768.24
+  },
+  {
+   "month": 202405,
+   "avgWage": 740.94,
+   "numInsured": 7,
+   "tax": 1258.77
+  },
+  {
+   "month": 202406,
+   "avgWage": 189.27,
+   "numInsured": 7,
+   "tax": 321.54
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,111 @@
+{
+ "jarCode": "306799877",
+ "sodraCode": 4237172,
+ "name": "MB \"VOLERES\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": 542.93,
+   "numInsured": 4,
+   "tax": 461.92
+  },
+  {
+   "month": 202511,
+   "avgWage": 742.5,
+   "numInsured": 5,
+   "tax": 789.66
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": 447.14,
+   "numInsured": 4,
+   "tax": 380.41
+  },
+  {
+   "month": 202602,
+   "avgWage": 480.55,
+   "numInsured": 5,
+   "tax": 518.34
+  },
+  {
+   "month": 202603,
+   "avgWage": 567.36,
+   "numInsured": 5,
+   "tax": 603.39
+  },
+  {
+   "month": 202604,
+   "avgWage": 617.14,
+   "numInsured": 4,
+   "tax": 530.47
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

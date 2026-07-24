@@ -1,0 +1,69 @@
+{
+ "jarCode": "306679778",
+ "sodraCode": 4191235,
+ "name": "UAB \"STATKEITA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1037.38,
+  "numInsured": 8
+ },
+ "months": [
+  {
+   "month": 202509,
+   "avgWage": 603.77,
+   "numInsured": 7,
+   "tax": 994.88
+  },
+  {
+   "month": 202510,
+   "avgWage": 743.26,
+   "numInsured": 9,
+   "tax": 1572.44
+  },
+  {
+   "month": 202511,
+   "avgWage": 810.0,
+   "numInsured": 8,
+   "tax": 1497.58
+  },
+  {
+   "month": 202512,
+   "avgWage": 923.98,
+   "numInsured": 7,
+   "tax": 1494.63
+  },
+  {
+   "month": 202601,
+   "avgWage": 964.97,
+   "numInsured": 8,
+   "tax": 1790.34
+  },
+  {
+   "month": 202602,
+   "avgWage": 977.07,
+   "numInsured": 8,
+   "tax": 1806.11
+  },
+  {
+   "month": 202603,
+   "avgWage": 931.99,
+   "numInsured": 8,
+   "tax": 1655.17
+  },
+  {
+   "month": 202604,
+   "avgWage": 964.25,
+   "numInsured": 8,
+   "tax": 1677.53
+  },
+  {
+   "month": 202605,
+   "avgWage": 1037.38,
+   "numInsured": 8,
+   "tax": 1799.86
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,159 @@
+{
+ "jarCode": "306805351",
+ "sodraCode": 4238371,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ WOW FOODS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 950.37,
+  "numInsured": 7
+ },
+ "months": [
+  {
+   "month": 202406,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202407,
+   "avgWage": 707.57,
+   "numInsured": 6,
+   "tax": 996.8
+  },
+  {
+   "month": 202408,
+   "avgWage": 978.77,
+   "numInsured": 6,
+   "tax": 1365.62
+  },
+  {
+   "month": 202409,
+   "avgWage": 902.49,
+   "numInsured": 6,
+   "tax": 1264.55
+  },
+  {
+   "month": 202410,
+   "avgWage": 965.73,
+   "numInsured": 7,
+   "tax": 1552.53
+  },
+  {
+   "month": 202411,
+   "avgWage": 1086.48,
+   "numInsured": 7,
+   "tax": 1732.31
+  },
+  {
+   "month": 202412,
+   "avgWage": 1126.93,
+   "numInsured": 7,
+   "tax": 1817.2
+  },
+  {
+   "month": 202501,
+   "avgWage": 1029.29,
+   "numInsured": 7,
+   "tax": 1651.33
+  },
+  {
+   "month": 202502,
+   "avgWage": 971.71,
+   "numInsured": 7,
+   "tax": 1559.69
+  },
+  {
+   "month": 202503,
+   "avgWage": 1141.05,
+   "numInsured": 7,
+   "tax": 1819.64
+  },
+  {
+   "month": 202504,
+   "avgWage": 1025.4,
+   "numInsured": 7,
+   "tax": 1645.66
+  },
+  {
+   "month": 202505,
+   "avgWage": 1030.05,
+   "numInsured": 8,
+   "tax": 1866.06
+  },
+  {
+   "month": 202506,
+   "avgWage": 1069.92,
+   "numInsured": 8,
+   "tax": 1941.53
+  },
+  {
+   "month": 202507,
+   "avgWage": 1091.96,
+   "numInsured": 8,
+   "tax": 2016.73
+  },
+  {
+   "month": 202508,
+   "avgWage": 1056.66,
+   "numInsured": 8,
+   "tax": 1956.75
+  },
+  {
+   "month": 202509,
+   "avgWage": 1075.73,
+   "numInsured": 8,
+   "tax": 1992.07
+  },
+  {
+   "month": 202510,
+   "avgWage": 1143.04,
+   "numInsured": 8,
+   "tax": 2124.18
+  },
+  {
+   "month": 202511,
+   "avgWage": 853.55,
+   "numInsured": 9,
+   "tax": 1787.81
+  },
+  {
+   "month": 202512,
+   "avgWage": 888.23,
+   "numInsured": 8,
+   "tax": 1630.24
+  },
+  {
+   "month": 202601,
+   "avgWage": 901.31,
+   "numInsured": 8,
+   "tax": 1644.86
+  },
+  {
+   "month": 202602,
+   "avgWage": 889.9,
+   "numInsured": 8,
+   "tax": 1627.16
+  },
+  {
+   "month": 202603,
+   "avgWage": 756.57,
+   "numInsured": 9,
+   "tax": 1477.49
+  },
+  {
+   "month": 202604,
+   "avgWage": 957.22,
+   "numInsured": 8,
+   "tax": 1637.67
+  },
+  {
+   "month": 202605,
+   "avgWage": 950.37,
+   "numInsured": 7,
+   "tax": 1423.87
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

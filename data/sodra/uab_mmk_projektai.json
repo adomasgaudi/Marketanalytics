@@ -1,0 +1,57 @@
+{
+ "jarCode": "307475084",
+ "sodraCode": 4413506,
+ "name": "UAB MMK PROJEKTAI",
+ "ecoActName": null,
+ "municipality": "Druskininkų sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 706.14,
+  "numInsured": 10
+ },
+ "months": [
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": 531.96,
+   "numInsured": 11,
+   "tax": 1409.38
+  },
+  {
+   "month": 202601,
+   "avgWage": 592.3,
+   "numInsured": 11,
+   "tax": 1577.9
+  },
+  {
+   "month": 202602,
+   "avgWage": 672.54,
+   "numInsured": 8,
+   "tax": 1305.81
+  },
+  {
+   "month": 202603,
+   "avgWage": 688.08,
+   "numInsured": 9,
+   "tax": 1461.91
+  },
+  {
+   "month": 202604,
+   "avgWage": 651.72,
+   "numInsured": 10,
+   "tax": 1539.03
+  },
+  {
+   "month": 202605,
+   "avgWage": 706.14,
+   "numInsured": 10,
+   "tax": 1643.66
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,135 @@
+{
+ "jarCode": "306585108",
+ "sodraCode": 4157778,
+ "name": "UAB \"ALADEUŠ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Šalčininkų r. sav.",
+ "latest": {
+  "month": 202508,
+  "avgWage": 339.4,
+  "numInsured": 5
+ },
+ "months": [
+  {
+   "month": 202401,
+   "avgWage": 352.36,
+   "numInsured": 6,
+   "tax": 480.32
+  },
+  {
+   "month": 202402,
+   "avgWage": 726.47,
+   "numInsured": 6,
+   "tax": 982.98
+  },
+  {
+   "month": 202403,
+   "avgWage": 520.96,
+   "numInsured": 7,
+   "tax": 829.55
+  },
+  {
+   "month": 202404,
+   "avgWage": 618.07,
+   "numInsured": 7,
+   "tax": 994.54
+  },
+  {
+   "month": 202405,
+   "avgWage": 577.74,
+   "numInsured": 7,
+   "tax": 929.8
+  },
+  {
+   "month": 202406,
+   "avgWage": 504.79,
+   "numInsured": 10,
+   "tax": 1177.33
+  },
+  {
+   "month": 202407,
+   "avgWage": 484.21,
+   "numInsured": 8,
+   "tax": 926.46
+  },
+  {
+   "month": 202408,
+   "avgWage": 483.5,
+   "numInsured": 8,
+   "tax": 925.09
+  },
+  {
+   "month": 202409,
+   "avgWage": 469.73,
+   "numInsured": 8,
+   "tax": 898.36
+  },
+  {
+   "month": 202410,
+   "avgWage": 453.82,
+   "numInsured": 7,
+   "tax": 764.17
+  },
+  {
+   "month": 202411,
+   "avgWage": 495.11,
+   "numInsured": 7,
+   "tax": 829.93
+  },
+  {
+   "month": 202412,
+   "avgWage": 469.77,
+   "numInsured": 7,
+   "tax": 792.46
+  },
+  {
+   "month": 202501,
+   "avgWage": 335.03,
+   "numInsured": 9,
+   "tax": 731.81
+  },
+  {
+   "month": 202502,
+   "avgWage": 402.81,
+   "numInsured": 8,
+   "tax": 782.09
+  },
+  {
+   "month": 202503,
+   "avgWage": 464.13,
+   "numInsured": 6,
+   "tax": 675.88
+  },
+  {
+   "month": 202504,
+   "avgWage": 418.62,
+   "numInsured": 5,
+   "tax": 508.0
+  },
+  {
+   "month": 202505,
+   "avgWage": 505.76,
+   "numInsured": 4,
+   "tax": 490.98
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": 507.84,
+   "numInsured": 6,
+   "tax": 709.05
+  },
+  {
+   "month": 202508,
+   "avgWage": 339.4,
+   "numInsured": 5,
+   "tax": 392.48
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

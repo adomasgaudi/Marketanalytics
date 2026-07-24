@@ -1,0 +1,87 @@
+{
+ "jarCode": "306359130",
+ "sodraCode": 4127956,
+ "name": "UAB \"MZIURI\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202408,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202309,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202310,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202311,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202312,
+   "avgWage": 256.84,
+   "numInsured": 6,
+   "tax": 365.4
+  },
+  {
+   "month": 202401,
+   "avgWage": 363.84,
+   "numInsured": 10,
+   "tax": 828.45
+  },
+  {
+   "month": 202402,
+   "avgWage": 498.51,
+   "numInsured": 9,
+   "tax": 1000.86
+  },
+  {
+   "month": 202403,
+   "avgWage": 680.94,
+   "numInsured": 7,
+   "tax": 1058.39
+  },
+  {
+   "month": 202404,
+   "avgWage": 625.35,
+   "numInsured": 6,
+   "tax": 826.58
+  },
+  {
+   "month": 202405,
+   "avgWage": 784.16,
+   "numInsured": 6,
+   "tax": 1053.08
+  },
+  {
+   "month": 202406,
+   "avgWage": 334.38,
+   "numInsured": 7,
+   "tax": 526.99
+  },
+  {
+   "month": 202407,
+   "avgWage": 93.06,
+   "numInsured": 7,
+   "tax": 141.28
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

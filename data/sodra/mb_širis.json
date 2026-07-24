@@ -1,0 +1,93 @@
+{
+ "jarCode": "306710355",
+ "sodraCode": 4202039,
+ "name": "MB \"ŠIRIS\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kaišiadorių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1024.24,
+  "numInsured": 15
+ },
+ "months": [
+  {
+   "month": 202505,
+   "avgWage": 421.82,
+   "numInsured": 13,
+   "tax": 1288.51
+  },
+  {
+   "month": 202506,
+   "avgWage": 1153.14,
+   "numInsured": 17,
+   "tax": 4591.34
+  },
+  {
+   "month": 202507,
+   "avgWage": 1327.99,
+   "numInsured": 16,
+   "tax": 4935.41
+  },
+  {
+   "month": 202508,
+   "avgWage": 1443.24,
+   "numInsured": 16,
+   "tax": 5403.04
+  },
+  {
+   "month": 202509,
+   "avgWage": 1353.49,
+   "numInsured": 15,
+   "tax": 4719.35
+  },
+  {
+   "month": 202510,
+   "avgWage": 1202.45,
+   "numInsured": 14,
+   "tax": 3905.49
+  },
+  {
+   "month": 202511,
+   "avgWage": 1371.78,
+   "numInsured": 12,
+   "tax": 3802.83
+  },
+  {
+   "month": 202512,
+   "avgWage": 913.34,
+   "numInsured": 13,
+   "tax": 2758.38
+  },
+  {
+   "month": 202601,
+   "avgWage": 1187.2,
+   "numInsured": 11,
+   "tax": 3016.88
+  },
+  {
+   "month": 202602,
+   "avgWage": 627.88,
+   "numInsured": 14,
+   "tax": 2015.58
+  },
+  {
+   "month": 202603,
+   "avgWage": 925.93,
+   "numInsured": 13,
+   "tax": 2662.33
+  },
+  {
+   "month": 202604,
+   "avgWage": 776.82,
+   "numInsured": 16,
+   "tax": 2766.41
+  },
+  {
+   "month": 202605,
+   "avgWage": 1024.24,
+   "numInsured": 15,
+   "tax": 3367.34
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

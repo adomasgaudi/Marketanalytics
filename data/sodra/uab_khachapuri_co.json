@@ -1,0 +1,51 @@
+{
+ "jarCode": "306952216",
+ "sodraCode": 4254347,
+ "name": "UAB \"KHACHAPURI & CO\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202503,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202411,
+   "avgWage": 1170.0,
+   "numInsured": 4,
+   "tax": 737.59
+  },
+  {
+   "month": 202412,
+   "avgWage": 997.37,
+   "numInsured": 5,
+   "tax": 855.83
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

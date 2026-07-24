@@ -1,0 +1,93 @@
+{
+ "jarCode": "306984801",
+ "sodraCode": 4266544,
+ "name": "MB KM ASSETS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Mažeikių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1762.53,
+  "numInsured": 14
+ },
+ "months": [
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": 846.39,
+   "numInsured": 11,
+   "tax": 2110.56
+  },
+  {
+   "month": 202508,
+   "avgWage": 1580.18,
+   "numInsured": 14,
+   "tax": 5103.59
+  },
+  {
+   "month": 202509,
+   "avgWage": 1848.17,
+   "numInsured": 12,
+   "tax": 5141.17
+  },
+  {
+   "month": 202510,
+   "avgWage": 2026.72,
+   "numInsured": 13,
+   "tax": 6120.91
+  },
+  {
+   "month": 202511,
+   "avgWage": 2021.98,
+   "numInsured": 13,
+   "tax": 6181.03
+  },
+  {
+   "month": 202512,
+   "avgWage": 1988.02,
+   "numInsured": 13,
+   "tax": 6102.55
+  },
+  {
+   "month": 202601,
+   "avgWage": 1699.8,
+   "numInsured": 13,
+   "tax": 5183.33
+  },
+  {
+   "month": 202602,
+   "avgWage": 1734.77,
+   "numInsured": 11,
+   "tax": 4513.59
+  },
+  {
+   "month": 202603,
+   "avgWage": 1700.71,
+   "numInsured": 12,
+   "tax": 4675.12
+  },
+  {
+   "month": 202604,
+   "avgWage": 1575.95,
+   "numInsured": 13,
+   "tax": 4516.61
+  },
+  {
+   "month": 202605,
+   "avgWage": 1762.53,
+   "numInsured": 14,
+   "tax": 5502.04
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

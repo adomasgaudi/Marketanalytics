@@ -1,0 +1,69 @@
+{
+ "jarCode": "306965509",
+ "sodraCode": 4260077,
+ "name": "UAB GILIŲ KIEMELIS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202506,
+  "avgWage": 487.66,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": 895.53,
+   "numInsured": 16,
+   "tax": 3317.84
+  },
+  {
+   "month": 202411,
+   "avgWage": 1199.07,
+   "numInsured": 16,
+   "tax": 4429.54
+  },
+  {
+   "month": 202412,
+   "avgWage": 995.8,
+   "numInsured": 18,
+   "tax": 4094.98
+  },
+  {
+   "month": 202501,
+   "avgWage": 831.23,
+   "numInsured": 21,
+   "tax": 3995.28
+  },
+  {
+   "month": 202502,
+   "avgWage": 1018.87,
+   "numInsured": 18,
+   "tax": 4178.76
+  },
+  {
+   "month": 202503,
+   "avgWage": 982.37,
+   "numInsured": 18,
+   "tax": 4019.75
+  },
+  {
+   "month": 202504,
+   "avgWage": 1030.75,
+   "numInsured": 16,
+   "tax": 3718.78
+  },
+  {
+   "month": 202506,
+   "avgWage": 487.66,
+   "numInsured": 4,
+   "tax": 442.28
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

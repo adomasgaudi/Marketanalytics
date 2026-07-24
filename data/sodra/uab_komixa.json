@@ -1,0 +1,39 @@
+{
+ "jarCode": "306621604",
+ "sodraCode": 4160551,
+ "name": "UAB \"KOMIXA\"",
+ "ecoActName": "Maisto ir gėrimų tiekimas pagal sutartį ir kitų maitinimo paslaugų veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202408,
+  "avgWage": 735.61,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202404,
+   "avgWage": 377.38,
+   "numInsured": 4,
+   "tax": 361.62
+  },
+  {
+   "month": 202406,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202407,
+   "avgWage": 581.51,
+   "numInsured": 5,
+   "tax": 683.51
+  },
+  {
+   "month": 202408,
+   "avgWage": 735.61,
+   "numInsured": 4,
+   "tax": 681.28
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

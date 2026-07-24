@@ -1,0 +1,111 @@
+{
+ "jarCode": "306940331",
+ "sodraCode": 4248435,
+ "name": "MB \"ŽVEJŲ SMUKLĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Anykščių r. sav.",
+ "latest": {
+  "month": 202604,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": 584.66,
+   "numInsured": 4,
+   "tax": 559.46
+  },
+  {
+   "month": 202508,
+   "avgWage": 861.34,
+   "numInsured": 4,
+   "tax": 805.91
+  },
+  {
+   "month": 202509,
+   "avgWage": 857.2,
+   "numInsured": 4,
+   "tax": 801.02
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": 1140.85,
+   "numInsured": 4,
+   "tax": 1076.39
+  },
+  {
+   "month": 202602,
+   "avgWage": 1239.32,
+   "numInsured": 4,
+   "tax": 1168.36
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

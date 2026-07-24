@@ -1,0 +1,99 @@
+{
+ "jarCode": "306623014",
+ "sodraCode": 4163841,
+ "name": "MB 21 DIENA",
+ "ecoActName": "Maisto ir gėrimų tiekimas pagal sutartį ir kitų maitinimo paslaugų veikla",
+ "municipality": "Vilniaus r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1873.81,
+  "numInsured": 9
+ },
+ "months": [
+  {
+   "month": 202504,
+   "avgWage": 1064.05,
+   "numInsured": 7,
+   "tax": 1807.71
+  },
+  {
+   "month": 202505,
+   "avgWage": 1428.68,
+   "numInsured": 8,
+   "tax": 2717.55
+  },
+  {
+   "month": 202506,
+   "avgWage": 1619.67,
+   "numInsured": 6,
+   "tax": 2302.16
+  },
+  {
+   "month": 202507,
+   "avgWage": 1494.41,
+   "numInsured": 8,
+   "tax": 2827.65
+  },
+  {
+   "month": 202508,
+   "avgWage": 1095.86,
+   "numInsured": 9,
+   "tax": 2323.31
+  },
+  {
+   "month": 202509,
+   "avgWage": 1460.6,
+   "numInsured": 11,
+   "tax": 3852.15
+  },
+  {
+   "month": 202510,
+   "avgWage": 1539.84,
+   "numInsured": 11,
+   "tax": 4046.17
+  },
+  {
+   "month": 202511,
+   "avgWage": 1864.0,
+   "numInsured": 9,
+   "tax": 3998.04
+  },
+  {
+   "month": 202512,
+   "avgWage": 1942.19,
+   "numInsured": 10,
+   "tax": 4620.47
+  },
+  {
+   "month": 202601,
+   "avgWage": 1661.71,
+   "numInsured": 12,
+   "tax": 4723.08
+  },
+  {
+   "month": 202602,
+   "avgWage": 1596.28,
+   "numInsured": 11,
+   "tax": 4101.37
+  },
+  {
+   "month": 202603,
+   "avgWage": 1432.45,
+   "numInsured": 12,
+   "tax": 3773.58
+  },
+  {
+   "month": 202604,
+   "avgWage": 1446.82,
+   "numInsured": 11,
+   "tax": 3489.31
+  },
+  {
+   "month": 202605,
+   "avgWage": 1873.81,
+   "numInsured": 9,
+   "tax": 3732.46
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

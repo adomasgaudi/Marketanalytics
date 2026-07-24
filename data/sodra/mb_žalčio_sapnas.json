@@ -1,0 +1,153 @@
+{
+ "jarCode": "306738080",
+ "sodraCode": 4211574,
+ "name": "MB \"ŽALČIO SAPNAS\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Akmenės r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1075.61,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202407,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": 741.79,
+   "numInsured": 4,
+   "tax": 664.32
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": 1099.12,
+   "numInsured": 4,
+   "tax": 1074.52
+  },
+  {
+   "month": 202507,
+   "avgWage": 1097.74,
+   "numInsured": 4,
+   "tax": 1040.82
+  },
+  {
+   "month": 202508,
+   "avgWage": 1069.44,
+   "numInsured": 4,
+   "tax": 1013.16
+  },
+  {
+   "month": 202509,
+   "avgWage": 1359.42,
+   "numInsured": 4,
+   "tax": 1296.02
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202605,
+   "avgWage": 1075.61,
+   "numInsured": 4,
+   "tax": 928.17
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

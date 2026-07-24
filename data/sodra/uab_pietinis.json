@@ -1,0 +1,129 @@
+{
+ "jarCode": "306991920",
+ "sodraCode": 4272611,
+ "name": "UAB \"PIETINIS\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1286.7,
+  "numInsured": 12
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": 637.14,
+   "numInsured": 7,
+   "tax": 1064.28
+  },
+  {
+   "month": 202412,
+   "avgWage": 960.96,
+   "numInsured": 10,
+   "tax": 2297.29
+  },
+  {
+   "month": 202501,
+   "avgWage": 897.75,
+   "numInsured": 17,
+   "tax": 3623.92
+  },
+  {
+   "month": 202502,
+   "avgWage": 1069.89,
+   "numInsured": 15,
+   "tax": 3772.71
+  },
+  {
+   "month": 202503,
+   "avgWage": 1067.51,
+   "numInsured": 15,
+   "tax": 3764.76
+  },
+  {
+   "month": 202504,
+   "avgWage": 1019.43,
+   "numInsured": 15,
+   "tax": 3591.44
+  },
+  {
+   "month": 202505,
+   "avgWage": 1102.94,
+   "numInsured": 14,
+   "tax": 3606.82
+  },
+  {
+   "month": 202506,
+   "avgWage": 1179.73,
+   "numInsured": 12,
+   "tax": 3272.68
+  },
+  {
+   "month": 202507,
+   "avgWage": 1143.79,
+   "numInsured": 13,
+   "tax": 3483.4
+  },
+  {
+   "month": 202508,
+   "avgWage": 1002.09,
+   "numInsured": 12,
+   "tax": 2760.47
+  },
+  {
+   "month": 202509,
+   "avgWage": 958.27,
+   "numInsured": 12,
+   "tax": 2649.69
+  },
+  {
+   "month": 202510,
+   "avgWage": 1015.25,
+   "numInsured": 11,
+   "tax": 2618.33
+  },
+  {
+   "month": 202511,
+   "avgWage": 1028.33,
+   "numInsured": 11,
+   "tax": 2658.29
+  },
+  {
+   "month": 202512,
+   "avgWage": 919.92,
+   "numInsured": 12,
+   "tax": 2607.51
+  },
+  {
+   "month": 202601,
+   "avgWage": 1070.61,
+   "numInsured": 11,
+   "tax": 2770.85
+  },
+  {
+   "month": 202602,
+   "avgWage": 1158.23,
+   "numInsured": 11,
+   "tax": 2967.86
+  },
+  {
+   "month": 202603,
+   "avgWage": 1254.32,
+   "numInsured": 11,
+   "tax": 2969.64
+  },
+  {
+   "month": 202604,
+   "avgWage": 1080.28,
+   "numInsured": 11,
+   "tax": 2562.4
+  },
+  {
+   "month": 202605,
+   "avgWage": 1286.7,
+   "numInsured": 12,
+   "tax": 3321.24
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

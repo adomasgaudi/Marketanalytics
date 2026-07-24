@@ -1,0 +1,165 @@
+{
+ "jarCode": "306632419",
+ "sodraCode": 4167164,
+ "name": "MB TRYS KURORTAI",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Birštono sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 767.2,
+  "numInsured": 8
+ },
+ "months": [
+  {
+   "month": 202405,
+   "avgWage": 879.91,
+   "numInsured": 16,
+   "tax": 3232.59
+  },
+  {
+   "month": 202406,
+   "avgWage": 918.14,
+   "numInsured": 25,
+   "tax": 5113.74
+  },
+  {
+   "month": 202407,
+   "avgWage": 902.39,
+   "numInsured": 33,
+   "tax": 6537.35
+  },
+  {
+   "month": 202408,
+   "avgWage": 977.06,
+   "numInsured": 26,
+   "tax": 5646.12
+  },
+  {
+   "month": 202409,
+   "avgWage": 1060.31,
+   "numInsured": 15,
+   "tax": 3620.84
+  },
+  {
+   "month": 202410,
+   "avgWage": 1132.64,
+   "numInsured": 12,
+   "tax": 3094.76
+  },
+  {
+   "month": 202411,
+   "avgWage": 1197.58,
+   "numInsured": 12,
+   "tax": 3308.82
+  },
+  {
+   "month": 202412,
+   "avgWage": 1022.31,
+   "numInsured": 11,
+   "tax": 2604.95
+  },
+  {
+   "month": 202501,
+   "avgWage": 715.84,
+   "numInsured": 9,
+   "tax": 1450.86
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 1429.98,
+   "numInsured": 4,
+   "tax": 1216.63
+  },
+  {
+   "month": 202506,
+   "avgWage": 811.18,
+   "numInsured": 16,
+   "tax": 2840.99
+  },
+  {
+   "month": 202507,
+   "avgWage": 1198.79,
+   "numInsured": 19,
+   "tax": 5003.47
+  },
+  {
+   "month": 202508,
+   "avgWage": 1098.8,
+   "numInsured": 20,
+   "tax": 4849.55
+  },
+  {
+   "month": 202509,
+   "avgWage": 915.01,
+   "numInsured": 4,
+   "tax": 795.25
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202605,
+   "avgWage": 767.2,
+   "numInsured": 8,
+   "tax": 1305.45
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

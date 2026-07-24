@@ -1,0 +1,135 @@
+{
+ "jarCode": "306714453",
+ "sodraCode": 4202954,
+ "name": "UAB DAINELĖ",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 663.85,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": 423.94,
+   "numInsured": 18,
+   "tax": 1736.49
+  },
+  {
+   "month": 202601,
+   "avgWage": 385.96,
+   "numInsured": 18,
+   "tax": 1603.88
+  },
+  {
+   "month": 202602,
+   "avgWage": 597.53,
+   "numInsured": 11,
+   "tax": 1529.94
+  },
+  {
+   "month": 202603,
+   "avgWage": 508.58,
+   "numInsured": 17,
+   "tax": 1926.74
+  },
+  {
+   "month": 202604,
+   "avgWage": 656.84,
+   "numInsured": 11,
+   "tax": 1561.16
+  },
+  {
+   "month": 202605,
+   "avgWage": 663.85,
+   "numInsured": 6,
+   "tax": 858.82
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

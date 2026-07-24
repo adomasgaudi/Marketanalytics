@@ -1,0 +1,105 @@
+{
+ "jarCode": "306399687",
+ "sodraCode": 4142811,
+ "name": "UAB \"ARENEM\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202510,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202310,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202311,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202312,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202401,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202402,
+   "avgWage": 224.9,
+   "numInsured": 7,
+   "tax": 338.95
+  },
+  {
+   "month": 202403,
+   "avgWage": 771.28,
+   "numInsured": 12,
+   "tax": 2097.54
+  },
+  {
+   "month": 202404,
+   "avgWage": 686.97,
+   "numInsured": 14,
+   "tax": 2200.87
+  },
+  {
+   "month": 202405,
+   "avgWage": 653.83,
+   "numInsured": 20,
+   "tax": 2921.31
+  },
+  {
+   "month": 202406,
+   "avgWage": 501.74,
+   "numInsured": 43,
+   "tax": 4759.46
+  },
+  {
+   "month": 202407,
+   "avgWage": 686.76,
+   "numInsured": 40,
+   "tax": 6080.09
+  },
+  {
+   "month": 202408,
+   "avgWage": 669.04,
+   "numInsured": 40,
+   "tax": 5894.06
+  },
+  {
+   "month": 202409,
+   "avgWage": 707.36,
+   "numInsured": 26,
+   "tax": 4116.51
+  },
+  {
+   "month": 202410,
+   "avgWage": 687.91,
+   "numInsured": 21,
+   "tax": 3232.55
+  },
+  {
+   "month": 202411,
+   "avgWage": 769.92,
+   "numInsured": 21,
+   "tax": 3636.97
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

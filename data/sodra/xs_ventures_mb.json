@@ -1,0 +1,135 @@
+{
+ "jarCode": "306987612",
+ "sodraCode": 4271222,
+ "name": "XS VENTURES, MB",
+ "ecoActName": "Maitinimo teikimo ir gėrimų tiekimo veikla",
+ "municipality": "Pasvalio r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 202410,
+   "avgWage": 223.02,
+   "numInsured": 6,
+   "tax": 289.01
+  },
+  {
+   "month": 202411,
+   "avgWage": 472.89,
+   "numInsured": 6,
+   "tax": 614.64
+  },
+  {
+   "month": 202412,
+   "avgWage": 316.64,
+   "numInsured": 7,
+   "tax": 483.25
+  },
+  {
+   "month": 202501,
+   "avgWage": 201.13,
+   "numInsured": 6,
+   "tax": 265.19
+  },
+  {
+   "month": 202502,
+   "avgWage": 322.83,
+   "numInsured": 6,
+   "tax": 449.16
+  },
+  {
+   "month": 202503,
+   "avgWage": 501.36,
+   "numInsured": 5,
+   "tax": 582.68
+  },
+  {
+   "month": 202504,
+   "avgWage": 453.48,
+   "numInsured": 5,
+   "tax": 522.43
+  },
+  {
+   "month": 202505,
+   "avgWage": 397.43,
+   "numInsured": 5,
+   "tax": 468.19
+  },
+  {
+   "month": 202506,
+   "avgWage": 327.56,
+   "numInsured": 4,
+   "tax": 310.8
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": 273.95,
+   "numInsured": 4,
+   "tax": 250.35
+  },
+  {
+   "month": 202511,
+   "avgWage": 121.07,
+   "numInsured": 4,
+   "tax": 109.79
+  },
+  {
+   "month": 202512,
+   "avgWage": 118.86,
+   "numInsured": 4,
+   "tax": 104.32
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": 143.95,
+   "numInsured": 5,
+   "tax": 169.68
+  },
+  {
+   "month": 202604,
+   "avgWage": 156.14,
+   "numInsured": 4,
+   "tax": 151.58
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

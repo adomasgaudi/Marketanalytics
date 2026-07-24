@@ -1,0 +1,123 @@
+{
+ "jarCode": "306311609",
+ "sodraCode": 4091684,
+ "name": "MB KAVOS SPOTAS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Jonavos r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 1490.06,
+  "numInsured": 6
+ },
+ "months": [
+  {
+   "month": 202412,
+   "avgWage": 416.6,
+   "numInsured": 7,
+   "tax": 696.66
+  },
+  {
+   "month": 202501,
+   "avgWage": 591.1,
+   "numInsured": 11,
+   "tax": 1546.31
+  },
+  {
+   "month": 202502,
+   "avgWage": 841.14,
+   "numInsured": 9,
+   "tax": 1804.83
+  },
+  {
+   "month": 202503,
+   "avgWage": 786.54,
+   "numInsured": 8,
+   "tax": 1512.69
+  },
+  {
+   "month": 202504,
+   "avgWage": 631.19,
+   "numInsured": 11,
+   "tax": 1670.91
+  },
+  {
+   "month": 202505,
+   "avgWage": 723.52,
+   "numInsured": 12,
+   "tax": 2045.99
+  },
+  {
+   "month": 202506,
+   "avgWage": 880.99,
+   "numInsured": 10,
+   "tax": 2041.31
+  },
+  {
+   "month": 202507,
+   "avgWage": 1249.59,
+   "numInsured": 7,
+   "tax": 2005.65
+  },
+  {
+   "month": 202508,
+   "avgWage": 1061.83,
+   "numInsured": 8,
+   "tax": 1948.67
+  },
+  {
+   "month": 202509,
+   "avgWage": 1272.02,
+   "numInsured": 7,
+   "tax": 2053.33
+  },
+  {
+   "month": 202510,
+   "avgWage": 643.91,
+   "numInsured": 8,
+   "tax": 1099.05
+  },
+  {
+   "month": 202511,
+   "avgWage": 1403.56,
+   "numInsured": 6,
+   "tax": 1888.57
+  },
+  {
+   "month": 202512,
+   "avgWage": 918.31,
+   "numInsured": 8,
+   "tax": 1685.7
+  },
+  {
+   "month": 202601,
+   "avgWage": 978.78,
+   "numInsured": 9,
+   "tax": 2046.68
+  },
+  {
+   "month": 202602,
+   "avgWage": 955.44,
+   "numInsured": 8,
+   "tax": 1710.54
+  },
+  {
+   "month": 202603,
+   "avgWage": 1378.52,
+   "numInsured": 6,
+   "tax": 1870.23
+  },
+  {
+   "month": 202604,
+   "avgWage": 1472.27,
+   "numInsured": 6,
+   "tax": 1983.94
+  },
+  {
+   "month": 202605,
+   "avgWage": 1490.06,
+   "numInsured": 6,
+   "tax": 2006.65
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

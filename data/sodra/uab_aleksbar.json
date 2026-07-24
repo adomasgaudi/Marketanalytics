@@ -1,0 +1,129 @@
+{
+ "jarCode": "307019981",
+ "sodraCode": 4287218,
+ "name": "UAB \"ALEKSBAR\"",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 938.75,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": 706.67,
+   "numInsured": 4,
+   "tax": 658.25
+  },
+  {
+   "month": 202501,
+   "avgWage": 794.77,
+   "numInsured": 4,
+   "tax": 740.37
+  },
+  {
+   "month": 202502,
+   "avgWage": 845.0,
+   "numInsured": 4,
+   "tax": 789.13
+  },
+  {
+   "month": 202503,
+   "avgWage": 780.25,
+   "numInsured": 4,
+   "tax": 726.27
+  },
+  {
+   "month": 202504,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202505,
+   "avgWage": 845.0,
+   "numInsured": 4,
+   "tax": 789.13
+  },
+  {
+   "month": 202506,
+   "avgWage": 765.09,
+   "numInsured": 4,
+   "tax": 711.55
+  },
+  {
+   "month": 202507,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202508,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202509,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202510,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202511,
+   "avgWage": 845.25,
+   "numInsured": 4,
+   "tax": 789.37
+  },
+  {
+   "month": 202512,
+   "avgWage": 780.1,
+   "numInsured": 4,
+   "tax": 726.13
+  },
+  {
+   "month": 202601,
+   "avgWage": 870.0,
+   "numInsured": 4,
+   "tax": 809.95
+  },
+  {
+   "month": 202602,
+   "avgWage": 938.75,
+   "numInsured": 4,
+   "tax": 876.69
+  },
+  {
+   "month": 202603,
+   "avgWage": 938.75,
+   "numInsured": 4,
+   "tax": 807.39
+  },
+  {
+   "month": 202604,
+   "avgWage": 938.75,
+   "numInsured": 4,
+   "tax": 807.39
+  },
+  {
+   "month": 202605,
+   "avgWage": 938.75,
+   "numInsured": 4,
+   "tax": 807.39
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

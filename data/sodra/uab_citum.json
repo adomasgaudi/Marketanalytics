@@ -1,0 +1,159 @@
+{
+ "jarCode": "306681170",
+ "sodraCode": 4191520,
+ "name": "UAB \"CITUM\"",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 592.85,
+  "numInsured": 15
+ },
+ "months": [
+  {
+   "month": 202406,
+   "avgWage": 238.42,
+   "numInsured": 18,
+   "tax": 1016.54
+  },
+  {
+   "month": 202407,
+   "avgWage": 395.14,
+   "numInsured": 22,
+   "tax": 2050.17
+  },
+  {
+   "month": 202408,
+   "avgWage": 404.9,
+   "numInsured": 23,
+   "tax": 2181.59
+  },
+  {
+   "month": 202409,
+   "avgWage": 455.81,
+   "numInsured": 20,
+   "tax": 2144.01
+  },
+  {
+   "month": 202410,
+   "avgWage": 527.26,
+   "numInsured": 20,
+   "tax": 2451.4
+  },
+  {
+   "month": 202411,
+   "avgWage": 779.66,
+   "numInsured": 19,
+   "tax": 3378.18
+  },
+  {
+   "month": 202412,
+   "avgWage": 886.7,
+   "numInsured": 20,
+   "tax": 4014.12
+  },
+  {
+   "month": 202501,
+   "avgWage": 749.83,
+   "numInsured": 21,
+   "tax": 3562.23
+  },
+  {
+   "month": 202502,
+   "avgWage": 651.16,
+   "numInsured": 22,
+   "tax": 3227.26
+  },
+  {
+   "month": 202503,
+   "avgWage": 678.03,
+   "numInsured": 22,
+   "tax": 3365.06
+  },
+  {
+   "month": 202504,
+   "avgWage": 799.16,
+   "numInsured": 16,
+   "tax": 2868.7
+  },
+  {
+   "month": 202505,
+   "avgWage": 930.59,
+   "numInsured": 16,
+   "tax": 3337.05
+  },
+  {
+   "month": 202506,
+   "avgWage": 760.29,
+   "numInsured": 17,
+   "tax": 2913.03
+  },
+  {
+   "month": 202507,
+   "avgWage": 517.26,
+   "numInsured": 18,
+   "tax": 2163.03
+  },
+  {
+   "month": 202508,
+   "avgWage": 489.57,
+   "numInsured": 21,
+   "tax": 2415.0
+  },
+  {
+   "month": 202509,
+   "avgWage": 772.84,
+   "numInsured": 19,
+   "tax": 3292.59
+  },
+  {
+   "month": 202510,
+   "avgWage": 834.77,
+   "numInsured": 20,
+   "tax": 3717.89
+  },
+  {
+   "month": 202511,
+   "avgWage": 774.17,
+   "numInsured": 22,
+   "tax": 3807.75
+  },
+  {
+   "month": 202512,
+   "avgWage": 753.01,
+   "numInsured": 21,
+   "tax": 3566.84
+  },
+  {
+   "month": 202601,
+   "avgWage": 484.9,
+   "numInsured": 21,
+   "tax": 2329.32
+  },
+  {
+   "month": 202602,
+   "avgWage": 449.52,
+   "numInsured": 21,
+   "tax": 2154.9
+  },
+  {
+   "month": 202603,
+   "avgWage": 479.24,
+   "numInsured": 20,
+   "tax": 2172.79
+  },
+  {
+   "month": 202604,
+   "avgWage": 549.79,
+   "numInsured": 18,
+   "tax": 2216.85
+  },
+  {
+   "month": 202605,
+   "avgWage": 592.85,
+   "numInsured": 15,
+   "tax": 2013.74
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

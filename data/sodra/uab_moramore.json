@@ -1,0 +1,153 @@
+{
+ "jarCode": "306638112",
+ "sodraCode": 4171371,
+ "name": "UAB MORAMORE",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 398.38,
+  "numInsured": 7
+ },
+ "months": [
+  {
+   "month": 202404,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": 780.0,
+   "numInsured": 5,
+   "tax": 946.54
+  },
+  {
+   "month": 202407,
+   "avgWage": 780.0,
+   "numInsured": 5,
+   "tax": 946.54
+  },
+  {
+   "month": 202408,
+   "avgWage": 718.33,
+   "numInsured": 5,
+   "tax": 871.7
+  },
+  {
+   "month": 202412,
+   "avgWage": 401.4,
+   "numInsured": 4,
+   "tax": 389.68
+  },
+  {
+   "month": 202501,
+   "avgWage": 313.86,
+   "numInsured": 4,
+   "tax": 304.69
+  },
+  {
+   "month": 202502,
+   "avgWage": 292.16,
+   "numInsured": 5,
+   "tax": 354.54
+  },
+  {
+   "month": 202503,
+   "avgWage": 713.5,
+   "numInsured": 5,
+   "tax": 844.64
+  },
+  {
+   "month": 202504,
+   "avgWage": 568.99,
+   "numInsured": 4,
+   "tax": 513.82
+  },
+  {
+   "month": 202505,
+   "avgWage": 563.91,
+   "numInsured": 4,
+   "tax": 508.9
+  },
+  {
+   "month": 202506,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": 348.25,
+   "numInsured": 4,
+   "tax": 314.95
+  },
+  {
+   "month": 202509,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": 684.89,
+   "numInsured": 4,
+   "tax": 626.35
+  },
+  {
+   "month": 202511,
+   "avgWage": 552.94,
+   "numInsured": 4,
+   "tax": 498.25
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": 503.46,
+   "numInsured": 5,
+   "tax": 564.21
+  },
+  {
+   "month": 202602,
+   "avgWage": 633.71,
+   "numInsured": 5,
+   "tax": 701.95
+  },
+  {
+   "month": 202603,
+   "avgWage": 799.8,
+   "numInsured": 6,
+   "tax": 1088.54
+  },
+  {
+   "month": 202604,
+   "avgWage": 270.6,
+   "numInsured": 5,
+   "tax": 289.3
+  },
+  {
+   "month": 202605,
+   "avgWage": 398.38,
+   "numInsured": 7,
+   "tax": 642.03
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

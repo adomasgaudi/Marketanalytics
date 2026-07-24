@@ -1,0 +1,81 @@
+{
+ "jarCode": "306679269",
+ "sodraCode": 4190651,
+ "name": "MB GARANTUOTA SĖKMĖ",
+ "ecoActName": "Maisto ir gėrimų tiekimas pagal sutartį ir kitų maitinimo paslaugų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202509,
+  "avgWage": 984.69,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 202406,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202407,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202410,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202504,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202505,
+   "avgWage": 1205.6,
+   "numInsured": 5,
+   "tax": 1294.55
+  },
+  {
+   "month": 202506,
+   "avgWage": 1110.25,
+   "numInsured": 5,
+   "tax": 1199.19
+  },
+  {
+   "month": 202507,
+   "avgWage": 921.47,
+   "numInsured": 6,
+   "tax": 1183.4
+  },
+  {
+   "month": 202508,
+   "avgWage": 1157.38,
+   "numInsured": 5,
+   "tax": 1247.65
+  },
+  {
+   "month": 202509,
+   "avgWage": 984.69,
+   "numInsured": 4,
+   "tax": 853.29
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

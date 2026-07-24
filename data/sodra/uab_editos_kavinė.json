@@ -1,0 +1,117 @@
+{
+ "jarCode": "307039158",
+ "sodraCode": 4298099,
+ "name": "UAB EDITOS KAVINĖ",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Šiaulių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 3
+ },
+ "months": [
+  {
+   "month": 202412,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202501,
+   "avgWage": 684.53,
+   "numInsured": 6,
+   "tax": 984.23
+  },
+  {
+   "month": 202502,
+   "avgWage": 903.02,
+   "numInsured": 7,
+   "tax": 1503.37
+  },
+  {
+   "month": 202503,
+   "avgWage": 1026.83,
+   "numInsured": 6,
+   "tax": 1465.36
+  },
+  {
+   "month": 202504,
+   "avgWage": 1055.5,
+   "numInsured": 6,
+   "tax": 1505.88
+  },
+  {
+   "month": 202505,
+   "avgWage": 974.03,
+   "numInsured": 6,
+   "tax": 1387.25
+  },
+  {
+   "month": 202506,
+   "avgWage": 1057.0,
+   "numInsured": 5,
+   "tax": 1251.54
+  },
+  {
+   "month": 202507,
+   "avgWage": 957.26,
+   "numInsured": 6,
+   "tax": 1349.07
+  },
+  {
+   "month": 202508,
+   "avgWage": 1057.0,
+   "numInsured": 5,
+   "tax": 1282.67
+  },
+  {
+   "month": 202509,
+   "avgWage": 1057.0,
+   "numInsured": 5,
+   "tax": 1282.68
+  },
+  {
+   "month": 202510,
+   "avgWage": 912.58,
+   "numInsured": 5,
+   "tax": 1107.43
+  },
+  {
+   "month": 202511,
+   "avgWage": 841.39,
+   "numInsured": 5,
+   "tax": 1021.02
+  },
+  {
+   "month": 202512,
+   "avgWage": 692.39,
+   "numInsured": 4,
+   "tax": 672.17
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": 715.12,
+   "numInsured": 4,
+   "tax": 650.14
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

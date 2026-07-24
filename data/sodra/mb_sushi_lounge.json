@@ -1,0 +1,129 @@
+{
+ "jarCode": "306981901",
+ "sodraCode": 4264924,
+ "name": "MB SUSHI LOUNGE",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 484.61,
+  "numInsured": 13
+ },
+ "months": [
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": 303.3,
+   "numInsured": 5,
+   "tax": 339.42
+  },
+  {
+   "month": 202501,
+   "avgWage": 349.33,
+   "numInsured": 6,
+   "tax": 458.4
+  },
+  {
+   "month": 202502,
+   "avgWage": 401.02,
+   "numInsured": 6,
+   "tax": 538.94
+  },
+  {
+   "month": 202503,
+   "avgWage": 313.44,
+   "numInsured": 6,
+   "tax": 408.88
+  },
+  {
+   "month": 202504,
+   "avgWage": 243.05,
+   "numInsured": 7,
+   "tax": 368.75
+  },
+  {
+   "month": 202505,
+   "avgWage": 524.33,
+   "numInsured": 6,
+   "tax": 680.77
+  },
+  {
+   "month": 202506,
+   "avgWage": 331.06,
+   "numInsured": 6,
+   "tax": 424.48
+  },
+  {
+   "month": 202507,
+   "avgWage": 341.32,
+   "numInsured": 4,
+   "tax": 298.18
+  },
+  {
+   "month": 202508,
+   "avgWage": 470.7,
+   "numInsured": 4,
+   "tax": 423.79
+  },
+  {
+   "month": 202509,
+   "avgWage": 436.76,
+   "numInsured": 4,
+   "tax": 392.37
+  },
+  {
+   "month": 202510,
+   "avgWage": 412.28,
+   "numInsured": 5,
+   "tax": 465.22
+  },
+  {
+   "month": 202511,
+   "avgWage": 436.18,
+   "numInsured": 11,
+   "tax": 1093.03
+  },
+  {
+   "month": 202512,
+   "avgWage": 634.58,
+   "numInsured": 9,
+   "tax": 1316.12
+  },
+  {
+   "month": 202601,
+   "avgWage": 690.33,
+   "numInsured": 7,
+   "tax": 1116.65
+  },
+  {
+   "month": 202602,
+   "avgWage": 743.44,
+   "numInsured": 9,
+   "tax": 1511.39
+  },
+  {
+   "month": 202603,
+   "avgWage": 602.93,
+   "numInsured": 10,
+   "tax": 1348.53
+  },
+  {
+   "month": 202604,
+   "avgWage": 434.73,
+   "numInsured": 13,
+   "tax": 1239.91
+  },
+  {
+   "month": 202605,
+   "avgWage": 484.61,
+   "numInsured": 13,
+   "tax": 1393.07
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

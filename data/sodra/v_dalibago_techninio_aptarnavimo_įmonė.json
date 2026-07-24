@@ -1,0 +1,141 @@
+{
+ "jarCode": "140447864",
+ "sodraCode": 360138,
+ "name": "V. DALIBAGO TECHNINIO APTARNAVIMO ĮMONĖ",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 202008,
+  "avgWage": 369.0,
+  "numInsured": 7
+ },
+ "months": [
+  {
+   "month": 201706,
+   "avgWage": 140.38,
+   "numInsured": 8,
+   "tax": 466.3
+  },
+  {
+   "month": 201707,
+   "avgWage": 170.89,
+   "numInsured": 9,
+   "tax": 657.76
+  },
+  {
+   "month": 201708,
+   "avgWage": 168.75,
+   "numInsured": 8,
+   "tax": 579.2
+  },
+  {
+   "month": 201709,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201804,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201805,
+   "avgWage": 223.75,
+   "numInsured": 4,
+   "tax": 388.78
+  },
+  {
+   "month": 201806,
+   "avgWage": 195.67,
+   "numInsured": 6,
+   "tax": 506.19
+  },
+  {
+   "month": 201807,
+   "avgWage": 201.78,
+   "numInsured": 8,
+   "tax": 690.83
+  },
+  {
+   "month": 201808,
+   "avgWage": 225.94,
+   "numInsured": 8,
+   "tax": 772.2
+  },
+  {
+   "month": 201809,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201904,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201905,
+   "avgWage": 330.0,
+   "numInsured": 4,
+   "tax": 329.42
+  },
+  {
+   "month": 201906,
+   "avgWage": 364.14,
+   "numInsured": 7,
+   "tax": 611.11
+  },
+  {
+   "month": 201907,
+   "avgWage": 269.78,
+   "numInsured": 9,
+   "tax": 581.33
+  },
+  {
+   "month": 201908,
+   "avgWage": 398.14,
+   "numInsured": 7,
+   "tax": 650.96
+  },
+  {
+   "month": 201909,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202005,
+   "avgWage": 319.6,
+   "numInsured": 5,
+   "tax": 383.42
+  },
+  {
+   "month": 202006,
+   "avgWage": 233.51,
+   "numInsured": 9,
+   "tax": 493.38
+  },
+  {
+   "month": 202007,
+   "avgWage": 276.93,
+   "numInsured": 8,
+   "tax": 513.45
+  },
+  {
+   "month": 202008,
+   "avgWage": 369.0,
+   "numInsured": 7,
+   "tax": 595.42
+  },
+  {
+   "month": 202009,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,177 @@
+{
+ "jarCode": "306620235",
+ "sodraCode": 4160033,
+ "name": "MAŽOJI BENDRIJA SWEETROLLAS",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilkaviškio r. sav.",
+ "latest": {
+  "month": 202604,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202401,
+   "avgWage": 572.85,
+   "numInsured": 5,
+   "tax": 609.22
+  },
+  {
+   "month": 202402,
+   "avgWage": 401.07,
+   "numInsured": 6,
+   "tax": 519.02
+  },
+  {
+   "month": 202403,
+   "avgWage": 707.24,
+   "numInsured": 7,
+   "tax": 1069.64
+  },
+  {
+   "month": 202404,
+   "avgWage": 560.59,
+   "numInsured": 7,
+   "tax": 857.12
+  },
+  {
+   "month": 202405,
+   "avgWage": 736.6,
+   "numInsured": 6,
+   "tax": 983.52
+  },
+  {
+   "month": 202406,
+   "avgWage": 834.88,
+   "numInsured": 5,
+   "tax": 957.05
+  },
+  {
+   "month": 202407,
+   "avgWage": 1304.93,
+   "numInsured": 4,
+   "tax": 1199.9
+  },
+  {
+   "month": 202408,
+   "avgWage": 956.15,
+   "numInsured": 5,
+   "tax": 1083.96
+  },
+  {
+   "month": 202409,
+   "avgWage": 820.44,
+   "numInsured": 7,
+   "tax": 1245.19
+  },
+  {
+   "month": 202410,
+   "avgWage": 1249.29,
+   "numInsured": 6,
+   "tax": 1621.61
+  },
+  {
+   "month": 202411,
+   "avgWage": 1045.62,
+   "numInsured": 7,
+   "tax": 1582.29
+  },
+  {
+   "month": 202412,
+   "avgWage": 1343.85,
+   "numInsured": 6,
+   "tax": 1746.33
+  },
+  {
+   "month": 202501,
+   "avgWage": 1081.83,
+   "numInsured": 6,
+   "tax": 1408.62
+  },
+  {
+   "month": 202502,
+   "avgWage": 1100.51,
+   "numInsured": 6,
+   "tax": 1439.29
+  },
+  {
+   "month": 202503,
+   "avgWage": 1142.35,
+   "numInsured": 6,
+   "tax": 1485.43
+  },
+  {
+   "month": 202504,
+   "avgWage": 1127.93,
+   "numInsured": 8,
+   "tax": 1945.55
+  },
+  {
+   "month": 202505,
+   "avgWage": 1275.88,
+   "numInsured": 6,
+   "tax": 1661.87
+  },
+  {
+   "month": 202506,
+   "avgWage": 1596.86,
+   "numInsured": 6,
+   "tax": 2110.81
+  },
+  {
+   "month": 202507,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202508,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202510,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202511,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202512,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202601,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202602,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202603,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 202604,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

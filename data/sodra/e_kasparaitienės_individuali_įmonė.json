@@ -1,0 +1,63 @@
+{
+ "jarCode": "141873571",
+ "sodraCode": 911391,
+ "name": "E. KASPARAITIENĖS INDIVIDUALI ĮMONĖ",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Klaipėdos m. sav.",
+ "latest": {
+  "month": 201712,
+  "avgWage": 0.0,
+  "numInsured": 3
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 258.93,
+   "numInsured": 7,
+   "tax": 741.43
+  },
+  {
+   "month": 201702,
+   "avgWage": 272.59,
+   "numInsured": 6,
+   "tax": 661.5
+  },
+  {
+   "month": 201703,
+   "avgWage": 310.58,
+   "numInsured": 6,
+   "tax": 754.76
+  },
+  {
+   "month": 201704,
+   "avgWage": 323.58,
+   "numInsured": 5,
+   "tax": 656.1
+  },
+  {
+   "month": 201707,
+   "avgWage": 274.06,
+   "numInsured": 6,
+   "tax": 666.46
+  },
+  {
+   "month": 201710,
+   "avgWage": 326.28,
+   "numInsured": 6,
+   "tax": 792.59
+  },
+  {
+   "month": 201711,
+   "avgWage": 633.16,
+   "numInsured": 5,
+   "tax": 1306.41
+  },
+  {
+   "month": 201712,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

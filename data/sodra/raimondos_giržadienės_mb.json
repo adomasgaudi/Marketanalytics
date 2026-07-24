@@ -1,0 +1,153 @@
+{
+ "jarCode": "306604583",
+ "sodraCode": 4158494,
+ "name": "RAIMONDOS GIRŽADIENĖS MB",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Šiaulių r. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 993.84,
+  "numInsured": 7
+ },
+ "months": [
+  {
+   "month": 202407,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202408,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202409,
+   "avgWage": 749.92,
+   "numInsured": 5,
+   "tax": 903.5
+  },
+  {
+   "month": 202410,
+   "avgWage": 777.06,
+   "numInsured": 4,
+   "tax": 754.37
+  },
+  {
+   "month": 202411,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202412,
+   "avgWage": 723.5,
+   "numInsured": 4,
+   "tax": 702.38
+  },
+  {
+   "month": 202501,
+   "avgWage": 836.25,
+   "numInsured": 4,
+   "tax": 811.84
+  },
+  {
+   "month": 202502,
+   "avgWage": 756.9,
+   "numInsured": 4,
+   "tax": 734.8
+  },
+  {
+   "month": 202503,
+   "avgWage": 784.52,
+   "numInsured": 4,
+   "tax": 761.62
+  },
+  {
+   "month": 202504,
+   "avgWage": 729.19,
+   "numInsured": 4,
+   "tax": 707.9
+  },
+  {
+   "month": 202505,
+   "avgWage": 885.64,
+   "numInsured": 5,
+   "tax": 1074.72
+  },
+  {
+   "month": 202506,
+   "avgWage": 849.48,
+   "numInsured": 4,
+   "tax": 824.68
+  },
+  {
+   "month": 202507,
+   "avgWage": 986.4,
+   "numInsured": 5,
+   "tax": 1148.75
+  },
+  {
+   "month": 202508,
+   "avgWage": 993.56,
+   "numInsured": 6,
+   "tax": 1369.99
+  },
+  {
+   "month": 202509,
+   "avgWage": 611.18,
+   "numInsured": 7,
+   "tax": 1024.77
+  },
+  {
+   "month": 202510,
+   "avgWage": 777.84,
+   "numInsured": 7,
+   "tax": 1262.83
+  },
+  {
+   "month": 202511,
+   "avgWage": 722.3,
+   "numInsured": 7,
+   "tax": 1155.74
+  },
+  {
+   "month": 202512,
+   "avgWage": 836.25,
+   "numInsured": 4,
+   "tax": 764.23
+  },
+  {
+   "month": 202601,
+   "avgWage": 848.23,
+   "numInsured": 4,
+   "tax": 770.82
+  },
+  {
+   "month": 202602,
+   "avgWage": 811.48,
+   "numInsured": 4,
+   "tax": 746.6
+  },
+  {
+   "month": 202603,
+   "avgWage": 883.94,
+   "numInsured": 5,
+   "tax": 1019.35
+  },
+  {
+   "month": 202604,
+   "avgWage": 944.85,
+   "numInsured": 6,
+   "tax": 1270.34
+  },
+  {
+   "month": 202605,
+   "avgWage": 993.84,
+   "numInsured": 7,
+   "tax": 1571.11
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

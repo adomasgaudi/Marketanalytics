@@ -1,0 +1,165 @@
+{
+ "jarCode": "306688236",
+ "sodraCode": 4193333,
+ "name": "MB ZIO RIGO",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 905.63,
+  "numInsured": 8
+ },
+ "months": [
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": 809.32,
+   "numInsured": 5,
+   "tax": 867.27
+  },
+  {
+   "month": 202407,
+   "avgWage": 890.7,
+   "numInsured": 5,
+   "tax": 956.98
+  },
+  {
+   "month": 202408,
+   "avgWage": 670.16,
+   "numInsured": 5,
+   "tax": 718.04
+  },
+  {
+   "month": 202409,
+   "avgWage": 570.92,
+   "numInsured": 4,
+   "tax": 499.64
+  },
+  {
+   "month": 202410,
+   "avgWage": 577.53,
+   "numInsured": 5,
+   "tax": 627.39
+  },
+  {
+   "month": 202411,
+   "avgWage": 196.34,
+   "numInsured": 4,
+   "tax": 178.74
+  },
+  {
+   "month": 202412,
+   "avgWage": 254.31,
+   "numInsured": 5,
+   "tax": 277.75
+  },
+  {
+   "month": 202501,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202502,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202503,
+   "avgWage": 623.82,
+   "numInsured": 4,
+   "tax": 538.38
+  },
+  {
+   "month": 202504,
+   "avgWage": 991.63,
+   "numInsured": 4,
+   "tax": 874.06
+  },
+  {
+   "month": 202505,
+   "avgWage": 1135.68,
+   "numInsured": 4,
+   "tax": 1003.58
+  },
+  {
+   "month": 202506,
+   "avgWage": 1117.52,
+   "numInsured": 5,
+   "tax": 1235.53
+  },
+  {
+   "month": 202507,
+   "avgWage": 1027.11,
+   "numInsured": 6,
+   "tax": 1399.66
+  },
+  {
+   "month": 202508,
+   "avgWage": 1017.98,
+   "numInsured": 5,
+   "tax": 1199.88
+  },
+  {
+   "month": 202509,
+   "avgWage": 765.94,
+   "numInsured": 5,
+   "tax": 889.81
+  },
+  {
+   "month": 202510,
+   "avgWage": 731.63,
+   "numInsured": 6,
+   "tax": 1020.37
+  },
+  {
+   "month": 202511,
+   "avgWage": 786.05,
+   "numInsured": 6,
+   "tax": 1100.25
+  },
+  {
+   "month": 202512,
+   "avgWage": 963.9,
+   "numInsured": 6,
+   "tax": 1361.35
+  },
+  {
+   "month": 202601,
+   "avgWage": 955.19,
+   "numInsured": 6,
+   "tax": 1340.52
+  },
+  {
+   "month": 202602,
+   "avgWage": 1190.27,
+   "numInsured": 6,
+   "tax": 1689.8
+  },
+  {
+   "month": 202603,
+   "avgWage": 797.74,
+   "numInsured": 5,
+   "tax": 924.58
+  },
+  {
+   "month": 202604,
+   "avgWage": 774.59,
+   "numInsured": 7,
+   "tax": 1240.16
+  },
+  {
+   "month": 202605,
+   "avgWage": 905.63,
+   "numInsured": 8,
+   "tax": 1645.31
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}
