@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
 import { IconMoon, IconSettings, IconSun } from "./Icons";
 import { useViewMode, ViewSub } from "./ViewSync";
+import { NuqsBoundary } from "@/components/nuqs-boundary";
 
 /**
  * Legacy topnav, replicated 1:1: logo-as-button (back chevron off home, view
@@ -25,7 +26,21 @@ const PALETTES = [
 ] as const;
 type Palette = (typeof PALETTES)[number];
 
-export function TopNav({ active }: { active?: "markets" | "companies" }) {
+/**
+ * Wrapper with its own nuqs boundary: useViewMode reads the URL, and a page
+ * without an adapter (the static /companies/<slug> profiles) would crash at
+ * prerender. The boundary scopes the client-side bailout to the nav alone, so
+ * those pages still export their CONTENT as real HTML.
+ */
+export function TopNav(props: { active?: "markets" | "companies" }) {
+  return (
+    <NuqsBoundary>
+      <TopNavInner {...props} />
+    </NuqsBoundary>
+  );
+}
+
+function TopNavInner({ active }: { active?: "markets" | "companies" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   // Secret dev key: 8 clicks on the version label enter Dev mode (hint at 5).

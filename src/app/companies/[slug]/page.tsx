@@ -6,6 +6,7 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { segName } from "@/features/market-rough/segments";
 import { TopNav } from "@/features/market-rough/TopNav";
+import { SODRA } from "@/features/explore/sodra-data";
 import { slugify, slugIndex } from "@/lib/slug";
 
 /**
@@ -45,6 +46,24 @@ export async function generateMetadata(props: {
   };
 }
 
+/** Headcount range within a year, from Sodra's monthly insured counts —
+    "34–41" says more about an agency than the flat average would. */
+function employeeRange(brand: string): Record<number, string> {
+  const months = SODRA.find((c) => c.brand === brand)?.months ?? [];
+  const byYear: Record<number, number[]> = {};
+  for (const m of months) {
+    if (m.insured == null) continue;
+    (byYear[Math.floor(m.month / 100)] ??= []).push(m.insured);
+  }
+  return Object.fromEntries(
+    Object.entries(byYear).map(([year, counts]) => {
+      const min = Math.min(...counts);
+      const max = Math.max(...counts);
+      return [year, min === max ? String(min) : `${min}–${max}`];
+    }),
+  );
+}
+
 export default async function CompanyPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   const data = companyData(slug);
@@ -52,6 +71,7 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
   const { model, brand, years, profile } = data;
   const meta = years[0];
   const dashHref = `/companies?companies=${encodeURIComponent(brand)}`;
+  const empRange = employeeRange(brand);
 
   // Peers: same main segment, by latest turnover — internal links that let
   // crawlers (and readers) walk the whole set without a 132-link footer.
@@ -114,7 +134,6 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
                 <th className="py-2 pr-3">Year</th>
                 <th className="py-2 pr-3">Turnover</th>
                 <th className="py-2 pr-3">Profit</th>
-                <th className="py-2 pr-3">Wage bill</th>
                 <th className="py-2 pr-3">Employees</th>
                 <th className="py-2">Avg salary / mo</th>
               </tr>
@@ -125,8 +144,9 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
                   <td className="py-2 pr-3 font-semibold">{y.year}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.revenue)}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.profit)}</td>
-                  <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.salaryCosts)}</td>
-                  <td className="py-2 pr-3 tabular-nums">{fmtInt(y.employees)}</td>
+                  <td className="py-2 pr-3 tabular-nums">
+                    {empRange[y.year] ?? fmtInt(y.employees)}
+                  </td>
                   <td className="py-2 tabular-nums">{fmtEurFull(y.avgSalary)}</td>
                 </tr>
               ))}
@@ -134,8 +154,9 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
           </table>
         </div>
         <p className="text-muted mt-2 text-[11.5px]">
-          Sources: Registrų centras filings (turnover, profit, wage bill) and Sodra
-          (headcount, salaries). Salaries are monthly averages before tax.
+          Sources: Registrų centras filings (turnover, profit) and Sodra (headcount,
+          salaries). Employees is the year&apos;s min–max of Sodra&apos;s monthly insured
+          counts; salaries are monthly averages before tax.
         </p>
 
         <h2 className="text-ink mt-10 mb-3 text-[18px] font-bold">Company facts</h2>

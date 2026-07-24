@@ -1,8 +1,6 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { DevCornerMount } from "@/dev/DevCornerMount";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -74,15 +72,11 @@ export default function RootLayout({
           content="object-src 'none'; base-uri 'self'"
         />
       </head>
-      {/* NuqsAdapter lets the dashboard keep its selections (year, basis,
-          filters) in the URL, so a view can be shared and survives a refresh. */}
+      {/* URL-state (nuqs) is no longer provided here: the adapter's
+          useSearchParams() forced every page to export as an empty HTML shell.
+          Dashboard pages wrap themselves in <NuqsBoundary> instead. */}
       <body>
-        {/* Suspense is required for the static export: nuqs reads
-            useSearchParams, which has no value at prerender time, so the page
-            must be allowed to bail out to the client instead of failing. */}
-        <Suspense>
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </Suspense>
+        {children}
         {/* Dev overlay — the Pepper dev corner (src/dev): edit/view trays,
             x-ray, depth experiments, version history. Dev mode only. */}
         <DevCornerMount />

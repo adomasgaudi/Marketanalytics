@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { slugify } from "@/lib/slug";
 import type { CompanyProfile } from "./profile";
 import { segName } from "./segments";
 import { useSegColors } from "./useSegColors";
@@ -174,6 +176,14 @@ export function CompanyProfileCard({
           </span>
         </div>
       )}
+      {/* Static profile page — the crawlable twin of this box, at
+          /companies/<slug>: plain-HTML figures, facts and peers. */}
+      <Link
+        href={`/companies/${slugify(brand)}`}
+        className="text-accent mt-2 inline-block text-[12.5px] font-semibold hover:underline"
+      >
+        Full profile page →
+      </Link>
     </div>
   );
 }
