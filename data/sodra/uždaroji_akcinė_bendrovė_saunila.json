@@ -1,0 +1,147 @@
+{
+ "jarCode": "124254481",
+ "sodraCode": 69495,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ SAUNILA",
+ "ecoActName": "Mažmeninė prekyba nespecializuotose parduotuvėse, kuriose vyrauja maistas, gėrimai ir tabakas",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201810,
+  "avgWage": 150.21,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 475.03,
+   "numInsured": 19,
+   "tax": 3661.03
+  },
+  {
+   "month": 201702,
+   "avgWage": 448.97,
+   "numInsured": 19,
+   "tax": 3460.92
+  },
+  {
+   "month": 201703,
+   "avgWage": 486.26,
+   "numInsured": 20,
+   "tax": 3936.22
+  },
+  {
+   "month": 201704,
+   "avgWage": 499.76,
+   "numInsured": 18,
+   "tax": 3650.37
+  },
+  {
+   "month": 201705,
+   "avgWage": 536.23,
+   "numInsured": 19,
+   "tax": 4138.74
+  },
+  {
+   "month": 201706,
+   "avgWage": 413.99,
+   "numInsured": 13,
+   "tax": 2192.43
+  },
+  {
+   "month": 201707,
+   "avgWage": 572.22,
+   "numInsured": 6,
+   "tax": 1413.06
+  },
+  {
+   "month": 201708,
+   "avgWage": 498.82,
+   "numInsured": 6,
+   "tax": 1235.8
+  },
+  {
+   "month": 201709,
+   "avgWage": 343.2,
+   "numInsured": 7,
+   "tax": 997.44
+  },
+  {
+   "month": 201710,
+   "avgWage": 344.42,
+   "numInsured": 6,
+   "tax": 853.42
+  },
+  {
+   "month": 201711,
+   "avgWage": 341.97,
+   "numInsured": 6,
+   "tax": 847.26
+  },
+  {
+   "month": 201712,
+   "avgWage": 350.05,
+   "numInsured": 6,
+   "tax": 867.3
+  },
+  {
+   "month": 201801,
+   "avgWage": 323.75,
+   "numInsured": 6,
+   "tax": 801.44
+  },
+  {
+   "month": 201802,
+   "avgWage": 304.58,
+   "numInsured": 6,
+   "tax": 752.76
+  },
+  {
+   "month": 201803,
+   "avgWage": 354.38,
+   "numInsured": 6,
+   "tax": 880.11
+  },
+  {
+   "month": 201804,
+   "avgWage": 332.2,
+   "numInsured": 6,
+   "tax": 823.24
+  },
+  {
+   "month": 201805,
+   "avgWage": 417.05,
+   "numInsured": 6,
+   "tax": 1042.17
+  },
+  {
+   "month": 201806,
+   "avgWage": 423.32,
+   "numInsured": 5,
+   "tax": 869.18
+  },
+  {
+   "month": 201807,
+   "avgWage": 300.28,
+   "numInsured": 5,
+   "tax": 619.39
+  },
+  {
+   "month": 201808,
+   "avgWage": 239.11,
+   "numInsured": 5,
+   "tax": 490.26
+  },
+  {
+   "month": 201809,
+   "avgWage": 259.45,
+   "numInsured": 4,
+   "tax": 425.35
+  },
+  {
+   "month": 201810,
+   "avgWage": 150.21,
+   "numInsured": 4,
+   "tax": 246.6
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,105 @@
+{
+ "jarCode": "133405669",
+ "sodraCode": 430879,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ KRAIČIO SKRYNIA",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 201803,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 291.79,
+   "numInsured": 7,
+   "tax": 829.22
+  },
+  {
+   "month": 201702,
+   "avgWage": 288.53,
+   "numInsured": 7,
+   "tax": 820.06
+  },
+  {
+   "month": 201703,
+   "avgWage": 291.79,
+   "numInsured": 7,
+   "tax": 829.21
+  },
+  {
+   "month": 201704,
+   "avgWage": 291.79,
+   "numInsured": 7,
+   "tax": 829.21
+  },
+  {
+   "month": 201705,
+   "avgWage": 314.6,
+   "numInsured": 7,
+   "tax": 893.39
+  },
+  {
+   "month": 201706,
+   "avgWage": 295.05,
+   "numInsured": 7,
+   "tax": 838.86
+  },
+  {
+   "month": 201707,
+   "avgWage": 295.49,
+   "numInsured": 7,
+   "tax": 839.67
+  },
+  {
+   "month": 201708,
+   "avgWage": 293.47,
+   "numInsured": 7,
+   "tax": 833.98
+  },
+  {
+   "month": 201709,
+   "avgWage": 308.97,
+   "numInsured": 7,
+   "tax": 878.86
+  },
+  {
+   "month": 201710,
+   "avgWage": 258.0,
+   "numInsured": 5,
+   "tax": 519.31
+  },
+  {
+   "month": 201711,
+   "avgWage": 258.0,
+   "numInsured": 5,
+   "tax": 519.31
+  },
+  {
+   "month": 201712,
+   "avgWage": 258.0,
+   "numInsured": 5,
+   "tax": 519.31
+  },
+  {
+   "month": 201801,
+   "avgWage": 300.0,
+   "numInsured": 5,
+   "tax": 606.7
+  },
+  {
+   "month": 201802,
+   "avgWage": 338.5,
+   "numInsured": 5,
+   "tax": 684.04
+  },
+  {
+   "month": 201803,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

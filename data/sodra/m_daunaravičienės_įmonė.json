@@ -1,0 +1,153 @@
+{
+ "jarCode": "125679115",
+ "sodraCode": 84512,
+ "name": "M. DAUNARAVIČIENĖS ĮMONĖ",
+ "ecoActName": "Kitų maitinimo paslaugų teikimas",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201811,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 221.25,
+   "numInsured": 4,
+   "tax": 365.68
+  },
+  {
+   "month": 201702,
+   "avgWage": 221.25,
+   "numInsured": 4,
+   "tax": 365.68
+  },
+  {
+   "month": 201703,
+   "avgWage": 221.25,
+   "numInsured": 4,
+   "tax": 365.68
+  },
+  {
+   "month": 201704,
+   "avgWage": 221.25,
+   "numInsured": 4,
+   "tax": 365.68
+  },
+  {
+   "month": 201705,
+   "avgWage": 208.3,
+   "numInsured": 4,
+   "tax": 343.83
+  },
+  {
+   "month": 201706,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201707,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201708,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201709,
+   "avgWage": 221.25,
+   "numInsured": 4,
+   "tax": 365.68
+  },
+  {
+   "month": 201710,
+   "avgWage": 231.25,
+   "numInsured": 4,
+   "tax": 382.16
+  },
+  {
+   "month": 201711,
+   "avgWage": 231.25,
+   "numInsured": 4,
+   "tax": 382.16
+  },
+  {
+   "month": 201712,
+   "avgWage": 231.25,
+   "numInsured": 4,
+   "tax": 382.16
+  },
+  {
+   "month": 201801,
+   "avgWage": 231.25,
+   "numInsured": 4,
+   "tax": 382.16
+  },
+  {
+   "month": 201802,
+   "avgWage": 188.53,
+   "numInsured": 5,
+   "tax": 389.6
+  },
+  {
+   "month": 201803,
+   "avgWage": 206.0,
+   "numInsured": 5,
+   "tax": 426.45
+  },
+  {
+   "month": 201804,
+   "avgWage": 206.0,
+   "numInsured": 5,
+   "tax": 426.45
+  },
+  {
+   "month": 201805,
+   "avgWage": 206.0,
+   "numInsured": 5,
+   "tax": 426.45
+  },
+  {
+   "month": 201806,
+   "avgWage": 165.97,
+   "numInsured": 5,
+   "tax": 344.03
+  },
+  {
+   "month": 201807,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201808,
+   "avgWage": 54.82,
+   "numInsured": 5,
+   "tax": 114.51
+  },
+  {
+   "month": 201809,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201810,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201811,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

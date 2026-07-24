@@ -1,0 +1,195 @@
+{
+ "jarCode": "125204257",
+ "sodraCode": 372098,
+ "name": "IĮ \"V. SKIRPSTO ĮMONĖ\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Palangos m. sav.",
+ "latest": {
+  "month": 202508,
+  "avgWage": 634.76,
+  "numInsured": 7
+ },
+ "months": [
+  {
+   "month": 201706,
+   "avgWage": 124.77,
+   "numInsured": 6,
+   "tax": 301.9
+  },
+  {
+   "month": 201707,
+   "avgWage": 164.38,
+   "numInsured": 8,
+   "tax": 548.25
+  },
+  {
+   "month": 201708,
+   "avgWage": 180.0,
+   "numInsured": 6,
+   "tax": 453.45
+  },
+  {
+   "month": 201806,
+   "avgWage": 194.04,
+   "numInsured": 5,
+   "tax": 410.26
+  },
+  {
+   "month": 201807,
+   "avgWage": 255.33,
+   "numInsured": 6,
+   "tax": 646.85
+  },
+  {
+   "month": 201808,
+   "avgWage": 256.52,
+   "numInsured": 5,
+   "tax": 541.91
+  },
+  {
+   "month": 201906,
+   "avgWage": 170.86,
+   "numInsured": 5,
+   "tax": 195.18
+  },
+  {
+   "month": 201907,
+   "avgWage": 393.24,
+   "numInsured": 5,
+   "tax": 447.01
+  },
+  {
+   "month": 201908,
+   "avgWage": 298.32,
+   "numInsured": 5,
+   "tax": 345.08
+  },
+  {
+   "month": 202006,
+   "avgWage": 281.33,
+   "numInsured": 7,
+   "tax": 449.1
+  },
+  {
+   "month": 202007,
+   "avgWage": 366.05,
+   "numInsured": 10,
+   "tax": 828.13
+  },
+  {
+   "month": 202008,
+   "avgWage": 334.8,
+   "numInsured": 8,
+   "tax": 606.38
+  },
+  {
+   "month": 202105,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202106,
+   "avgWage": 620.84,
+   "numInsured": 8,
+   "tax": 1147.93
+  },
+  {
+   "month": 202107,
+   "avgWage": 621.43,
+   "numInsured": 7,
+   "tax": 989.57
+  },
+  {
+   "month": 202108,
+   "avgWage": 492.24,
+   "numInsured": 6,
+   "tax": 679.04
+  },
+  {
+   "month": 202205,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 202206,
+   "avgWage": 391.06,
+   "numInsured": 8,
+   "tax": 723.91
+  },
+  {
+   "month": 202207,
+   "avgWage": 691.52,
+   "numInsured": 8,
+   "tax": 1250.73
+  },
+  {
+   "month": 202208,
+   "avgWage": 650.82,
+   "numInsured": 8,
+   "tax": 1180.89
+  },
+  {
+   "month": 202306,
+   "avgWage": 533.93,
+   "numInsured": 8,
+   "tax": 974.04
+  },
+  {
+   "month": 202307,
+   "avgWage": 657.54,
+   "numInsured": 8,
+   "tax": 1191.54
+  },
+  {
+   "month": 202308,
+   "avgWage": 532.11,
+   "numInsured": 8,
+   "tax": 962.8
+  },
+  {
+   "month": 202405,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202406,
+   "avgWage": 547.39,
+   "numInsured": 6,
+   "tax": 761.56
+  },
+  {
+   "month": 202407,
+   "avgWage": 533.19,
+   "numInsured": 10,
+   "tax": 1209.32
+  },
+  {
+   "month": 202408,
+   "avgWage": 534.64,
+   "numInsured": 8,
+   "tax": 978.3
+  },
+  {
+   "month": 202506,
+   "avgWage": 428.85,
+   "numInsured": 6,
+   "tax": 584.69
+  },
+  {
+   "month": 202507,
+   "avgWage": 744.6,
+   "numInsured": 8,
+   "tax": 1342.26
+  },
+  {
+   "month": 202508,
+   "avgWage": 634.76,
+   "numInsured": 7,
+   "tax": 1004.06
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

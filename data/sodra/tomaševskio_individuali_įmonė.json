@@ -1,0 +1,117 @@
+{
+ "jarCode": "120580259",
+ "sodraCode": 10963,
+ "name": "TOMAŠEVSKIO INDIVIDUALI ĮMONĖ",
+ "ecoActName": "Variklinių transporto priemonių techninė priežiūra ir remontas",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201805,
+  "avgWage": 0.0,
+  "numInsured": 2
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 328.23,
+   "numInsured": 17,
+   "tax": 2274.45
+  },
+  {
+   "month": 201702,
+   "avgWage": 303.84,
+   "numInsured": 15,
+   "tax": 1855.69
+  },
+  {
+   "month": 201703,
+   "avgWage": 346.03,
+   "numInsured": 17,
+   "tax": 2409.38
+  },
+  {
+   "month": 201704,
+   "avgWage": 344.41,
+   "numInsured": 17,
+   "tax": 2398.16
+  },
+  {
+   "month": 201705,
+   "avgWage": 357.95,
+   "numInsured": 17,
+   "tax": 2500.21
+  },
+  {
+   "month": 201706,
+   "avgWage": 371.85,
+   "numInsured": 15,
+   "tax": 2291.79
+  },
+  {
+   "month": 201707,
+   "avgWage": 373.53,
+   "numInsured": 14,
+   "tax": 2142.95
+  },
+  {
+   "month": 201708,
+   "avgWage": 360.63,
+   "numInsured": 14,
+   "tax": 2069.92
+  },
+  {
+   "month": 201709,
+   "avgWage": 333.25,
+   "numInsured": 14,
+   "tax": 1912.38
+  },
+  {
+   "month": 201710,
+   "avgWage": 331.16,
+   "numInsured": 15,
+   "tax": 2034.81
+  },
+  {
+   "month": 201711,
+   "avgWage": 395.0,
+   "numInsured": 15,
+   "tax": 2422.45
+  },
+  {
+   "month": 201712,
+   "avgWage": 381.47,
+   "numInsured": 17,
+   "tax": 2650.08
+  },
+  {
+   "month": 201801,
+   "avgWage": 440.1,
+   "numInsured": 16,
+   "tax": 2877.64
+  },
+  {
+   "month": 201802,
+   "avgWage": 427.37,
+   "numInsured": 15,
+   "tax": 2614.38
+  },
+  {
+   "month": 201803,
+   "avgWage": 613.37,
+   "numInsured": 15,
+   "tax": 3749.34
+  },
+  {
+   "month": 201804,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201805,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

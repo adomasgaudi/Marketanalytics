@@ -1,0 +1,14 @@
+{
+ "jarCode": "122384711",
+ "sodraCode": 8051,
+ "name": "UAB LIŪTO ŠIRDIS",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 0,
+  "avgWage": 0.0,
+  "numInsured": 0
+ },
+ "months": [],
+ "source": "atvira.sodra.lt (open data)"
+}

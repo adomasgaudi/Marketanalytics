@@ -1,0 +1,189 @@
+{
+ "jarCode": "120916941",
+ "sodraCode": 3030,
+ "name": "UAB LAUVITA",
+ "ecoActName": "Pagaminto valgio tiekimas renginiams",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201905,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 280.91,
+   "numInsured": 4,
+   "tax": 459.06
+  },
+  {
+   "month": 201702,
+   "avgWage": 317.5,
+   "numInsured": 4,
+   "tax": 519.08
+  },
+  {
+   "month": 201703,
+   "avgWage": 328.78,
+   "numInsured": 5,
+   "tax": 669.32
+  },
+  {
+   "month": 201704,
+   "avgWage": 326.0,
+   "numInsured": 5,
+   "tax": 663.14
+  },
+  {
+   "month": 201705,
+   "avgWage": 338.0,
+   "numInsured": 5,
+   "tax": 687.63
+  },
+  {
+   "month": 201706,
+   "avgWage": 338.0,
+   "numInsured": 5,
+   "tax": 687.63
+  },
+  {
+   "month": 201707,
+   "avgWage": 341.62,
+   "numInsured": 5,
+   "tax": 694.37
+  },
+  {
+   "month": 201708,
+   "avgWage": 290.0,
+   "numInsured": 6,
+   "tax": 706.72
+  },
+  {
+   "month": 201709,
+   "avgWage": 295.25,
+   "numInsured": 6,
+   "tax": 720.2
+  },
+  {
+   "month": 201710,
+   "avgWage": 307.75,
+   "numInsured": 6,
+   "tax": 750.92
+  },
+  {
+   "month": 201711,
+   "avgWage": 348.33,
+   "numInsured": 6,
+   "tax": 849.35
+  },
+  {
+   "month": 201712,
+   "avgWage": 315.0,
+   "numInsured": 6,
+   "tax": 767.99
+  },
+  {
+   "month": 201801,
+   "avgWage": 353.41,
+   "numInsured": 6,
+   "tax": 861.4
+  },
+  {
+   "month": 201802,
+   "avgWage": 332.0,
+   "numInsured": 5,
+   "tax": 676.4
+  },
+  {
+   "month": 201803,
+   "avgWage": 332.0,
+   "numInsured": 5,
+   "tax": 676.4
+  },
+  {
+   "month": 201804,
+   "avgWage": 308.58,
+   "numInsured": 6,
+   "tax": 753.33
+  },
+  {
+   "month": 201805,
+   "avgWage": 363.33,
+   "numInsured": 6,
+   "tax": 885.33
+  },
+  {
+   "month": 201806,
+   "avgWage": 358.56,
+   "numInsured": 6,
+   "tax": 873.83
+  },
+  {
+   "month": 201807,
+   "avgWage": 328.07,
+   "numInsured": 7,
+   "tax": 932.07
+  },
+  {
+   "month": 201808,
+   "avgWage": 346.81,
+   "numInsured": 7,
+   "tax": 984.64
+  },
+  {
+   "month": 201809,
+   "avgWage": 338.92,
+   "numInsured": 7,
+   "tax": 961.67
+  },
+  {
+   "month": 201810,
+   "avgWage": 306.79,
+   "numInsured": 6,
+   "tax": 740.8
+  },
+  {
+   "month": 201811,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201812,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201901,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201902,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201903,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201904,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201905,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

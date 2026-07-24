@@ -1,0 +1,75 @@
+{
+ "jarCode": "124268278",
+ "sodraCode": 85126,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ \"LANTORA\"",
+ "ecoActName": "Restoranų veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201808,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 197.23,
+   "numInsured": 7,
+   "tax": 578.04
+  },
+  {
+   "month": 201702,
+   "avgWage": 222.19,
+   "numInsured": 6,
+   "tax": 555.34
+  },
+  {
+   "month": 201703,
+   "avgWage": 265.48,
+   "numInsured": 6,
+   "tax": 662.95
+  },
+  {
+   "month": 201704,
+   "avgWage": 148.24,
+   "numInsured": 6,
+   "tax": 371.01
+  },
+  {
+   "month": 201705,
+   "avgWage": 343.87,
+   "numInsured": 6,
+   "tax": 861.92
+  },
+  {
+   "month": 201706,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201707,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201708,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201709,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201808,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

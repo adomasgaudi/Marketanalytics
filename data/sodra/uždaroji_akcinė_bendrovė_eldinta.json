@@ -1,0 +1,207 @@
+{
+ "jarCode": "122778955",
+ "sodraCode": 67465,
+ "name": "UŽDAROJI AKCINĖ BENDROVĖ ELDINTA",
+ "ecoActName": "Gėrimų pardavimo vartoti vietoje veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201912,
+  "avgWage": 0.0,
+  "numInsured": 3
+ },
+ "months": [
+  {
+   "month": 201705,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201706,
+   "avgWage": 36.33,
+   "numInsured": 4,
+   "tax": 58.95
+  },
+  {
+   "month": 201707,
+   "avgWage": 144.73,
+   "numInsured": 5,
+   "tax": 291.94
+  },
+  {
+   "month": 201708,
+   "avgWage": 151.96,
+   "numInsured": 7,
+   "tax": 427.57
+  },
+  {
+   "month": 201709,
+   "avgWage": 190.06,
+   "numInsured": 5,
+   "tax": 382.73
+  },
+  {
+   "month": 201710,
+   "avgWage": 162.34,
+   "numInsured": 6,
+   "tax": 392.32
+  },
+  {
+   "month": 201711,
+   "avgWage": 166.92,
+   "numInsured": 7,
+   "tax": 469.87
+  },
+  {
+   "month": 201712,
+   "avgWage": 180.99,
+   "numInsured": 5,
+   "tax": 363.71
+  },
+  {
+   "month": 201801,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201802,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201803,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201804,
+   "avgWage": 175.45,
+   "numInsured": 5,
+   "tax": 352.52
+  },
+  {
+   "month": 201805,
+   "avgWage": 239.43,
+   "numInsured": 5,
+   "tax": 481.12
+  },
+  {
+   "month": 201806,
+   "avgWage": 254.95,
+   "numInsured": 5,
+   "tax": 512.45
+  },
+  {
+   "month": 201807,
+   "avgWage": 254.95,
+   "numInsured": 5,
+   "tax": 512.45
+  },
+  {
+   "month": 201808,
+   "avgWage": 223.79,
+   "numInsured": 5,
+   "tax": 449.98
+  },
+  {
+   "month": 201809,
+   "avgWage": 255.92,
+   "numInsured": 5,
+   "tax": 514.54
+  },
+  {
+   "month": 201810,
+   "avgWage": 207.42,
+   "numInsured": 5,
+   "tax": 417.1
+  },
+  {
+   "month": 201811,
+   "avgWage": 219.28,
+   "numInsured": 4,
+   "tax": 352.81
+  },
+  {
+   "month": 201812,
+   "avgWage": 217.4,
+   "numInsured": 4,
+   "tax": 349.8
+  },
+  {
+   "month": 201901,
+   "avgWage": 307.5,
+   "numInsured": 4,
+   "tax": 274.0
+  },
+  {
+   "month": 201902,
+   "avgWage": 305.7,
+   "numInsured": 4,
+   "tax": 272.34
+  },
+  {
+   "month": 201903,
+   "avgWage": 305.7,
+   "numInsured": 4,
+   "tax": 272.34
+  },
+  {
+   "month": 201904,
+   "avgWage": 306.6,
+   "numInsured": 4,
+   "tax": 273.17
+  },
+  {
+   "month": 201905,
+   "avgWage": 307.5,
+   "numInsured": 4,
+   "tax": 280.73
+  },
+  {
+   "month": 201906,
+   "avgWage": 264.0,
+   "numInsured": 5,
+   "tax": 299.68
+  },
+  {
+   "month": 201907,
+   "avgWage": 326.4,
+   "numInsured": 4,
+   "tax": 296.01
+  },
+  {
+   "month": 201908,
+   "avgWage": 271.63,
+   "numInsured": 5,
+   "tax": 307.06
+  },
+  {
+   "month": 201909,
+   "avgWage": 342.61,
+   "numInsured": 4,
+   "tax": 312.79
+  },
+  {
+   "month": 201910,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201911,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201912,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

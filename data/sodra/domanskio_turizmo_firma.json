@@ -1,0 +1,21 @@
+{
+ "jarCode": "121598616",
+ "sodraCode": 8061,
+ "name": "DOMANSKIO TURIZMO FIRMA",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Molėtų r. sav.",
+ "latest": {
+  "month": 201706,
+  "avgWage": 0.0,
+  "numInsured": 0
+ },
+ "months": [
+  {
+   "month": 201706,
+   "avgWage": null,
+   "numInsured": 0,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

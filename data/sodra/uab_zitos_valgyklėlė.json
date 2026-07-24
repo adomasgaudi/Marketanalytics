@@ -1,0 +1,219 @@
+{
+ "jarCode": "133500850",
+ "sodraCode": 468981,
+ "name": "UAB ZITOS VALGYKLĖLĖ",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Kauno m. sav.",
+ "latest": {
+  "month": 202002,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 209.36,
+   "numInsured": 5,
+   "tax": 420.6
+  },
+  {
+   "month": 201703,
+   "avgWage": 201.65,
+   "numInsured": 7,
+   "tax": 570.49
+  },
+  {
+   "month": 201704,
+   "avgWage": 151.49,
+   "numInsured": 6,
+   "tax": 365.2
+  },
+  {
+   "month": 201706,
+   "avgWage": 144.45,
+   "numInsured": 4,
+   "tax": 232.16
+  },
+  {
+   "month": 201707,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201708,
+   "avgWage": 210.1,
+   "numInsured": 5,
+   "tax": 426.16
+  },
+  {
+   "month": 201709,
+   "avgWage": 327.12,
+   "numInsured": 4,
+   "tax": 533.34
+  },
+  {
+   "month": 201710,
+   "avgWage": 299.28,
+   "numInsured": 4,
+   "tax": 488.59
+  },
+  {
+   "month": 201711,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201712,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201801,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201803,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201804,
+   "avgWage": 423.68,
+   "numInsured": 5,
+   "tax": 864.65
+  },
+  {
+   "month": 201805,
+   "avgWage": 190.34,
+   "numInsured": 7,
+   "tax": 535.37
+  },
+  {
+   "month": 201806,
+   "avgWage": 234.93,
+   "numInsured": 6,
+   "tax": 566.37
+  },
+  {
+   "month": 201807,
+   "avgWage": 362.2,
+   "numInsured": 4,
+   "tax": 590.35
+  },
+  {
+   "month": 201808,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201809,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201810,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201811,
+   "avgWage": 251.64,
+   "numInsured": 4,
+   "tax": 411.71
+  },
+  {
+   "month": 201812,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201901,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201902,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201903,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201904,
+   "avgWage": null,
+   "numInsured": 3,
+   "tax": null
+  },
+  {
+   "month": 201905,
+   "avgWage": null,
+   "numInsured": 2,
+   "tax": null
+  },
+  {
+   "month": 201906,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201907,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201908,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201910,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201911,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 201912,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202001,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  },
+  {
+   "month": 202002,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

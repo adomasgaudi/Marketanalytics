@@ -1,0 +1,21 @@
+{
+ "jarCode": "125730143",
+ "sodraCode": 94537,
+ "name": "VŠĮ CREATIVE PRODUCTION",
+ "ecoActName": "Niekur kitur nepriskirta pramogų ir rekreacijos organizavimo veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 202605,
+  "avgWage": 0.0,
+  "numInsured": 1
+ },
+ "months": [
+  {
+   "month": 202605,
+   "avgWage": null,
+   "numInsured": 1,
+   "tax": null
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}

@@ -1,0 +1,21 @@
+{
+ "jarCode": "121839227",
+ "sodraCode": 1378,
+ "name": "J. BABENKO FIRMA FORSITA",
+ "ecoActName": "Restoranų ir pagaminto valgio teikimo veikla",
+ "municipality": "Vilniaus m. sav.",
+ "latest": {
+  "month": 201701,
+  "avgWage": 151.78,
+  "numInsured": 4
+ },
+ "months": [
+  {
+   "month": 201701,
+   "avgWage": 151.78,
+   "numInsured": 4,
+   "tax": 243.94
+  }
+ ],
+ "source": "atvira.sodra.lt (open data)"
+}
