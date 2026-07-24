@@ -145,6 +145,7 @@ export function RankVsMarket({
       <div className="chartbox relative" style={{ height }}>
         <BarsSvg
           rows={bars}
+          domain={[0, 100]}
           fmt={(v) => String(Math.round(v))}
           xTitle={`Percentile vs ${poolSize} ${segment ? segName(segment) + " " : ""}agencies (100 = top)`}
           tip={(bar, i) => {

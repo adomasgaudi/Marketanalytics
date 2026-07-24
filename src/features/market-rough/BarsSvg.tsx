@@ -30,11 +30,15 @@ export function BarsSvg({
   fmt,
   xTitle,
   tip,
+  domain,
 }: {
   rows: BarRow[];
   fmt: (v: number) => string;
   xTitle?: string;
   tip?: (row: BarRow, index: number) => string;
+  /** Fixes the value axis to a constant range instead of fitting the largest
+   *  bar — e.g. [0, 100] so a percentile chart always reads full-width. */
+  domain?: [number, number];
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const clipId = useId();
@@ -46,7 +50,7 @@ export function BarsSvg({
   const R = rows.length;
 
   // Full-data view (legacy fullView): refit whenever the data signature changes.
-  const sig = rows.map((r) => `${r.heading ?? r.label}:${r.value}`).join("|");
+  const sig = `${domain?.join(",") ?? ""}|${rows.map((r) => `${r.heading ?? r.label}:${r.value}`).join("|")}`;
   const fullView = useMemo<View>(() => {
     let lo = 0;
     let hi = 0;
@@ -55,6 +59,9 @@ export function BarsSvg({
       if (r.value > hi) hi = r.value;
     });
     if (lo === hi) hi = lo + 1;
+    // A fixed domain wins over the fitted extent, so the axis is a constant
+    // ruler (percentile 0–100) rather than growing to the tallest bar.
+    if (domain) [lo, hi] = domain;
     return { vMin: lo, vMax: hi, iMin: -0.5, iMax: Math.max(0.5, R - 0.5) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sig]);
