@@ -1,6 +1,7 @@
 "use client";
 
 import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Seg } from "@/components/ui/seg";
@@ -131,8 +132,10 @@ const cssVar = (name: string) =>
  */
 function DonutLegend({
   items,
+  onPick,
 }: {
   items: { key: string; text: string; value: string; color: string }[];
+  onPick?: (key: string) => void;
 }) {
   return (
     // justify-center-safe, not justify-center: a centred flex column that
@@ -141,7 +144,11 @@ function DonutLegend({
     // to start-aligned once it doesn't, so the first company is always reachable.
     <ul className="absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center-safe gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex">
       {items.map((item) => (
-        <li key={item.key} className="flex items-start gap-1.5 leading-[1.35]">
+        <li
+          key={item.key}
+          className={`flex items-start gap-1.5 leading-[1.35] ${onPick ? "cursor-pointer hover:opacity-80" : ""}`}
+          onClick={onPick ? () => onPick(item.key) : undefined}
+        >
           <span
             className="mt-[3px] h-2.5 w-2.5 flex-none rounded-[3px]"
             style={{ background: item.color }}
@@ -156,7 +163,11 @@ function DonutLegend({
 
 /** "{year} Revenue by segment" — doughnut or SVG bars, %/€, follows year + basis. */
 export function SegmentChart({ model }: { model: MarketModel }) {
-  const [{ year, market, segment, per }] = useDashboardParams(model.last);
+  const [{ year, market, segment, per }, setParams] = useDashboardParams(model.last);
+  const router = useRouter();
+  // Same URL shape as the strip's "Open in dashboard" link.
+  const companyHref = (brand: string) =>
+    `/companies?companies=${encodeURIComponent(brand)}&year=${year}`;
   const SEG_COLORS = useSegColors();
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   const [show, setShow] = useState<"pct" | "eur">("pct");
@@ -221,7 +232,10 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const centreValue = segment
     ? basis === "emp"
       ? (() => {
-          const v = scopedRows.reduce((sum, d) => sum + (SEG_METRICS[metric].f(d) ?? 0), 0);
+          const v = scopedRows.reduce(
+            (sum, d) => sum + (SEG_METRICS[metric].f(d) ?? 0),
+            0,
+          );
           const e = scopedRows.reduce((sum, d) => sum + (d.employees ?? 0), 0);
           return e > 0 ? v / e / months : 0;
         })()
@@ -268,6 +282,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
       return {
         value: rescale ? (value / companyTotal) * displayedSegmentValue : value,
         brand,
+        seg: segmentRow.s,
         color: tint(SEG_COLORS[segmentRow.s] ?? "#888", i, brands.length),
       };
     });
@@ -367,6 +382,37 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                 // Room for the labels of the outermost slices, which sit near
                 // the canvas edge once the legend no longer squeezes the box.
                 layout: { padding: 6 },
+                // In All Segments a click on either ring scopes the donut to
+                // that slice's segment — same URL param the picker writes, so
+                // every card follows. Scoped, a company slice opens that
+                // company in the dashboard (the strip's "Open in dashboard"
+                // URL); the one-slice outer ring stays inert.
+                onClick: (
+                  _e: unknown,
+                  els: { datasetIndex: number; index: number }[],
+                ) => {
+                  if (!els.length) return;
+                  const { datasetIndex, index } = els[0];
+                  if (segment) {
+                    const brand = datasetIndex === 1 ? companySlices[index]?.brand : null;
+                    if (brand) router.push(companyHref(brand));
+                    return;
+                  }
+                  const s =
+                    datasetIndex === 0 ? rows[index]?.s : companySlices[index]?.seg;
+                  if (s) setParams({ segment: s });
+                },
+                onHover: (
+                  e: { native?: { target?: HTMLElement } },
+                  els: { datasetIndex: number }[],
+                ) => {
+                  const t = e.native?.target;
+                  if (t)
+                    t.style.cursor =
+                      els.length && (!segment || els[0].datasetIndex === 1)
+                        ? "pointer"
+                        : "";
+                },
                 // Per-ring on-slice text. Unscoped: the segment share on the
                 // outer ring. Scoped: the outer ring is one slice at 100% — a
                 // tautology, so it stays blank — and the company ring carries
@@ -432,6 +478,12 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             plugins={[onSlice, centreText]}
           />
           <DonutLegend
+            onPick={
+              segment
+                ? // Scoped: rows are companies; open the company dashboard.
+                  (key) => router.push(companyHref(key))
+                : (key) => setParams({ segment: key })
+            }
             items={
               segment
                 ? companySlices
