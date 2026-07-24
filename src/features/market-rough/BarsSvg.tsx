@@ -260,7 +260,7 @@ export function BarsSvg({
             {xTitle}
           </text>
         )}
-        <g clipPath={`url(#${clipId}p)`}>
+        <g key={sig} className="graph-fade" clipPath={`url(#${clipId}p)`}>
           {rows.map((r, i) => {
             const cy = rowY(i);
             if (cy < m.t - bandH || cy > m.t + ph + bandH) return null;
