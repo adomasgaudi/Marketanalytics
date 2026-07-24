@@ -23,7 +23,15 @@ const META = (classification as { companies: Record<string, Meta> }).companies;
 const compByBrand = new Map(COMPANIES.map((c) => [c.brand, c]));
 const sodraByBrand = new Map(SODRA.map((c) => [c.brand, c]));
 
-/** One {brand, year} row for every year any data2 figure reaches the brand. */
+// The dashboard's headline metric — agency revenue — is derived from the Sodra
+// payroll, and per-employee/wage figures need it too, so a year with no Sodra
+// data renders empty across the whole page. Registry filings reach back to 2015
+// but Sodra starts in 2017; capping the model at Sodra's first year keeps every
+// selectable year populated instead of surfacing blank pre-payroll years.
+const SODRA_FLOOR = Math.min(...SODRA.flatMap((c) => Object.keys(c.years).map(Number)));
+
+/** One {brand, year} row for every year any data2 figure reaches the brand,
+    within the supported (Sodra-backed) window. */
 function buildRows(): CompanyYear[] {
   const rows: CompanyYear[] = [];
   for (const [brand, meta] of Object.entries(META)) {
@@ -35,6 +43,7 @@ function buildRows(): CompanyYear[] {
     for (const y of Object.keys(sodra?.years ?? {})) years.add(Number(y));
 
     for (const year of years) {
+      if (year < SODRA_FLOOR) continue;
       const revenue = comp?.values.turnover?.[year] ?? null;
       const salaryCosts = comp?.values.wageBill?.[year] ?? null;
       const sy = sodra?.years[year];
