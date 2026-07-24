@@ -141,11 +141,23 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-[13px]">
             <thead>
+              {/* Two header rows: sources on top, metrics under them — the
+                  registry pair (gov), the company's own figure, the Sodra pair. */}
+              <tr className="text-muted/70 text-left text-[10px] tracking-[.14em] uppercase">
+                <th />
+                <th colSpan={2} className="pt-2 pr-3 pb-0.5">
+                  Gov (Registrų centras)
+                </th>
+                <th className="pt-2 pr-3 pb-0.5">Company</th>
+                <th colSpan={2} className="pt-2 pb-0.5">
+                  Sodra
+                </th>
+              </tr>
               <tr className="text-muted border-line border-b text-left text-[11px] tracking-wider uppercase">
                 <th className="py-2 pr-3">Year</th>
                 <th className="py-2 pr-3">Turnover</th>
-                <th className="py-2 pr-3">Declared revenue</th>
                 <th className="py-2 pr-3">Profit</th>
+                <th className="py-2 pr-3">Declared revenue</th>
                 <th className="py-2 pr-3">Employees</th>
                 <th className="py-2">Avg salary / mo</th>
               </tr>
@@ -155,12 +167,12 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
                 <tr key={y.year} className="border-line border-b">
                   <td className="py-2 pr-3 font-semibold">{y.year}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.revenue)}</td>
+                  <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.profit)}</td>
                   {/* Declared only — no modelled fallback: this column is the
                       company's own figure or nothing. */}
                   <td className="py-2 pr-3 tabular-nums">
                     {fmtEurFull(declaredRevenue(brand, y.year)?.revenue)}
                   </td>
-                  <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.profit)}</td>
                   <td className="py-2 pr-3 tabular-nums">
                     {empRange[y.year] ?? fmtInt(y.employees)}
                   </td>
