@@ -146,7 +146,7 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
               <tr className="text-muted/70 text-left text-[10px] tracking-[.14em] uppercase">
                 <th />
                 <th colSpan={2} className="pt-2 pr-3 pb-0.5">
-                  Gov (Registrų centras)
+                  Registrų centras
                 </th>
                 <th className="pt-2 pr-3 pb-0.5">Company</th>
                 <th colSpan={2} className="pt-2 pb-0.5">
