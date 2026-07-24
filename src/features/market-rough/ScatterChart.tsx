@@ -8,7 +8,7 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bubble } from "react-chartjs-2";
 import { Seg } from "@/components/ui/seg";
 import { fmtM } from "./format";
@@ -352,6 +352,31 @@ export function ScatterChart({ model }: { model: MarketModel }) {
   /** All years = a fixed ruler; this view = fill the box with what's shown. */
   const [fitAll, setFitAll] = useState(true);
 
+  // Bubbles appear IN PLACE: the position tween is off (see options.animation),
+  // so instead of flying new bubbles in from the axis floor and sliding the
+  // whole field on every year step, the canvas fades from transparent to
+  // visible whenever what it plots changes. Re-triggered off this signature.
+  const chartRef = useRef<Chart<"bubble"> | null>(null);
+  const fieldSig = [
+    year,
+    xMetric,
+    yMetric,
+    xLog,
+    yLog,
+    perEmp,
+    fitAll,
+    [...hiddenSegs].sort().join(","),
+  ].join("|");
+  useEffect(() => {
+    const canvas = chartRef.current?.canvas;
+    if (!canvas) return;
+    canvas.style.transition = "none";
+    canvas.style.opacity = "0";
+    void canvas.offsetHeight; // reflow so the 0 lands before the transition
+    canvas.style.transition = "opacity 300ms ease-out";
+    canvas.style.opacity = "1";
+  }, [fieldSig]);
+
   const rows = useMemo(
     () => dotsFor(model.rows, year, perEmp, xMetric, yMetric, xLog, yLog),
     [model.rows, year, perEmp, xMetric, yMetric, xLog, yLog],
@@ -589,97 +614,97 @@ export function ScatterChart({ model }: { model: MarketModel }) {
             options={SCALE_OPTIONS}
           />
         </div>
-      <div className="chartbox tall relative h-[450px] min-w-0 flex-1 md:h-[600px] lg:h-[640px]">
-        <Bubble
-          // No `key`: remounting would rebuild the chart and every switch would
-          // snap. The chart is kept alive so changing the x metric or the scale
-          // slides the bubbles from one reading to the other.
-          plugins={[trails as never]}
-          data={{ datasets }}
-          options={
-            {
-              maintainAspectRatio: false,
-              // Stepping years moves every bubble at once; without a tween the
-              // field just teleports and you lose track of which dot was which.
-              // Only x/y/r are animated — colours snap, so toggling a segment
-              // off in the legend still reads as instant.
-              animation: { duration: 420, easing: "easeOutQuart" },
-              animations: { x: {}, y: {}, r: {} },
-              transitions: { active: { animation: { duration: 0 } } },
-              responsive: true,
-              plugins: {
-                trails: { on: showTrails, paths: trailPaths },
-                legend: {
-                  onClick: (_e: unknown, item: { datasetIndex?: number }) => {
-                    const seg = model.segments[item.datasetIndex ?? -1];
-                    if (!seg) return;
-                    setHiddenSegs((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(seg)) next.delete(seg);
-                      else next.add(seg);
-                      return next;
-                    });
+        <div className="chartbox tall relative h-[450px] min-w-0 flex-1 md:h-[600px] lg:h-[640px]">
+          <Bubble
+            // No `key`: remounting would rebuild the chart and every switch would
+            // snap. The chart is kept alive so the fieldSig effect can fade the
+            // canvas instead of the whole element flashing on a remount.
+            ref={chartRef}
+            plugins={[trails as never]}
+            data={{ datasets }}
+            options={
+              {
+                maintainAspectRatio: false,
+                // No position tween. Flying every bubble in from the axis and
+                // gliding the field on each year step read as confusing motion
+                // in a dense scatter — so bubbles land in place and the canvas
+                // fades in instead (fieldSig effect). Trails still show each
+                // company's year-to-year path, drawn statically.
+                animation: false,
+                responsive: true,
+                plugins: {
+                  trails: { on: showTrails, paths: trailPaths },
+                  legend: {
+                    onClick: (_e: unknown, item: { datasetIndex?: number }) => {
+                      const seg = model.segments[item.datasetIndex ?? -1];
+                      if (!seg) return;
+                      setHiddenSegs((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(seg)) next.delete(seg);
+                        else next.add(seg);
+                        return next;
+                      });
+                    },
+                    labels: {
+                      color: ink,
+                      usePointStyle: true,
+                      pointStyle: "circle",
+                      boxWidth: 8,
+                      boxHeight: 8,
+                      padding: 16,
+                      font: { size: 12 },
+                      filter: (item: { text?: string }) => (item.text ?? "").length > 0,
+                      generateLabels: (chart: {
+                        data: { datasets: { label?: string }[] };
+                      }) =>
+                        chart.data.datasets.map((ds, i) => {
+                          const seg = model.segments[i];
+                          const off = hiddenSegs.has(seg);
+                          const color = segColor(seg);
+                          return {
+                            text: ds.label ?? segName(seg),
+                            fillStyle: color,
+                            strokeStyle: color,
+                            lineWidth: 1.5,
+                            // `hidden` is what Chart.js draws the strike-through
+                            // from — there is no `strikeThrough` field on a legend
+                            // item. Hard-coding it false is why a bottom-bar
+                            // segment filter left every other name looking active.
+                            hidden: off,
+                            datasetIndex: i,
+                            fontColor: off ? muted : ink,
+                          };
+                        }),
+                    },
                   },
-                  labels: {
-                    color: ink,
+                  tooltip: {
+                    titleColor: ink,
+                    bodyColor: ink,
+                    backgroundColor: cssVar("--color-panel"),
+                    borderColor: cssVar("--color-line"),
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 10,
+                    boxPadding: 4,
                     usePointStyle: true,
-                    pointStyle: "circle",
-                    boxWidth: 8,
-                    boxHeight: 8,
-                    padding: 16,
-                    font: { size: 12 },
-                    filter: (item: { text?: string }) => (item.text ?? "").length > 0,
-                    generateLabels: (chart: {
-                      data: { datasets: { label?: string }[] };
-                    }) =>
-                      chart.data.datasets.map((ds, i) => {
-                        const seg = model.segments[i];
-                        const off = hiddenSegs.has(seg);
-                        const color = segColor(seg);
-                        return {
-                          text: ds.label ?? segName(seg),
-                          fillStyle: color,
-                          strokeStyle: color,
-                          lineWidth: 1.5,
-                          // `hidden` is what Chart.js draws the strike-through
-                          // from — there is no `strikeThrough` field on a legend
-                          // item. Hard-coding it false is why a bottom-bar
-                          // segment filter left every other name looking active.
-                          hidden: off,
-                          datasetIndex: i,
-                          fontColor: off ? muted : ink,
-                        };
-                      }),
-                  },
-                },
-                tooltip: {
-                  titleColor: ink,
-                  bodyColor: ink,
-                  backgroundColor: cssVar("--color-panel"),
-                  borderColor: cssVar("--color-line"),
-                  borderWidth: 1,
-                  cornerRadius: 8,
-                  padding: 10,
-                  boxPadding: 4,
-                  usePointStyle: true,
-                  callbacks: {
-                    label: (c: { raw: Dot }) => {
-                      const p = c.raw;
-                      const per = perEmp ? "/emp" : "";
-                      // Reads the RAW values, so the tooltip is unaffected by
-                      // whichever fold the axis happens to be drawing in.
-                      return ` ${p.brand}: ${METRICS[xMetric].label}${METRICS[xMetric].money ? per : ""} ${METRICS[xMetric].fmt(p.xRaw)}, ${METRICS[yMetric].label}${METRICS[yMetric].money ? per : ""} ${METRICS[yMetric].fmt(p.yRaw)}, ${p.emp} empl.`;
+                    callbacks: {
+                      label: (c: { raw: Dot }) => {
+                        const p = c.raw;
+                        const per = perEmp ? "/emp" : "";
+                        // Reads the RAW values, so the tooltip is unaffected by
+                        // whichever fold the axis happens to be drawing in.
+                        return ` ${p.brand}: ${METRICS[xMetric].label}${METRICS[xMetric].money ? per : ""} ${METRICS[xMetric].fmt(p.xRaw)}, ${METRICS[yMetric].label}${METRICS[yMetric].money ? per : ""} ${METRICS[yMetric].fmt(p.yRaw)}, ${p.emp} empl.`;
+                      },
                     },
                   },
                 },
-              },
-              scales: {
-                x: buildScale(xMetric, xLog, perEmp, xBounds, skin),
-                y: buildScale(yMetric, yLog, perEmp, yBounds, skin),
-              },
-            } as never
-          }
-        />
+                scales: {
+                  x: buildScale(xMetric, xLog, perEmp, xBounds, skin),
+                  y: buildScale(yMetric, yLog, perEmp, yBounds, skin),
+                },
+              } as never
+            }
+          />
         </div>
       </div>
       {/* Under the plot, centred: this is the X axis title, and it is clickable. */}

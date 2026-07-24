@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Seg } from "@/components/ui/seg";
 import { fmtPct } from "./format";
 import { revBreakdown } from "./money-flow-breakdown";
 
@@ -51,19 +52,49 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const [view, setView] = useState<View | null>(null);
   const [tt, setTt] = useState<{ x: number; y: number; html: string } | null>(null);
   const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
+  // Absolute € vs % of that year's turnover. In % mode every figure is divided
+  // by its own year's turnover ×100, so turnover is 100% each year and the bar
+  // reads as composition rather than size.
+  const [pct, setPct] = useState(false);
+
+  // Plot off `data`, not `rows`: in % mode all figures scale by the same
+  // per-year turnover, so shares are preserved. `rows` (absolute) is still used
+  // for the tooltip and the year-on-year change, which stay meaningful in €.
+  const data = useMemo<YearFlow[]>(
+    () =>
+      pct
+        ? rows.map((r) => {
+            const t = r.turnover || 1;
+            const s = (v: number) => (v / t) * 100;
+            return {
+              year: r.year,
+              turnover: s(r.turnover),
+              revenue: s(r.revenue),
+              profit: s(r.profit),
+              payroll: r.payroll != null ? s(r.payroll) : r.payroll,
+            };
+          })
+        : rows,
+    [rows, pct],
+  );
+
+  const valFmt = pct ? (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}%` : chartFmt;
+  const tickFmt = pct ? (v: number) => `${Math.round(v)}%` : axisFmt;
 
   const R = rows.length;
   // Must cover EVERY plotted figure, not just turnover. It gates both the
   // fitted view and the zoom reset, and switching the data source changes
   // revenue and profit while leaving turnover identical — so a turnover-only
   // signature let the chart keep a view fitted to the other dataset.
-  const sig = rows.map((r) => `${r.year}:${r.turnover}:${r.revenue}:${r.profit}`).join("|");
+  const sig =
+    (pct ? "%|" : "€|") +
+    data.map((r) => `${r.year}:${r.turnover}:${r.revenue}:${r.profit}`).join("|");
 
   // Legacy fitState: stacked headroom ×1.22 for the total labels, then
   // zoomOut 0.2 → ±10% margin on BOTH axes (so the 0-line floats above the
   // bottom and the x range gains side slots).
   const fullView = useMemo<View>(() => {
-    const hi = Math.max(...rows.map((r) => r.turnover), 1) * 1.22;
+    const hi = Math.max(...data.map((r) => r.turnover), 1) * 1.22;
     const xMax = Math.max(1, R - 1);
     const xs = xMax;
     const ys = hi;
@@ -200,7 +231,23 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
-      <h2 className="mb-1 text-[15px] font-semibold">{title}</h2>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <h2 className="text-[15px] font-semibold">{title}</h2>
+        <Seg
+          label="Scale"
+          btnClassName="px-2.5 py-0.5 text-[11px]"
+          options={[
+            { value: "abs" as const, title: "Figures in euros", label: "€" },
+            {
+              value: "pct" as const,
+              title: "Each figure as a share of that year's turnover — turnover is 100%",
+              label: "% of turnover",
+            },
+          ]}
+          value={pct ? "pct" : "abs"}
+          onChange={(value) => setPct(value === "pct")}
+        />
+      </div>
       {rows.length === 0 ? (
         <p className="text-muted p-6 text-center text-[13px]">No data.</p>
       ) : (
@@ -249,7 +296,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       fontSize="10"
                       fill="var(--color-muted)"
                     >
-                      {axisFmt(t)}
+                      {tickFmt(t)}
                     </text>
                   </g>
                 );
@@ -270,7 +317,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
               ))}
 
               <g clipPath={`url(#${clipId}p)`}>
-                {rows.map((r, i) => {
+                {data.map((r, i) => {
                   const profit = Math.max(0, r.profit);
                   const revRest = Math.max(0, r.revenue - profit);
                   const turnRest = Math.max(0, r.turnover - r.revenue);
@@ -282,8 +329,11 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                   const yRevTop = y(profit + revRest);
                   const yTurnTop = y(profit + revRest + turnRest);
                   const revH = Math.max(0, yProfitTop - yRevTop);
+                  // YoY is a €-size change, meaningless in % mode (turnover is
+                  // 100 every year) — so it reads from absolute `rows` always.
                   const prev = i > 0 ? rows[i - 1].turnover : null;
-                  const yoy = prev != null && prev > 0 ? r.turnover / prev - 1 : null;
+                  const yoy =
+                    prev != null && prev > 0 ? rows[i].turnover / prev - 1 : null;
                   const revRects = () => {
                     if (revH <= 0) return null;
                     if (!revParts || revRest <= 0) {
@@ -329,30 +379,24 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           bands poked out past the rounded stroke and the whole
                           bar read as a selection box rather than a chart. */}
                       <clipPath id={`${clipId}b${r.year}`}>
-                        <rect
-                          x={x0}
-                          y={barTop}
-                          width={barW}
-                          height={barH}
-                          rx={barR}
-                        />
+                        <rect x={x0} y={barTop} width={barW} height={barH} rx={barR} />
                       </clipPath>
                       <g clipPath={`url(#${clipId}b${r.year})`}>
-                      <rect
-                        x={x0}
-                        y={yProfitTop}
-                        width={barW}
-                        height={Math.max(0, y(0) - yProfitTop)}
-                        fill="var(--color-green)"
-                      />
-                      {revRects()}
-                      <rect
-                        x={x0}
-                        y={yTurnTop}
-                        width={barW}
-                        height={Math.max(0, yRevTop - yTurnTop)}
-                        fill="var(--color-mf-turn)"
-                      />
+                        <rect
+                          x={x0}
+                          y={yProfitTop}
+                          width={barW}
+                          height={Math.max(0, y(0) - yProfitTop)}
+                          fill="var(--color-green)"
+                        />
+                        {revRects()}
+                        <rect
+                          x={x0}
+                          y={yTurnTop}
+                          width={barW}
+                          height={Math.max(0, yRevTop - yTurnTop)}
+                          fill="var(--color-mf-turn)"
+                        />
                       </g>
                       {/* Turnover is the whole stack, so it is drawn as the
                           stack's outline rather than as a band — same as the
@@ -390,7 +434,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         fontWeight="700"
                         fill="var(--color-ink)"
                       >
-                        {chartFmt(r.turnover)}
+                        {valFmt(r.turnover)}
                       </text>
                       {yoy != null && (
                         <text
@@ -398,7 +442,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           // two tops: a change belongs between the years it
                           // compares, not over one of them.
                           x={(x(i - 1) + cx) / 2}
-                          y={Math.min(yTurnTop, y(rows[i - 1].turnover)) - 8}
+                          y={Math.min(yTurnTop, y(data[i - 1].turnover)) - 8}
                           textAnchor="middle"
                           fontSize="9"
                           fontWeight="600"
@@ -417,7 +461,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           fontWeight="600"
                           fill="var(--color-ink)"
                         >
-                          {chartFmt(revRest)}
+                          {valFmt(revRest)}
                         </text>
                       )}
                     </g>

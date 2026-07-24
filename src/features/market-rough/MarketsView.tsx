@@ -9,7 +9,6 @@ import { MoneyFlow } from "./MoneyFlow";
 import { PeriodToggle } from "./PeriodToggle";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { ScatterChart } from "./ScatterChart";
-import { ScatterScrub } from "./ScatterScrub";
 import { segName } from "./segments";
 import { SegmentChart } from "./SegmentChart";
 import { SegmentTrends } from "./SegmentTrends";
@@ -272,7 +271,6 @@ export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
         })}
       />
       <SegmentTrends model={model} />
-      <ScatterScrub model={model} />
       {/* The same bubble field as the per-year panel. It still draws one year —
           the one the bottom bar last held — but its axes span every year, so it
           reads as a fixed frame here rather than a per-year snapshot. */}
