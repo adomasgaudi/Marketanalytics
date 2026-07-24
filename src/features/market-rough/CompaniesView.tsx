@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/cn";
 import { slugify } from "@/lib/slug";
 import { CompanyProfileCard } from "./CompanyProfile";
 import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
@@ -57,22 +58,36 @@ function SelectCompanyHint() {
     muted placeholder. Client-side because selection lives in the URL. */
 export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
   const [{ companies, off }] = useDashboardParams(defaultYear);
-  const brand = companies.find((b) => !off.includes(b)) ?? companies[0];
+  // Every selected company (minus toggled-off), not just the first — the
+  // title names what the page is actually comparing.
+  const pool = companies.filter((b) => !off.includes(b));
+  const brands = pool.length ? pool : companies.slice(0, 1);
   return (
     <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
-      <span className="block text-[clamp(42px,9vw,72px)]">
-        {brand ? (
-          <>
-            {brand}
-            {/* ↗ to the static profile page — the crawlable twin of this view. */}
-            <Link
-              href={`/companies/${slugify(brand)}`}
-              title={`${brand} — full profile page`}
-              className="text-muted hover:text-accent ml-3 align-super text-[0.35em] font-bold transition-colors"
-            >
-              ↗
-            </Link>
-          </>
+      {/* Size steps down as the list grows, so five names still fit. */}
+      <span
+        className={cn(
+          "block",
+          brands.length > 2
+            ? "text-[clamp(26px,4.5vw,40px)] leading-[1.1]"
+            : "text-[clamp(42px,9vw,72px)]",
+        )}
+      >
+        {brands.length ? (
+          brands.map((brand, i) => (
+            <span key={brand} className="whitespace-nowrap">
+              {brand}
+              {/* ↗ to the static profile page — the crawlable twin of this view. */}
+              <Link
+                href={`/companies/${slugify(brand)}`}
+                title={`${brand} — full profile page`}
+                className="text-muted hover:text-accent ml-1.5 align-super text-[0.35em] font-bold transition-colors"
+              >
+                ↗
+              </Link>
+              {i < brands.length - 1 && <span className="text-muted/60">, </span>}
+            </span>
+          ))
         ) : (
           <span className="text-muted/60">Select a company</span>
         )}
