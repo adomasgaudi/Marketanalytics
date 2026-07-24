@@ -59,7 +59,13 @@ export function RankingsChart({ model: legacyModel }: { model: MarketModel }) {
         : fmtInt(v);
 
   let rows: Row[] = model.rows
-    .filter((r) => r.year === year && r.activities.some((a) => segs.has(a)))
+    // Selected companies stay in even when the segment filter would drop
+    // them — the whole point of selecting is to see where THEY stand.
+    .filter(
+      (r) =>
+        r.year === year &&
+        (r.activities.some((a) => segs.has(a)) || selected.has(r.brand)),
+    )
     .map((r) => {
       let v = metric.f(r);
       if (v != null && perEmp) v = (r.employees ?? 0) > 0 ? v / r.employees! : null;
