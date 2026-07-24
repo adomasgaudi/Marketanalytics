@@ -25,8 +25,8 @@ import {
  */
 const MARKET_LABELS: Record<MarketMode, string> = {
   whole: "Whole",
-  avg: "Company",
-  emp: "Employee",
+  avg: "Per company",
+  emp: "Per employee",
 };
 
 /** Second line, shown only under "Whole": which market is being summed. */
