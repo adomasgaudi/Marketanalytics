@@ -5,7 +5,7 @@ export function Footer() {
       {/* .letterpress only bites under the refined skin, where it tints this
           line down to just off the page background. */}
       <span className="letterpress opacity-80">
-        by adomasgaudi.github · data@marketanalytics.lt · © 2026
+        by adomasgaudi.github · data@marketanalytics.lt · © 2026 · all rights reserved
       </span>
     </footer>
   );

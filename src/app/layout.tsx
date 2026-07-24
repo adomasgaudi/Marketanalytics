@@ -21,6 +21,15 @@ export default function RootLayout({
     // classic fallback it used to switch back to is gone. The attribute stays
     // because ~55 rules in globals.css are scoped to it.
     <html lang="en" data-theme="dark" data-mode="default" data-skin="refined">
+      <head>
+        {/* GitHub Pages can't send CSP headers, so this meta tag carries the
+            safe subset: no plugins, no <base> hijack. script-src is left open —
+            Next's hydration runs on inline scripts. */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="object-src 'none'; base-uri 'self'"
+        />
+      </head>
       {/* NuqsAdapter lets the dashboard keep its selections (year, basis,
           filters) in the URL, so a view can be shared and survives a refresh. */}
       <body>
