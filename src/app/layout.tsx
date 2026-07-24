@@ -6,8 +6,52 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Market Analytics",
-  description: "Lithuanian marketing & PR agency market, 2019–2025.",
+  metadataBase: new URL("https://marketanalytics.lt"),
+  title: {
+    default: "Market Analytics — Lithuanian marketing & PR agency market",
+    template: "%s · Market Analytics",
+  },
+  description:
+    "Turnover, payroll and profit of 132 Lithuanian marketing, PR and communications agencies, 2019–2025. Every figure traced to a public registry.",
+  keywords: [
+    "Lithuanian marketing agencies",
+    "PR agencies Lithuania",
+    "agency market analytics",
+    "reklamos agentūros",
+    "marketingo agentūros",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "Market Analytics",
+    url: "https://marketanalytics.lt",
+    title: "Market Analytics — Lithuanian marketing & PR agency market",
+    description:
+      "Turnover, payroll and profit of 132 Lithuanian marketing, PR and communications agencies, 2019–2025.",
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Market Analytics — Lithuanian marketing & PR agency market",
+    description:
+      "Turnover, payroll and profit of 132 Lithuanian marketing, PR and communications agencies, 2019–2025.",
+    images: ["/og.png"],
+  },
+  robots: { index: true, follow: true },
+};
+
+/** Cloudflare Web Analytics — free, cookieless, so no consent banner needed.
+    Empty string = beacon not rendered. To turn on: add marketanalytics.lt at
+    dash.cloudflare.com → Web Analytics, paste the site token here. */
+const CF_ANALYTICS_TOKEN = "";
+
+// Structured data: tells Google this is a website + dataset-backed dashboard.
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Market Analytics",
+  url: "https://marketanalytics.lt",
+  description:
+    "Turnover, payroll and profit of 132 Lithuanian marketing, PR and communications agencies, 2019–2025, from public registries.",
 };
 
 export default function RootLayout({
@@ -44,6 +88,17 @@ export default function RootLayout({
         <DevCornerMount />
         {/* X-ray switchboard (bottom-left); hidden until html[data-mode=dev]. */}
         <Script src="/devtools.js" strategy="afterInteractive" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
+        {CF_ANALYTICS_TOKEN && (
+          <Script
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );

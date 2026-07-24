@@ -13,6 +13,14 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { RankingsChart } from "@/features/market-rough/RankingsChart";
 import { TopNav } from "@/features/market-rough/TopNav";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Agency profiles & rankings",
+  description:
+    "Per-company financials, rankings and deep-dives for 132 Lithuanian marketing, PR and communications agencies — turnover, payroll, profit by year.",
+  alternates: { canonical: "/companies" },
+};
 
 /**
  * The Companies view — mirrors the legacy companiesView: hero, the gold

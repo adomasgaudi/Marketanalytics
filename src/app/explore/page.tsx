@@ -8,6 +8,14 @@ import type { RekTabsFile } from "@/features/explore/FieldData";
 import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { TopNav } from "@/features/market-rough/TopNav";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Raw data & sources",
+  description:
+    "The raw registry data behind the dashboard: per-company source fields, coverage grid and the data-change audit log.",
+  alternates: { canonical: "/explore" },
+};
 
 /**
  * The v3 Data-exploration page — the legacy rekView copied over: company

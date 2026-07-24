@@ -10,6 +10,14 @@ import { TopCards } from "@/features/market-rough/TopCards";
 import { TopNav } from "@/features/market-rough/TopNav";
 import { Bloom } from "@/components/ui/bloom";
 import events from "../../data/data_events.json";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Market Analytics — Lithuanian marketing & PR agency market" },
+  description:
+    "Market size, cash flow and payroll of the Lithuanian marketing & communications sector, 2019–2025, built from public-registry filings of 132 agencies.",
+  alternates: { canonical: "/" },
+};
 
 /**
  * Newest `at` in the data-change audit log, as "22 Jul 2026" — written by the
