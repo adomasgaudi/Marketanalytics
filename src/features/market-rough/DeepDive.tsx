@@ -7,6 +7,7 @@ import { LineChart } from "./LineChart";
 import { defaultBrand } from "./metrics";
 import type { CompanyYear, MarketModel } from "./types";
 import { useSourcedModel } from "./rebuilt-source";
+import { useCmpColor } from "./useSegColors";
 import { useDashboardParams } from "./useDashboardParams";
 
 const DD_METRICS: {
@@ -70,15 +71,31 @@ export function DeepDive({
   title?: string;
 }) {
   const model = useSourcedModel(legacyModel);
-  const [{ companies }] = useDashboardParams(model.last);
+  const [{ companies, off }] = useDashboardParams(model.last);
   const [metricKey, setMetricKey] = useState("ddRev");
+  const cmpColor = useCmpColor();
 
-  const brand = companies[0] ?? defaultBrand(model);
+  // Every company in the compare pool (minus the toggled-off ones) gets a
+  // line — "Compare financials" was plotting only the first selection.
+  const pool = companies.filter((b) => !off.includes(b));
+  const brands = pool.length ? pool : [defaultBrand(model)];
   const metric = DD_METRICS.find((m) => m.key === metricKey) ?? DD_METRICS[0];
 
-  const data = model.years
-    .map((y) => ({ x: y, y: metric.f(model.byBrand[brand]?.[y] ?? ({} as CompanyYear)) }))
-    .filter((p): p is { x: number; y: number } => p.y != null);
+  const series = brands
+    .map((brand, i) => ({
+      label: brand,
+      // Single company keeps the accent; a pool uses the compare palette, the
+      // same colours as the pills above, so line ↔ pill reads instantly.
+      color:
+        brands.length === 1 ? "var(--color-accent)" : cmpColor(companies.indexOf(brand)),
+      data: model.years
+        .map((y) => ({
+          x: y,
+          y: metric.f(model.byBrand[brand]?.[y] ?? ({} as CompanyYear)),
+        }))
+        .filter((p): p is { x: number; y: number } => p.y != null),
+    }))
+    .filter((s) => s.data.length);
 
   return (
     <section id="deepdive" className="mb-7">
@@ -98,16 +115,14 @@ export function DeepDive({
           ))}
         </PillRow>
         <h3 className="mb-2 text-[15px] font-semibold">
-          {brand} — {metric.title}
+          {brands.length === 1 ? `${brands[0]} — ` : ""}
+          {metric.title}
         </h3>
-        {data.length ? (
-          <LineChart
-            series={[{ label: brand, color: "var(--color-accent)", data }]}
-            fmt={metric.fmt}
-          />
+        {series.length ? (
+          <LineChart series={series} fmt={metric.fmt} />
         ) : (
           <p className="text-muted p-6 text-center text-[13px]">
-            No {metric.label.toLowerCase()} data for {brand}.
+            No {metric.label.toLowerCase()} data for {brands.join(", ")}.
           </p>
         )}
       </div>

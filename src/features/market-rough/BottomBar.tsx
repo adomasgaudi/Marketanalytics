@@ -581,7 +581,14 @@ export function BottomBar({
           the track was flex-1 and swallowed the spare width, which pushed the
           picker off-centre. From sm up there is room to spare and the flex row
           spreads the three groups across the bar. */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 sm:flex sm:flex-nowrap sm:gap-x-4 md:gap-x-8">
+      <div
+        className={cn(
+          "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 sm:flex sm:flex-nowrap sm:gap-x-4 md:gap-x-8",
+          // All-years hides the year track; without it the two remaining
+          // controls hug the left — centre them instead.
+          view === "all" && "sm:justify-center",
+        )}
+      >
         {/* The year row only makes sense per-year — all-years mode hides it.
             Elastic rather than a fixed fraction: the segment select and basis
             toggle are flex-none, so they claim their natural width first and

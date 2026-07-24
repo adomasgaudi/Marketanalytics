@@ -404,18 +404,6 @@ export function LineChart({
           </g>
         </svg>
 
-        <button
-          type="button"
-          title="Fit — reset zoom & pan"
-          onClick={(e) => {
-            e.stopPropagation();
-            setView(null);
-          }}
-          className="border-line bg-panel text-muted absolute top-1 right-1 z-[7] cursor-pointer rounded-[4px] border px-[5px] py-0.5 text-[12px] font-semibold opacity-60"
-        >
-          ⤢
-        </button>
-
         {tt && (
           <div
             className="border-line bg-panel text-ink pointer-events-none absolute z-[6] rounded-[4px] border px-1.5 py-1 text-[11px] whitespace-nowrap"
