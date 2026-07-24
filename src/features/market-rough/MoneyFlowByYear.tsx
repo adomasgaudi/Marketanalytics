@@ -129,9 +129,12 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const ispan = v.iMax - v.iMin || 1;
   const y = (val: number) => m.t + ph - ((val - v.vMin) / vspan) * ph;
   const x = (i: number) => m.l + ((i - v.iMin) / ispan) * pw;
-  // Legacy: slotPx = pw / span; barW = min(slot × 0.7, 64).
+  // slotPx = pw / span. Main stack kept slimmer so the gold revenue companion
+  // beside it reads as a real second bar rather than a hairline.
   const bandW = pw / ispan;
-  const barW = Math.min(bandW * 0.7, 64);
+  const barW = Math.min(bandW * 0.46, 44);
+  // Gold revenue bar: a proper companion, ~half the stack's width.
+  const revBarW = Math.max(9, Math.round(barW * 0.5));
 
   // Round 1/2/5×10ⁿ y ticks that move with the view (legacy niceTicks).
   const ticks = useMemo(() => {
@@ -302,13 +305,15 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                 );
               })}
 
-              {/* Legend inside the plot, top-right, as the legacy engine. */}
+              {/* Legend inside the plot, top-right. Payroll names the grey band
+                  (its white in-bar figure); Revenue matches the gold companion. */}
               {[
                 ["var(--color-green)", "Net profit"],
-                ["var(--color-mf-rev)", "Revenue"],
+                ["var(--color-mf-rev-labour)", "Payroll"],
+                ["var(--color-gold)", "Revenue"],
                 ["var(--color-mf-turn-line)", "Turnover"],
               ].map(([color, label], i) => (
-                <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
+                <g key={label} transform={`translate(${W - 340 + i * 84}, 10)`}>
                   <rect width="9" height="9" rx="2" fill={color} />
                   <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
                     {label}
@@ -411,20 +416,32 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         strokeWidth={2}
                         rx={barR - 1}
                       />
-                      {/* A hairline companion bar carrying revenue alone. The
-                          stack already contains it, but split three ways and
-                          starting off the axis — so its year-on-year shape was
-                          unreadable. Beside the stack, on the same scale, it
-                          is a second series you can actually follow. */}
+                      {/* Companion bar carrying revenue alone. The stack already
+                          contains it, but split three ways and starting off the
+                          axis — so its year-on-year shape was unreadable. Beside
+                          the stack, on the same scale, it is a second series you
+                          can actually follow. Its value rides ON TOP of it. */}
                       {r.revenue > 0 && (
-                        <rect
-                          x={x0 + barW + 2}
-                          y={y(r.revenue)}
-                          width={Math.max(4, Math.round(barW * 0.16))}
-                          height={Math.max(0, y(0) - y(r.revenue))}
-                          rx={2}
-                          fill="var(--color-gold)"
-                        />
+                        <g>
+                          <rect
+                            x={x0 + barW + 4}
+                            y={y(r.revenue)}
+                            width={revBarW}
+                            height={Math.max(0, y(0) - y(r.revenue))}
+                            rx={2}
+                            fill="var(--color-gold)"
+                          />
+                          <text
+                            x={x0 + barW + 4 + revBarW / 2}
+                            y={y(r.revenue) - 4}
+                            textAnchor="middle"
+                            fontSize="9"
+                            fontWeight="700"
+                            fill="var(--color-gold)"
+                          >
+                            {valFmt(r.revenue)}
+                          </text>
+                        </g>
                       )}
                       <text
                         x={cx}
@@ -451,19 +468,24 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           {fmtPct(yoy)}
                         </text>
                       )}
-                      {/* Rest-of-revenue SEGMENT value inside the dark band (legacy). */}
-                      {revRest > 0 && yProfitTop - yRevTop > 14 && (
-                        <text
-                          x={cx}
-                          y={(yRevTop + yProfitTop) / 2 + 3}
-                          textAnchor="middle"
-                          fontSize="9"
-                          fontWeight="600"
-                          fill="var(--color-ink)"
-                        >
-                          {valFmt(revRest)}
-                        </text>
-                      )}
+                      {/* Payroll (the labour slice) labelled inside the bar, in
+                          white so it reads on the mid-grey band — never dark ink
+                          on grey. Only when the slice is tall enough to hold it. */}
+                      {revParts &&
+                        r.payroll != null &&
+                        r.payroll > 0 &&
+                        (revParts.employer / revRest) * revH > 12 && (
+                          <text
+                            x={cx}
+                            y={yRevTop + ((revParts.employer / revRest) * revH) / 2 + 3}
+                            textAnchor="middle"
+                            fontSize="9"
+                            fontWeight="700"
+                            fill="#ffffff"
+                          >
+                            {valFmt(r.payroll)}
+                          </text>
+                        )}
                     </g>
                   );
                 })}
