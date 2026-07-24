@@ -1,0 +1,515 @@
+"use client";
+
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Seg } from "@/components/ui/seg";
+import { fmtPct } from "./format";
+import { revBreakdown } from "./money-flow-breakdown";
+
+export type YearFlow = {
+  year: number;
+  turnover: number;
+  revenue: number;
+  profit: number;
+  /** Sodra wage bill — bar subdivision only. */
+  payroll?: number | null;
+};
+
+/** Chart-label format, as the legacy SVG engine: 1.94M / 653.5k — no €. */
+const chartFmt = (v: number) =>
+  v >= 1e6
+    ? `${(v / 1e6).toFixed(v >= 1e7 ? 1 : 2)}M`
+    : v >= 1e3
+      ? `${(v / 1e3).toFixed(1)}k`
+      : String(Math.round(v));
+
+/** Axis-tick format: 4M / 3.5M / 500k / 0 — trailing zeros dropped. */
+const axisFmt = (v: number) => {
+  if (v === 0) return "0";
+  if (Math.abs(v) >= 1e6) {
+    const m = v / 1e6;
+    return `${Number.isInteger(m) ? m : m.toFixed(1)}M`;
+  }
+  if (Math.abs(v) >= 1e3) {
+    const k = v / 1e3;
+    return `${Number.isInteger(k) ? k : k.toFixed(1)}k`;
+  }
+  return String(Math.round(v));
+};
+
+type View = { vMin: number; vMax: number; iMin: number; iMax: number };
+
+/**
+ * Money-flow by year — the legacy drawFinSvg stacked-bar chart: one bar per
+ * year (Net profit / rest-of-Revenue / rest-of-Turnover bottom→top), total +
+ * YoY labels on top, the rest-of-revenue value inside the dark band, in-plot
+ * legend, 20% zoom-out headroom, hover tooltip, ⤢ fit and pan/zoom gated by
+ * the Dev graph-pan setting. Container-pixel sized with a ResizeObserver.
+ */
+export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: string }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const clipId = useId();
+  const [size, setSize] = useState({ W: 720, H: 300 });
+  const [view, setView] = useState<View | null>(null);
+  const [tt, setTt] = useState<{ x: number; y: number; html: string } | null>(null);
+  const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
+  // Absolute € vs % of that year's turnover. In % mode every figure is divided
+  // by its own year's turnover ×100, so turnover is 100% each year and the bar
+  // reads as composition rather than size.
+  const [pct, setPct] = useState(false);
+
+  // Plot off `data`, not `rows`: in % mode all figures scale by the same
+  // per-year turnover, so shares are preserved. `rows` (absolute) is still used
+  // for the tooltip and the year-on-year change, which stay meaningful in €.
+  const data = useMemo<YearFlow[]>(
+    () =>
+      pct
+        ? rows.map((r) => {
+            const t = r.turnover || 1;
+            const s = (v: number) => (v / t) * 100;
+            return {
+              year: r.year,
+              turnover: s(r.turnover),
+              revenue: s(r.revenue),
+              profit: s(r.profit),
+              payroll: r.payroll != null ? s(r.payroll) : r.payroll,
+            };
+          })
+        : rows,
+    [rows, pct],
+  );
+
+  const valFmt = pct ? (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}%` : chartFmt;
+  const tickFmt = pct ? (v: number) => `${Math.round(v)}%` : axisFmt;
+
+  const R = rows.length;
+  // Must cover EVERY plotted figure, not just turnover. It gates both the
+  // fitted view and the zoom reset, and switching the data source changes
+  // revenue and profit while leaving turnover identical — so a turnover-only
+  // signature let the chart keep a view fitted to the other dataset.
+  const sig =
+    (pct ? "%|" : "€|") +
+    data.map((r) => `${r.year}:${r.turnover}:${r.revenue}:${r.profit}`).join("|");
+
+  // Legacy fitState: stacked headroom ×1.22 for the total labels, then
+  // zoomOut 0.2 → ±10% margin on BOTH axes (so the 0-line floats above the
+  // bottom and the x range gains side slots).
+  const fullView = useMemo<View>(() => {
+    const hi = Math.max(...data.map((r) => r.turnover), 1) * 1.22;
+    const xMax = Math.max(1, R - 1);
+    const xs = xMax;
+    const ys = hi;
+    return {
+      vMin: -ys * 0.1,
+      vMax: hi + ys * 0.1,
+      iMin: -xs * 0.1,
+      iMax: xMax + xs * 0.1,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
+  const v = view ?? fullView;
+
+  useEffect(() => setView(null), [sig]);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const measure = () =>
+      host.clientWidth > 0 && setSize({ W: host.clientWidth, H: host.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(host);
+    return () => ro.disconnect();
+  }, []);
+
+  const { W, H } = size;
+  const m = { t: 6, r: 12, b: 24, l: 44 };
+  const pw = W - m.l - m.r;
+  const ph = H - m.t - m.b;
+  const vspan = v.vMax - v.vMin || 1;
+  const ispan = v.iMax - v.iMin || 1;
+  const y = (val: number) => m.t + ph - ((val - v.vMin) / vspan) * ph;
+  const x = (i: number) => m.l + ((i - v.iMin) / ispan) * pw;
+  // Legacy: slotPx = pw / span; barW = min(slot × 0.7, 64).
+  const bandW = pw / ispan;
+  const barW = Math.min(bandW * 0.7, 64);
+
+  // Round 1/2/5×10ⁿ y ticks that move with the view (legacy niceTicks).
+  const ticks = useMemo(() => {
+    if (!(v.vMax > v.vMin)) return [v.vMin];
+    const raw = (v.vMax - v.vMin) / 8;
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    const nrm = raw / mag;
+    const step = (nrm < 1.5 ? 1 : nrm < 3 ? 2 : nrm < 7 ? 5 : 10) * mag;
+    const out: number[] = [];
+    for (
+      let t = Math.ceil(v.vMin / step - 1e-9) * step;
+      t <= v.vMax + step * 1e-9;
+      t += step
+    )
+      out.push(Math.abs(t) < step * 1e-6 ? 0 : t);
+    return out;
+  }, [v]);
+
+  const graphPanOn = () => {
+    try {
+      return localStorage.getItem("graphPan") === "on";
+    } catch {
+      return false;
+    }
+  };
+
+  const zoomAbout = (cx: number, cy: number, kx: number, ky: number) => {
+    const rect = hostRef.current!.getBoundingClientRect();
+    const fx = Math.max(0, Math.min(1, (cx - rect.left - m.l) / (pw || 1)));
+    const fy = Math.max(0, Math.min(1, (cy - rect.top - m.t) / (ph || 1)));
+    const focI = v.iMin + fx * ispan;
+    const ni = ispan * kx;
+    // y is inverted: top of plot = vMax.
+    const focV = v.vMax - fy * vspan;
+    const nv = Math.max(1e-6, vspan * ky);
+    setView({
+      iMin: focI - fx * ni,
+      iMax: focI + (1 - fx) * ni,
+      vMax: focV + fy * nv,
+      vMin: focV + fy * nv - nv,
+    });
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const host = hostRef.current;
+    if (!host || drag.current?.moved) return;
+    const rect = host.getBoundingClientRect();
+    const xv = e.clientX - rect.left;
+    if (xv < m.l || xv > m.l + pw) return setTt(null);
+    const i = Math.round(v.iMin + ((xv - m.l) / pw) * ispan);
+    if (i < 0 || i >= R) return setTt(null);
+    const r = rows[i];
+    setTt({
+      x: Math.max(2, xv + 8),
+      y: e.clientY - rect.top + 8,
+      html:
+        `<b>${r.year}</b><br>` +
+        `Turnover €${chartFmt(r.turnover)}<br>` +
+        `Revenue €${chartFmt(r.revenue)}<br>` +
+        `Net profit €${chartFmt(r.profit)}`,
+    });
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!graphPanOn()) return;
+    drag.current = { x0: e.clientX, y0: e.clientY, v: { ...v }, moved: false };
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d) return;
+    if (Math.abs(e.clientX - d.x0) + Math.abs(e.clientY - d.y0) > 3) d.moved = true;
+    if (!d.moved) return;
+    setTt(null);
+    const di = ((e.clientX - d.x0) / (pw || 1)) * (d.v.iMax - d.v.iMin);
+    const dv = ((e.clientY - d.y0) / (ph || 1)) * (d.v.vMax - d.v.vMin);
+    setView({
+      iMin: d.v.iMin - di,
+      iMax: d.v.iMax - di,
+      vMin: d.v.vMin + dv,
+      vMax: d.v.vMax + dv,
+    });
+  };
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!graphPanOn()) return;
+      e.preventDefault();
+      const k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+      zoomAbout(e.clientX, e.clientY, e.shiftKey ? 1 : k, e.altKey ? 1 : k);
+    };
+    host.addEventListener("wheel", onWheel, { passive: false });
+    return () => host.removeEventListener("wheel", onWheel);
+  });
+
+  return (
+    <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <h2 className="text-[15px] font-semibold">{title}</h2>
+        <Seg
+          label="Scale"
+          btnClassName="px-2.5 py-0.5 text-[11px]"
+          options={[
+            { value: "abs" as const, title: "Figures in euros", label: "€" },
+            {
+              value: "pct" as const,
+              title: "Each figure as a share of that year's turnover — turnover is 100%",
+              label: "% of turnover",
+            },
+          ]}
+          value={pct ? "pct" : "abs"}
+          onChange={(value) => setPct(value === "pct")}
+        />
+      </div>
+      {rows.length === 0 ? (
+        <p className="text-muted p-6 text-center text-[13px]">No data.</p>
+      ) : (
+        <div className="chartbox relative h-[340px]">
+          <span className="bg-panel2 text-muted pointer-events-none absolute top-1 left-1 z-[7] rounded-[3px] px-1 py-0.5 text-[8px] font-semibold tracking-[.04em] opacity-70">
+            SVG
+          </span>
+          <div
+            ref={hostRef}
+            className="absolute inset-0 touch-none select-none"
+            onMouseMove={onMouseMove}
+            onMouseLeave={() => setTt(null)}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={() => (drag.current = null)}
+            onDoubleClick={() => setView(null)}
+          >
+            <svg
+              width="100%"
+              height="100%"
+              viewBox={`0 0 ${W} ${H}`}
+              className="block overflow-visible"
+            >
+              <defs>
+                <clipPath id={`${clipId}p`}>
+                  <rect x={m.l} y={m.t} width={pw} height={ph} />
+                </clipPath>
+              </defs>
+              {ticks.map((t) => {
+                const ty = y(t);
+                if (ty < m.t - 1 || ty > m.t + ph + 1) return null;
+                return (
+                  <g key={t}>
+                    <line
+                      x1={m.l}
+                      x2={W - m.r}
+                      y1={ty}
+                      y2={ty}
+                      stroke="var(--color-grid)"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={m.l - 6}
+                      y={ty + 3}
+                      textAnchor="end"
+                      fontSize="10"
+                      fill="var(--color-muted)"
+                    >
+                      {tickFmt(t)}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Legend inside the plot, top-right, as the legacy engine. */}
+              {[
+                ["var(--color-green)", "Net profit"],
+                ["var(--color-mf-rev)", "Revenue"],
+                ["var(--color-mf-turn-line)", "Turnover"],
+              ].map(([color, label], i) => (
+                <g key={label} transform={`translate(${W - 260 + i * 85}, 10)`}>
+                  <rect width="9" height="9" rx="2" fill={color} />
+                  <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
+                    {label}
+                  </text>
+                </g>
+              ))}
+
+              <g clipPath={`url(#${clipId}p)`}>
+                {data.map((r, i) => {
+                  const profit = Math.max(0, r.profit);
+                  const revRest = Math.max(0, r.revenue - profit);
+                  const turnRest = Math.max(0, r.turnover - r.revenue);
+                  const revParts = revBreakdown(revRest, r.payroll);
+                  const cx = x(i);
+                  if (cx < m.l - bandW || cx > m.l + pw + bandW) return null;
+                  const x0 = cx - barW / 2;
+                  const yProfitTop = y(profit);
+                  const yRevTop = y(profit + revRest);
+                  const yTurnTop = y(profit + revRest + turnRest);
+                  const revH = Math.max(0, yProfitTop - yRevTop);
+                  // YoY is a €-size change, meaningless in % mode (turnover is
+                  // 100 every year) — so it reads from absolute `rows` always.
+                  const prev = i > 0 ? rows[i - 1].turnover : null;
+                  const yoy =
+                    prev != null && prev > 0 ? rows[i].turnover / prev - 1 : null;
+                  const revRects = () => {
+                    if (revH <= 0) return null;
+                    if (!revParts || revRest <= 0) {
+                      return (
+                        <rect
+                          x={x0}
+                          y={yRevTop}
+                          width={barW}
+                          height={revH}
+                          fill="var(--color-mf-rev)"
+                        />
+                      );
+                    }
+                    let yTop = yRevTop;
+                    const slices = [
+                      { h: revParts.employer, fill: "var(--color-mf-rev-labour)" },
+                      { h: revParts.opex, fill: "var(--color-mf-rev-opex)" },
+                      { h: revParts.profitTax, fill: "var(--color-mf-rev-tax)" },
+                    ].filter((s) => s.h > 0);
+                    return slices.map((slice, si) => {
+                      const h = (slice.h / revRest) * revH;
+                      const el = (
+                        <rect
+                          key={si}
+                          x={x0}
+                          y={yTop}
+                          width={barW}
+                          height={h}
+                          fill={slice.fill}
+                        />
+                      );
+                      yTop += h;
+                      return el;
+                    });
+                  };
+                  const barR = 4;
+                  const barTop = yTurnTop;
+                  const barH = Math.max(0, y(0) - barTop);
+                  return (
+                    <g key={r.year}>
+                      {/* The stack's fills are clipped to the SAME rounded rect
+                          the outline traces. Without this the square-cornered
+                          bands poked out past the rounded stroke and the whole
+                          bar read as a selection box rather than a chart. */}
+                      <clipPath id={`${clipId}b${r.year}`}>
+                        <rect x={x0} y={barTop} width={barW} height={barH} rx={barR} />
+                      </clipPath>
+                      <g clipPath={`url(#${clipId}b${r.year})`}>
+                        <rect
+                          x={x0}
+                          y={yProfitTop}
+                          width={barW}
+                          height={Math.max(0, y(0) - yProfitTop)}
+                          fill="var(--color-green)"
+                        />
+                        {revRects()}
+                        <rect
+                          x={x0}
+                          y={yTurnTop}
+                          width={barW}
+                          height={Math.max(0, yRevTop - yTurnTop)}
+                          fill="var(--color-mf-turn)"
+                        />
+                      </g>
+                      {/* Turnover is the whole stack, so it is drawn as the
+                          stack's outline rather than as a band — same as the
+                          per-year card, where blue marks the outer boundary. */}
+                      <rect
+                        x={x0 + 1}
+                        y={barTop + 1}
+                        width={Math.max(0, barW - 2)}
+                        height={Math.max(0, barH - 2)}
+                        fill="none"
+                        stroke="var(--color-mf-turn-line)"
+                        strokeWidth={2}
+                        rx={barR - 1}
+                      />
+                      {/* A hairline companion bar carrying revenue alone. The
+                          stack already contains it, but split three ways and
+                          starting off the axis — so its year-on-year shape was
+                          unreadable. Beside the stack, on the same scale, it
+                          is a second series you can actually follow. */}
+                      {r.revenue > 0 && (
+                        <rect
+                          x={x0 + barW + 2}
+                          y={y(r.revenue)}
+                          width={Math.max(4, Math.round(barW * 0.16))}
+                          height={Math.max(0, y(0) - y(r.revenue))}
+                          rx={2}
+                          fill="var(--color-gold)"
+                        />
+                      )}
+                      <text
+                        x={cx}
+                        y={yTurnTop - 5}
+                        textAnchor="middle"
+                        fontSize="10"
+                        fontWeight="700"
+                        fill="var(--color-ink)"
+                      >
+                        {valFmt(r.turnover)}
+                      </text>
+                      {yoy != null && (
+                        <text
+                          // Midway to the previous bar, at the higher of the
+                          // two tops: a change belongs between the years it
+                          // compares, not over one of them.
+                          x={(x(i - 1) + cx) / 2}
+                          y={Math.min(yTurnTop, y(data[i - 1].turnover)) - 8}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="600"
+                          fill={yoy >= 0 ? "var(--color-green)" : "var(--color-red)"}
+                        >
+                          {fmtPct(yoy)}
+                        </text>
+                      )}
+                      {/* Rest-of-revenue SEGMENT value inside the dark band (legacy). */}
+                      {revRest > 0 && yProfitTop - yRevTop > 14 && (
+                        <text
+                          x={cx}
+                          y={(yRevTop + yProfitTop) / 2 + 3}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="600"
+                          fill="var(--color-ink)"
+                        >
+                          {valFmt(revRest)}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </g>
+
+              {/* Year labels live OUTSIDE the plot clip (legacy category row). */}
+              {rows.map((r, i) => {
+                const cx = x(i);
+                if (cx < m.l - 4 || cx > m.l + pw + 4) return null;
+                return (
+                  <text
+                    key={r.year}
+                    x={cx}
+                    y={H - 8}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="var(--color-muted)"
+                  >
+                    {r.year}
+                  </text>
+                );
+              })}
+            </svg>
+
+            <button
+              type="button"
+              title="Fit — reset zoom & pan"
+              onClick={(e) => {
+                e.stopPropagation();
+                setView(null);
+              }}
+              className="border-line bg-panel text-muted absolute top-1 right-1 z-[7] cursor-pointer rounded-[4px] border px-[5px] py-0.5 text-[12px] font-semibold opacity-60"
+            >
+              ⤢
+            </button>
+
+            {tt && (
+              <div
+                className="border-line bg-panel text-ink pointer-events-none absolute z-[6] rounded-[4px] border px-1.5 py-1 text-[11px] whitespace-nowrap"
+                style={{ left: tt.x, top: tt.y }}
+                dangerouslySetInnerHTML={{ __html: tt.html }}
+              />
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

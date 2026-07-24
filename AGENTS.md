@@ -96,27 +96,19 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 |- next.config.ts
 |
 |- src/                         NEXT.JS APP - the only app track
-|  |- app/                      App Router: layout, globals.css, routes
-|  |- features/                 Feature modules (market-rough, explore)
+|  |- app/                      App Router: layout, globals.css, / (= restaurants), /restaurants
 |  |- components/ui/            Shared primitives (seg, pills, group, ...)
-|  |- lib/                      Shared utils (cn, ...)
+|  |- lib/                      Shared utils (cn, version-history, ...)
 |  `- app-version.ts            GENERATED from package.json - never hand-edit
 |- public/                      Next static assets (incl. CNAME -> custom domain)
 |
 |- data/
-|  |- data.json                 Canonical annual company financial dataset
-|  |- sheets_data.json          Imported spreadsheet source data
-|  |- rek_tabs.json             Scraped Rekvizitai source data
-|  |- data_events.json          Data-change audit log
-|  |- workbook.json             The source .xlsx as one Main sheet - powers /explore/sheets
-|  |- disagreements.json        What the retired sheets recorded differently (flagged in gold)
-|  `- sodra/<slug>.json         Per-company payroll source, named by rek_tabs slug
+|  `- sodra/<slug>.json         Per-company payroll source (866 food-service co)
 |
 |- scripts/                     Split by WHAT THEY ACT ON, not by language
 |  |- app/                      Acts on the app: write-version, lan-qr (run per build/dev)
-|  `- data/                     Acts on data/: the LIVE Py scrape+parse+estimate
-|     |                         pipeline, plus the make-sheets .mjs one-offs
-|     `- workbook/              The .xlsx extract + merge/retire chain behind workbook.json
+|  `- data/                     discover_restaurants, scrape_rc_bulk, scrape_gov,
+|                               scrape_sodra, build_sodra, data_events
 |
 |- docs/                        Every doc lives in one of these - nothing loose at docs/ root
 |  |- ai-harness/               Harness space: skills, rules, startprompt, old-agents
