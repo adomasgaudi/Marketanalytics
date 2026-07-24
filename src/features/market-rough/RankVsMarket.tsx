@@ -21,6 +21,7 @@ export function RankVsMarket({
   brand,
   brands,
   colorPool,
+  colors,
   year,
   perEmployee,
   segment,
@@ -31,6 +32,8 @@ export function RankVsMarket({
   brands?: string[];
   /** Full pool incl. hidden brands — keeps bar colours matching the chips. */
   colorPool?: string[];
+  /** brand -> segment colour (useCompareColors); falls back to index palette. */
+  colors?: Record<string, string>;
   year: number;
   perEmployee: boolean;
   /** Bottom-bar segment scope: rank within this segment, not the whole market. */
@@ -104,7 +107,7 @@ export function RankVsMarket({
           value: rank.pct,
           valueText: mode === "value" ? realText : undefined,
           color: grouped
-            ? cmpColor((colorPool ?? pool).indexOf(b))
+            ? (colors?.[b] ?? cmpColor((colorPool ?? pool).indexOf(b)))
             : rank.pct >= 50
               ? "var(--color-gold-rank)"
               : "var(--color-muted)",

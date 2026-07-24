@@ -146,12 +146,15 @@ export function CompanyPicker({
 export function CompanyTabs({
   brands,
   colorPool,
+  colors,
   focused,
   onFocus,
 }: {
   brands: string[];
   /** Full pool incl. hidden brands — keeps dot colours matching the chips. */
   colorPool?: string[];
+  /** brand -> segment colour (useCompareColors); falls back to index palette. */
+  colors?: Record<string, string>;
   focused: string;
   onFocus: (brand: string) => void;
 }) {
@@ -166,7 +169,7 @@ export function CompanyTabs({
       className="border-line mb-3 flex [scrollbar-width:none] gap-0.5 overflow-x-auto border-b [&::-webkit-scrollbar]:hidden"
     >
       {brands.map((b) => {
-        const color = cmpColor((colorPool ?? brands).indexOf(b));
+        const color = colors?.[b] ?? cmpColor((colorPool ?? brands).indexOf(b));
         const on = b === focused;
         return (
           <button
@@ -211,6 +214,8 @@ export function CompanyPerYear({
   const model = useSourcedModel(legacyModel);
   const [{ year, basis, segment }] = useDashboardParams(model.last);
   const { brands, pool } = useSelectedBrands(model);
+  // One colour map for tabs, chips and rank bars — segment colours.
+  const compareColors = useCompareColors(brandSegments(model))(pool);
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
   const brand = focus && brands.includes(focus) ? focus : brands[0];
@@ -274,7 +279,7 @@ export function CompanyPerYear({
         : v;
 
   const tabs = (
-    <CompanyTabs brands={brands} colorPool={pool} focused={brand} onFocus={setFocus} />
+    <CompanyTabs brands={brands} colorPool={pool} colors={compareColors} focused={brand} onFocus={setFocus} />
   );
   const profileCard = (
     <CompanyProfileCard
@@ -435,6 +440,7 @@ export function CompanyPerYear({
         brand={brand}
         brands={brands}
         colorPool={pool}
+        colors={compareColors}
         year={year}
         perEmployee={perEmployee}
         segment={segment}
