@@ -51,7 +51,7 @@ export function CompanyPicker({
   // same figures the cards below will show.
   const model = useSourcedModel(legacyModel);
   const { pool, off, set, setOff } = useSelectedBrands(model);
-  const [{ year }] = useDashboardParams(model.last);
+  const [{ year, segment }] = useDashboardParams(model.last);
   return (
     <>
       {/* The picker button scrolls away, like the legacy #ovCompanySelect. */}
@@ -64,6 +64,7 @@ export function CompanyPicker({
           onChange={set}
           onOffChange={setOff}
           profiles={profiles}
+          scopedSegment={segment}
         />
       </div>
       {/* Only the company PILLS stay pinned under the 50px top nav — the
@@ -151,7 +152,7 @@ export function CompanyPerYear({
   // Follows the nav's data-source toggle, so every widget below — money-flow,
   // KPIs, ranks, deep-dive — reads the same dataset.
   const model = useSourcedModel(legacyModel);
-  const [{ year, basis, src }] = useDashboardParams(model.last);
+  const [{ year, basis, src, segment }] = useDashboardParams(model.last);
   const { brands, pool } = useSelectedBrands(model);
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
@@ -380,6 +381,7 @@ export function CompanyPerYear({
         colorPool={pool}
         year={year}
         perEmployee={perEmployee}
+        segment={segment}
       />
     </div>
   );

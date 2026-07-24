@@ -446,14 +446,14 @@ export function BottomBar({
     selectSegment(stepIn(["", ...model.segments], segment ?? "", -dir as 1 | -1));
   });
   // Keyboard mirror of the two wheel gestures. ←/→ only while the year track is
-  // actually on screen (the all-years view hides it), ↑/↓ only on the Markets
-  // page, which is the one that carries a segment picker.
+  // actually on screen (the all-years view hides it), ↑/↓ steps the segment on
+  // both pages — each now carries a segment picker.
   useArrowKeys((key) => {
     pinView();
     if (key === "ArrowLeft" || key === "ArrowRight") {
       if (view === "all") return;
       setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
-    } else if (mode === "market") {
+    } else {
       selectSegment(
         stepIn(["", ...model.segments], segment ?? "", key === "ArrowDown" ? 1 : -1),
       );
@@ -599,9 +599,11 @@ export function BottomBar({
           </div>
         </div>
 
-        {/* Segment scope for the cash-flow panel. A <select> rather than a Seg:
-            9 segments as joined buttons would be ~900px wide. */}
-        {mode === "market" && (
+        {/* Segment scope. On Markets it scopes the cash-flow panel; on the
+            companies view it pre-filters the picker and turns the vs-market
+            chart into vs-segment. A <select> rather than a Seg: 9 segments as
+            joined buttons would be ~900px wide. */}
+        {model.segments.length > 0 && (
           <div
             ref={segmentRef}
             className="segment-picker justify-self-center"

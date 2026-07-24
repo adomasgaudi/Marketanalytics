@@ -6,6 +6,7 @@ import { cmpColor } from "./CompanySelector";
 import { fmtEur, fmtInt } from "./format";
 import { type KpiMode, KpiModeToggle } from "./KpiCard";
 import { margin, type Rank, rankOf } from "./metrics";
+import { segName } from "./segments";
 import type { CompanyYear, MarketModel } from "./types";
 
 const pctText = (v: number) => `${v.toFixed(1)}%`;
@@ -22,6 +23,7 @@ export function RankVsMarket({
   colorPool,
   year,
   perEmployee,
+  segment,
 }: {
   model: MarketModel;
   brand: string;
@@ -31,6 +33,8 @@ export function RankVsMarket({
   colorPool?: string[];
   year: number;
   perEmployee: boolean;
+  /** Bottom-bar segment scope: rank within this segment, not the whole market. */
+  segment?: string | null;
 }) {
   // "value" = read the real €/%/headcount figure; "change" = the percentile.
   // Bar LENGTH is the percentile either way — the metrics share no unit.
@@ -70,8 +74,17 @@ export function RankVsMarket({
           },
         ]),
   ];
+  // When a segment is scoped, the percentile is against that segment's
+  // companies, not the whole market — so the ranking pool and the "of N" count
+  // both shrink to it.
+  const rankRows = segment
+    ? model.rows.filter((r) => r.activities.includes(segment))
+    : model.rows;
+  const poolSize = segment
+    ? new Set(rankRows.map((r) => r.brand)).size
+    : model.brands.length;
   const rankFor = (b: string, f: (r: CompanyYear) => number | null) =>
-    rankOf(model.rows, year, model.byBrand[b]?.[year], f);
+    rankOf(rankRows, year, model.byBrand[b]?.[year], f);
 
   // Grouped (>1 company): one metric HEADING per group (spacer above for a
   // gap), then one bar per company labelled with just the company name — its
@@ -123,7 +136,8 @@ export function RankVsMarket({
     <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <div className="mb-2 flex items-center justify-between gap-3">
         <h3 className="text-[15px] font-semibold">
-          {grouped ? "Selected companies" : brand} vs the market ({year}
+          {grouped ? "Selected companies" : brand} vs{" "}
+          {segment ? segName(segment) : "the market"} ({year}
           {perEmployee ? ", per employee" : ""})
         </h3>
         <KpiModeToggle mode={mode} onChange={setMode} />
@@ -132,7 +146,7 @@ export function RankVsMarket({
         <BarsSvg
           rows={bars}
           fmt={(v) => String(Math.round(v))}
-          xTitle={`Percentile vs ${model.brands.length} agencies (100 = top)`}
+          xTitle={`Percentile vs ${poolSize} ${segment ? segName(segment) + " " : ""}agencies (100 = top)`}
           tip={(bar, i) => {
             const m = meta[i];
             if (!m) return "";

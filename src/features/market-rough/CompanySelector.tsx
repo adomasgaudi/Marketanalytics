@@ -216,6 +216,7 @@ export function CompanySelector({
   onChange,
   onOffChange,
   profiles,
+  scopedSegment,
 }: {
   model: MarketModel;
   year: number;
@@ -226,6 +227,9 @@ export function CompanySelector({
   onChange: (brands: string[]) => void;
   onOffChange: (off: string[]) => void;
   profiles?: Record<string, CompanyProfile>;
+  /** Bottom-bar segment scope — seeds the segment filter so the list opens
+      already narrowed to that segment. Null/empty means all segments. */
+  scopedSegment?: string | null;
 }) {
   const SEG_COLORS = useSegColors();
   const [open, setOpen] = useState(false);
@@ -240,6 +244,13 @@ export function CompanySelector({
   });
   const rootRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Follow the bottom-bar segment scope: opening or changing it narrows the
+  // list to that segment. Keyed on the scope alone, so a manual multi-select
+  // the user makes afterwards holds until the scope next changes.
+  useEffect(() => {
+    setSegs(scopedSegment ? new Set([scopedSegment]) : new Set());
+  }, [scopedSegment]);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
