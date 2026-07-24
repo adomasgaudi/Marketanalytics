@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { slugify } from "@/lib/slug";
 import { CompanyProfileCard } from "./CompanyProfile";
 import { cmpColor, CompanySelector, CompareChips } from "./CompanySelector";
 import { DeepDive } from "./DeepDive";
@@ -59,7 +61,21 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
   return (
     <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
       <span className="block text-[clamp(42px,9vw,72px)]">
-        {brand ?? <span className="text-muted/60">Select a company</span>}
+        {brand ? (
+          <>
+            {brand}
+            {/* ↗ to the static profile page — the crawlable twin of this view. */}
+            <Link
+              href={`/companies/${slugify(brand)}`}
+              title={`${brand} — full profile page`}
+              className="text-muted hover:text-accent ml-3 align-super text-[0.35em] font-bold transition-colors"
+            >
+              ↗
+            </Link>
+          </>
+        ) : (
+          <span className="text-muted/60">Select a company</span>
+        )}
       </span>
       {/* The per-year / all-time toggle the old "Companies per year" title
           carried — kept, demoted to the subtitle line (mirrors HeroTitle). */}
