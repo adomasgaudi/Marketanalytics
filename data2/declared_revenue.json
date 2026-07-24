@@ -1,0 +1,9 @@
+{
+  "_meta": {
+    "source": "company-declared",
+    "note": "Agency revenue figures given directly by the company itself. Hard data: where an entry exists it OVERRIDES the modelled netRevenue, and opex is re-solved from it (declared - labour cost - pre-tax profit) instead of the 0.43 guess. Payroll (Sodra) and profit (Registru centras) stay sourced as before.",
+    "shape": "companies.<brand>.<year> = { revenue: <EUR int>, from: '<who gave it, how>', at: '<ISO date received>' }",
+    "rule": "No entry without `from` and `at` - a declared figure with no traceable origin does not belong in data2."
+  },
+  "companies": {}
+}
