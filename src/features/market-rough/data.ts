@@ -1,58 +1,82 @@
-import raw from "../../../data/data.json";
-import workbook from "../../../data/workbook.json";
-import { canonSegment } from "./segments";
+import classification from "../../../data2/classification.json";
+import { COMPANIES } from "../explore/model-data";
+import { SODRA } from "../explore/sodra-data";
 import type { CompanyYear, MarketModel } from "./types";
 
-const rows = raw as CompanyYear[];
+/**
+ * The dashboard model, built entirely from data2/. Registry filings (turnover,
+ * profit, agency revenue, wage bill) come from the COMPANIES sheet; headcount
+ * and average wage from Sodra; and the non-registry fields a filing never
+ * carries — company name, segments, main segment, city, credit risk — from
+ * data2/classification.json, the one-time migrated snapshot (see its
+ * _meta.source). Nothing here reads the retired data/ set.
+ */
+type Meta = {
+  company: string;
+  activities: string[];
+  mainSegment: string | null;
+  city: string | null;
+  risk: string | null;
+};
+const META = (classification as { companies: Record<string, Meta> }).companies;
 
-/** Per-brand main segment from the workbook Main sheet Veikla column. */
-function loadMainSegmentByBrand(): Record<string, string> {
-  const sheet = workbook.sheets.find((s) => s.name === "Main");
-  if (!sheet) return {};
-  const hdr = sheet.values[0] as string[];
-  const bi = hdr.indexOf("Pagrindinis brandas");
-  const vi = hdr.indexOf("Veikla");
-  if (bi < 0 || vi < 0) return {};
-  const out: Record<string, string> = {};
-  for (const row of sheet.values.slice(1)) {
-    const brand = String(row[bi] ?? "").trim();
-    const rawSeg = row[vi];
-    if (!brand || rawSeg == null || rawSeg === "") continue;
-    const seg = canonSegment(String(rawSeg));
-    if (seg) out[brand] = seg;
+const compByBrand = new Map(COMPANIES.map((c) => [c.brand, c]));
+const sodraByBrand = new Map(SODRA.map((c) => [c.brand, c]));
+
+/** One {brand, year} row for every year any data2 figure reaches the brand. */
+function buildRows(): CompanyYear[] {
+  const rows: CompanyYear[] = [];
+  for (const [brand, meta] of Object.entries(META)) {
+    const comp = compByBrand.get(brand);
+    const sodra = sodraByBrand.get(brand);
+    const years = new Set<number>();
+    for (const key of ["turnover", "netRevenue", "profit", "wageBill"])
+      for (const y of Object.keys(comp?.values[key] ?? {})) years.add(Number(y));
+    for (const y of Object.keys(sodra?.years ?? {})) years.add(Number(y));
+
+    for (const year of years) {
+      const revenue = comp?.values.turnover?.[year] ?? null;
+      const salaryCosts = comp?.values.wageBill?.[year] ?? null;
+      const sy = sodra?.years[year];
+      rows.push({
+        company: meta.company,
+        brand,
+        year,
+        activities: meta.activities,
+        mainSegment: meta.mainSegment ?? meta.activities[0] ?? "Other",
+        city: meta.city ?? "",
+        risk: meta.risk ?? "",
+        employees: sy?.avgHeadcount == null ? null : Math.round(sy.avgHeadcount),
+        avgSalary: sy?.avgWage == null ? null : Math.round(sy.avgWage),
+        salaryCosts,
+        revenue,
+        profit: comp?.values.profit?.[year] ?? null,
+        // Non-salary cost = turnover minus the wage bill, when both are known.
+        nonSalaryCosts:
+          revenue != null && salaryCosts != null ? revenue - salaryCosts : null,
+        estimatedIncome: comp?.values.netRevenue?.[year] ?? null,
+      });
+    }
   }
-  return out;
+  return rows;
 }
 
-const mainByBrand = loadMainSegmentByBrand();
-
-const enrich = (row: CompanyYear): CompanyYear => ({
-  ...row,
-  mainSegment: mainByBrand[row.brand] ?? row.activities[0] ?? "Other",
-});
-
-/** Builds the indexes the legacy dashboard derives at load (byBrand, BRANDS,
-    SEGMENTS, YEARS, LAST, FIN_YEARS). Runs on the server; the model is handed
-    down to the views. */
+/** Builds the indexes the dashboard derives at load (byBrand, brands, segments,
+    years, last, finYears). Runs on the server; the model is handed to the views. */
 export function loadMarketData(): MarketModel {
-  const enriched = rows.map(enrich);
-  const years = [...new Set(enriched.map((row) => row.year))].sort((a, b) => a - b);
-
-  const last = Math.max(
-    ...enriched.filter((row) => row.revenue != null).map((row) => row.year),
-  );
+  const rows = buildRows();
+  const years = [...new Set(rows.map((r) => r.year))].sort((a, b) => a - b);
+  const last = Math.max(...rows.filter((r) => r.revenue != null).map((r) => r.year));
   const finYears = years.filter((year) => year <= last);
 
   const byBrand: Record<string, Record<number, CompanyYear>> = {};
-  for (const row of enriched) {
-    (byBrand[row.brand] ??= {})[row.year] = row;
-  }
+  for (const row of rows) (byBrand[row.brand] ??= {})[row.year] = row;
 
   return {
-    rows: enriched,
+    rows,
     byBrand,
     brands: Object.keys(byBrand),
-    segments: [...new Set(enriched.flatMap((row) => row.activities))].sort(),
+    segments: [...new Set(rows.flatMap((row) => row.activities))].sort(),
     years,
     last,
     finYears,

@@ -1,4 +1,4 @@
-import legacyJson from "../../../data/data.json";
+import classification from "../../../data2/classification.json";
 import companiesJson from "../../../data2/companies.json";
 import { SODRA } from "./sodra-data";
 import govJson from "../../../data2/gov_finance.json";
@@ -317,18 +317,16 @@ export const COMPANIES: Company[] = (
   .sort((a, b) => a.brand.localeCompare(b.brand, "lt"));
 
 /**
- * Which service segments a brand trades in, joined from the legacy dataset on
- * the brand name. The rebuilt data2/ files carry registry figures only — no
- * activity classification — so this is the one field the sheet still borrows
- * from data.json. Brand is the join key because data2 has no segment column to
- * match on; a brand missing there simply has no segments and is only ever shown
- * unfiltered.
+ * Which service segments a brand trades in. data2's registry files carry no
+ * activity classification, so this is read from data2/classification.json —
+ * the one-time migrated snapshot of the owner's segment assignments (see its
+ * _meta.source). Brand is the join key; a brand missing there has no segments
+ * and is only ever shown unfiltered.
  */
 const SEGMENTS_BY_BRAND = new Map<string, string[]>(
-  (legacyJson as { brand: string; activities: string[] }[]).map((row) => [
-    row.brand,
-    row.activities,
-  ]),
+  Object.entries(
+    (classification as { companies: Record<string, { activities: string[] }> }).companies,
+  ).map(([brand, c]) => [brand, c.activities]),
 );
 
 export const segmentsOf = (brand: string) => SEGMENTS_BY_BRAND.get(brand) ?? [];

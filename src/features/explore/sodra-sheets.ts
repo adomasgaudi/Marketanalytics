@@ -25,17 +25,6 @@ const round = (value: number | null) => (value == null ? null : Math.round(value
     and a short row renders "undefined" straight into the gap. */
 const blankRow = (width: number) => Array<null>(width).fill(null);
 
-/** How far the legacy annualisation sits from the summed truth, as a signed %.
-    Blank on month columns and wherever either figure is missing. */
-const gapText = (
-  entry: { wageBill: number | null; legacyWageBill: number | null } | undefined,
-  column: { month: number | null },
-) => {
-  if (column.month != null || !entry?.wageBill || !entry.legacyWageBill) return null;
-  const gap = entry.wageBill / entry.legacyWageBill - 1;
-  return `${gap >= 0 ? "+" : ""}${(gap * 100).toFixed(1)}%`;
-};
-
 type Column = { year: number; month: number | null };
 
 /**
@@ -108,9 +97,6 @@ const across = (year: number | null, companies: SodraCompany[]): Sheet => {
       company.brand,
       "block-row",
     );
-    // The wage BILL — wage x headcount — beside the legacy dataset's version of
-    // it, which annualised a single month. Yearly figures only: a month column
-    // has nothing to compare against.
     // The payroll: each month's wage multiplied by that month's headcount, and
     // the year column their SUM. This is the one figure here that may be summed
     // — twelve payrolls really do add up to a year's payroll, while twelve
@@ -127,23 +113,6 @@ const across = (year: number | null, companies: SodraCompany[]): Sheet => {
             : null;
         }),
       ],
-      company.brand,
-      "block-row",
-    );
-    push(
-      [
-        "Algų fondas (senoji ×12)",
-        ...columns.map((column) =>
-          column.month == null
-            ? (company.years[column.year]?.legacyWageBill ?? null)
-            : null,
-        ),
-      ],
-      company.brand,
-      "block-row",
-    );
-    push(
-      ["Skirtumas", ...columns.map((column) => gapText(company.years[column.year], column))],
       company.brand,
       "block-row",
     );
@@ -167,14 +136,7 @@ const down = (year: number | null, companies: SodraCompany[]): Sheet => {
   const columns = columnsFor(years, year != null);
 
   const values: (string | number | null)[][] = [
-    [
-      "Laikotarpis",
-      "Darbuotojai",
-      "Atlyginimas",
-      "Algų fondas",
-      "Algų fondas (senoji ×12)",
-      "Skirtumas",
-    ],
+    ["Laikotarpis", "Darbuotojai", "Atlyginimas", "Algų fondas"],
   ];
   const rowGroups: (string | null)[] = [null];
   const rowClasses: (string | null)[] = [null];
@@ -185,7 +147,7 @@ const down = (year: number | null, companies: SodraCompany[]): Sheet => {
   };
 
   for (const company of companies) {
-    push([company.brand, null, null, null, null, null], company.brand, "block-title");
+    push([company.brand, null, null, null], company.brand, "block-title");
     for (const column of columns) {
       const summary = company.years[column.year];
       if (column.month == null) {
@@ -196,8 +158,6 @@ const down = (year: number | null, companies: SodraCompany[]): Sheet => {
             round(summary?.avgHeadcount ?? null),
             round(summary?.avgWage ?? null),
             round(summary?.wageBill ?? null),
-            summary?.legacyWageBill ?? null,
-            gapText(summary, column),
           ],
           company.brand,
           "block-row",
@@ -206,8 +166,7 @@ const down = (year: number | null, companies: SodraCompany[]): Sheet => {
       }
       const month = company.byMonth.get(column.year * 100 + column.month);
       if (!month) continue;
-      // The month's own payroll: its wage x its headcount. The legacy
-      // comparison stays blank — a month has nothing to compare against.
+      // The month's own payroll: its wage x its headcount.
       push(
         [
           heading(column),
@@ -216,20 +175,18 @@ const down = (year: number | null, companies: SodraCompany[]): Sheet => {
           month.avgWage != null && month.insured != null
             ? Math.round(month.avgWage * month.insured)
             : null,
-          null,
-          null,
         ],
         company.brand,
         "block-row",
       );
     }
-    for (let i = 0; i < GAP_ROWS; i++) push(blankRow(6), null, "block-gap");
+    for (let i = 0; i < GAP_ROWS; i++) push(blankRow(4), null, "block-gap");
   }
 
   return {
     name: "Sodra",
     compactNumbers: true,
-    address: `A1:F${values.length}`,
+    address: `A1:D${values.length}`,
     values,
     rowGroups,
     rowClasses,

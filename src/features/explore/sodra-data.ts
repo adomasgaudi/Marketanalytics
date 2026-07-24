@@ -1,4 +1,3 @@
-import legacy from "../../../data/data.json";
 import sodraJson from "../../../data2/sodra_months.json";
 
 /**
@@ -27,8 +26,6 @@ export type SodraYear = {
   wageBill: number | null;
   /** How many of the twelve months carried a wage. Below 12, wageBill is short. */
   monthsWithWage: number;
-  /** The legacy figure: one month's pay × headcount × 12. */
-  legacyWageBill: number | null;
 };
 
 export type SodraCompany = {
@@ -44,14 +41,6 @@ export type SodraCompany = {
 
 const mean = (values: number[]) =>
   values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
-
-// Legacy salaryCosts, keyed brand+year. It is avgSalary × employees × 12 — the
-// annualisation this sheet exists to test.
-const legacyWages = new Map<string, number>();
-for (const row of legacy as { brand: string; year: number; salaryCosts?: number }[]) {
-  if (row.salaryCosts != null)
-    legacyWages.set(`${row.brand}|${row.year}`, row.salaryCosts);
-}
 
 const source = sodraJson as {
   companies: { jarCode: string; brand: string; months: MonthRow[] }[];
@@ -83,7 +72,6 @@ export const SODRA: SodraCompany[] = source.companies
             )
           : null,
         monthsWithWage: wages.length,
-        legacyWageBill: legacyWages.get(`${company.brand}|${year}`) ?? null,
       };
     }
     return {
