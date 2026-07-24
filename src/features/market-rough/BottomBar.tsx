@@ -426,7 +426,10 @@ export function BottomBar({
           Math.abs(b.offsetLeft + b.offsetWidth / 2 - centre),
       )[0];
     const next = Number(nearest?.dataset.year);
-    if (Number.isFinite(next) && next !== year) setParams({ year: next });
+    if (Number.isFinite(next) && next !== year) {
+      pinView();
+      setParams({ year: next });
+    }
   };
 
   /**
@@ -508,6 +511,7 @@ export function BottomBar({
       showFlash(`Company: ${next}`);
     } else if (key === "ArrowLeft" || key === "ArrowRight") {
       if (view === "all") return;
+      pinView();
       setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
     } else {
       selectSegment(
@@ -608,7 +612,12 @@ export function BottomBar({
                 data-year={option}
                 ref={option === year ? activeYearRef : undefined}
                 disabled={!yearsWithData.has(option) && option !== year}
-                onClick={() => setParams({ year: option })}
+                onClick={() => {
+                  // Pin like the step buttons do — a bare setParams re-lays
+                  // the page and the card you were reading slides away.
+                  pinView();
+                  setParams({ year: option });
+                }}
                 // bb-pill + data-on are styling hooks for the refined skin; they
                 // have no effect while the skin is set to classic.
                 data-on={option === year}
