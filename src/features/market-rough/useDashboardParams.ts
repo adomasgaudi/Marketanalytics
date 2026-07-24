@@ -32,20 +32,6 @@ export type MarketMode = (typeof MARKET_MODES)[number];
  * `shallow` defaults to true: the URL updates client-side with no server
  * round-trip, so this costs no more than useState.
  */
-/**
- * Which dataset the money figures come from.
- *
- * "rebuilt" is the DEFAULT and what the site means by its figures: data2/,
- * sourced from Registrų centras (turnover, profit) and Sodra (the payroll,
- * summed month by month). "legacy" is data/data.json — the original
- * spreadsheet, kept only so the two can be compared, since its payroll
- * annualises a single month and overstates in ~78% of company-years.
- *
- * In the URL, so a comparison is shareable.
- */
-export const SOURCES = ["legacy", "rebuilt"] as const;
-export type DataSource = (typeof SOURCES)[number];
-
 /** Per-year vs all-years page mode — the legacy's clickable "per year" word. */
 export const VIEWS = ["year", "all"] as const;
 export type ViewMode = (typeof VIEWS)[number];
@@ -67,7 +53,6 @@ export function useDashboardParams(defaultYear: number) {
     segments: parseAsArrayOf(parseAsString).withDefault([]),
     /** Scopes the cash-flow panel to one service segment; "" = whole market. */
     segment: parseAsString.withDefault(""),
-    src: parseAsStringLiteral(SOURCES).withDefault("rebuilt"),
     /**
      * Time unit for money figures. A SEPARATE axis from `market`: it composes
      * with all three of them, so "per company per month" is a reading and had

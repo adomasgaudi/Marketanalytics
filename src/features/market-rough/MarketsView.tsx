@@ -20,7 +20,7 @@ import { useDashboardParams } from "./useDashboardParams";
 export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
   // Rebuilt figures by default; every child below is handed this same model.
   const model = useSourcedModel(legacyModel);
-  const [{ year, market, segment, src, per }] = useDashboardParams(model.last);
+  const [{ year, market, segment, per }] = useDashboardParams(model.last);
   // The bottom-bar segment scope narrows the row set every figure on this
   // panel is derived from — totals, salary and the money-flow alike.
   const rows = segment
@@ -181,7 +181,6 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
             actions={<PeriodToggle defaultYear={model.last} />}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             formulas={moneyFormulas({
-              source: src,
               sum: true,
               // Names the rows actually summed, so the fold changes with the
               // segment picker instead of always describing the whole market.

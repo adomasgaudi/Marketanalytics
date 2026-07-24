@@ -152,7 +152,7 @@ export function CompanyPerYear({
   // Follows the nav's data-source toggle, so every widget below — money-flow,
   // KPIs, ranks, deep-dive — reads the same dataset.
   const model = useSourcedModel(legacyModel);
-  const [{ year, basis, src, segment }] = useDashboardParams(model.last);
+  const [{ year, basis, segment }] = useDashboardParams(model.last);
   const { brands, pool } = useSelectedBrands(model);
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
@@ -284,7 +284,6 @@ export function CompanyPerYear({
           "Headcount",
           "employees",
           emp != null ? emp.toLocaleString() : undefined,
-          src,
         ),
       ],
     },
@@ -298,7 +297,6 @@ export function CompanyPerYear({
           "Average monthly salary",
           "avgSalary",
           sal != null ? `€${sal.toLocaleString()}/mo` : undefined,
-          src,
         ),
       ],
     },
@@ -338,7 +336,6 @@ export function CompanyPerYear({
                   : {}
               }
               formulas={moneyFormulas({
-                source: src,
                 div:
                   perEmployee && (row.employees ?? 0) > 0
                     ? {

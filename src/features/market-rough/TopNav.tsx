@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
 import { IconMoon, IconPalette, IconSettings, IconSun } from "./Icons";
 import type { SegPalette } from "./segments";
-import { useDashboardParams } from "./useDashboardParams";
 import { useViewMode, ViewSub } from "./ViewSync";
 
 /**
@@ -46,9 +45,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
   const [segPalette, setSegPalette] = useState<SegPalette>("spectral");
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
-  // Which dataset the money figures come from. In the URL so a comparison is
-  // shareable; the toggle only writes it, CompaniesView reads it.
-  const [{ src }, setParams] = useDashboardParams(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [mktView, setMktView] = useViewMode("mkt");
   const [coView, setCoView] = useViewMode("co");
@@ -85,11 +81,6 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
       localStorage.setItem("graphPan", graphPan ? "on" : "off");
     } catch {}
   }, [theme, palette, mode, graphPan, segPalette]);
-
-  // Legacy comparison is dev-only; strip a bookmarked ?src=legacy outside it.
-  useEffect(() => {
-    if (mode !== "dev" && src === "legacy") setParams({ src: "rebuilt" });
-  }, [mode, src, setParams]);
 
   useEffect(() => {
     if (!open) return;
@@ -172,129 +163,113 @@ export function TopNav({ active }: { active?: "markets" | "companies" }) {
         </span>
       </Link>
 
-      {/* Right cluster: data-source toggle is dev-only; settings always visible. */}
+      {/* Right cluster: settings always visible. */}
       <div className="ml-auto flex flex-shrink-0 items-center">
-        {mode === "dev" && (
-          <button
-            type="button"
-            onClick={() => setParams({ src: src === "rebuilt" ? "legacy" : "rebuilt" })}
-            aria-pressed={src === "rebuilt"}
-            title="Rebuilt figures (Registrų centras + Sodra) vs the original spreadsheet's"
-            className={`mr-2 flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
-              src === "legacy"
-                ? "border-gold text-gold bg-gold/12"
-                : "border-line text-muted hover:text-ink"
-            }`}
-          >
-            🧮 {src === "legacy" ? "Legacy data" : "Rebuilt data"}
-          </button>
-        )}
-
         {/* settings-wrap: cog above, clickable version below, menus anchored right. */}
         <div
           ref={wrapRef}
           className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
         >
-        {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
+          {/* Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at
             5; the counter resets after 3.2s. Inert once already in Dev mode. */}
-        <span
-          onClick={(e) => {
-            if (mode === "dev") return;
-            e.stopPropagation();
-            verClicks.current++;
-            if (verTimer.current) clearTimeout(verTimer.current);
-            verTimer.current = setTimeout(() => {
-              verClicks.current = 0;
-              setVerHint("");
-            }, 3200);
-            if (verClicks.current === 5) setVerHint("Click 3 more times");
-            if (verClicks.current >= 8) {
-              verClicks.current = 0;
-              setVerHint("");
-              setMode("dev");
-            }
-          }}
-          className="letterpress text-muted text-[10px] leading-none font-semibold whitespace-nowrap select-none"
-        >
-          {APP_VERSION_LABEL}
-        </span>
-        {verHint && (
-          <span className="border-line bg-panel text-muted absolute top-[calc(100%+5px)] right-0 z-210 rounded-[4px] border px-2 py-[3px] text-[10px] font-semibold whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,.18)]">
-            {verHint}
+          <span
+            onClick={(e) => {
+              if (mode === "dev") return;
+              e.stopPropagation();
+              verClicks.current++;
+              if (verTimer.current) clearTimeout(verTimer.current);
+              verTimer.current = setTimeout(() => {
+                verClicks.current = 0;
+                setVerHint("");
+              }, 3200);
+              if (verClicks.current === 5) setVerHint("Click 3 more times");
+              if (verClicks.current >= 8) {
+                verClicks.current = 0;
+                setVerHint("");
+                setMode("dev");
+              }
+            }}
+            className="letterpress text-muted text-[10px] leading-none font-semibold whitespace-nowrap select-none"
+          >
+            {APP_VERSION_LABEL}
           </span>
-        )}
-        <button
-          type="button"
-          title="Settings"
-          aria-label="Settings"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
-        >
-          <IconSettings size={19} className="block" />
-        </button>
+          {verHint && (
+            <span className="border-line bg-panel text-muted absolute top-[calc(100%+5px)] right-0 z-210 rounded-[4px] border px-2 py-[3px] text-[10px] font-semibold whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,.18)]">
+              {verHint}
+            </span>
+          )}
+          <button
+            type="button"
+            title="Settings"
+            aria-label="Settings"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
+          >
+            <IconSettings size={19} className="block" />
+          </button>
 
-        {open && (
-          <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
-            {/* Labels name the mode you'd switch TO, not the current one. */}
-            <button
-              type="button"
-              className={menuItem}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
-              {theme === "dark" ? "Light" : "Dark"}
-            </button>
-            <button
-              type="button"
-              className={menuItem}
-              // Cycles through the accent palettes rather than flipping two.
-              onClick={() =>
-                setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
-              }
-            >
-              <IconPalette size={15} />
-              <span className="capitalize">{palette}</span>
-            </button>
-            {/* Segment chart colours; "spectral" restores the pre-v3.41 set. */}
-            <button
-              type="button"
-              className={menuItem}
-              onClick={() =>
-                setSegPalette(segPalette === "harmony" ? "spectral" : "harmony")
-              }
-            >
-              <IconPalette size={15} />
-              {segPalette === "harmony" ? "Segments: harmony" : "Segments: spectral"}
-            </button>
-            {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
-            {mode === "dev" && (
-              <>
-                <button
-                  type="button"
-                  className={menuItem}
-                  onClick={() => setMode("default")}
-                >
-                  → Default view
-                </button>
-                <button
-                  type="button"
-                  className={menuItem}
-                  onClick={() => setGraphPan((v) => !v)}
-                >
-                  🔒 Graph pan: {graphPan ? "on" : "off"}
-                </button>
-                <button
-                  type="button"
-                  className={`${menuItem} cursor-default opacity-50`}
-                  title="Sodra scraping runs in CI (refresh-sodra workflow)"
-                >
-                  🔄 Refresh Sodra
-                </button>
-              </>
-            )}
-          </div>
-        )}
+          {open && (
+            <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
+              {/* Labels name the mode you'd switch TO, not the current one. */}
+              <button
+                type="button"
+                className={menuItem}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
+                {theme === "dark" ? "Light" : "Dark"}
+              </button>
+              <button
+                type="button"
+                className={menuItem}
+                // Cycles through the accent palettes rather than flipping two.
+                onClick={() =>
+                  setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
+                }
+              >
+                <IconPalette size={15} />
+                <span className="capitalize">{palette}</span>
+              </button>
+              {/* Segment chart colours; "spectral" restores the pre-v3.41 set. */}
+              <button
+                type="button"
+                className={menuItem}
+                onClick={() =>
+                  setSegPalette(segPalette === "harmony" ? "spectral" : "harmony")
+                }
+              >
+                <IconPalette size={15} />
+                {segPalette === "harmony" ? "Segments: harmony" : "Segments: spectral"}
+              </button>
+              {/* Dev-mode-only items, exactly as the legacy default-mode gating. */}
+              {mode === "dev" && (
+                <>
+                  <button
+                    type="button"
+                    className={menuItem}
+                    onClick={() => setMode("default")}
+                  >
+                    → Default view
+                  </button>
+                  <button
+                    type="button"
+                    className={menuItem}
+                    onClick={() => setGraphPan((v) => !v)}
+                  >
+                    🔒 Graph pan: {graphPan ? "on" : "off"}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${menuItem} cursor-default opacity-50`}
+                    title="Sodra scraping runs in CI (refresh-sodra workflow)"
+                  >
+                    🔄 Refresh Sodra
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </nav>

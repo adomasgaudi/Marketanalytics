@@ -86,44 +86,28 @@ export function Math_({ children }: { children: ReactNode }) {
 
 /* --- Shared builders ---------------------------------------------------- */
 
-type DataSource = "legacy" | "rebuilt";
-
-const PROVENANCE: Record<
-  DataSource,
-  Partial<Record<string, { path: string; source: string }>>
-> = {
-  rebuilt: {
-    revenue: {
-      path: "data2/rc_bulk.json · turnover",
-      source: "Registrų centras — registrucentras.lt/aduomenys",
-    },
-    profit: {
-      path: "data2/rc_bulk.json · profit",
-      source: "Registrų centras — registrucentras.lt/aduomenys",
-    },
-    employees: {
-      path: "data2/sodra_months.json · avgHeadcount",
-      source: "Sodra — sodra.lt",
-    },
-    avgSalary: {
-      path: "data2/sodra_months.json · avgWage",
-      source: "Sodra — sodra.lt",
-    },
-    salaryCosts: {
-      path: "data2/sodra_months.json · wageBill",
-      source: "Sodra — sodra.lt",
-    },
+// Where each figure comes from — the single (data2) dataset. Kept here so the
+// ƒ popover can name the file and scrape source behind a headline number.
+const PROVENANCE: Partial<Record<string, { path: string; source: string }>> = {
+  revenue: {
+    path: "data2/rc_bulk.json · turnover",
+    source: "Registrų centras — registrucentras.lt/aduomenys",
   },
-  legacy: {
-    revenue: { path: "data/data.json · revenue", source: "Original spreadsheet" },
-    profit: { path: "data/data.json · profit", source: "Original spreadsheet" },
-    estimatedIncome: {
-      path: "data/data.json · estimatedIncome",
-      source: "Original spreadsheet",
-    },
-    employees: { path: "data/data.json · employees", source: "Original spreadsheet" },
-    avgSalary: { path: "data/data.json · avgSalary", source: "Original spreadsheet" },
-    salaryCosts: { path: "data/data.json · salaryCosts", source: "Original spreadsheet" },
+  profit: {
+    path: "data2/rc_bulk.json · profit",
+    source: "Registrų centras — registrucentras.lt/aduomenys",
+  },
+  employees: {
+    path: "data2/sodra_months.json · avgHeadcount",
+    source: "Sodra — sodra.lt",
+  },
+  avgSalary: {
+    path: "data2/sodra_months.json · avgWage",
+    source: "Sodra — sodra.lt",
+  },
+  salaryCosts: {
+    path: "data2/sodra_months.json · wageBill",
+    source: "Sodra — sodra.lt",
   },
 };
 
@@ -132,9 +116,8 @@ export function sourceFormula(
   name: string,
   field: string,
   value: string | undefined,
-  dataset: DataSource,
 ): Formula {
-  const p = PROVENANCE[dataset][field];
+  const p = PROVENANCE[field];
   return {
     name,
     vars: [
@@ -158,10 +141,6 @@ export type MoneyBasis = {
   /** Displayed figure per row, already formatted — the left side of each
       equation, so the fold can be checked against the card. */
   values?: Partial<Record<"T" | "R" | "P", string>>;
-  /** Which dataset produced the figures. It decides how the Revenue fold
-      explains itself: the two datasets build that number in genuinely
-      different ways, so one explanation cannot serve both. */
-  source?: "legacy" | "rebuilt";
   /** Which companies were summed. Without it the fold explained how ONE
       company's figure is built while the card showed a market aggregate, and
       said the same thing whichever segment or basis was selected. */
@@ -213,80 +192,55 @@ function marketFormula(
 export function moneyFormulas(
   basis: MoneyBasis = {},
 ): Record<"T" | "R" | "P", Formula[]> {
-  const src = basis.source ?? "rebuilt";
   // Market cards aggregate; a company card does not. Only the former needs the
   // extra step, and it must be FIRST — it is what the figure on the card is.
   const agg = (code: "T" | "R" | "P", metric: string): Formula[] =>
     basis.sum ? [marketFormula(code, metric, basis, basis.values?.[code])] : [];
   return {
-    T: [...agg("T", "Turnover"), sourceFormula("Turnover", "revenue", basis.values?.T, src)],
+    T: [...agg("T", "Turnover"), sourceFormula("Turnover", "revenue", basis.values?.T)],
     R: [
       ...agg("R", "Revenue"),
-      src === "legacy"
-        ? {
-            name: "…how the figure was reached",
-            math: (
-              <>
-                <V c="ei" />
-                <Op o="=" />
-                <V c="sales" />
-                <Op o="×" />
-                <V c="f" />
-              </>
-            ),
-            vars: [
-              {
-                code: "sales",
-                label: "filed sales revenue (turnover)",
-                field: "revenue",
-              },
-              {
-                code: "f",
-                label: "fee ratio — mean of ei ÷ sales over the brand's last ≤3 filed years",
-              },
-            ],
-          }
-        : {
-            name: "…how the figure is built",
-            math: (
-              <>
-                <V c="ei" />
-                <Op o="=" />
-                <V c="pay" />
-                <Op o="×" />
-                <V c="sod" />
-                <Op o="×" />
-                <V c="opx" />
-                <Op o="+" />
-                <V c="pre" />
-              </>
-            ),
-            vars: [
-              {
-                code: "pay",
-                label: "payroll — Sodra's monthly wage × headcount, summed over the year",
-                field: "salaryCosts",
-                path: PROVENANCE.rebuilt.salaryCosts?.path,
-                source: PROVENANCE.rebuilt.salaryCosts?.source,
-              },
-              { code: "sod", label: "1,0177 — the employer's own Sodra contribution" },
-              {
-                code: "opx",
-                label: "1,43 — own opex at 43% of labour. The only assumption here",
-              },
-              {
-                code: "pre",
-                label: "profit before tax, as filed with Registrų centras",
-                field: "profit",
-                path: PROVENANCE.rebuilt.profit?.path,
-                source: PROVENANCE.rebuilt.profit?.source,
-              },
-            ],
+      {
+        name: "…how the figure is built",
+        math: (
+          <>
+            <V c="ei" />
+            <Op o="=" />
+            <V c="pay" />
+            <Op o="×" />
+            <V c="sod" />
+            <Op o="×" />
+            <V c="opx" />
+            <Op o="+" />
+            <V c="pre" />
+          </>
+        ),
+        vars: [
+          {
+            code: "pay",
+            label: "payroll — Sodra's monthly wage × headcount, summed over the year",
+            field: "salaryCosts",
+            path: PROVENANCE.salaryCosts?.path,
+            source: PROVENANCE.salaryCosts?.source,
           },
+          { code: "sod", label: "1,0177 — the employer's own Sodra contribution" },
+          {
+            code: "opx",
+            label: "1,43 — own opex at 43% of labour. The only assumption here",
+          },
+          {
+            code: "pre",
+            label: "profit before tax, as filed with Registrų centras",
+            field: "profit",
+            path: PROVENANCE.profit?.path,
+            source: PROVENANCE.profit?.source,
+          },
+        ],
+      },
     ],
     P: [
       ...agg("P", "Net profit"),
-      sourceFormula("Net profit", "profit", basis.values?.P, src),
+      sourceFormula("Net profit", "profit", basis.values?.P),
     ],
   };
 }
@@ -399,7 +353,7 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
                     </code>
                   )}
                   {v.source && (
-                    <span className={v.path ? " block mt-0.5" : ""}>{v.source}</span>
+                    <span className={v.path ? "mt-0.5 block" : ""}>{v.source}</span>
                   )}
                 </dd>
               ) : (
@@ -409,7 +363,9 @@ function FormulaPanel({ formulas }: { formulas: Formula[] }) {
                   ) : null}
                   <dd className={v.code ? "text-muted" : "text-muted col-span-2"}>
                     {v.value != null && (
-                      <span className="text-ink font-semibold tabular-nums">{v.value}</span>
+                      <span className="text-ink font-semibold tabular-nums">
+                        {v.value}
+                      </span>
                     )}
                     <span className={v.value != null ? "block" : ""}>
                       {v.label}
