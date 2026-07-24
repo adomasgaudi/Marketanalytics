@@ -17,19 +17,19 @@ const CAP =
 
 export function ArrowKeysHint({
   vertical,
+  fVertical,
   className,
 }: {
-  /** What ↑/↓ do here. Omitted, the vertical pair is drawn inactive — the
-      Companies page binds only the horizontal axis. */
+  /** What ↑/↓ do here. Omitted, the vertical pair is drawn inactive. */
   vertical?: string;
+  /** What holding F + ↑/↓ does. Omitted, the F cluster isn't drawn at all —
+      only the Companies page binds it. */
+  fVertical?: string;
   className?: string;
 }) {
   return (
     <div
-      className={cn(
-        "kbd-hint text-muted items-center justify-center gap-5",
-        className,
-      )}
+      className={cn("kbd-hint text-muted items-center justify-center gap-5", className)}
       aria-hidden
     >
       {/* Left label, right-aligned so it points into the cluster. */}
@@ -57,6 +57,24 @@ export function ArrowKeysHint({
       <span className="w-[92px] text-left text-[11px] leading-tight font-semibold tracking-[.12em] uppercase">
         next year
       </span>
+
+      {/* Held-F chord: a second cluster so the chord reads as its own control
+          rather than a fourth arrow. */}
+      {fVertical && (
+        <div className="ml-3 flex flex-col items-center gap-1">
+          <div className="flex items-center gap-1">
+            <div className={CAP}>F</div>
+            <span className="text-[11px] font-semibold">+</span>
+            <div className={CAP}>←</div>
+            <div className={CAP}>↑</div>
+            <div className={CAP}>↓</div>
+            <div className={CAP}>→</div>
+          </div>
+          <span className="mt-1 text-[11px] leading-tight font-semibold tracking-[.12em] uppercase">
+            {fVertical}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

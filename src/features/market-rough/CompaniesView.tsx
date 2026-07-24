@@ -17,18 +17,21 @@ import { RankVsMarket } from "./RankVsMarket";
 import { useSourcedModel } from "./rebuilt-source";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
+import { ViewWord } from "./ViewSync";
 
 /** The selected compare pool (legacy ovBrands + ovActive): `pool` keeps its
     order; `off` hides brands from charts; `brands` = the visible (active)
     list, first entry is the primary brand. */
 export function useSelectedBrands(model: MarketModel) {
   const [{ companies, off }, setParams] = useDashboardParams(model.last);
-  const pool = companies.length ? companies : [defaultBrand(model)];
+  // No default company: the page opens unselected, and per-company SEO pages
+  // (separate routes) are where a company is pre-picked.
+  const pool = companies;
   const active = pool.filter((b) => !off.includes(b));
   return {
     pool,
     off,
-    brands: active.length ? active : [pool[0]],
+    brands: active.length ? active : pool.slice(0, 1),
     set: (next: string[]) => setParams({ companies: next }),
     setOff: (next: string[]) => setParams({ off: next }),
   };
@@ -37,6 +40,34 @@ export function useSelectedBrands(model: MarketModel) {
 export function useSelectedBrand(model: MarketModel) {
   const { brands, set } = useSelectedBrands(model);
   return { brand: brands[0], select: (next: string) => set([next]) };
+}
+
+/** Shown by every company widget when nothing is selected yet. */
+function SelectCompanyHint() {
+  return (
+    <p className="text-muted border-line bg-panel2 rounded-lg border p-4 text-sm">
+      No company selected — pick one above to see its financials.
+    </p>
+  );
+}
+
+/** The hero: the selected company IS the title; empty selection shows a
+    muted placeholder. Client-side because selection lives in the URL. */
+export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
+  const [{ companies, off }] = useDashboardParams(defaultYear);
+  const brand = companies.find((b) => !off.includes(b)) ?? companies[0];
+  return (
+    <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
+      <span className="block text-[clamp(42px,9vw,72px)]">
+        {brand ?? <span className="text-muted/60">Select a company</span>}
+      </span>
+      {/* The per-year / all-time toggle the old "Companies per year" title
+          carried — kept, demoted to the subtitle line (mirrors HeroTitle). */}
+      <span className="text-muted mt-3 block text-[clamp(24px,4.5vw,40px)] leading-none">
+        <ViewWord scope="co" />
+      </span>
+    </h1>
+  );
 }
 
 /** The hoisted company picker, visible on every Financials tab. */
@@ -157,6 +188,7 @@ export function CompanyPerYear({
   // Focused company for the single-company widgets; follows the pool.
   const [focus, setFocus] = useState<string | null>(null);
   const brand = focus && brands.includes(focus) ? focus : brands[0];
+  if (!brand) return <SelectCompanyHint />;
   const row = model.byBrand[brand]?.[year];
   const prev = model.byBrand[brand]?.[year - 1];
 
@@ -389,6 +421,7 @@ export function CompanyPerYear({
 export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
   const { brand } = useSelectedBrand(model);
+  if (!brand) return <SelectCompanyHint />;
 
   return (
     <div>

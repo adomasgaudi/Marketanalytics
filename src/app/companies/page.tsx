@@ -2,11 +2,13 @@ import { Bloom } from "@/components/ui/bloom";
 import { NuqsBoundary } from "@/components/nuqs-boundary";
 import { Footer } from "@/components/ui/footer";
 import { CollapsibleCard } from "@/components/ui/group";
-import { ViewGroupCard, ViewWord } from "@/features/market-rough/ViewSync";
+import { ViewGroupCard } from "@/features/market-rough/ViewSync";
 import { ArrowKeysHint } from "@/features/market-rough/ArrowKeysHint";
 import { BottomBar } from "@/features/market-rough/BottomBar";
+import { CompanyStrip } from "@/features/market-rough/CompanyStrip";
 import {
   CompanyAllTime,
+  CompanyHeroTitle,
   CompanyPerYear,
   CompanyPicker,
 } from "@/features/market-rough/CompaniesView";
@@ -14,8 +16,6 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { RankingsChart } from "@/features/market-rough/RankingsChart";
 import { TopNav } from "@/features/market-rough/TopNav";
-import { slugify } from "@/lib/slug";
-import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -51,11 +51,15 @@ export default function CompaniesPage() {
             <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
               Profiles, rankings &amp; deep-dives · {model.brands.length} tracked agencies
             </p>
-            <h1 className="text-[clamp(42px,9vw,72px)] leading-[0.95] font-extrabold tracking-[-0.035em]">
-              Companies <ViewWord scope="co" />
-            </h1>
-            {/* No segment picker on this page, so the vertical pair is inert. */}
-            <ArrowKeysHint className="mt-6" />
+            <CompanyHeroTitle defaultYear={model.last} />
+            {/* ↑/↓ steps the bottom-bar segment scope here too; held F re-aims
+              the pair at the company ranking. */}
+            <ArrowKeysHint vertical="segment" fVertical="company" className="mt-6" />
+            {/* Every-agency pill band lives at the hero's foot — clicking a
+              pill selects that company below. */}
+            <div className="mt-6">
+              <CompanyStrip model={model} />
+            </div>
             <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
           </header>
 
@@ -97,25 +101,6 @@ export default function CompaniesPage() {
             Explore the raw data &amp; sources →
           </a>
 
-          {/* Server-rendered directory: the crawlable path into the 132 static
-            company pages (the charts above are invisible to search engines). */}
-          <section className="mt-12" aria-label="Agency directory">
-            <h2 className="text-muted mb-3 text-[11px] font-semibold tracking-[.18em] uppercase">
-              Agency directory
-            </h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-[12.5px]">
-              {model.brands.map((brand) => (
-                <li key={brand}>
-                  <Link
-                    href={`/companies/${slugify(brand)}`}
-                    className="text-muted hover:text-accent transition-colors"
-                  >
-                    {brand}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
           <Footer />
         </div>
         <BottomBar model={model} mode="company" />

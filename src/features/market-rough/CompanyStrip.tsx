@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { fmtEur } from "./format";
 import { useSourcedModel } from "./rebuilt-source";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
+
+/** Rows in the strip's grid — the F+←/→ column jump in BottomBar must match. */
+export const STRIP_ROWS = 3;
 
 /**
  * Every tracked agency on one scrolling line, largest first, each carrying its
@@ -18,14 +22,30 @@ import { useDashboardParams } from "./useDashboardParams";
  */
 export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const [{ year, segment }] = useDashboardParams(model.last);
+  const [{ year, segment, companies }] = useDashboardParams(model.last);
 
+  // Turnover by default, so the strip opens on the names worth knowing and a
+  // company's place along it is itself information; clicking the sort label
+  // flips to alphabetical for when you're LOOKING SOMEONE UP, not browsing.
+  const [alpha, setAlpha] = useState(false);
   const rows = model.rows
     .filter((row) => row.year === year)
     .filter((row) => !segment || row.activities.includes(segment))
-    // Ranked by turnover, so the strip opens on the names worth knowing and a
-    // company's place along it is itself information.
-    .sort((a, b) => (b.revenue ?? -1) - (a.revenue ?? -1));
+    .sort((a, b) =>
+      alpha
+        ? a.brand.localeCompare(b.brand, undefined, { sensitivity: "base" })
+        : (b.revenue ?? -1) - (a.revenue ?? -1),
+    );
+
+  // Keyboard (F+arrows in the bottom bar) moves the selection without touching
+  // the strip — follow it, so the selected pill is always in view.
+  const stripRef = useRef<HTMLDivElement>(null);
+  const selectedKey = companies.join(",");
+  useEffect(() => {
+    stripRef.current
+      ?.querySelector("[data-selected]")
+      ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+  }, [selectedKey, year, segment]);
 
   if (!rows.length) return null;
 
@@ -34,25 +54,37 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
       <div className="text-muted mb-2 flex items-baseline gap-2 text-[11px] font-semibold tracking-[.18em] uppercase">
         <span>{segment ? `${segName(segment)} agencies` : "Every agency"}</span>
         <span className="text-[10px] tracking-normal normal-case opacity-70">
-          {rows.length} · {year} · by turnover
+          {rows.length} · {year} ·{" "}
+          <button
+            type="button"
+            onClick={() => setAlpha((v) => !v)}
+            title="Toggle sort order"
+            className="hover:text-accent cursor-pointer underline decoration-dotted underline-offset-2 transition-colors"
+          >
+            {alpha ? "alphabetical" : "by turnover"}
+          </button>
         </span>
       </div>
 
-      {/* TWO rows that scroll together, not one row that wraps. `grid-flow-col`
-          fills down-then-across, so the pair moves as a single band and the
-          ranking still reads left to right. A wrapping flex would instead run
-          out of width, break to a second line, and only then scroll — which
+      {/* THREE rows that scroll together, not one row that wraps. `grid-flow-col`
+          fills down-then-across, so the band moves as one and the ranking still
+          reads down each column then rightward. A wrapping flex would instead
+          run out of width, break to a second line, and only then scroll — which
           puts rank 2 underneath rank 1 and hides the order.
 
           Scrollbar hidden: the band is visibly cut off at the right edge, which
           says "there is more" more quietly than a bar does. */}
-      <div className="-mx-1 grid grid-flow-col grid-rows-2 [grid-auto-columns:max-content] [scrollbar-width:none] gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden">
+      <div
+        ref={stripRef}
+        className="-mx-1 grid [scrollbar-width:none] [grid-auto-columns:max-content] grid-flow-col grid-rows-3 gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden"
+      >
         {rows.map((row) => (
           <Link
             key={row.brand}
+            data-selected={companies.includes(row.brand) || undefined}
             href={`/companies?companies=${encodeURIComponent(row.brand)}&year=${year}`}
             title={`${row.company} — ${row.activities.map(segName).join(", ") || "no segment"}`}
-            className="border-line bg-panel hover:border-accent hover:text-accent flex flex-none items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors"
+            className={`border-line bg-panel hover:border-accent hover:text-accent flex flex-none items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors ${companies.includes(row.brand) ? "border-accent text-accent" : ""}`}
           >
             {row.brand}
             <span className="text-muted text-[11px] tabular-nums">

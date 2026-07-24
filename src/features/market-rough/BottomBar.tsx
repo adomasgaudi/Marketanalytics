@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { cn } from "@/lib/cn";
+import { STRIP_ROWS } from "./CompanyStrip";
 import { IconAverage, IconBuilding, IconMarket, IconPerson, IconSegments } from "./Icons";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
@@ -148,10 +149,14 @@ function useWheelStep(
  * while reading the charts. Typing fields and modifier chords are left alone,
  * as are the browser's own shortcuts.
  */
-function useArrowKeys(step: (key: string) => void) {
+function useArrowKeys(step: (key: string, fHeld: boolean) => void) {
   const stepRef = useRef(step);
   stepRef.current = step;
   useEffect(() => {
+    // F is a held chord key, not a modifier the event reports — track it
+    // ourselves. Reset on blur so a missed keyup (tab away mid-hold) can't
+    // leave the chord stuck on.
+    let fHeld = false;
     const onKey = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       const el = e.target as HTMLElement | null;
@@ -160,13 +165,29 @@ function useArrowKeys(step: (key: string) => void) {
         ["INPUT", "TEXTAREA", "SELECT"].includes(el?.tagName ?? "")
       )
         return;
+      if (e.key === "f" || e.key === "F") {
+        fHeld = true;
+        return;
+      }
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
       // Only now claim the key — ↑/↓ would otherwise stop scrolling the page.
       e.preventDefault();
-      stepRef.current(e.key);
+      stepRef.current(e.key, fHeld);
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "f" || e.key === "F") fHeld = false;
+    };
+    const onBlur = () => {
+      fHeld = false;
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
   }, []);
 }
 
@@ -207,7 +228,9 @@ export function BottomBar({
   /** "market" = avg/emp/whole toggle (Markets page); "company" = full/per-emp. */
   mode: "market" | "company";
 }) {
-  const [{ year, market, basis, segment }, setParams] = useDashboardParams(model.last);
+  const [{ year, market, basis, segment, companies }, setParams] = useDashboardParams(
+    model.last,
+  );
   // Same live palette the doughnut uses (theme × harmony/spectral), so the
   // picker's colours ARE the slice colours — the trigger and each option read
   // as the segment they select. "All segments" has no single hue, so it stays
@@ -423,6 +446,10 @@ export function BottomBar({
     if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
     scrollEndTimer.current = setTimeout(() => {
       userScrolling.current = false;
+      // Settle exactly like an arrow-key step: pill MIDDLE on the track's
+      // middle. Native snap gives up at the edges (the rubber-band spacers can
+      // leave the first/last year off-centre), so finish the job ourselves.
+      if (!centringYear.current) centreActiveYear(true);
     }, 180);
     if (scrollFrame.current) return;
     scrollFrame.current = requestAnimationFrame(() => {
@@ -447,10 +474,39 @@ export function BottomBar({
   });
   // Keyboard mirror of the two wheel gestures. ←/→ only while the year track is
   // actually on screen (the all-years view hides it), ↑/↓ steps the segment on
-  // both pages — each now carries a segment picker.
-  useArrowKeys((key) => {
+  // both pages — each now carries a segment picker. Holding F re-aims ALL four
+  // arrows at the company strip grid (companies view only).
+  useArrowKeys((key, fHeld) => {
     pinView();
-    if (key === "ArrowLeft" || key === "ArrowRight") {
+    if (fHeld && mode === "company") {
+      // F+arrows walk the company strip as the GRID it is drawn as: the
+      // ranking fills down-then-across in STRIP_ROWS rows, so ↑/↓ is ±1 rank
+      // (one cell vertically) and ←/→ is ±STRIP_ROWS (one column sideways).
+      // Nothing selected yet starts at #1.
+      const ranked = model.rows
+        .filter((row) => row.year === year)
+        .filter((row) => !segment || row.activities.includes(segment))
+        .sort((a, b) => (b.revenue ?? -1) - (a.revenue ?? -1))
+        .map((row) => row.brand);
+      if (!ranked.length) return;
+      const current = companies.find((brand) => ranked.includes(brand));
+      const delta =
+        key === "ArrowDown"
+          ? 1
+          : key === "ArrowUp"
+            ? -1
+            : key === "ArrowRight"
+              ? STRIP_ROWS
+              : -STRIP_ROWS;
+      const next = current
+        ? ranked[
+            Math.min(ranked.length - 1, Math.max(0, ranked.indexOf(current) + delta))
+          ]
+        : ranked[0];
+      if (next === current || next == null) return;
+      setParams({ companies: [next] });
+      showFlash(`Company: ${next}`);
+    } else if (key === "ArrowLeft" || key === "ArrowRight") {
       if (view === "all") return;
       setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
     } else {

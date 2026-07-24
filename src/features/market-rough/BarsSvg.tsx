@@ -314,7 +314,7 @@ export function BarsSvg({
                 <text
                   x={lx}
                   y={cy + 3}
-                  fontSize="9"
+                  fontSize="11"
                   textAnchor={x1 >= base ? "start" : "end"}
                   fill="var(--color-muted)"
                   style={{ transition: "x 400ms ease, y 400ms ease" }}
