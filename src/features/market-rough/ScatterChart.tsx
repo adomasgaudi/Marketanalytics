@@ -345,6 +345,17 @@ export function ScatterChart({ model }: { model: MarketModel }) {
   }, [segment, model.segments]);
 
   const [showTrails, setShowTrails] = useState(true);
+  // Trails are a Dev-mode feature. `data-mode` is written on <html> by TopNav;
+  // watch it so the control and the drawing appear/disappear with the toggle.
+  const [isDev, setIsDev] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const read = () => setIsDev(root.getAttribute("data-mode") === "dev");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(root, { attributes: true, attributeFilter: ["data-mode"] });
+    return () => obs.disconnect();
+  }, []);
   const [xMetric, setXMetric] = useState<MetricKey>("revenue");
   const [yMetric, setYMetric] = useState<MetricKey>("margin");
   const [xLog, setXLog] = useState(true);
@@ -571,16 +582,18 @@ export function ScatterChart({ model }: { model: MarketModel }) {
               { value: "view", label: "This view" },
             ]}
           />
-          <Seg
-            label="Trails"
-            value={showTrails ? "on" : "off"}
-            onChange={(v) => setShowTrails(v === "on")}
-            btnClassName="px-2 py-1 text-[11.5px]"
-            options={[
-              { value: "on", label: "Trails" },
-              { value: "off", label: "None" },
-            ]}
-          />
+          {isDev && (
+            <Seg
+              label="Trails"
+              value={showTrails ? "on" : "off"}
+              onChange={(v) => setShowTrails(v === "on")}
+              btnClassName="px-2 py-1 text-[11.5px]"
+              options={[
+                { value: "on", label: "Trails" },
+                { value: "off", label: "None" },
+              ]}
+            />
+          )}
         </div>
       </div>
       {/* The phone height is intentionally shorter via the mobile override;
@@ -633,7 +646,7 @@ export function ScatterChart({ model }: { model: MarketModel }) {
                 animation: false,
                 responsive: true,
                 plugins: {
-                  trails: { on: showTrails, paths: trailPaths },
+                  trails: { on: isDev && showTrails, paths: trailPaths },
                   legend: {
                     onClick: (_e: unknown, item: { datasetIndex?: number }) => {
                       const seg = model.segments[item.datasetIndex ?? -1];
