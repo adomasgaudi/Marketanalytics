@@ -3,8 +3,11 @@ import { readFileSync, writeFileSync } from "node:fs";
 const pkg = JSON.parse(
   readFileSync(new URL("../../package.json", import.meta.url), "utf8"),
 );
+// Owner-facing label is major.minor only (v3.80) — the patch digit stays in
+// package.json for npm's semver but never reaches the UI or commit subjects.
+const short = pkg.version.split(".").slice(0, 2).join(".");
 const body = `export const APP_VERSION = "${pkg.version}";
-export const APP_VERSION_LABEL = \`v\${APP_VERSION}\`;
+export const APP_VERSION_LABEL = "v${short}";
 `;
 
 writeFileSync(new URL("../../src/app-version.ts", import.meta.url), body);

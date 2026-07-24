@@ -392,8 +392,19 @@ export function BottomBar({
     pinned.current = null;
     // isConnected: a segment step can unmount the very card that was pinned.
     if (!hold?.el.isConnected) return;
-    const drift = hold.el.getBoundingClientRect().top - hold.top;
-    if (drift) window.scrollBy(0, drift);
+    // Hold the pin for ~600ms, not one frame: charts mount and resize AFTER
+    // the React commit, re-laying the page again — a single scrollBy fixed
+    // the first shift and then the async ones dragged the view anyway.
+    let raf = 0;
+    const t0 = performance.now();
+    const step = () => {
+      if (!hold.el.isConnected) return;
+      const drift = hold.el.getBoundingClientRect().top - hold.top;
+      if (drift) window.scrollBy(0, drift);
+      if (performance.now() - t0 < 600) raf = requestAnimationFrame(step);
+    };
+    step();
+    return () => cancelAnimationFrame(raf);
   }, [year, segment]);
 
   const centreActiveYear = (smooth: boolean) => {
