@@ -133,7 +133,7 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
           href={dashHref}
           className="border-line bg-panel2 text-muted hover:text-ink mt-4 inline-block rounded-lg border px-4 py-2 text-[13px] font-semibold transition-colors"
         >
-          Open {brand} in the interactive dashboard →
+          Dashboard →
         </Link>
 
         <h2 className="text-ink mt-10 mb-3 text-[18px] font-bold">Financials by year</h2>
