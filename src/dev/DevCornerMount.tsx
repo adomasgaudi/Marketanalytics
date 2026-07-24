@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { APP_VERSION } from "@/app-version";
-import { VERSIONS } from "@/features/market-rough/version-history";
+import { VERSIONS } from "@/lib/version-history";
 
 /**
  * @adomas/dev-tools is an OPTIONAL dependency: it resolves to a path outside

@@ -1,7 +1,7 @@
 import { Bloom } from "@/components/ui/bloom";
 import { Footer } from "@/components/ui/footer";
-import { TopNav } from "@/features/market-rough/TopNav";
 import rcJson from "../../../data2/rc_bulk.json";
+import sodraJson from "../../../data2/sodra_months.json";
 import govJson from "../../../data2/gov_finance.json";
 import companiesJson from "../../../data2/companies.json";
 import { RestaurantsTable, type Row } from "./table";
@@ -44,6 +44,17 @@ export default function RestaurantsPage() {
     govJson.companies.filter((c) => c.taxes?.length).map((c) => [c.jarCode, c.taxes]),
   );
 
+  // Latest Sodra month that actually carries data, per company.
+  const sodraByJar = new Map(
+    sodraJson.companies
+      .filter((c) => c.months.length)
+      .map((c) => {
+        const last = c.months[c.months.length - 1];
+        const wage = [...c.months].reverse().find((m) => m.avgWage != null);
+        return [c.jarCode, { insured: last.insured, avgWage: wage?.avgWage ?? null }];
+      }),
+  );
+
   const byJar = new Map(companiesJson.map((c) => [c.jarCode, c]));
   const rows: Row[] = [...merged.entries()]
     .filter(([, byYear]) => byYear.size > 0)
@@ -52,10 +63,13 @@ export default function RestaurantsPage() {
       const years = [...byYear.values()].sort((a, b) => b.year - a.year);
       // Newest FULL VMI year (throughMonth 12); a partial current year misleads.
       const tax = taxesByJar.get(jar)?.find((t) => t.throughMonth === 12);
+      const sodra = sodraByJar.get(jar);
       return {
         jarCode: jar,
         name: seed?.name ?? jar,
         evrk: EVRK[seed?.evrk ?? ""] ?? seed?.evrk ?? "?",
+        insured: sodra?.insured ?? null,
+        avgWage: sodra?.avgWage ?? null,
         year: years[0].year,
         turnover: years[0].turnover,
         profit: years[0].profit,
@@ -67,7 +81,12 @@ export default function RestaurantsPage() {
 
   return (
     <main>
-      <TopNav />
+      <nav className="border-line bg-panel sticky top-0 z-100 flex min-h-[50px] items-center border-b px-[max(24px,calc((100%-1052px)/2))]">
+        <span className="text-[15px] font-extrabold">Market Analytics</span>
+        <span className="text-muted ml-2 text-[10px] font-semibold tracking-[.01em]">
+          restaurants &amp; bars
+        </span>
+      </nav>
       <div className="wrap mx-auto w-full max-w-[1100px] px-6 pt-6 pb-16">
         <header className="relative isolate mt-1.5 mb-8">
           <Bloom
