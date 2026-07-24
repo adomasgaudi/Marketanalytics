@@ -164,6 +164,30 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
           </button>
         ))}
       </div>
+
+      {/* The pool on its own line: picks vanish into the scroll above, this
+          row is where they collect. Click removes. */}
+      {companies.length > 0 && (
+        <div className="mt-3">
+          <div className="text-muted mb-1.5 text-[10px] font-semibold tracking-[.18em] uppercase opacity-70">
+            Selected
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {companies.map((brand) => (
+              <button
+                key={brand}
+                type="button"
+                onClick={() => toggle(brand)}
+                title={`${brand} — click to remove`}
+                className="border-accent text-accent bg-panel flex flex-none cursor-pointer items-baseline gap-1.5 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors hover:opacity-70"
+              >
+                {brand}
+                <span className="text-[10px] opacity-60">×</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
