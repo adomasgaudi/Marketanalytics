@@ -776,11 +776,15 @@ export function BottomBar({
                     // stretch the button and shuffle the whole bar.
                     <span className="inline-flex w-[72px] flex-col justify-center leading-[1.15]">
                       <span>{MARKET_LABELS[m]}</span>
+                      {/* Active sub-line INHERITS the button's own text colour
+                          at 70% rather than naming white — the refined skin
+                          paints the selected chip panel-on-panel in light mode,
+                          so a hard white sub-line vanished into it. */}
                       {m === "whole" && (
                         <span
                           className={cn(
                             "truncate text-[10px] font-bold",
-                            m === market ? "text-white/70" : "text-muted",
+                            m === market ? "opacity-70" : "text-muted",
                           )}
                         >
                           {wholeSubLabel(segment)}
