@@ -173,8 +173,16 @@ export function marketMetricTotal(
 }
 
 /**
- * Denominator for segment-share %. Summing per-segment totals double-counts
- * multi-segment companies (Fabula × 4); scoped to one segment it is that slice.
+ * Denominator for segment-share %.
+ *
+ * Whole-market basis: the deduped market total, because summing per-segment
+ * totals double-counts multi-segment companies (Fabula × 4).
+ *
+ * Per company / per employee: the SUM OF THE DRAWN SLICES. Those slices are
+ * averages, and an average measured against the market's own average is a
+ * ratio, not a share — it read "1165%" on a ring that looks like a pie. Divide
+ * by what is actually drawn and the labels add to 100%, which is the only
+ * promise a donut makes. Scoped to one segment, same rule for the same reason.
  */
 export function segmentShareTotal(
   rows: CompanyYear[],
@@ -184,7 +192,7 @@ export function segmentShareTotal(
   scopedSegment: string | null,
   shownValues: number[],
 ): number {
-  if (scopedSegment) {
+  if (scopedSegment || basis !== "total") {
     return shownValues.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
   }
   return marketMetricTotal(rows, metric, basis, year) || 1;
@@ -263,8 +271,8 @@ export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
   return basis === "total"
     ? `Each segment's total (companies with several segments count in each). Shares use the deduped whole market, not the sum of slices.`
     : basis === "emp"
-      ? `Average ${M.short} per employee in each segment — a productivity proxy.`
-      : `Average ${M.short} per company in each segment.`;
+      ? `Average ${M.short} per employee in each segment — a productivity proxy. Shares are of the ring, so they add to 100%.`
+      : `Average ${M.short} per company in each segment. Shares are of the ring, so they add to 100%.`;
 }
 
 /** Segments a brand wears, main first — feeds useCompareColors. */
