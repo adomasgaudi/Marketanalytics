@@ -1,7 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { useDashboardParams } from "./useDashboardParams";
+
+/**
+ * Opt-in switch for controls that are ours, not the reader's: `?dev=1`.
+ *
+ * NODE_ENV was the obvious gate and the wrong one — the owner develops against
+ * `pnpm dev`, so "hidden in production" still meant "always on screen for the
+ * person asking it to go away". A URL flag is visible, testable in the built
+ * site, and identical in both environments. Read after mount so the prerendered
+ * HTML (which has no query string) and the first client render agree.
+ */
+function useDevFlag() {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    setOn(new URLSearchParams(window.location.search).get("dev") === "1");
+  }, []);
+  return on;
+}
 
 /**
  * Year / month for the money figures. It lives ON the card rather than in the
@@ -13,13 +31,13 @@ import { useDashboardParams } from "./useDashboardParams";
  * turnover or profit — those are annual registry filings — so this is a
  * run-rate, and the tooltip says so rather than implying a measurement.
  *
- * DEV ONLY: the control is hidden in production builds. The `per` URL param
- * still works everywhere — only the switch is gone, so the site ships on the
- * annual default and the monthly reading stays a local tool.
+ * HIDDEN unless `?dev=1` — dev server included. `?per=month` still works on
+ * its own, so the monthly reading stays reachable without the switch.
  */
 export function PeriodToggle({ defaultYear }: { defaultYear: number }) {
   const [{ per }, setParams] = useDashboardParams(defaultYear);
-  if (process.env.NODE_ENV !== "development") return null;
+  const dev = useDevFlag();
+  if (!dev) return null;
   return (
     <Seg
       label="Period"
