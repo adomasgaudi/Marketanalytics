@@ -324,9 +324,11 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           value={metric}
           onChange={setMetric}
           btnClassName="px-2 py-1 text-[11.5px]"
+          // Turnover first: it is the registry-filed headline figure, so it
+          // leads and revenue sits beside it as the derived reading.
           options={[
-            { value: "revenue", label: "Revenue" },
             { value: "turnover", label: "Turnover" },
+            { value: "revenue", label: "Revenue" },
             { value: "profit", label: "Profit" },
           ]}
         />
