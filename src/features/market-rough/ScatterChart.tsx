@@ -231,7 +231,6 @@ type AxisSkin = { ink: string; muted: string; grid: string };
  *  - log    the rung ladder, ruled at every 10/20/30… and labelled sparsely
  *  - slog   the same ladder, mirrored through zero, folded in the data
  *  - linear Chart.js's own even steps, which need no help
- * Break-even gets a solid rule on any axis that crosses zero.
  */
 function buildScale(
   key: MetricKey,
@@ -288,14 +287,13 @@ function buildScale(
     grid: {
       display: true,
       drawTicks: false,
+      // Break-even used to get a heavy black rule here. It read as a chart
+      // border cutting the plot in two, so zero is now just another gridline.
       color: (c: { tick: { value: number } }) =>
-        c.tick.value === 0 && bounds.lo < 0
-          ? skin.ink
-          : mode === "linear" || named.has(readTick(c.tick.value))
-            ? skin.grid
-            : `${skin.grid}55`,
-      lineWidth: (c: { tick: { value: number } }) =>
-        c.tick.value === 0 && bounds.lo < 0 ? 1.5 : 1,
+        mode === "linear" || named.has(readTick(c.tick.value))
+          ? skin.grid
+          : `${skin.grid}55`,
+      lineWidth: 1,
     },
     border: { display: false },
     afterBuildTicks: (axis: { ticks: { value: number }[] }) => {
