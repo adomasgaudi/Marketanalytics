@@ -4,7 +4,7 @@ import { fmtEur, fmtEurFull, fmtInt, fmtPct } from "./format";
 import { Frac, moneyFormulas, Op, V } from "./Formula";
 import { Insights } from "./Insights";
 import { KpiCard, type KpiCardData } from "./KpiCard";
-import { marketTotals, medianSalary } from "./metrics";
+import { marketTotals, avgSalary } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { PeriodToggle } from "./PeriodToggle";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
@@ -64,8 +64,8 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
     };
   };
 
-  const salary = medianSalary(rows, year) ?? 0;
-  const salaryPrev = medianSalary(rows, year - 1) ?? 0;
+  const salary = avgSalary(rows, year) ?? 0;
+  const salaryPrev = avgSalary(rows, year - 1) ?? 0;
   const salaryFmt = (v: number) => `${fmtEurFull(v)}/mo`;
   const payrollCur = rows
     .filter((row) => row.year === year)
@@ -142,15 +142,15 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
       ],
     },
     {
-      ...yoyCard("Median salary", salary, salaryPrev, salaryFmt),
+      ...yoyCard("Average salary", salary, salaryPrev, salaryFmt),
       formulas: [
         {
-          name: "Median salary",
+          name: "Average salary",
           math: (
             <>
               <V c="SAL" />
               <Op o="=" />
-              <mi>median</mi>
+              <mi>avg</mi>
               <mo>(</mo>
               <V c="avg" sub="i" />
               <mo>)</mo>
@@ -159,7 +159,7 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
           vars: [
             {
               code: "SAL",
-              label: "market median monthly salary",
+              label: "market average monthly salary",
               value: salaryFmt(salary),
             },
             {

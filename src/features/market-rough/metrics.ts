@@ -33,14 +33,20 @@ export function marketTotals(rows: CompanyYear[], year: number): MarketTotals {
   };
 }
 
-/** Median salary that year, ignoring implausibly low figures (legacy: >500). */
-export function medianSalary(rows: CompanyYear[], year: number): number | null {
+/**
+ * Average salary that year, ignoring implausibly low figures (legacy: >500).
+ * Was a median until v3.96; the owner's rule is average unless a median is
+ * explicitly asked for. Note this is the unweighted mean ACROSS companies —
+ * each company's own avgSalary counts once, regardless of headcount.
+ */
+export function avgSalary(rows: CompanyYear[], year: number): number | null {
   const salaries = rows
     .filter((row) => row.year === year && (row.avgSalary ?? 0) > 500)
-    .map((row) => row.avgSalary as number)
-    .sort((a, b) => a - b);
+    .map((row) => row.avgSalary as number);
 
-  return salaries.length ? salaries[Math.floor(salaries.length / 2)] : null;
+  return salaries.length
+    ? salaries.reduce((sum, s) => sum + s, 0) / salaries.length
+    : null;
 }
 
 /** Where one company sits against the whole market on a metric (legacy: rankOf). */

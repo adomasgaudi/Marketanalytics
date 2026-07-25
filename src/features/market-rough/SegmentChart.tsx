@@ -174,14 +174,14 @@ export function SegmentChart({ model }: { model: MarketModel }) {
 
   /**
    * The aggregation basis is a way of comparing SEGMENTS with each other —
-   * whole, median company, median per employee. Scoped to one segment the
+   * whole, average company, average per employee. Scoped to one segment the
    * donut stops comparing segments and starts listing companies, and a
    * per-company reading of a per-company list is not a thing.
    *
    * Applying it anyway was not merely redundant, it was wrong: "company" made
-   * the segment's value its MEDIAN, and the company ring was then rescaled so
-   * its slices summed to that median. Every company was drawn at its real
-   * figure x (median / sum) — Fabula's EUR 2.7M appeared as EUR 48k, a number
+   * the segment's value its AVERAGE, and the company ring was then rescaled so
+   * its slices summed to that average. Every company was drawn at its real
+   * figure x (average / sum) — Fabula's EUR 2.7M appeared as EUR 48k, a number
    * that is neither its revenue nor an average of anything.
    */
   const basis: SegBasis = segment

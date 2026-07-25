@@ -281,8 +281,8 @@ export function CompanyPerYear({
   // Legacy company KPI cards: Revenue / Employees / Average salary / Turnover,
   // "Average", not "Median": this is one company's own avgSalary — the mean of
   // its 12 monthly Sodra avgWage figures. A per-company median is impossible,
-  // Sodra never publishes per-employee wages. The market-level "Median salary"
-  // elsewhere is a different figure: the median ACROSS these company averages.
+  // Sodra never publishes per-employee wages. The market-level "Average salary"
+  // elsewhere is a different figure: the mean ACROSS these company averages.
   // each labelled "→24", with YoY change and a formula fold.
   const hasFin = row.revenue != null;
   // 93 filings report employees:0 (20 brands). Per-employee then divides by a

@@ -96,7 +96,7 @@ export const SEG_METRICS: Record<
     short: string;
     f: (d: CompanyYear) => number | null;
     pos: boolean;
-    /** Already a per-head ratio → basis-independent median (legacy avgSalary). */
+    /** Already a per-head ratio → basis-independent average (legacy avgSalary). */
     ratio?: boolean;
   }
 > = {
@@ -117,8 +117,14 @@ export const SEG_METRICS: Record<
 export const basisWord = (b: SegBasis) =>
   b === "emp" ? "per employee" : b === "company" ? "per company" : "whole-market total";
 
-const median = (a: number[]) =>
-  a.length ? a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)] : null;
+/**
+ * AVERAGE, not median — owner's rule (2026-07-25): never aggregate on the
+ * median unless a figure is explicitly asked for as one. The mean is the
+ * number people mean by "average"; it moves when one big agency moves, which
+ * is information, whereas the median hid it.
+ */
+const mean = (a: number[]) =>
+  a.length ? a.reduce((sum, x) => sum + x, 0) / a.length : null;
 
 /** Canonical segment names — used to normalise workbook Veikla values. */
 export const SEGMENT_KEYS = [
@@ -157,12 +163,12 @@ export function marketMetricTotal(
       (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
     );
 
-  if (M.ratio) return median(ds.map((o) => o.v)) ?? 0;
+  if (M.ratio) return mean(ds.map((o) => o.v)) ?? 0;
   if (basis === "emp") {
     const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
-    return median(w) ?? 0;
+    return mean(w) ?? 0;
   }
-  if (basis === "company") return median(ds.map((o) => o.v)) ?? 0;
+  if (basis === "company") return mean(ds.map((o) => o.v)) ?? 0;
   return ds.reduce((s, o) => s + o.v, 0);
 }
 
@@ -200,12 +206,12 @@ export function segMetricValUnique(
       (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
     );
 
-  if (M.ratio) return median(ds.map((o) => o.v));
+  if (M.ratio) return mean(ds.map((o) => o.v));
   if (basis === "emp") {
     const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
-    return w.length >= 3 ? median(w) : null;
+    return w.length >= 3 ? mean(w) : null;
   }
-  if (basis === "company") return median(ds.map((o) => o.v));
+  if (basis === "company") return mean(ds.map((o) => o.v));
   return ds.length ? ds.reduce((s, o) => s + o.v, 0) : null;
 }
 
@@ -225,12 +231,12 @@ export function segMetricVal(
       (o): o is { v: number; e: number | null } => o.v != null && (!M.pos || o.v > 0),
     );
 
-  if (M.ratio) return median(ds.map((o) => o.v));
+  if (M.ratio) return mean(ds.map((o) => o.v));
   if (basis === "emp") {
     const w = ds.filter((o) => (o.e ?? 0) > 2).map((o) => o.v / (o.e as number));
-    return w.length >= 3 ? median(w) : null;
+    return w.length >= 3 ? mean(w) : null;
   }
-  if (basis === "company") return median(ds.map((o) => o.v));
+  if (basis === "company") return mean(ds.map((o) => o.v));
   return ds.length ? ds.reduce((s, o) => s + o.v, 0) : null;
 }
 
@@ -257,8 +263,8 @@ export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
   return basis === "total"
     ? `Each segment's total (companies with several segments count in each). Shares use the deduped whole market, not the sum of slices.`
     : basis === "emp"
-      ? `Median ${M.short} per employee in each segment — a productivity proxy.`
-      : `Median ${M.short} per company in each segment.`;
+      ? `Average ${M.short} per employee in each segment — a productivity proxy.`
+      : `Average ${M.short} per company in each segment.`;
 }
 
 /** Segments a brand wears, main first — feeds useCompareColors. */

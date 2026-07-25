@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 import { fmtEur, fmtPct } from "./format";
-import { margin, marketTotals, medianSalary } from "./metrics";
+import { margin, marketTotals, avgSalary } from "./metrics";
 import { primarySegment } from "./segments";
 import type { CompanyYear, MarketModel } from "./types";
 
@@ -113,14 +113,16 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
     .filter((x): x is { row: CompanyYear; m: number } => x.m != null)
     .sort((a, b) => b.m - a.m);
   if (byMargin.length >= 8) {
-    const median = (xs: number[]) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+    // Average, per the owner's rule — the quartile split still uses size order,
+    // only the margin figure inside each half changed from median to mean.
+    const mean = (xs: number[]) => xs.reduce((sum, x) => sum + x, 0) / (xs.length || 1);
     const bySize = [...byMargin].sort(
       (a, b) => (b.row.estimatedIncome ?? 0) - (a.row.estimatedIncome ?? 0),
     );
     const cut = Math.floor(bySize.length / 4);
-    const bigMedian = median(bySize.slice(0, cut).map((x) => x.m));
-    const smallMedian = median(bySize.slice(cut).map((x) => x.m));
-    const smallWin = smallMedian > bigMedian + 2;
+    const bigMean = mean(bySize.slice(0, cut).map((x) => x.m));
+    const smallMean = mean(bySize.slice(cut).map((x) => x.m));
+    const smallWin = smallMean > bigMean + 2;
     insights.push({
       accent: "border-l-green",
       title: smallWin
@@ -128,8 +130,8 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
         : "The big firms out-earn the boutiques",
       lines: [
         <>
-          Top quartile by fee revenue: median <b>{bigMedian.toFixed(0)}%</b> margin vs{" "}
-          <b>{smallMedian.toFixed(0)}%</b> for the rest
+          Top quartile by fee revenue: average <b>{bigMean.toFixed(0)}%</b> margin vs{" "}
+          <b>{smallMean.toFixed(0)}%</b> for the rest
         </>,
         <>
           {smallWin ? "Big means payroll, not profit. " : "Scale pays, but "}
@@ -205,9 +207,9 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
     });
   }
 
-  // 5 — wage pressure: median salary vs revenue over the same span.
-  const salary = medianSalary(rows, year);
-  const salaryBase = medianSalary(rows, back);
+  // 5 — wage pressure: average salary vs revenue over the same span.
+  const salary = avgSalary(rows, year);
+  const salaryBase = avgSalary(rows, back);
   if (salary && salaryBase && year > back) {
     const salaryUp = pct(salaryBase, salary)!;
     const revUp = pct(marketTotals(rows, back).revenue, cur.revenue)!;
@@ -219,7 +221,7 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
           : "Revenue is outrunning wages",
       lines: [
         <>
-          Median salary <b>{fmtPct(salaryUp)}</b> since {back} (€{Math.round(salaryBase)}{" "}
+          Average salary <b>{fmtPct(salaryUp)}</b> since {back} (€{Math.round(salaryBase)}{" "}
           → €{Math.round(salary)}/mo) vs revenue <b>{fmtPct(revUp)}</b>
         </>,
         <>
