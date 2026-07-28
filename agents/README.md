@@ -13,6 +13,7 @@ Several agents work here at once. These notes are how they hand over.
 | [agent3](agent3/NOTES.md) | 2026-07-23 | All-segments donut crash from ~150-slice inner ring |
 | [agent4](agent4/NOTES.md) | 2026-07-23 | Scatter chart segment colours aligned with doughnut palette |
 | [agent5](agent5/NOTES.md) | 2026-07-24 | Dashboard migrated off `data/` onto data2 + classification.json; `data/` kept for `/explore` |
+| [agent6](agent6/NOTES.md) | 2026-07-28 | Top navigation version label moved beside theme controls |
 
 ## If you are a new agent
 

@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.99.0",
+    date: "2026-07-28",
+    title: "Version beside theme",
+    desc: "Places the version label to the left of the light/dark and accent controls in the top navigation.",
+  },
+  {
     v: "v3.54.0",
     date: "2026-07-23",
     title: "Main segment per company",

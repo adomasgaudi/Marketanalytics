@@ -199,8 +199,14 @@ function TopNavInner({ active }: { active?: "markets" | "companies" }) {
           menu below is empty in default mode); the cog appears only in Dev. */}
       <div className="ml-auto flex flex-shrink-0 items-center gap-2">
         {/* One control, two sides: theme on the left, accent swatch on the
-            right. In default mode the version tucks UNDER it. */}
-        <div className="relative flex flex-col items-center gap-[3px]">
+            right. In default mode the version sits to their left. */}
+        <div className="flex items-center gap-1">
+          {mode !== "dev" && (
+            <span className="relative inline-flex items-center">
+              {versionTag("text-[8px]")}
+              {verHintEl}
+            </span>
+          )}
           <div className="border-line flex items-center overflow-hidden rounded-full border">
             <button
               type="button"
@@ -228,13 +234,6 @@ function TopNavInner({ active }: { active?: "markets" | "companies" }) {
               />
             </button>
           </div>
-          {/* Default mode: small version tag under the buttons (secret dev key). */}
-          {mode !== "dev" && (
-            <>
-              {versionTag("text-[8px]")}
-              {verHintEl}
-            </>
-          )}
         </div>
 
         {/* Dev only: the version sits beside the cog, menus anchored right. */}
