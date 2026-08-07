@@ -527,10 +527,13 @@ export function ScatterChart({ model }: { model: MarketModel }) {
   if (!visibleRows.length) {
     return (
       <section className="card border-line bg-panel mb-4 rounded-xl border p-[18px]">
-        <h2 className="mb-1 text-[15px] font-semibold">
-          Size vs profitability ({year}
-          {segment ? ` · ${segName(segment)}` : ""})
-        </h2>
+        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h2 className="text-[15px] font-semibold">Company size vs. profitability</h2>
+          <p className="text-muted text-xs">
+            {year}
+            {segment ? ` · ${segName(segment)}` : ""}
+          </p>
+        </div>
         <p className="text-muted p-6 text-center text-[13px]">No data for {year}.</p>
       </section>
     );
@@ -559,11 +562,14 @@ export function ScatterChart({ model }: { model: MarketModel }) {
 
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
-      <h2 className="mb-1 text-[15px] font-semibold">
-        Size vs profitability ({year}
-        {segment ? ` · ${segName(segment)}` : ""}
-        {perEmp ? " · per employee" : ""})
-      </h2>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h2 className="text-[15px] font-semibold">Company size vs. profitability</h2>
+        <p className="text-muted text-xs">
+          {year}
+          {segment ? ` · ${segName(segment)}` : ""}
+          {perEmp ? " · per employee" : ""}
+        </p>
+      </div>
       {/* The Y controls sit where the Y title was, the X controls under the
           X axis — each axis is named by the thing that changes it, so there is
           no second label to fall out of step. Chart-wide controls keep to the

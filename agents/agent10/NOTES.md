@@ -46,3 +46,8 @@ v3.107 fixes the phone scatterplot's collapsed field. `flex-1` set a zero flex
 basis in the mobile column and reduced the intended 450px canvas to 150px.
 Mobile now uses a fixed flex item; desktop keeps flexible growth. The next
 material change is v3.108.
+
+v3.108 renames the card “Company size vs. profitability” and moves the year,
+segment, and per-employee context into a separate responsive line. This avoids
+an ambiguous title and cramped mobile wrapping. The next material change is
+v3.109.

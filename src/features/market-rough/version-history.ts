@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.108.0",
+    date: "2026-08-07",
+    title: "Clear scatterplot title",
+    desc: "Names the company comparison clearly and separates responsive year and segment context.",
+  },
+  {
     v: "v3.107.0",
     date: "2026-08-07",
     title: "Readable phone scatterplot",
