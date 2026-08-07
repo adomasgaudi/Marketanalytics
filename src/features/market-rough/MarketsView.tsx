@@ -15,12 +15,13 @@ import { SegmentTrends } from "./SegmentTrends";
 import type { MarketModel } from "./types";
 import { useSourcedModel } from "./rebuilt-source";
 import { useDashboardParams } from "./useDashboardParams";
+import { useVisibleYears } from "./years";
 
 /** The "Market {year}" panel: money-flow, #/% KPIs, insights, both charts. */
 export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
   // Rebuilt figures by default; every child below is handed this same model.
   const model = useSourcedModel(legacyModel);
-  const [{ year, market, segment, per }] = useDashboardParams(model.last);
+  const [{ year, market, segment, per }] = useDashboardParams();
   // The bottom-bar segment scope narrows the row set every figure on this
   // panel is derived from — totals, salary and the money-flow alike.
   const rows = segment
@@ -178,7 +179,7 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
       <div className="mb-6 md:flex md:items-stretch md:gap-2.5">
         <div className="min-w-0 md:flex-1 [&>.card]:md:mb-0 [&>.card]:md:h-full">
           <MoneyFlow
-            actions={<PeriodToggle defaultYear={model.last} />}
+            actions={<PeriodToggle />}
             yrLabel={hasPrev ? `${year - 1} → ${year}` : String(year)}
             formulas={moneyFormulas({
               sum: true,
@@ -244,7 +245,8 @@ export function MarketPerYear({ model: legacyModel }: { model: MarketModel }) {
 /** The "Market all time" panel: money-flow by year, segment trends, scrubber. */
 export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const [{ market, segment }] = useDashboardParams(model.last);
+  const [{ market, segment }] = useDashboardParams();
+  const visibleYears = useVisibleYears(model.finYears);
   const rows = segment
     ? model.rows.filter((row) => row.activities.includes(segment))
     : model.rows;
@@ -252,8 +254,8 @@ export function MarketAllTime({ model: legacyModel }: { model: MarketModel }) {
   return (
     <div>
       <MoneyFlowByYear
-        title={`${segment ? segName(segment) : "Total market"} money-flow by year (${model.finYears[0]}–${model.finYears[model.finYears.length - 1]})`}
-        rows={model.finYears.map((fy) => {
+        title={`${segment ? segName(segment) : "Total market"} money-flow by year (${visibleYears[0]}–${visibleYears[visibleYears.length - 1]})`}
+        rows={visibleYears.map((fy) => {
           const t = marketTotals(rows, fy);
           const d = market === "avg" ? t.count : market === "emp" ? t.employees : 1;
           const dv = (v: number) => (d > 0 ? v / d : 0);

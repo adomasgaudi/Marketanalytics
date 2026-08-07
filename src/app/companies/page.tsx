@@ -35,7 +35,7 @@ export default function CompaniesPage() {
 
   return (
     <NuqsBoundary>
-      <main>
+      <main className="companies-page min-h-screen">
         <TopNav active="companies" />
         <div className="wrap mx-auto w-full max-w-[840px] px-6 pt-6 pb-[84px]">
           {/* Same hero treatment as Markets: oversized title over a soft accent
@@ -50,7 +50,7 @@ export default function CompaniesPage() {
             <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
               Profiles, rankings &amp; deep-dives · {model.brands.length} tracked agencies
             </p>
-            <CompanyHeroTitle defaultYear={model.last} />
+            <CompanyHeroTitle />
             {/* ↑/↓ steps the bottom-bar segment scope here too; held F re-aims
               the pair at the company ranking. */}
             <ArrowKeysHint vertical="segment" fVertical="company" className="mt-6" />

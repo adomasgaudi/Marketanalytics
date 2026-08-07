@@ -9,6 +9,8 @@ import { segName } from "./segments";
 import type { MarketModel } from "./types";
 import { useSegColors } from "./useSegColors";
 import { useViewMode } from "./ViewSync";
+import { DEFAULT_YEAR } from "./year-policy";
+import { useVisibleYears } from "./years";
 import {
   BASES,
   type Basis,
@@ -228,9 +230,8 @@ export function BottomBar({
   /** "market" = avg/emp/whole toggle (Markets page); "company" = full/per-emp. */
   mode: "market" | "company";
 }) {
-  const [{ year, market, basis, segment, companies }, setParams] = useDashboardParams(
-    model.last,
-  );
+  const [{ year, market, basis, segment, companies }, setParams] = useDashboardParams();
+  const visibleYears = useVisibleYears(model.finYears);
   // Same live palette the doughnut uses (theme × harmony/spectral), so the
   // picker's colours ARE the slice colours — the trigger and each option read
   // as the segment they select. "All segments" has no single hue, so it stays
@@ -251,6 +252,10 @@ export function BottomBar({
       .map((row) => row.year),
   );
   const [view] = useViewMode(mode === "market" ? "mkt" : "co");
+
+  useEffect(() => {
+    if (!visibleYears.includes(year)) setParams({ year: DEFAULT_YEAR });
+  }, [setParams, visibleYears, year]);
 
   // Legacy syncBottomBarH: measure the bar (it can wrap to 2 rows on narrow
   // screens) and publish --bb-h, which .wrap uses as its bottom padding so
@@ -475,7 +480,7 @@ export function BottomBar({
   // effect below then pulls it into view, so the track scrolls as a side effect.
   useWheelStep(trackRef, (dir) => {
     pinView();
-    setParams({ year: stepIn(model.finYears, year, dir) });
+    setParams({ year: stepIn(visibleYears, year, dir) });
   });
   // Same gesture on the segment picker. "" is the All-segments entry, so it
   // has to be part of the list the wheel walks.
@@ -523,7 +528,7 @@ export function BottomBar({
     } else if (key === "ArrowLeft" || key === "ArrowRight") {
       if (view === "all") return;
       pinView();
-      setParams({ year: stepIn(model.finYears, year, key === "ArrowRight" ? 1 : -1) });
+      setParams({ year: stepIn(visibleYears, year, key === "ArrowRight" ? 1 : -1) });
     } else {
       selectSegment(
         stepIn(["", ...model.segments], segment ?? "", key === "ArrowDown" ? 1 : -1),
@@ -617,7 +622,7 @@ export function BottomBar({
               aria-hidden
               className="pointer-events-none w-[calc(50%+64px)] flex-none"
             />
-            {model.finYears.map((option) => (
+            {visibleYears.map((option) => (
               <button
                 key={option}
                 type="button"
@@ -670,7 +675,7 @@ export function BottomBar({
             aria-hidden
             className="absolute inset-x-0 top-[calc(100%+3px)] flex items-center justify-center gap-[3px]"
           >
-            {model.finYears.map((option) => (
+            {visibleYears.map((option) => (
               <span
                 key={option}
                 className={cn(

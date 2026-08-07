@@ -39,7 +39,7 @@ type Row = { brand: string; val: number; rank: number; grp?: "top" | "mid" | "bo
     hidden middle; selected gold, top green, bottom red. */
 export function RankingsChart({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const [{ year, basis, companies }] = useDashboardParams(model.last);
+  const [{ year, basis, companies }] = useDashboardParams();
   const SEG_COLORS = useSegColors();
   const [metricKey, setMetricKey] = useState("estimatedIncome");
   const [segs, setSegs] = useState<Set<string>>(new Set(model.segments));

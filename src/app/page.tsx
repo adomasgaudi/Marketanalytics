@@ -8,6 +8,7 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { MarketAllTime, MarketPerYear } from "@/features/market-rough/MarketsView";
 import { TopCards } from "@/features/market-rough/TopCards";
 import { TopNav } from "@/features/market-rough/TopNav";
+import { publicYears } from "@/features/market-rough/year-policy";
 import { Bloom } from "@/components/ui/bloom";
 import { NuqsBoundary } from "@/components/nuqs-boundary";
 import events from "../../data/data_events.json";
@@ -46,6 +47,7 @@ function lastUpdated() {
  */
 export default function MarketsPage() {
   const model = loadMarketData();
+  const years = publicYears(model.years);
 
   return (
     <NuqsBoundary>
@@ -61,10 +63,15 @@ export default function MarketsPage() {
               className="-top-24 -left-[20vw] h-[380px] w-[80vw]"
             />
             <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
-              Lithuanian marketing &amp; communications · {model.years[0]}–
-              {model.years[model.years.length - 1]}
+              Lithuanian marketing &amp; communications ·{" "}
+              <span className="public-year-range">
+                {years[0]}–{years[years.length - 1]}
+              </span>
+              <span className="dev-year-range">
+                {model.years[0]}–{model.years[model.years.length - 1]}
+              </span>
             </p>
-            <HeroTitle defaultYear={model.last} segments={model.segments.length} />
+            <HeroTitle segments={model.segments.length} />
             {/* Freshness marker: newest entry in the data-change audit log. */}
             <p className="text-muted mt-3 flex items-center gap-1.5 text-[11.5px]">
               <span className="bg-green inline-block h-1.5 w-1.5 rounded-full" />

@@ -279,6 +279,22 @@ html[data-mode="default"] [data-devcorner] {
   display: none !important;
 }
 
+html[data-mode="default"] [data-dev-only-year],
+html[data-mode="default"] .dev-year-range,
+html[data-mode="dev"] .public-year-range {
+  display: none;
+}
+
+.companies-page {
+  background:
+    radial-gradient(
+      circle at 90% 8%,
+      color-mix(in srgb, var(--color-purple) 10%, transparent),
+      transparent 34rem
+    ),
+    color-mix(in srgb, var(--color-panel) 35%, var(--color-bg));
+}
+
 /* The shared dev corner (Pepper toolkit) sits bottom-right at z-30 — this app
    has a fixed bottom bar at z-400, so lift the corner and its trays above it
    and clear the bar's measured height. */

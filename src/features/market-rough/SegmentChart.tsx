@@ -17,6 +17,7 @@ import {
   segName,
 } from "./segments";
 import { PeriodToggle } from "./PeriodToggle";
+import { SegmentDetailsDialog } from "./SegmentDetailsDialog";
 import { useSegColors } from "./useSegColors";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
@@ -133,16 +134,24 @@ const cssVar = (name: string) =>
 function DonutLegend({
   items,
   onPick,
+  mobile = false,
 }: {
   items: { key: string; text: string; value: string; color: string }[];
   onPick?: (key: string) => void;
+  mobile?: boolean;
 }) {
   return (
     // justify-center-safe, not justify-center: a centred flex column that
     // overflows spills off BOTH ends, and the rows above the top edge cannot be
     // scrolled back to. `safe` centres only while the list fits and falls back
     // to start-aligned once it doesn't, so the first company is always reachable.
-    <ul className="absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center-safe gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex">
+    <ul
+      className={
+        mobile
+          ? "mt-3 grid list-none grid-cols-2 gap-2 text-[11px] sm:hidden"
+          : "absolute inset-y-0 right-0 hidden w-[164px] [scrollbar-width:thin] list-none flex-col justify-center-safe gap-[3px] overflow-y-auto py-1 text-[11px] sm:flex"
+      }
+    >
       {items.map((item) => (
         <li
           key={item.key}
@@ -163,7 +172,7 @@ function DonutLegend({
 
 /** "{year} Revenue by segment" — doughnut or SVG bars, %/€, follows year + basis. */
 export function SegmentChart({ model }: { model: MarketModel }) {
-  const [{ year, market, segment, per }, setParams] = useDashboardParams(model.last);
+  const [{ year, market, segment, per }, setParams] = useDashboardParams();
   const router = useRouter();
   // Same URL shape as the strip's "Open in dashboard" link.
   const companyHref = (brand: string) =>
@@ -171,6 +180,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const SEG_COLORS = useSegColors();
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   const [show, setShow] = useState<"pct" | "eur">("pct");
+  const [inspectedSegment, setInspectedSegment] = useState<string | null>(null);
 
   /**
    * The aggregation basis is a way of comparing SEGMENTS with each other —
@@ -245,6 +255,35 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const shown = (i: number) =>
     show === "pct" ? `${pct(i).toFixed(pct(i) < 10 ? 1 : 0)}%` : fmtEur(rows[i].v);
 
+  const inspectedIndex = rows.findIndex((row) => row.s === inspectedSegment);
+  const inspectedRows = inspectedSegment
+    ? model.rows.filter(
+        (row) => row.year === year && row.activities.includes(inspectedSegment),
+      )
+    : [];
+  const inspectedDetails =
+    inspectedIndex < 0
+      ? null
+      : {
+          key: rows[inspectedIndex].s,
+          name: segName(rows[inspectedIndex].s),
+          year,
+          metric: SEG_METRICS[metric].label,
+          value: fmtEur(rows[inspectedIndex].v),
+          share: `${pct(inspectedIndex).toFixed(1)}%`,
+          companies: inspectedRows.filter((row) => SEG_METRICS[metric].f(row) != null)
+            .length,
+          employees: inspectedRows.reduce((sum, row) => sum + (row.employees ?? 0), 0),
+          leaders: inspectedRows
+            .filter((row) => SEG_METRICS[metric].f(row) != null)
+            .sort(
+              (a, b) => (SEG_METRICS[metric].f(b) ?? 0) - (SEG_METRICS[metric].f(a) ?? 0),
+            )
+            .slice(0, 3)
+            .map((row) => row.brand),
+          color: SEG_COLORS[rows[inspectedIndex].s] ?? "#888",
+        };
+
   const title = `${year} ${SEG_METRICS[metric].label} ${segment ? `in ${segName(segment)} by company` : "by segment"}${basis === "total" ? "" : ` · ${basisWord(basis)}`}`;
 
   // Inner company ring only when scoped to one segment — in All Segments the
@@ -314,6 +353,30 @@ export function SegmentChart({ model }: { model: MarketModel }) {
     weight: segment ? 3 : 1,
   };
 
+  const legendItems = segment
+    ? companySlices
+        .map((slice, i) => ({
+          key: slice.brand,
+          text: slice.brand,
+          value: shownVal(slice.value, companyPct(i)),
+          color: slice.color,
+          sort: slice.value,
+        }))
+        .filter((item) => item.sort > 0)
+        .sort((a, b) => b.sort - a.sort)
+    : rows
+        .map((row, i) => ({
+          key: row.s,
+          text: segName(row.s),
+          value: shown(i),
+          color: SEG_COLORS[row.s] ?? "#888",
+          sort: row.has ? row.v : -1,
+        }))
+        .filter((item) => item.sort >= 0);
+  const pickLegend = segment
+    ? (key: string) => router.push(companyHref(key))
+    : (key: string) => setInspectedSegment(key);
+
   return (
     <section className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">
       <h2 className="mb-1 text-[15px] font-semibold">{title}</h2>
@@ -346,7 +409,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
             param, so the two never disagree about the period on screen. Shown
             in % mode too: the shares are indeed identical either way, but the
             CENTRE figure is always in euro, so the toggle still changes it. */}
-        <PeriodToggle defaultYear={model.last} />
+        <PeriodToggle />
       </div>
 
       {!rows.some((o) => o.has) ? (
@@ -360,157 +423,140 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         // the donut. The legend's column is reserved with padding instead, and
         // being a fixed width it can never resize the canvas or shift the
         // donut sideways.
-        <div className="chartbox relative h-[340px] sm:pr-[176px]">
-          <Doughnut
-            // Remount whenever the SLICE COUNT changes — i.e. when the segment
-            // scope changes. Chart.js tweens arcs between updates; if the
-            // number of arcs changes mid-flight (stepping segments quickly
-            // with ↑/↓ or the wheel) it is left drawing arcs whose radius and
-            // angle belong to two different charts, and the donut collapses
-            // into skewed slivers. Within one scope the key is stable, so
-            // year and metric changes still animate.
-            // A scope change replaces the ring structure, but year/metric
-            // changes keep the same slots and animate each slice in place.
-            // The plugins above safely ignore Chart.js's teardown frame.
-            key={segment || "all"}
-            data={{
-              labels: rows.map((o) => segName(o.s)),
-              datasets: [segmentRing, companyRing],
-            }}
-            options={
-              {
-                maintainAspectRatio: false,
-                cutout: "58%",
-                // Room for the labels of the outermost slices, which sit near
-                // the canvas edge once the legend no longer squeezes the box.
-                layout: { padding: 6 },
-                // In All Segments a click on either ring scopes the donut to
-                // that slice's segment — same URL param the picker writes, so
-                // every card follows. Scoped, a company slice opens that
-                // company in the dashboard (the strip's "Open in dashboard"
-                // URL); the one-slice outer ring stays inert.
-                onClick: (
-                  _e: unknown,
-                  els: { datasetIndex: number; index: number }[],
-                ) => {
-                  if (!els.length) return;
-                  const { datasetIndex, index } = els[0];
-                  if (segment) {
-                    const brand = datasetIndex === 1 ? companySlices[index]?.brand : null;
-                    if (brand) router.push(companyHref(brand));
-                    return;
-                  }
-                  const s =
-                    datasetIndex === 0 ? rows[index]?.s : companySlices[index]?.seg;
-                  if (s) setParams({ segment: s });
-                },
-                onHover: (
-                  e: { native?: { target?: HTMLElement } },
-                  els: { datasetIndex: number }[],
-                ) => {
-                  const t = e.native?.target;
-                  if (t)
-                    t.style.cursor =
-                      els.length && (!segment || els[0].datasetIndex === 1)
-                        ? "pointer"
-                        : "";
-                },
-                // Per-ring on-slice text. Unscoped: the segment share on the
-                // outer ring. Scoped: the outer ring is one slice at 100% — a
-                // tautology, so it stays blank — and the company ring carries
-                // name + share wherever an arc is wide enough to hold two lines.
-                ringLabels: segment
-                  ? [
-                      null,
-                      {
-                        // shownVal, not a hardcoded %: the €/% toggle has to
-                        // reach the on-slice text too, or switching to € changes
-                        // the legend and the tooltip while the donut keeps
-                        // showing percentages.
-                        lines: companySlices.map((s, i) => [
-                          s.brand,
-                          shownVal(s.value, companyPct(i)),
-                        ]),
-                        pcts: companySlices.map((_, i) => companyPct(i)),
-                        min: 4.5,
-                        size: 10.5,
-                      },
-                    ]
-                  : [
-                      {
-                        lines: rows.map((_, i) => [shown(i)]),
-                        pcts: rows.map((_, i) => pct(i)),
-                        min: 5,
-                        size: 11,
-                      },
-                      null,
-                    ],
-                centre: {
-                  top: segment ? segName(segment) : "Total market",
-                  big: fmtEur(centreValue),
-                },
-                plugins: {
-                  // Replaced by the fixed-width HTML legend beside the canvas.
-                  legend: { display: false },
-                  tooltip: {
-                    titleColor: cssVar("--color-ink"),
-                    bodyColor: cssVar("--color-ink"),
-                    backgroundColor: cssVar("--color-panel"),
-                    borderColor: cssVar("--color-line"),
-                    borderWidth: 1,
-                    callbacks: {
-                      label: (c: {
-                        datasetIndex: number;
-                        dataIndex: number;
-                        label?: string;
-                      }) => {
-                        if (c.datasetIndex === 1) {
-                          const s = companySlices[c.dataIndex];
-                          return s
-                            ? ` ${s.brand}: ${fmtEur(s.value)} (${companyPct(c.dataIndex).toFixed(1)}%)`
-                            : " Company";
-                        }
-                        return ` ${c.label}: ${fmtEur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`;
+        <>
+          <div className="chartbox relative h-[340px] sm:pr-[176px]">
+            <Doughnut
+              // Remount whenever the SLICE COUNT changes — i.e. when the segment
+              // scope changes. Chart.js tweens arcs between updates; if the
+              // number of arcs changes mid-flight (stepping segments quickly
+              // with ↑/↓ or the wheel) it is left drawing arcs whose radius and
+              // angle belong to two different charts, and the donut collapses
+              // into skewed slivers. Within one scope the key is stable, so
+              // year and metric changes still animate.
+              // A scope change replaces the ring structure, but year/metric
+              // changes keep the same slots and animate each slice in place.
+              // The plugins above safely ignore Chart.js's teardown frame.
+              key={segment || "all"}
+              data={{
+                labels: rows.map((o) => segName(o.s)),
+                datasets: [segmentRing, companyRing],
+              }}
+              options={
+                {
+                  maintainAspectRatio: false,
+                  cutout: "58%",
+                  // Room for the labels of the outermost slices, which sit near
+                  // the canvas edge once the legend no longer squeezes the box.
+                  layout: { padding: 6 },
+                  // In All Segments a click on either ring scopes the donut to
+                  // that slice's segment — same URL param the picker writes, so
+                  // every card follows. Scoped, a company slice opens that
+                  // company in the dashboard (the strip's "Open in dashboard"
+                  // URL); the one-slice outer ring stays inert.
+                  onClick: (
+                    _e: unknown,
+                    els: { datasetIndex: number; index: number }[],
+                  ) => {
+                    if (!els.length) return;
+                    const { datasetIndex, index } = els[0];
+                    if (segment) {
+                      const brand =
+                        datasetIndex === 1 ? companySlices[index]?.brand : null;
+                      if (brand) router.push(companyHref(brand));
+                      return;
+                    }
+                    const selectedSegment =
+                      datasetIndex === 0 ? rows[index]?.s : companySlices[index]?.seg;
+                    if (selectedSegment) setInspectedSegment(selectedSegment);
+                  },
+                  onHover: (
+                    e: { native?: { target?: HTMLElement } },
+                    els: { datasetIndex: number }[],
+                  ) => {
+                    const t = e.native?.target;
+                    if (t)
+                      t.style.cursor =
+                        els.length && (!segment || els[0].datasetIndex === 1)
+                          ? "pointer"
+                          : "";
+                  },
+                  // Per-ring on-slice text. Unscoped: the segment share on the
+                  // outer ring. Scoped: the outer ring is one slice at 100% — a
+                  // tautology, so it stays blank — and the company ring carries
+                  // name + share wherever an arc is wide enough to hold two lines.
+                  ringLabels: segment
+                    ? [
+                        null,
+                        {
+                          // shownVal, not a hardcoded %: the €/% toggle has to
+                          // reach the on-slice text too, or switching to € changes
+                          // the legend and the tooltip while the donut keeps
+                          // showing percentages.
+                          lines: companySlices.map((s, i) => [
+                            s.brand,
+                            shownVal(s.value, companyPct(i)),
+                          ]),
+                          pcts: companySlices.map((_, i) => companyPct(i)),
+                          min: 4.5,
+                          size: 10.5,
+                        },
+                      ]
+                    : [
+                        {
+                          lines: rows.map((row, i) => [segName(row.s), shown(i)]),
+                          pcts: rows.map((_, i) => pct(i)),
+                          min: 2.5,
+                          size: 9.5,
+                        },
+                        null,
+                      ],
+                  centre: {
+                    top: segment ? segName(segment) : "Total market",
+                    big: fmtEur(centreValue),
+                  },
+                  plugins: {
+                    // Replaced by the fixed-width HTML legend beside the canvas.
+                    legend: { display: false },
+                    tooltip: {
+                      titleColor: cssVar("--color-ink"),
+                      bodyColor: cssVar("--color-ink"),
+                      backgroundColor: cssVar("--color-panel"),
+                      borderColor: cssVar("--color-line"),
+                      borderWidth: 1,
+                      callbacks: {
+                        label: (c: {
+                          datasetIndex: number;
+                          dataIndex: number;
+                          label?: string;
+                        }) => {
+                          if (c.datasetIndex === 1) {
+                            const s = companySlices[c.dataIndex];
+                            return s
+                              ? ` ${s.brand}: ${fmtEur(s.value)} (${companyPct(c.dataIndex).toFixed(1)}%)`
+                              : " Company";
+                          }
+                          return ` ${c.label}: ${fmtEur(rows[c.dataIndex].v)} (${pct(c.dataIndex).toFixed(1)}%)`;
+                        },
                       },
                     },
                   },
-                },
-              } as never
-            }
-            plugins={[onSlice, centreText]}
-          />
-          <DonutLegend
-            onPick={
-              segment
-                ? // Scoped: rows are companies; open the company dashboard.
-                  (key) => router.push(companyHref(key))
-                : (key) => setParams({ segment: key })
-            }
-            items={
-              segment
-                ? companySlices
-                    .map((s, i) => ({
-                      key: s.brand,
-                      text: s.brand,
-                      value: shownVal(s.value, companyPct(i)),
-                      color: s.color,
-                      sort: s.value,
-                    }))
-                    .filter((e) => e.sort > 0)
-                    .sort((a, b) => b.sort - a.sort)
-                : rows
-                    .map((o, i) => ({
-                      key: o.s,
-                      text: segName(o.s),
-                      value: shown(i),
-                      color: SEG_COLORS[o.s] ?? "#888",
-                      sort: o.has ? o.v : -1,
-                    }))
-                    .filter((e) => e.sort >= 0)
-            }
-          />
-        </div>
+                } as never
+              }
+              plugins={[onSlice, centreText]}
+            />
+            <DonutLegend onPick={pickLegend} items={legendItems} />
+          </div>
+          <DonutLegend mobile onPick={pickLegend} items={legendItems} />
+        </>
       )}
+      <SegmentDetailsDialog
+        details={inspectedDetails}
+        onClose={() => setInspectedSegment(null)}
+        onFilter={(nextSegment) => {
+          setParams({ segment: nextSegment });
+          setInspectedSegment(null);
+        }}
+      />
     </section>
   );
 }

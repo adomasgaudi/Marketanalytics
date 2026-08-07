@@ -7,14 +7,8 @@ import { useDashboardParams } from "./useDashboardParams";
  * Year selector. Writes to the URL, so the chosen year is shareable and
  * survives a refresh.
  */
-export function YearRow({
-  years,
-  defaultYear,
-}: {
-  years: number[];
-  defaultYear: number;
-}) {
-  const [{ year }, setParams] = useDashboardParams(defaultYear);
+export function YearRow({ years }: { years: number[] }) {
+  const [{ year }, setParams] = useDashboardParams();
 
   return (
     <PillRow label="Year" className="mb-3">

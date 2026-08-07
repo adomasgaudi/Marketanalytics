@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { APP_VERSION_LABEL } from "@/app-version";
 import { IconMoon, IconSettings, IconSun } from "./Icons";
-import { useViewMode, ViewSub } from "./ViewSync";
 import { NuqsBoundary } from "@/components/nuqs-boundary";
 
 /**
- * Legacy topnav, replicated 1:1: logo-as-button (back chevron off home, view
- * toggle on home), two-line Companies button, settings-wrap (clickable version
- * under the ⚙️ cog, dropdown menu with Dev-mode-gated items). Only deliberate
- * difference: the port-cycle button is named "⏭️ v2" and opens /v2.
+ * Two page tabs plus theme controls and the Dev-mode settings menu. Time-view
+ * switching lives under each page title, so these tabs only change pages.
  */
 /** Accent palettes, in cycle order. "classic" is the original blue. */
 const PALETTES = [
@@ -43,6 +40,7 @@ export function TopNav(props: { active?: "markets" | "companies" }) {
 function TopNavInner({ active }: { active?: "markets" | "companies" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [switchingTo, setSwitchingTo] = useState<"Markets" | "Companies" | null>(null);
   // Secret dev key: 8 clicks on the version label enter Dev mode (hint at 5).
   const verClicks = useRef(0);
   const verTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -52,8 +50,6 @@ function TopNavInner({ active }: { active?: "markets" | "companies" }) {
   const [mode, setMode] = useState<"default" | "dev">("default");
   const [graphPan, setGraphPan] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [mktView, setMktView] = useViewMode("mkt");
-  const [coView, setCoView] = useViewMode("co");
 
   // Read the persisted choices the same way the legacy pre-paint script does.
   useEffect(() => {
@@ -98,17 +94,18 @@ function TopNavInner({ active }: { active?: "markets" | "companies" }) {
     };
   }, [open]);
 
-  // Legacy navHome: on the dashboard the logo toggles per-year/all-years; from
-  // any other view it navigates home.
-  const onLogo = () => {
-    if (active === "markets") setMktView(mktView === "year" ? "all" : "year");
-    // Keep the URL params so both pages' view modes survive the hop, as the
-    // legacy's in-memory state does.
-    else router.push(`/${window.location.search}`);
-  };
-
   const menuItem =
     "flex w-full cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-2.5 py-[7px] text-left text-[13px] text-ink hover:bg-panel2";
+
+  const switchView = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    target: "markets" | "companies",
+  ) => {
+    if (active === target) return;
+    event.preventDefault();
+    setSwitchingTo(target === "markets" ? "Markets" : "Companies");
+    window.setTimeout(() => router.push(target === "markets" ? "/" : "/companies"), 500);
+  };
 
   // Secret dev key (legacy VER_DEV_CLICKS): 8 clicks → Dev mode; hint at 5; the
   // counter resets after 3.2s. Inert once already in Dev mode.
@@ -145,146 +142,134 @@ function TopNavInner({ active }: { active?: "markets" | "companies" }) {
   // Nav padding folds in the content wrap's own px-6 (840+48=792) so the logo
   // shares a left edge with the page content, not the column's outer edge.
   return (
-    <nav className="border-line bg-panel sticky top-0 z-100 flex min-h-[50px] items-center border-b px-[max(24px,calc((100%-792px)/2))] max-sm:min-h-[46px] max-sm:px-2">
-      <div
-        role="button"
-        tabIndex={0}
-        title="Dashboard · click to toggle per-year / all-years"
-        onClick={onLogo}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onLogo()}
-        className="hover:text-accent focus-visible:text-accent mr-6 inline-flex flex-shrink-0 cursor-pointer items-center text-[15px] leading-[1.1] font-extrabold whitespace-nowrap transition-colors select-none focus-visible:outline-none max-sm:mr-2 max-sm:text-[13px]"
-      >
-        {/* Back chevron: always occupies space so the title never shifts;
-            invisible on the dashboard (legacy .home-ic). */}
-        <span
-          className={`text-muted mr-[5px] align-[-1px] text-[1.15em] font-bold ${
-            active === "markets" ? "invisible" : ""
+    <>
+      <nav className="border-line bg-panel sticky top-0 z-100 flex min-h-[50px] items-center border-b px-[max(24px,calc((100%-792px)/2))] max-sm:min-h-[46px] max-sm:px-2">
+        <Link
+          href="/"
+          onClick={(event) => switchView(event, "markets")}
+          className={`inline-flex h-[50px] items-center px-[18px] text-[15px] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
+            active === "markets"
+              ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
+              : "text-ink hover:text-accent"
           }`}
         >
-          ‹
-        </span>
-        <span className="inline-flex flex-col leading-[1.08]">
-          <span className="whitespace-nowrap">Market Analytics</span>
-          <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-            <ViewSub scope="mkt" />
-          </span>
-        </span>
-      </div>
+          Markets
+        </Link>
 
-      {/* Two-line nav button: page name + small gray mode sub-label. Re-tapping
-          it while ALREADY on Companies toggles per-year ⇄ all-years (legacy). */}
-      <Link
-        href="/companies"
-        onClick={(e) => {
-          if (active === "companies") {
-            e.preventDefault();
-            setCoView(coView === "year" ? "all" : "year");
-          }
-        }}
-        className={`inline-flex h-[50px] flex-col items-center justify-center gap-px px-[18px] text-[15px] leading-[1.05] font-semibold whitespace-nowrap transition-colors select-none max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
-          active === "companies"
-            ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
-            : // Same resting/hover colours as the Market Analytics logo, so the
-              // two nav items read as equal peers rather than title + sub-link.
-              "text-ink hover:text-accent"
-        }`}
-      >
-        <span>Companies</span>
-        <span className="text-muted text-[10px] font-semibold tracking-[.01em]">
-          <ViewSub scope="co" />
-        </span>
-      </Link>
+      {/* Page navigation only; time-view controls live under the hero titles. */}
+        <Link
+          href="/companies"
+          onClick={(event) => switchView(event, "companies")}
+          className={`inline-flex h-[50px] items-center px-[18px] text-[15px] font-semibold whitespace-nowrap transition-colors max-sm:h-[46px] max-sm:px-2 max-sm:text-[13px] ${
+            active === "companies"
+              ? "text-accent shadow-[inset_0_-2px_0_var(--color-accent)]"
+              : // Same resting/hover colours as the Market Analytics logo, so the
+                // two nav items read as equal peers rather than title + sub-link.
+                "text-ink hover:text-accent"
+          }`}
+        >
+          Companies
+        </Link>
 
-      {/* Right cluster: the theme+accent control lives out here (the settings
+        {/* Right cluster: the theme+accent control lives out here (the settings
           menu below is empty in default mode); the cog appears only in Dev. */}
-      <div className="ml-auto flex flex-shrink-0 items-center gap-2">
-        {/* One control, two sides: theme on the left, accent swatch on the
+        <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+          {/* One control, two sides: theme on the left, accent swatch on the
             right. In default mode the version sits to their left. */}
-        <div className="flex items-center gap-1">
-          {mode !== "dev" && (
-            <span className="relative inline-flex items-center">
-              {versionTag("text-[8px]")}
-              {verHintEl}
-            </span>
+          <div className="flex items-center gap-1">
+            {mode !== "dev" && (
+              <span className="relative inline-flex items-center">
+                {versionTag("text-[8px]")}
+                {verHintEl}
+              </span>
+            )}
+            <div className="border-line flex items-center overflow-hidden rounded-full border">
+              <button
+                type="button"
+                title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+                aria-label="Toggle light / dark theme"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="text-muted hover:text-accent hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+              >
+                {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
+              </button>
+              <span className="bg-line h-4 w-px" />
+              <button
+                type="button"
+                title={`Accent: ${palette} — click to cycle`}
+                aria-label="Cycle accent colour"
+                // Cycles through the accent palettes rather than flipping two.
+                onClick={() =>
+                  setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
+                }
+                className="hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
+              >
+                <span
+                  className="border-line h-3.5 w-3.5 rounded-full border"
+                  style={{ background: "var(--color-accent)" }}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Dev only: the version sits beside the cog, menus anchored right. */}
+          {mode === "dev" && (
+            <div
+              ref={wrapRef}
+              className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
+            >
+              {versionTag("text-[10px]")}
+              <button
+                type="button"
+                title="Settings"
+                aria-label="Settings"
+                aria-expanded={open}
+                onClick={() => setOpen((v) => !v)}
+                className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
+              >
+                <IconSettings size={19} className="block" />
+              </button>
+
+              {open && (
+                <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
+                  <button
+                    type="button"
+                    className={menuItem}
+                    onClick={() => {
+                      setMode("default");
+                      setOpen(false);
+                    }}
+                  >
+                    → Default view
+                  </button>
+                  <button
+                    type="button"
+                    className={menuItem}
+                    onClick={() => setGraphPan((v) => !v)}
+                  >
+                    🔒 Graph pan: {graphPan ? "on" : "off"}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${menuItem} cursor-default opacity-50`}
+                    title="Sodra scraping runs in CI (refresh-sodra workflow)"
+                  >
+                    🔄 Refresh Sodra
+                  </button>
+                </div>
+              )}
+            </div>
           )}
-          <div className="border-line flex items-center overflow-hidden rounded-full border">
-            <button
-              type="button"
-              title={theme === "dark" ? "Switch to light" : "Switch to dark"}
-              aria-label="Toggle light / dark theme"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="text-muted hover:text-accent hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
-            >
-              {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
-            </button>
-            <span className="bg-line h-4 w-px" />
-            <button
-              type="button"
-              title={`Accent: ${palette} — click to cycle`}
-              aria-label="Cycle accent colour"
-              // Cycles through the accent palettes rather than flipping two.
-              onClick={() =>
-                setPalette(PALETTES[(PALETTES.indexOf(palette) + 1) % PALETTES.length])
-              }
-              className="hover:bg-panel2 flex cursor-pointer items-center px-2.5 py-1 leading-none transition-colors"
-            >
-              <span
-                className="border-line h-3.5 w-3.5 rounded-full border"
-                style={{ background: "var(--color-accent)" }}
-              />
-            </button>
+        </div>
+      </nav>
+      {switchingTo && (
+        <div className="bg-bg/90 fixed inset-0 z-[700] grid place-items-center backdrop-blur-sm">
+          <div className="text-center">
+            <span className="border-line border-t-accent mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2" />
+            <p className="text-sm font-semibold">Opening {switchingTo}…</p>
           </div>
         </div>
-
-        {/* Dev only: the version sits beside the cog, menus anchored right. */}
-        {mode === "dev" && (
-          <div
-            ref={wrapRef}
-            className="relative flex flex-shrink-0 flex-col-reverse items-center justify-center gap-px"
-          >
-            {versionTag("text-[10px]")}
-            <button
-              type="button"
-              title="Settings"
-              aria-label="Settings"
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-              className="text-muted hover:text-accent cursor-pointer border-none bg-transparent px-2 py-1 leading-none transition-colors"
-            >
-              <IconSettings size={19} className="block" />
-            </button>
-
-            {open && (
-              <div className="border-line bg-panel absolute top-[calc(100%+4px)] right-0 z-200 min-w-[160px] rounded-[10px] border p-2 shadow-[0_4px_20px_rgba(0,0,0,.4)]">
-                <button
-                  type="button"
-                  className={menuItem}
-                  onClick={() => {
-                    setMode("default");
-                    setOpen(false);
-                  }}
-                >
-                  → Default view
-                </button>
-                <button
-                  type="button"
-                  className={menuItem}
-                  onClick={() => setGraphPan((v) => !v)}
-                >
-                  🔒 Graph pan: {graphPan ? "on" : "off"}
-                </button>
-                <button
-                  type="button"
-                  className={`${menuItem} cursor-default opacity-50`}
-                  title="Sodra scraping runs in CI (refresh-sodra workflow)"
-                >
-                  🔄 Refresh Sodra
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </nav>
+      )}
+    </>
   );
 }

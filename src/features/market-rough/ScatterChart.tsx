@@ -328,7 +328,7 @@ type TrailChart = {
 
 /** Size vs profitability: one bubble per company, revenue × margin, r = headcount. */
 export function ScatterChart({ model }: { model: MarketModel }) {
-  const [{ year, market, segment }] = useDashboardParams(model.last);
+  const [{ year, market, segment }] = useDashboardParams();
   const SEG_COLORS = useSegColors();
   const perEmp = market === "emp";
   const [hiddenSegs, setHiddenSegs] = useState<Set<string>>(() => new Set());

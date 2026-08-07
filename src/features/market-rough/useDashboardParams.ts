@@ -7,6 +7,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
+import { DEFAULT_YEAR } from "./year-policy";
 
 /** How money figures are scaled. Mirrors the legacy's basis toggles. */
 export const BASES = ["total", "emp"] as const;
@@ -36,12 +37,12 @@ export type MarketMode = (typeof MARKET_MODES)[number];
 export const VIEWS = ["year", "all"] as const;
 export type ViewMode = (typeof VIEWS)[number];
 
-export function useDashboardParams(defaultYear: number) {
+export function useDashboardParams() {
   return useQueryStates({
-    year: parseAsInteger.withDefault(defaultYear),
+    year: parseAsInteger.withDefault(DEFAULT_YEAR),
     // Markets and Companies keep INDEPENDENT view modes, as the legacy's
     // separate mktNavMode / coNavMode labels do.
-    mktView: parseAsStringLiteral(VIEWS).withDefault("year"),
+    mktView: parseAsStringLiteral(VIEWS).withDefault("all"),
     coView: parseAsStringLiteral(VIEWS).withDefault("year"),
     basis: parseAsStringLiteral(BASES).withDefault("total"),
     market: parseAsStringLiteral(MARKET_MODES).withDefault("whole"),

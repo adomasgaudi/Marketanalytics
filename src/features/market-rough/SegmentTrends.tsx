@@ -16,6 +16,7 @@ import {
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
 import { useSegLineColors } from "./useSegColors";
+import { useVisibleYears } from "./years";
 
 const TREND_METRICS: SegMetricKey[] = [
   "revenue",
@@ -28,7 +29,8 @@ const TREND_METRICS: SegMetricKey[] = [
 
 /** Financial metrics by segment: one line per selected segment across the years. */
 export function SegmentTrends({ model }: { model: MarketModel }) {
-  const [{ market, segment }] = useDashboardParams(model.last);
+  const [{ market, segment }] = useDashboardParams();
+  const visibleYears = useVisibleYears(model.finYears);
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   // Legacy default: just the first segment selected.
   const [segs, setSegs] = useState<Set<string>>(
@@ -89,7 +91,7 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
         width: 1,
         opacity,
         noMarkers: true,
-        data: model.finYears
+        data: visibleYears
           .map((y) => ({ x: y, y: segMetricPct(model.rows, s, metric, y, p) }))
           .filter((pt): pt is { x: number; y: number } => pt.y != null),
       });
@@ -106,7 +108,7 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
       label: segName(s),
       color: col,
       width: 2,
-      data: model.finYears
+      data: visibleYears
         .map((y) => ({ x: y, y: segMetricVal(model.rows, s, metric, basis, y) }))
         .filter((p): p is { x: number; y: number } => p.y != null),
     };
@@ -238,8 +240,8 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
             {showBands
               ? " Dashed = 25th/75th, dotted = 5th/95th percentile per segment."
               : ""}{" "}
-            Shown {model.finYears[0]}→
-            {String(model.finYears[model.finYears.length - 1]).slice(2)}.
+            Shown {visibleYears[0]}→
+            {String(visibleYears[visibleYears.length - 1]).slice(2)}.
           </p>
         </>
       ) : (

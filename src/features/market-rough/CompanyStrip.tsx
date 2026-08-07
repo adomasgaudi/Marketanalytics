@@ -7,6 +7,7 @@ import { useSourcedModel } from "./rebuilt-source";
 import { segName } from "./segments";
 import type { MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
+import { useVisibleYears } from "./years";
 
 /** Rows in the strip's grid — the F+←/→ column jump in BottomBar must match. */
 export const STRIP_ROWS = 3;
@@ -38,7 +39,8 @@ export function CompanyStrip({
   mode: "overview" | "select";
 }) {
   const model = useSourcedModel(legacyModel);
-  const [{ year, segment, companies }, setParams] = useDashboardParams(model.last);
+  const [{ year, segment, companies }, setParams] = useDashboardParams();
+  const visibleYears = useVisibleYears(model.finYears);
   const selectable = mode === "select";
 
   const [sort, setSort] = useState<Sort>("turnover");
@@ -105,7 +107,7 @@ export function CompanyStrip({
             type="button"
             title="Change year"
             className={word}
-            onClick={() => setParams({ year: cycle(model.finYears, year) })}
+            onClick={() => setParams({ year: cycle(visibleYears, year) })}
           >
             {year}
           </button>{" "}

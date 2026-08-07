@@ -15,20 +15,21 @@ import { moneyFormulas, sourceFormula } from "./Formula";
 import { KpiCard, type KpiCardData } from "./KpiCard";
 import { type MoneyFlowRanks } from "./MoneyFlow";
 import { type RevBreakdown, revBreakdown } from "./money-flow-breakdown";
-import { defaultBrand, rankOf } from "./metrics";
+import { rankOf } from "./metrics";
 import { MoneyFlow } from "./MoneyFlow";
 import { MoneyFlowByYear } from "./MoneyFlowByYear";
 import { RankVsMarket } from "./RankVsMarket";
 import { useSourcedModel } from "./rebuilt-source";
 import type { CompanyYear, MarketModel } from "./types";
 import { useDashboardParams } from "./useDashboardParams";
-import { ViewWord } from "./ViewSync";
+import { ViewLabel, ViewSwitch } from "./ViewSync";
+import { useVisibleYears } from "./years";
 
 /** The selected compare pool (legacy ovBrands + ovActive): `pool` keeps its
     order; `off` hides brands from charts; `brands` = the visible (active)
     list, first entry is the primary brand. */
-export function useSelectedBrands(model: MarketModel) {
-  const [{ companies, off }, setParams] = useDashboardParams(model.last);
+export function useSelectedBrands() {
+  const [{ companies, off }, setParams] = useDashboardParams();
   // No default company: the page opens unselected, and per-company SEO pages
   // (separate routes) are where a company is pre-picked.
   const pool = companies;
@@ -42,8 +43,8 @@ export function useSelectedBrands(model: MarketModel) {
   };
 }
 
-export function useSelectedBrand(model: MarketModel) {
-  const { brands, set } = useSelectedBrands(model);
+export function useSelectedBrand() {
+  const { brands, set } = useSelectedBrands();
   return { brand: brands[0], select: (next: string) => set([next]) };
 }
 
@@ -58,8 +59,8 @@ function SelectCompanyHint() {
 
 /** The hero: the selected company IS the title; empty selection shows a
     muted placeholder. Client-side because selection lives in the URL. */
-export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
-  const [{ companies, off }] = useDashboardParams(defaultYear);
+export function CompanyHeroTitle() {
+  const [{ companies, off }] = useDashboardParams();
   // Every selected company (minus toggled-off), not just the first — the
   // title names what the page is actually comparing.
   const pool = companies.filter((b) => !off.includes(b));
@@ -68,44 +69,46 @@ export function CompanyHeroTitle({ defaultYear }: { defaultYear: number }) {
   const brands = all.slice(0, 3);
   const more = all.length - brands.length;
   return (
-    <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
-      {/* Size steps down as the list grows, so five names still fit. */}
-      <span
-        className={cn(
-          "block",
-          brands.length > 2
-            ? "text-[clamp(26px,4.5vw,40px)] leading-[1.1]"
-            : "text-[clamp(42px,9vw,72px)]",
-        )}
-      >
-        {brands.length ? (
-          brands.map((brand, i) => (
-            <span key={brand} className="whitespace-nowrap">
-              {brand}
-              {/* ↗ to the static profile page — the crawlable twin of this view. */}
-              <Link
-                href={`/companies/${slugify(brand)}`}
-                title={`${brand} — full profile page`}
-                className="text-muted hover:text-accent ml-1.5 align-super text-[0.35em] font-bold transition-colors"
-              >
-                ↗
-              </Link>
-              {i < brands.length - 1 && <span className="text-muted/60">, </span>}
-            </span>
-          ))
-        ) : (
-          <span className="text-muted/60">Select a company</span>
-        )}
-        {more > 0 && (
-          <span className="text-muted/60 ml-2 text-[0.55em]">+{more} more</span>
-        )}
-      </span>
-      {/* The per-year / all-time toggle the old "Companies per year" title
-          carried — kept, demoted to the subtitle line (mirrors HeroTitle). */}
-      <span className="text-muted mt-3 block text-[clamp(24px,4.5vw,40px)] leading-none">
-        <ViewWord scope="co" />
-      </span>
-    </h1>
+    <div>
+      <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
+        {/* Size steps down as the list grows, so five names still fit. */}
+        <span
+          className={cn(
+            "block",
+            brands.length > 2
+              ? "text-[clamp(26px,4.5vw,40px)] leading-[1.1]"
+              : "text-[clamp(42px,9vw,72px)]",
+          )}
+        >
+          {brands.length ? (
+            brands.map((brand, i) => (
+              <span key={brand} className="whitespace-nowrap">
+                {brand}
+                {/* ↗ to the static profile page — the crawlable twin of this view. */}
+                <Link
+                  href={`/companies/${slugify(brand)}`}
+                  title={`${brand} — full profile page`}
+                  className="text-muted hover:text-accent ml-1.5 align-super text-[0.35em] font-bold transition-colors"
+                >
+                  ↗
+                </Link>
+                {i < brands.length - 1 && <span className="text-muted/60">, </span>}
+              </span>
+            ))
+          ) : (
+            <span className="text-muted/60">Select a company</span>
+          )}
+          {more > 0 && (
+            <span className="text-muted/60 ml-2 text-[0.55em]">+{more} more</span>
+          )}
+        </span>
+      {/* The current time scope stays in the title; its action sits below. */}
+        <span className="text-muted mt-3 block text-[clamp(24px,4.5vw,40px)] leading-none">
+          <ViewLabel scope="co" />
+        </span>
+      </h1>
+      <ViewSwitch scope="co" />
+    </div>
   );
 }
 
@@ -180,8 +183,8 @@ export function CompanyPerYear({
   // Follows the nav's data-source toggle, so every widget below — money-flow,
   // KPIs, ranks, deep-dive — reads the same dataset.
   const model = useSourcedModel(legacyModel);
-  const [{ year, basis, segment }] = useDashboardParams(model.last);
-  const { brands, pool } = useSelectedBrands(model);
+  const [{ year, basis, segment }] = useDashboardParams();
+  const { brands, pool } = useSelectedBrands();
   // One colour map for tabs, chips and rank bars — segment colours.
   const compareColors = useCompareColors(brandSegments(model))(pool);
   // Focused company for the single-company widgets; follows the pool.
@@ -427,7 +430,8 @@ export function CompanyPerYear({
     "Compare financials" deep-dive (legacy makeSectionsCollapsible). */
 export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
   const model = useSourcedModel(legacyModel);
-  const { brands, pool } = useSelectedBrands(model);
+  const visibleYears = useVisibleYears(model.finYears);
+  const { brands, pool } = useSelectedBrands();
   const compareColors = useCompareColors(brandSegments(model))(pool);
   // Same focus pattern as the per-year view: tabs pick which single company
   // the money-flow chart shows; the compare chart below plots all of them.
@@ -446,7 +450,7 @@ export function CompanyAllTime({ model: legacyModel }: { model: MarketModel }) {
       />
       <MoneyFlowByYear
         title={`${brand} — money-flow by year`}
-        rows={model.finYears
+        rows={visibleYears
           .map((fy) => model.byBrand[brand]?.[fy])
           .filter((r): r is CompanyYear => r != null && r.revenue != null)
           .map((r) => ({

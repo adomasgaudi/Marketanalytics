@@ -19,17 +19,20 @@ const SOURCES = [
   {
     label: "Registrų centras",
     cube: "bg-green",
-    title: "Annual filings — turnover, profit before and after tax. Taken from the registry's own daily dump, which carries FY2025.",
+    title:
+      "Annual filings — turnover, profit before and after tax. Taken from the registry's own daily dump, which carries FY2025.",
   },
   {
     label: "Sodra",
     cube: "bg-amber",
-    title: "Monthly insured headcount and gross pay, per company. The payroll is summed month by month from these.",
+    title:
+      "Monthly insured headcount and gross pay, per company. The payroll is summed month by month from these.",
   },
   {
     label: "data.gov.lt",
     cube: "bg-accent",
-    title: "The open-data mirror of Registrų centras, plus VMI's paid-tax record. Months behind the registry's own feed.",
+    title:
+      "The open-data mirror of Registrų centras, plus VMI's paid-tax record. Months behind the registry's own feed.",
   },
 ] as const;
 
@@ -37,7 +40,7 @@ const SOURCES = [
 export function TopCards({ model }: { model: MarketModel }) {
   // Same segment scope the bottom bar applies to every figure below: with one
   // segment picked the headline counts only the companies inside it.
-  const [{ segment }] = useDashboardParams(0);
+  const [{ segment }] = useDashboardParams();
   const count = segment
     ? new Set(
         model.rows

@@ -34,8 +34,8 @@ function useDevFlag() {
  * HIDDEN unless `?dev=1` — dev server included. `?per=month` still works on
  * its own, so the monthly reading stays reachable without the switch.
  */
-export function PeriodToggle({ defaultYear }: { defaultYear: number }) {
-  const [{ per }, setParams] = useDashboardParams(defaultYear);
+export function PeriodToggle() {
+  const [{ per }, setParams] = useDashboardParams();
   const dev = useDevFlag();
   if (!dev) return null;
   return (

@@ -6,18 +6,15 @@ import { useDashboardParams, type ViewMode } from "./useDashboardParams";
 export type ViewScope = "mkt" | "co";
 
 export function useViewMode(scope: ViewScope): [ViewMode, (v: ViewMode) => void] {
-  const [{ mktView, coView }, setParams] = useDashboardParams(0);
+  const [{ mktView, coView }, setParams] = useDashboardParams();
   const view = scope === "mkt" ? mktView : coView;
   const set = (v: ViewMode) =>
     setParams(scope === "mkt" ? { mktView: v } : { coView: v });
   return [view, set];
 }
 
-/**
- * The hero's clickable dotted-underline word: tapping it switches per-year ↔
- * all-years, exactly like the legacy #mktViewWord / #coViewWord.
- */
-export function ViewWord({
+/** The current time scope shown inside a hero title. */
+export function ViewLabel({
   scope,
   yearLabel = "per year",
 }: {
@@ -26,29 +23,23 @@ export function ViewWord({
       Companies keeps the abstract "per year". */
   yearLabel?: string;
 }) {
-  const [view, set] = useViewMode(scope);
-  const toggle = () => set(view === "year" ? "all" : "year");
-  return (
-    // Hover reads as "this is a control" by the dotted rule going solid —
-    // enough of a change to notice without decorating the hero.
-    <span
-      role="button"
-      tabIndex={0}
-      aria-label={`Switch to ${view === "year" ? "all years" : "per year"}`}
-      title="Tap to switch per-year / all-time"
-      onClick={toggle}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle()}
-      className="text-accent focus-visible:outline-accent cursor-pointer whitespace-nowrap underline decoration-dotted underline-offset-[5px] transition-colors duration-150 select-none hover:decoration-solid focus-visible:outline-2 focus-visible:outline-offset-2"
-    >
-      {view === "year" ? yearLabel : "all years"}
-    </span>
-  );
+  const [view] = useViewMode(scope);
+  return <>{view === "year" ? yearLabel : "all years"}</>;
 }
 
-/** Nav sub-label that follows one scope's view mode ("per year" / "all years"). */
-export function ViewSub({ scope }: { scope: ViewScope }) {
-  const [view] = useViewMode(scope);
-  return <>{view === "year" ? "per year" : "all years"}</>;
+/** Explicit action below the title; the label names the destination. */
+export function ViewSwitch({ scope }: { scope: ViewScope }) {
+  const [view, set] = useViewMode(scope);
+  const next = view === "year" ? "all" : "year";
+  return (
+    <button
+      type="button"
+      onClick={() => set(next)}
+      className="text-accent mt-3 cursor-pointer text-[13px] font-semibold underline decoration-dotted underline-offset-4 hover:decoration-solid"
+    >
+      {view === "year" ? "See all years together" : "See for a single year"}
+    </button>
+  );
 }
 
 /**

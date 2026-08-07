@@ -1,12 +1,8 @@
 "use client";
 
 import { segName } from "./segments";
-import {
-  MARKET_MODES,
-  type MarketMode,
-  useDashboardParams,
-} from "./useDashboardParams";
-import { ViewWord } from "./ViewSync";
+import { MARKET_MODES, type MarketMode, useDashboardParams } from "./useDashboardParams";
+import { ViewLabel, ViewSwitch } from "./ViewSync";
 
 /**
  * What is on screen, split into three fixed lines: WHAT is being measured,
@@ -35,7 +31,7 @@ const lensLine = (mode: MarketMode, segment: string) => {
  * are the sentence describing the page, which is the natural place to change it.
  */
 function LensWord({ mode, segment }: { mode: MarketMode; segment: string }) {
-  const [, setParams] = useDashboardParams(0);
+  const [, setParams] = useDashboardParams();
   const next = () =>
     setParams({
       market: MARKET_MODES[(MARKET_MODES.indexOf(mode) + 1) % MARKET_MODES.length],
@@ -56,27 +52,32 @@ function LensWord({ mode, segment }: { mode: MarketMode; segment: string }) {
 }
 
 export function HeroTitle({
-  defaultYear,
   segments,
 }: {
-  defaultYear: number;
   /** How many service segments the dataset actually covers. */
   segments: number;
 }) {
-  const [{ segment, market, year }] = useDashboardParams(defaultYear);
+  const [{ segment, market, year }] = useDashboardParams();
   return (
-    <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
-      {/* Subject leads, year underneath. Two fixed lines either way, so the
+    <div>
+      <h1 className="leading-[0.95] font-extrabold tracking-[-0.035em]">
+        {/* Subject leads, year underneath. Two fixed lines either way, so the
           hero keeps its height however long the subject gets — that was the
           point of splitting them. The year line is still the per-year /
           all-years toggle. */}
-      <span className="block text-[clamp(42px,9vw,72px)]">
-        {scopeLine(segment, segments)}
-      </span>
-      <span className="text-muted mt-3 block text-[clamp(24px,4.5vw,40px)] leading-none">
-        <LensWord mode={market} segment={segment} />,{" "}
-        <ViewWord scope="mkt" yearLabel={`in ${year}`} />
-      </span>
-    </h1>
+        <span className="block text-[clamp(42px,9vw,72px)]">
+          {scopeLine(segment, segments)}
+        </span>
+        <span className="text-muted mt-3 block text-[clamp(24px,4.5vw,40px)] leading-none">
+          {market === "whole" ? null : (
+            <>
+              <LensWord mode={market} segment={segment} />,{" "}
+            </>
+          )}
+          <ViewLabel scope="mkt" yearLabel={`in ${year}`} />
+        </span>
+      </h1>
+      <ViewSwitch scope="mkt" />
+    </div>
   );
 }

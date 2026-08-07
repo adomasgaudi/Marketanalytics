@@ -10,6 +10,7 @@ import { useSourcedModel } from "./rebuilt-source";
 import { useCompareColors } from "./useSegColors";
 import { brandSegments } from "./segments";
 import { useDashboardParams } from "./useDashboardParams";
+import { useVisibleYears } from "./years";
 
 const DD_METRICS: {
   key: string;
@@ -72,7 +73,8 @@ export function DeepDive({
   title?: string;
 }) {
   const model = useSourcedModel(legacyModel);
-  const [{ companies, off }] = useDashboardParams(model.last);
+  const [{ companies, off }] = useDashboardParams();
+  const visibleYears = useVisibleYears(model.years);
   const [metricKey, setMetricKey] = useState("ddRev");
 
   // Every company in the compare pool (minus the toggled-off ones) gets a
@@ -87,7 +89,7 @@ export function DeepDive({
     .map((brand) => ({
       label: brand,
       color: brands.length === 1 ? "var(--color-accent)" : colors[brand],
-      data: model.years
+      data: visibleYears
         .map((y) => ({
           x: y,
           y: metric.f(model.byBrand[brand]?.[y] ?? ({} as CompanyYear)),

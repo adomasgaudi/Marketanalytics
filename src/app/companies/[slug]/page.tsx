@@ -6,6 +6,7 @@ import { loadMarketData } from "@/features/market-rough/data";
 import { loadProfiles } from "@/features/market-rough/profile";
 import { segName } from "@/features/market-rough/segments";
 import { TopNav } from "@/features/market-rough/TopNav";
+import { PUBLIC_YEAR_FLOOR } from "@/features/market-rough/year-policy";
 import { declaredRevenue } from "@/features/explore/declared-data";
 import { SODRA } from "@/features/explore/sodra-data";
 import { slugify, slugIndex } from "@/lib/slug";
@@ -42,7 +43,7 @@ export async function generateMetadata(props: {
   ].filter(Boolean);
   return {
     title: `${data.brand} — turnover, salaries & profit`,
-    description: `${data.years[0]?.company ?? data.brand}: ${bits.join(", ") || "financials"} — registry-sourced figures, ${data.model.years[0]}–${data.model.last}.`,
+    description: `${data.years[0]?.company ?? data.brand}: ${bits.join(", ") || "financials"} — registry-sourced figures, ${PUBLIC_YEAR_FLOOR}–${data.model.last}.`,
     alternates: { canonical: `/companies/${slug}` },
   };
 }
@@ -122,7 +123,12 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
       <div className="wrap mx-auto w-full max-w-[840px] px-6 pt-6 pb-16">
         <p className="text-muted mb-2 text-[11px] font-semibold tracking-[.18em] uppercase">
           Lithuanian {meta ? segName(meta.mainSegment ?? "") : ""} agency ·{" "}
-          {model.years[0]}–{model.last}
+          <span className="public-year-range">
+            {PUBLIC_YEAR_FLOOR}–{model.last}
+          </span>
+          <span className="dev-year-range">
+            {model.years[0]}–{model.last}
+          </span>
         </p>
         <h1 className="text-ink text-[34px] leading-tight font-extrabold">{brand}</h1>
         {profile?.description && (
@@ -164,7 +170,11 @@ export default async function CompanyPage(props: { params: Promise<{ slug: strin
             </thead>
             <tbody>
               {years.map((y) => (
-                <tr key={y.year} className="border-line border-b">
+                <tr
+                  key={y.year}
+                  data-dev-only-year={y.year < PUBLIC_YEAR_FLOOR || undefined}
+                  className="border-line border-b"
+                >
                   <td className="py-2 pr-3 font-semibold">{y.year}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.revenue)}</td>
                   <td className="py-2 pr-3 tabular-nums">{fmtEurFull(y.profit)}</td>

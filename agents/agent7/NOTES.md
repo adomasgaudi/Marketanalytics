@@ -3,7 +3,7 @@
 ## In 30 words
 
 Split the shared company strip into overview and select modes. Markets now shows
-informational company pills; Companies keeps multi-selection. Shipped as v4.0
+informational company pills; Companies keeps multi-selection. Shipped as v3.100
 after type, lint, build, and route checks.
 
 ## In 300 words
@@ -23,5 +23,5 @@ three-row scrolling layout, labels, and values are unchanged in both modes.
 
 The pages pass their intent explicitly, preventing future callers from silently
 getting the wrong behavior. The app version and newest-first version history
-were advanced from v3.99 to v4.0. The production export builds successfully;
+were advanced from v3.99 to v3.100. The production export builds successfully;
 TypeScript and targeted ESLint checks also pass.

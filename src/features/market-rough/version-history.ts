@@ -10,7 +10,13 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
-    v: "v4.0.0",
+    v: "v3.101.0",
+    date: "2026-08-07",
+    title: "Clearer market navigation",
+    desc: "Adds donut segment details, public-year focus, explicit time switching, distinct pages, and a brief navigation transition.",
+  },
+  {
+    v: "v3.100.0",
     date: "2026-08-07",
     title: "Markets list simplified",
     desc: "Market company pills are now informational; company selection remains in the Companies view.",

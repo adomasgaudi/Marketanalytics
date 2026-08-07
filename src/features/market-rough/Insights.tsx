@@ -3,6 +3,7 @@ import { fmtEur, fmtPct } from "./format";
 import { margin, marketTotals, avgSalary } from "./metrics";
 import { primarySegment } from "./segments";
 import type { CompanyYear, MarketModel } from "./types";
+import { useVisibleYears } from "./years";
 
 type Insight = {
   accent: string;
@@ -25,9 +26,8 @@ const list = (parts: React.ReactNode[]) =>
   ]);
 
 /** Computes the six analyst cards from the data for one selected year. */
-function buildInsights(model: MarketModel, year: number): Insight[] {
+function buildInsights(model: MarketModel, year: number, first: number): Insight[] {
   const { rows } = model;
-  const first = model.finYears[0];
   const cur = marketTotals(rows, year);
   const prev = marketTotals(rows, year - 1);
   const base = marketTotals(rows, first);
@@ -285,7 +285,8 @@ function buildInsights(model: MarketModel, year: number): Insight[] {
 
 /** The collapsible "Key insights" card — recomputed for the selected year. */
 export function Insights({ model, year }: { model: MarketModel; year: number }) {
-  const insights = buildInsights(model, year);
+  const visibleYears = useVisibleYears(model.finYears);
+  const insights = buildInsights(model, year, visibleYears[0]);
 
   return (
     <details className="border-line bg-panel group mb-6 rounded-[10px] border">
