@@ -195,20 +195,17 @@ function useArrowKeys(step: (key: string, fHeld: boolean) => void) {
 
 /**
  * How much of each control's name to spell out, from the room the bar has.
- * Three tiers with two breakpoints, matching what the user asked for:
+ * Three supported tiers, selected conservatively so controls stay in bounds:
  *   icon  — glyph / segment code only (phones with the year track present)
  *   short — one-line names ("Whole", "/ company", "Full company")
  *   full  — the two-line market labels that carry the segment sub-line
- * Per-year keeps the old viewport cutoff (icon <768, full ≥768) so that view
- * is untouched; all-years — where the year track is hidden and the whole bar
- * is free — is the one that grows its labels to fill the space it now has.
+ * Per-year keeps the old viewport cutoff. All-years stays icon-only below the
+ * sm breakpoint; its two controls cannot safely share expanded labels there.
  */
 type Density = "icon" | "short" | "full";
 function barDensity(width: number, allYears: boolean): Density {
   if (!allYears) return width >= 768 ? "full" : "icon";
-  if (width >= 560) return "full";
-  if (width >= 380) return "short";
-  return "icon";
+  return width >= 640 ? "full" : "icon";
 }
 
 /** Move `current` by `dir` inside `list`, clamped at both ends. */
@@ -588,10 +585,10 @@ export function BottomBar({
           spreads the three groups across the bar. */}
       <div
         className={cn(
-          "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 sm:flex sm:flex-nowrap sm:gap-x-4 md:gap-x-8",
-          // All-years hides the year track; without it the two remaining
-          // controls hug the left — centre them instead.
-          view === "all" && "sm:justify-center",
+          "grid items-center gap-x-2 sm:flex sm:flex-nowrap sm:gap-x-4 md:gap-x-8",
+          view === "all"
+            ? "grid-cols-2 justify-items-center sm:justify-center"
+            : "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]",
         )}
       >
         {/* The year row only makes sense per-year — all-years mode hides it.
@@ -762,7 +759,12 @@ export function BottomBar({
         {/* The basis control can't shrink (nowrap labels, ~340px wide), so on a
             phone it used to stretch the flex line and push the year track off
             screen. Its own scroll box keeps the overflow local. */}
-        <div className="relative max-w-full min-w-0 shrink [scrollbar-width:none] justify-self-end overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div
+          className={cn(
+            "relative max-w-full min-w-0 shrink [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden",
+            view === "all" ? "justify-self-center" : "justify-self-end",
+          )}
+        >
           {mode === "market" ? (
             <Seg
               label="Market basis"

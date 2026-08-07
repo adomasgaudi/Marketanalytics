@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.102.0",
+    date: "2026-08-07",
+    title: "Balanced all-years bar",
+    desc: "Uses two equal phone columns and compact controls so the all-years bottom bar stays centered and bounded.",
+  },
+  {
     v: "v3.101.0",
     date: "2026-08-07",
     title: "Clearer market navigation",
