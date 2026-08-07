@@ -55,3 +55,8 @@ v3.109.
 v3.109 adds compact upward and rightward markers beside the scatter controls.
 They are ordinary flex items rather than canvas overlays, so they remain inside
 the card and reflow with phone controls. The next material change is v3.110.
+
+v3.110 restores visible Chart.js axis titles. Each title follows the selected
+metric and adds “per employee” only for money metrics in that basis. Keeping
+the labels in the chart layout lets Chart.js align them without viewport
+overflow. The next material change is v3.111.

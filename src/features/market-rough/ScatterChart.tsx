@@ -281,9 +281,13 @@ function buildScale(
     type: mode === "log" ? ("logarithmic" as const) : ("linear" as const),
     min: mode === "slog" ? slog(bounds.lo) : bounds.lo,
     max: mode === "slog" ? slog(bounds.hi) : bounds.hi,
-    // No title: the axis is named by its own controls, which sit where the
-    // title would be. Two labels for one axis is one too many.
-    title: { display: false },
+    title: {
+      display: true,
+      text: `${M.label}${M.money && perEmp ? " per employee" : ""}`,
+      color: skin.ink,
+      font: { size: 11, weight: 600 },
+      padding: 4,
+    },
     grid: {
       display: true,
       drawTicks: false,
