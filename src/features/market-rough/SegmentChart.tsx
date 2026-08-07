@@ -3,6 +3,7 @@
 import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Doughnut } from "react-chartjs-2";
 import { Seg } from "@/components/ui/seg";
 import { fmtEur } from "./format";
@@ -181,6 +182,12 @@ export function SegmentChart({ model }: { model: MarketModel }) {
   const [metric, setMetric] = useState<SegMetricKey>("revenue");
   const [show, setShow] = useState<"pct" | "eur">("pct");
   const [inspectedSegment, setInspectedSegment] = useState<string | null>(null);
+  const [switchingCompany, setSwitchingCompany] = useState<string | null>(null);
+  const openCompany = (brand: string) => {
+    if (switchingCompany) return;
+    setSwitchingCompany(brand);
+    window.setTimeout(() => router.push(companyHref(brand)), 500);
+  };
 
   /**
    * The aggregation basis is a way of comparing SEGMENTS with each other —
@@ -374,7 +381,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
         }))
         .filter((item) => item.sort >= 0);
   const pickLegend = segment
-    ? (key: string) => router.push(companyHref(key))
+    ? (key: string) => openCompany(key)
     : (key: string) => setInspectedSegment(key);
 
   return (
@@ -462,7 +469,7 @@ export function SegmentChart({ model }: { model: MarketModel }) {
                     if (segment) {
                       const brand =
                         datasetIndex === 1 ? companySlices[index]?.brand : null;
-                      if (brand) router.push(companyHref(brand));
+                      if (brand) openCompany(brand);
                       return;
                     }
                     const selectedSegment =
@@ -557,6 +564,16 @@ export function SegmentChart({ model }: { model: MarketModel }) {
           setInspectedSegment(null);
         }}
       />
+      {switchingCompany &&
+        createPortal(
+          <div className="bg-bg/90 fixed inset-0 z-[700] grid place-items-center backdrop-blur-sm">
+            <div className="text-center">
+              <span className="border-line border-t-accent mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2" />
+              <p className="text-sm font-semibold">Opening {switchingCompany}…</p>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }

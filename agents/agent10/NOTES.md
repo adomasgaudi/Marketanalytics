@@ -36,3 +36,8 @@ v3.105 strengthens the Companies page distinction. The earlier single 10%
 corner glow was too faint to communicate a page change; a restrained violet
 canvas plus two soft gradients now differentiates the destination without
 changing card contrast. The next material change is v3.106.
+
+v3.106 routes scoped donut company slices and legend rows through the same
+half-second loading treatment as top navigation. The overlay is portaled to
+`document.body` so chart stacking contexts cannot hide it. The next material
+change is v3.107.
