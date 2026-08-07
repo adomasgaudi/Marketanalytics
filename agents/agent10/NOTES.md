@@ -24,5 +24,10 @@ changelog advance from v3.102 to v3.103.
 
 Verify with focused ESLint, `pnpm exec tsc --noEmit`, and `pnpm run build`.
 After deployment, confirm the public bundle contains v3.103 and both salary
-labels. The next material change must advance to v3.104 (`3.104.0` in
-`package.json`).
+labels.
+
+The segment details popup later moved into a `document.body` portal in v3.104.
+That placement is load-bearing: a high z-index inside the chart's stacking
+context did not reliably clear fixed navigation. The dialog is also centered,
+width-limited, and vertically scrollable so it fits small screens. The next
+material change must advance to v3.105 (`3.105.0` in `package.json`).
