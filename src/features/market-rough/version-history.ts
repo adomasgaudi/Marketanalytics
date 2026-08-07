@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.105.0",
+    date: "2026-08-07",
+    title: "Distinct Companies canvas",
+    desc: "Adds a restrained page-wide violet treatment so Companies reads as a different destination.",
+  },
+  {
     v: "v3.104.0",
     date: "2026-08-07",
     title: "Compact segment popup",

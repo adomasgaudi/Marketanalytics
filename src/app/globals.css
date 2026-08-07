@@ -289,10 +289,15 @@ html[data-mode="dev"] .public-year-range {
   background:
     radial-gradient(
       circle at 90% 8%,
-      color-mix(in srgb, var(--color-purple) 10%, transparent),
+      color-mix(in srgb, var(--color-purple) 18%, transparent),
       transparent 34rem
     ),
-    color-mix(in srgb, var(--color-panel) 35%, var(--color-bg));
+    radial-gradient(
+      circle at 0% 72%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent),
+      transparent 28rem
+    ),
+    color-mix(in srgb, var(--color-purple) 7%, var(--color-bg));
 }
 
 /* The shared dev corner (Pepper toolkit) sits bottom-right at z-30 — this app

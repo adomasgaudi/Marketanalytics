@@ -29,5 +29,10 @@ labels.
 The segment details popup later moved into a `document.body` portal in v3.104.
 That placement is load-bearing: a high z-index inside the chart's stacking
 context did not reliably clear fixed navigation. The dialog is also centered,
-width-limited, and vertically scrollable so it fits small screens. The next
-material change must advance to v3.105 (`3.105.0` in `package.json`).
+width-limited, and vertically scrollable so it fits small screens. That change
+shipped as v3.104 (`3.104.0` in `package.json`).
+
+v3.105 strengthens the Companies page distinction. The earlier single 10%
+corner glow was too faint to communicate a page change; a restrained violet
+canvas plus two soft gradients now differentiates the destination without
+changing card contrast. The next material change is v3.106.
