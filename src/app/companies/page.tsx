@@ -57,11 +57,10 @@ export default function CompaniesPage() {
             {/* Every-agency pill band lives at the hero's foot — clicking a
               pill selects that company below. */}
             <div className="mt-6">
-              <CompanyStrip model={model} />
+              <CompanyStrip model={model} mode="select" />
             </div>
             <div className="from-accent mt-5 h-px w-full bg-gradient-to-r to-transparent opacity-40" />
           </header>
-
 
           <ViewGroupCard
             title="Financials"

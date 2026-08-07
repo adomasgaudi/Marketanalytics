@@ -88,7 +88,7 @@ export default function MarketsPage() {
 
           {/* Names the count above it: every tracked agency on one line, so the
             "132" stops being an abstraction. */}
-          <CompanyStrip model={model} />
+          <CompanyStrip model={model} mode="overview" />
 
           <div className="relative isolate">
             <Bloom

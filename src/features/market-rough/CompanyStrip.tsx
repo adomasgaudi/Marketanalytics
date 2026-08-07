@@ -27,12 +27,19 @@ function cycle<T>(list: readonly T[], current: T): T {
 /**
  * Every tracked agency on one scrolling band. The whole header line is
  * clickable: the scope word cycles segments, the year cycles years, the sort
- * word cycles turnover → salary → A–Z. Chips TOGGLE into the compare pool
- * (multi-select, held in the URL); "Open in dashboard" carries them over.
+ * word cycles turnover → salary → A–Z. In overview mode the chips are a visual
+ * market inventory; in select mode they toggle into the URL-backed compare pool.
  */
-export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
+export function CompanyStrip({
+  model: legacyModel,
+  mode,
+}: {
+  model: MarketModel;
+  mode: "overview" | "select";
+}) {
   const model = useSourcedModel(legacyModel);
   const [{ year, segment, companies }, setParams] = useDashboardParams(model.last);
+  const selectable = mode === "select";
 
   const [sort, setSort] = useState<Sort>("turnover");
   const [query, setQuery] = useState("");
@@ -60,10 +67,11 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
   const stripRef = useRef<HTMLDivElement>(null);
   const selectedKey = companies.join(",");
   useEffect(() => {
+    if (!selectable) return;
     stripRef.current
       ?.querySelector("[data-selected]")
       ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-  }, [selectedKey, year, segment]);
+  }, [selectable, selectedKey, year, segment]);
 
   // A zero-match SEARCH must keep the section (and its input) on screen;
   // only an empty year/segment hides the strip entirely.
@@ -111,7 +119,7 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
             {SORT_LABEL[sort]}
           </button>
         </span>
-        {companies.length > 0 && (
+        {selectable && companies.length > 0 && (
           <Link
             href={`/companies?companies=${companies.map(encodeURIComponent).join(",")}&year=${year}`}
             className="text-accent text-[10px] tracking-normal normal-case hover:underline"
@@ -142,32 +150,49 @@ export function CompanyStrip({ model: legacyModel }: { model: MarketModel }) {
             No agency matches “{query}”.
           </p>
         )}
-        {rows.map((row) => (
-          <button
-            key={row.brand}
-            type="button"
-            data-selected={companies.includes(row.brand) || undefined}
-            onClick={() => toggle(row.brand)}
-            title={`${row.company} — ${row.activities.map(segName).join(", ") || "no segment"} — click to select`}
-            className={`border-line bg-panel hover:border-accent hover:text-accent flex flex-none cursor-pointer items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors ${companies.includes(row.brand) ? "border-accent text-accent" : ""}`}
-          >
-            {row.brand}
-            <span className="text-muted text-[11px] tabular-nums">
-              {sort === "salary"
-                ? row.avgSalary == null
-                  ? "—"
-                  : `€${row.avgSalary}/mo`
-                : row.revenue == null
-                  ? "—"
-                  : fmtEur(row.revenue)}
-            </span>
-          </button>
-        ))}
+        {rows.map((row) => {
+          const value =
+            sort === "salary"
+              ? row.avgSalary == null
+                ? "—"
+                : `€${row.avgSalary}/mo`
+              : row.revenue == null
+                ? "—"
+                : fmtEur(row.revenue);
+          const title = `${row.company} — ${row.activities.map(segName).join(", ") || "no segment"}`;
+          const content = (
+            <>
+              {row.brand}
+              <span className="text-muted text-[11px] tabular-nums">{value}</span>
+            </>
+          );
+
+          return selectable ? (
+            <button
+              key={row.brand}
+              type="button"
+              data-selected={companies.includes(row.brand) || undefined}
+              onClick={() => toggle(row.brand)}
+              title={`${title} — click to select`}
+              className={`border-line bg-panel hover:border-accent hover:text-accent flex flex-none cursor-pointer items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap transition-colors ${companies.includes(row.brand) ? "border-accent text-accent" : ""}`}
+            >
+              {content}
+            </button>
+          ) : (
+            <div
+              key={row.brand}
+              title={title}
+              className="border-line bg-panel flex flex-none items-baseline gap-2 rounded-full border py-1 pr-3 pl-3 text-[12.5px] font-medium whitespace-nowrap"
+            >
+              {content}
+            </div>
+          );
+        })}
       </div>
 
       {/* The pool on its own line: picks vanish into the scroll above, this
           row is where they collect. Click removes. */}
-      {companies.length > 0 && (
+      {selectable && companies.length > 0 && (
         <div className="mt-3">
           <div className="text-muted mb-1.5 text-[10px] font-semibold tracking-[.18em] uppercase opacity-70">
             Selected

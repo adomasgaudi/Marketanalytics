@@ -28,7 +28,7 @@
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.99.0
+> v4.0.0
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -43,6 +43,12 @@ Are you a ?
 <br />
 
 ## Workflow
+
+### Live view
+
+The owner views the production export at `https://marketanalytics.lt/`. Run
+`pnpm build` to refresh the local `out/` artifact; pushing `main` triggers the
+GitHub Pages deployment. Verify HTTP 200 and the new version label after deploy.
 
 ### Push policy
 
