@@ -41,3 +41,8 @@ v3.106 routes scoped donut company slices and legend rows through the same
 half-second loading treatment as top navigation. The overlay is portaled to
 `document.body` so chart stacking contexts cannot hide it. The next material
 change is v3.107.
+
+v3.107 fixes the phone scatterplot's collapsed field. `flex-1` set a zero flex
+basis in the mobile column and reduced the intended 450px canvas to 150px.
+Mobile now uses a fixed flex item; desktop keeps flexible growth. The next
+material change is v3.108.

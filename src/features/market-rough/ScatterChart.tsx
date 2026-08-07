@@ -629,7 +629,7 @@ export function ScatterChart({ model }: { model: MarketModel }) {
             options={SCALE_OPTIONS}
           />
         </div>
-        <div className="chartbox tall relative h-[450px] min-w-0 flex-1 md:h-[600px] lg:h-[640px]">
+        <div className="chartbox tall relative h-[450px] min-w-0 flex-none md:h-[600px] md:flex-1 lg:h-[640px]">
           <Bubble
             // No `key`: remounting would rebuild the chart and every switch would
             // snap. The chart is kept alive so the fieldSig effect can fade the

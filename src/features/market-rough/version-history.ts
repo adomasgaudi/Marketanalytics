@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.107.0",
+    date: "2026-08-07",
+    title: "Readable phone scatterplot",
+    desc: "Prevents the mobile bubble field from collapsing to one-third of its intended height.",
+  },
+  {
     v: "v3.106.0",
     date: "2026-08-07",
     title: "Donut company transition",
