@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.109.0",
+    date: "2026-08-07",
+    title: "Scatter axis arrows",
+    desc: "Adds bounded upward and rightward markers beside the controls they describe.",
+  },
+  {
     v: "v3.108.0",
     date: "2026-08-07",
     title: "Clear scatterplot title",

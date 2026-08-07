@@ -51,3 +51,7 @@ v3.108 renames the card “Company size vs. profitability” and moves the year,
 segment, and per-employee context into a separate responsive line. This avoids
 an ambiguous title and cramped mobile wrapping. The next material change is
 v3.109.
+
+v3.109 adds compact upward and rightward markers beside the scatter controls.
+They are ordinary flex items rather than canvas overlays, so they remain inside
+the card and reflow with phone controls. The next material change is v3.110.

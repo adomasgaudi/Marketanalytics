@@ -618,6 +618,12 @@ export function ScatterChart({ model }: { model: MarketModel }) {
           the bubble field too narrow to read. */}
       <div className="flex flex-col gap-2 md:flex-row md:items-stretch md:gap-3">
         <div className="flex flex-row flex-wrap gap-[7px] md:w-[104px] md:flex-none md:flex-col md:justify-center">
+          <span
+            title="Values increase upward"
+            className="border-line text-accent flex h-7 w-7 flex-none items-center justify-center rounded-md border text-lg font-bold md:self-center"
+          >
+            ↑
+          </span>
           <Seg
             label="Y axis"
             value={yMetric}
@@ -744,6 +750,12 @@ export function ScatterChart({ model }: { model: MarketModel }) {
           btnClassName="px-2 py-1 text-[11.5px]"
           options={SCALE_OPTIONS}
         />
+        <span
+          title="Values increase rightward"
+          className="border-line text-accent flex h-7 w-7 flex-none items-center justify-center rounded-md border text-lg font-bold"
+        >
+          →
+        </span>
       </div>
     </section>
   );
