@@ -1,34 +1,8 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # AGENTS.md - Marketanalytics-stacked
 
 > Agent entrypoint for Codex and other AGENTS.md-aware agents starting on the project.
 >
-> v3.102.0
+> v3.103.0
 
 **This is NOT the Next.js you know.** This repo runs a Next.js version with breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any app code. Heed deprecation notices.
 
@@ -139,13 +113,6 @@ For this we use "snipets" or "registries" (compacted vital info and info how to 
 `- .githooks/                   Repository hooks (commit-msg format)
 ```
 
-
-
-
-
-
-
-
 This file is very valuable context. All edit here must be vital. If this file gets too big it will loose its purpose.
 
 <br />
@@ -199,4 +166,3 @@ write the code. but don't write more than 50lines of code at a time, so that i c
 <br />
 
 plan should be up to 50 words with bulets and checkboxes
-

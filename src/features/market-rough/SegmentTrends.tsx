@@ -23,7 +23,6 @@ const TREND_METRICS: SegMetricKey[] = [
   "turnover",
   "profit",
   "employees",
-  "wages",
   "avgSalary",
 ];
 
@@ -115,7 +114,8 @@ export function SegmentTrends({ model }: { model: MarketModel }) {
     if (med.data.length) series.push(med);
   });
 
-  const yUnit = metric === "avgSalary" ? "€/mo" : metric === "employees" ? "people" : "€";
+  const yUnit =
+    metric === "avgSalary" ? "€/employee/month" : metric === "employees" ? "people" : "€";
 
   return (
     <div className="card border-line bg-panel mb-4 min-w-0 rounded-xl border p-[18px]">

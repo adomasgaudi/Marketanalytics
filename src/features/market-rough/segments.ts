@@ -106,8 +106,8 @@ export const SEG_METRICS: Record<
   employees: { label: "Employees", short: "employees", f: (d) => d.employees, pos: true },
   wages: { label: "Wages", short: "wages", f: (d) => d.salaryCosts, pos: true },
   avgSalary: {
-    label: "Avg salary",
-    short: "avg salary",
+    label: "Salary / employee / month",
+    short: "monthly salary per employee",
     f: (d) => ((d.avgSalary ?? 0) > 500 ? d.avgSalary : null),
     pos: true,
     ratio: true,
@@ -268,6 +268,8 @@ export function segMetricPct(
 
 export function segDesc(metric: SegMetricKey, basis: SegBasis): string {
   const M = SEG_METRICS[metric];
+  if (M.ratio)
+    return "Average monthly salary per employee, averaged across companies in each segment.";
   return basis === "total"
     ? `Each segment's total (companies with several segments count in each). Shares use the deduped whole market, not the sum of slices.`
     : basis === "emp"

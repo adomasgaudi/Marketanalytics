@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.103.0",
+    date: "2026-08-07",
+    title: "Monthly salary metric",
+    desc: "Replaces total wages in segment trends with average monthly salary per employee.",
+  },
+  {
     v: "v3.102.0",
     date: "2026-08-07",
     title: "Balanced all-years bar",
