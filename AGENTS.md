@@ -129,6 +129,17 @@ own — the shape is 30 words, then 300.
 
 <br />
 
+## Tickets go on the Notion Ticket Board — not elsewhere
+
+[Ticket Board](https://app.notion.com/p/3b9182a8ad2d814b986ff460d5233ef5) (under
+`TURINYS → Warp agents`) is the canonical task board for this repo. Other boards
+in the workspace — `Market Analytics — UX/UI board`, `My Tasks` — are not it; do
+not file there. Schema: `Ticket` (title), `Status` (Backlog / To Do / In Progress
+/ Done), `Priority` (Low / Medium / High / Urgent), `Assignee`, `Due Date`. New
+findings land as `Backlog`. Set by the owner 2026-08-11.
+
+<br />
+
 ## Read before touching /explore/sheets
 
 [docs/ai-obs/HANDOFF-workbook-viewer.md](docs/ai-obs/HANDOFF-workbook-viewer.md) — the workbook viewer that now IS that page (ported 2026-07-22 from the standalone `financial-data-viewer`, which is retired). Covers the `workbook.json` pipeline, the disagreements record, and four decisions that look like mistakes and are not: hand-written CSS scoped to `.wbv`, no theme toggle of its own, a local `CellStyle` instead of `CSSProperties`, no changelog.
