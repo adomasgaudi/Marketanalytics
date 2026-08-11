@@ -18,6 +18,7 @@ Several agents work here at once. These notes are how they hand over.
 | [agent8](agent8/NOTES.md)   | 2026-08-07 | Navigation, segment details, year visibility, and view transitions                           |
 | [agent9](agent9/NOTES.md)   | 2026-08-07 | All-years mobile bottom navigation balanced                                                  |
 | [agent10](agent10/NOTES.md) | 2026-08-07 | Segment trends changed to monthly salary per employee                                        |
+| [agent11](agent11/NOTES.md) | 2026-08-11 | Money-flow-by-year chart numbers enlarged from 9–11px to 11–13px (v3.111, PR #12)           |
 
 ## If you are a new agent
 
