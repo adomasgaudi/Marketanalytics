@@ -1,4 +1,6 @@
 {
+  "model": "opus",
+  "effortLevel": "low",
   "//": "HOOK-01: every path is absolute via $CLAUDE_PROJECT_DIR. Relative paths (py .claude/hooks/x.py) resolve against the agent's cwd, so one `cd` into a subdir 404s every hook and blocks all Bash+Edit calls. That happened. See docs/ai-harness/harness.md.",
   "hooks": {
     "UserPromptSubmit": [
