@@ -21,19 +21,28 @@ is **not** a bug — it is a capture artifact. UX-07 survived that check.
 | ID | Ticket | Where |
 | --- | --- | --- |
 | UX-01 | Debug **`SVG`** badge renders on every chart in production | `LineChart.tsx:257`, `MoneyFlowByYear.tsx:262` |
-| UX-02 | Workbook viewer opens pre-filtered to a hardcoded search term `"fab"` | `WorkbookViewer.tsx:537` |
 | UX-03 | Footer text fails contrast at **1.35:1** (AA needs 4.5:1) | `globals.css:457` `.letterpress` |
 | UX-04 | Stray `€` glyph floating on the segment line-chart y-axis | `/` |
 | UX-05 | Coverage table year headers collapse into `201201201202202` | `/explore` @360 |
 | UX-06 | Top-ranked bar loses its value label — reads as missing data | `/companies` |
 | UX-07 | `Per employee` clipped to `Per employe` in the fixed bottom bar | `/` @1280 |
 
-**UX-01** — an 8px `SVG` pill sits at the top-left of every chartbox, twice on
-the home page alone. Leftover from the SVG-engine port.
+**UX-01 — done.** An 8px `SVG` pill sat at the top-left of every chartbox, twice
+on the home page alone. Unlike every other non-obvious choice in this codebase
+it carried no explaining comment, which is what marked it as leftover. Both
+spans removed; re-shot at 1280×900 and confirmed 0 remaining in the DOM with
+the charts otherwise unchanged.
 
 **UX-03** — measured, not eyeballed: `srgb(0.150 0.163 0.193)` on
 `rgb(10,12,17)`. `.letterpress` tints the line to just under the page floor,
 which is the stated intent, but the result is below the legibility floor too.
+**Owner's call**, so it is not being auto-fixed: the effect is deliberate and
+raising it changes a look you chose. Say the word and it goes to `text-muted`.
+
+**UX-02 was re-filed as P2 after reading the source** — the `"fab"` default is
+deliberate (`WorkbookViewer.tsx:535` scopes company sheets to Fabula), not a
+leftover. The confusion is real but the fix is a visible "Showing: Fabula ×"
+chip, not a deletion. See the CSV.
 
 <br />
 
