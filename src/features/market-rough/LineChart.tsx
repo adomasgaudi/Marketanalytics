@@ -254,10 +254,6 @@ export function LineChart({
 
   return (
     <div className="chartbox relative h-[340px]">
-      <span className="bg-panel2 text-muted pointer-events-none absolute top-1 left-1 z-[7] rounded-[3px] px-1 py-0.5 text-[8px] font-semibold tracking-[.04em] opacity-70">
-        SVG
-      </span>
-
       {/* Top-centre overlay legend (legacy .svg-legend). */}
       {labeled.length > 1 && (
         <div className="text-ink pointer-events-none absolute top-0.5 right-9 left-9 z-[6] flex flex-wrap justify-center gap-x-2.5 text-[9.5px] leading-[1.3]">

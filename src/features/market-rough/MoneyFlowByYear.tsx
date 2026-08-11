@@ -259,9 +259,6 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
         <p className="text-muted p-6 text-center text-[13px]">No data.</p>
       ) : (
         <div className="chartbox relative h-[340px]">
-          <span className="bg-panel2 text-muted pointer-events-none absolute top-1 left-1 z-[7] rounded-[3px] px-1 py-0.5 text-[8px] font-semibold tracking-[.04em] opacity-70">
-            SVG
-          </span>
           <div
             ref={hostRef}
             className="absolute inset-0 touch-none select-none"
