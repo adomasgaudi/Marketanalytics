@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Seg } from "@/components/ui/seg";
 import { fmtPct } from "./format";
 import { revBreakdown } from "./money-flow-breakdown";
+import { YearDetailsDialog } from "./YearDetailsDialog";
 
 export type YearFlow = {
   year: number;
@@ -54,10 +55,15 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const [view, setView] = useState<View | null>(null);
   const [tt, setTt] = useState<{ x: number; y: number; html: string } | null>(null);
   const drag = useRef<{ x0: number; y0: number; v: View; moved: boolean } | null>(null);
+  // A pan ends with a click event. `drag` is already null by then, so the fact
+  // that the pointer moved has to outlive it or every pan would open a dialog.
+  const panned = useRef(false);
   // Absolute € vs % of that year's turnover. In % mode every figure is divided
   // by its own year's turnover ×100, so turnover is 100% each year and the bar
   // reads as composition rather than size.
   const [pct, setPct] = useState(false);
+  // Index of the year whose detail dialog is open.
+  const [openYear, setOpenYear] = useState<number | null>(null);
 
   // Plot off `data`, not `rows`: in % mode all figures scale by the same
   // per-year turnover, so shares are preserved. `rows` (absolute) is still used
@@ -276,7 +282,10 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
             onMouseLeave={() => setTt(null)}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
-            onPointerUp={() => (drag.current = null)}
+            onPointerUp={() => {
+              panned.current = drag.current?.moved ?? false;
+              drag.current = null;
+            }}
             onDoubleClick={() => setView(null)}
           >
             <svg
@@ -504,6 +513,30 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                             {valFmt(r.payroll)}
                           </text>
                         )}
+                      {/* Whole-band hit target, drawn last so it sits over the
+                          bar and its labels. Transparent, full plot height, so
+                          a short bar is as easy to hit as a tall one. */}
+                      <rect
+                        x={cx - bandW / 2}
+                        y={m.t}
+                        width={bandW}
+                        height={ph}
+                        fill="transparent"
+                        className="cursor-pointer outline-none"
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`${r.year} money-flow details`}
+                        onClick={() => {
+                          if (panned.current) return;
+                          setTt(null);
+                          setOpenYear(r.year);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter" && e.key !== " ") return;
+                          e.preventDefault();
+                          setOpenYear(r.year);
+                        }}
+                      />
                     </g>
                   );
                 })}
@@ -538,6 +571,15 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
           </div>
         </div>
       )}
+      {/* Always the absolute figures: the dialog reports euros and computes its
+          own shares, so the % scale toggle must not reach it. */}
+      <YearDetailsDialog
+        row={rows.find((r) => r.year === openYear) ?? null}
+        prev={
+          rows[rows.findIndex((r) => r.year === openYear) - 1] ?? null
+        }
+        onClose={() => setOpenYear(null)}
+      />
     </section>
   );
 }
