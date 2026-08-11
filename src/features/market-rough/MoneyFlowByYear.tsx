@@ -132,12 +132,19 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
   const ispan = v.iMax - v.iMin || 1;
   const y = (val: number) => m.t + ph - ((val - v.vMin) / vspan) * ph;
   const x = (i: number) => m.l + ((i - v.iMin) / ispan) * pw;
-  // slotPx = pw / span. Main stack kept slimmer so the gold revenue companion
-  // beside it reads as a real second bar rather than a hairline.
+  // slotPx = pw / span. The gold revenue companion is a slim rail rather than a
+  // second full-width bar: it only has to carry a from-zero silhouette you can
+  // follow year to year, and at half the stack's width it was costing ~40% of
+  // every year's slot and pushing its own value label off the plot. Its value
+  // now rides above the group with the turnover total, so the rail itself is
+  // the only horizontal cost.
   const bandW = pw / ispan;
-  const barW = Math.min(bandW * 0.46, 44);
-  // Gold revenue bar: a proper companion, ~half the stack's width.
-  const revBarW = Math.max(9, Math.round(barW * 0.5));
+  const RAIL_GAP = 2;
+  const railW = 7;
+  const barW = Math.min(bandW * 0.52, 44);
+  // Stack + gap + rail, centred on the year tick as one group — otherwise the
+  // pair's visual centre sits right of the year label it belongs to.
+  const groupW = barW + RAIL_GAP + railW;
 
   // Round 1/2/5×10ⁿ y ticks that move with the view (legacy niceTicks).
   const ticks = useMemo(() => {
@@ -333,7 +340,10 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                   const revParts = revBreakdown(revRest, r.payroll, r.customOpex);
                   const cx = x(i);
                   if (cx < m.l - bandW || cx > m.l + pw + bandW) return null;
-                  const x0 = cx - barW / 2;
+                  const x0 = cx - groupW / 2;
+                  // Stack centre — no longer the same as the tick, so anything
+                  // that belongs to the stack alone must use this.
+                  const sx = x0 + barW / 2;
                   const yProfitTop = y(profit);
                   const yRevTop = y(profit + revRest);
                   const yTurnTop = y(profit + revRest + turnRest);
@@ -426,27 +436,19 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           the stack, on the same scale, it is a second series you
                           can actually follow. Its value rides ON TOP of it. */}
                       {r.revenue > 0 && (
-                        <g>
-                          <rect
-                            x={x0 + barW + 4}
-                            y={y(r.revenue)}
-                            width={revBarW}
-                            height={Math.max(0, y(0) - y(r.revenue))}
-                            rx={2}
-                            fill="var(--color-gold)"
-                          />
-                          <text
-                            x={x0 + barW + 4 + revBarW / 2}
-                            y={y(r.revenue) - 4}
-                            textAnchor="middle"
-                            fontSize="9"
-                            fontWeight="700"
-                            fill="var(--color-gold)"
-                          >
-                            {valFmt(r.revenue)}
-                          </text>
-                        </g>
+                        <rect
+                          x={x0 + barW + RAIL_GAP}
+                          y={y(r.revenue)}
+                          width={railW}
+                          height={Math.max(0, y(0) - y(r.revenue))}
+                          rx={2}
+                          fill="var(--color-gold)"
+                        />
                       )}
+                      {/* Both totals stack above the group, centred on the tick:
+                          the revenue figure used to sit over its own bar, which
+                          is what made the companion cost real width and clip at
+                          the plot edge. Gold keeps it tied to the rail. */}
                       <text
                         x={cx}
                         y={yTurnTop - 5}
@@ -457,6 +459,18 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       >
                         {valFmt(r.turnover)}
                       </text>
+                      {r.revenue > 0 && (
+                        <text
+                          x={cx}
+                          y={yTurnTop - 16}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="700"
+                          fill="var(--color-gold)"
+                        >
+                          {valFmt(r.revenue)}
+                        </text>
+                      )}
                       {yoy != null && (
                         <text
                           // Midway to the previous bar, at the higher of the
@@ -480,7 +494,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         r.payroll > 0 &&
                         (revParts.employer / revRest) * revH > 12 && (
                           <text
-                            x={cx}
+                            x={sx}
                             y={yRevTop + ((revParts.employer / revRest) * revH) / 2 + 3}
                             textAnchor="middle"
                             fontSize="9"
