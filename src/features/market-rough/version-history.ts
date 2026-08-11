@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.111.0",
+    date: "2026-08-11",
+    title: "Readable money-flow numbers",
+    desc: "Enlarges the money-flow-by-year chart labels from 9–11px to 11–13px so values, ticks, legend, and tooltip stay legible on the all-years view.",
+  },
+  {
     v: "v3.110.0",
     date: "2026-08-07",
     title: "Responsive scatter labels",
