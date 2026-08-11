@@ -20,9 +20,14 @@ type View = { vMin: number; vMax: number; xMin: number; xMax: number };
 function useTweenedView(target: View, sig: string): View {
   const [disp, setDisp] = useState(target);
   const dispRef = useRef(target);
-  dispRef.current = disp;
   const raf = useRef(0);
   const first = useRef(true);
+  // Mirrors `disp` into a ref so the tween below can read where the view
+  // currently sits without depending on it. Declared first so it has already
+  // run by the time the tween effect starts a new glide.
+  useEffect(() => {
+    dispRef.current = disp;
+  });
   useEffect(() => {
     if (first.current) {
       first.current = false;

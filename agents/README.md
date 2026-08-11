@@ -18,6 +18,7 @@ Several agents work here at once. These notes are how they hand over.
 | [agent8](agent8/NOTES.md)   | 2026-08-07 | Navigation, segment details, year visibility, and view transitions                           |
 | [agent9](agent9/NOTES.md)   | 2026-08-07 | All-years mobile bottom navigation balanced                                                  |
 | [agent10](agent10/NOTES.md) | 2026-08-07 | Segment trends changed to monthly salary per employee                                        |
+| [agent11](agent11/NOTES.md) | 2026-08-11 | Render-phase React fixes; why 7 setState-in-effect errors stay                               |
 
 ## If you are a new agent
 

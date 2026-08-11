@@ -125,7 +125,11 @@ function useWheelStep(
   step: (dir: 1 | -1) => void,
 ) {
   const stepRef = useRef(step);
-  stepRef.current = step;
+  // Kept fresh in an effect rather than during render: the listener below is
+  // attached once, and effects run before any wheel event can reach it.
+  useEffect(() => {
+    stepRef.current = step;
+  });
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -153,7 +157,10 @@ function useWheelStep(
  */
 function useArrowKeys(step: (key: string, fHeld: boolean) => void) {
   const stepRef = useRef(step);
-  stepRef.current = step;
+  // See useWheelStep: same latest-callback ref, same reason.
+  useEffect(() => {
+    stepRef.current = step;
+  });
   useEffect(() => {
     // F is a held chord key, not a modifier the event reports — track it
     // ourselves. Reset on blur so a missed keyup (tab away mid-hold) can't

@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.111.0",
+    date: "2026-08-11",
+    title: "Render-phase React fixes",
+    desc: "Segment dots no longer remount on every profile render; wheel, arrow-key and chart-tween callbacks refresh in effects instead of during render.",
+  },
+  {
     v: "v3.110.0",
     date: "2026-08-07",
     title: "Responsive scatter labels",

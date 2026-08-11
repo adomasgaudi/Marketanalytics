@@ -9,6 +9,29 @@ import type { MarketModel } from "./types";
 
 const Nd = () => <span className="text-muted italic">no data</span>;
 
+/** One coloured dot plus its segment name. Module-scope: defined inside the
+ *  card it would be a fresh component type on every render, remounting every
+ *  dot instead of updating it. */
+const SegDot = ({
+  seg,
+  bold,
+  colors,
+}: {
+  seg: string;
+  bold?: boolean;
+  colors: Record<string, string>;
+}) => (
+  <span className="mr-1.5 whitespace-nowrap">
+    <span
+      className="mr-1 inline-block h-2 w-2 rounded-full align-[-1px]"
+      style={{ background: colors[seg] ?? "#888" }}
+    />
+    <span className={bold ? "font-bold" : "text-muted font-normal"}>
+      {segName(seg)}
+    </span>
+  </span>
+);
+
 /** The legacy #mineNote profile box: brand + full legal name, CEO / Founded /
     Employees / Segment / Risk / Type / Website rows, then the Rekvizitai
     description (or an "About: no data" row). */
@@ -53,19 +76,6 @@ export function CompanyProfileCard({
     : (years.map((y) => mine[y]).find((r) => r.activities?.length)?.activities ?? []);
   const main = row?.mainSegment ?? acts[0];
 
-  /** One coloured dot plus its segment name. */
-  const SegDot = ({ seg, bold }: { seg: string; bold?: boolean }) => (
-    <span className="mr-1.5 whitespace-nowrap">
-      <span
-        className="mr-1 inline-block h-2 w-2 rounded-full align-[-1px]"
-        style={{ background: SEG_COLORS[seg] ?? "#888" }}
-      />
-      <span className={bold ? "font-bold" : "text-muted font-normal"}>
-        {segName(seg)}
-      </span>
-    </span>
-  );
-
   const rows: [string, React.ReactNode][] = [
     ["CEO", profile?.ceo ?? <Nd />],
     ["Founded", profile?.founded ?? <Nd />],
@@ -73,7 +83,10 @@ export function CompanyProfileCard({
     // The main segment gets its own line. Inline, an "main" tag after one of
     // four names was easy to miss, and the one segment a company is actually
     // known for is the thing a reader wants first.
-    ["Main segment", main ? <SegDot seg={main} bold /> : <Nd />],
+    [
+      "Main segment",
+      main ? <SegDot seg={main} bold colors={SEG_COLORS} /> : <Nd />,
+    ],
     [
       "Also in",
       acts.filter((s) => s !== main).length ? (
@@ -81,7 +94,7 @@ export function CompanyProfileCard({
           {acts
             .filter((s) => s !== main)
             .map((s) => (
-              <SegDot key={s} seg={s} />
+              <SegDot key={s} seg={s} colors={SEG_COLORS} />
             ))}
         </span>
       ) : (
