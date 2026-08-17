@@ -300,7 +300,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       x={m.l - 6}
                       y={ty + 3}
                       textAnchor="end"
-                      fontSize="10"
+                      fontSize="11"
                       fill="var(--color-muted)"
                     >
                       {tickFmt(t)}
@@ -318,8 +318,8 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                 ["var(--color-mf-turn-line)", "Turnover"],
               ].map(([color, label], i) => (
                 <g key={label} transform={`translate(${W - 340 + i * 84}, 10)`}>
-                  <rect width="9" height="9" rx="2" fill={color} />
-                  <text x="13" y="8" fontSize="10" fill="var(--color-ink)">
+                  <rect width="10" height="10" rx="2" fill={color} />
+                  <text x="14" y="9" fontSize="11" fill="var(--color-ink)">
                     {label}
                   </text>
                 </g>
@@ -437,9 +437,9 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           />
                           <text
                             x={x0 + barW + 4 + revBarW / 2}
-                            y={y(r.revenue) - 4}
+                            y={y(r.revenue) - 5}
                             textAnchor="middle"
-                            fontSize="9"
+                            fontSize="12"
                             fontWeight="700"
                             fill="var(--color-gold)"
                           >
@@ -449,9 +449,9 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                       )}
                       <text
                         x={cx}
-                        y={yTurnTop - 5}
+                        y={yTurnTop - 6}
                         textAnchor="middle"
-                        fontSize="10"
+                        fontSize="13"
                         fontWeight="700"
                         fill="var(--color-ink)"
                       >
@@ -463,9 +463,9 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                           // two tops: a change belongs between the years it
                           // compares, not over one of them.
                           x={(x(i - 1) + cx) / 2}
-                          y={Math.min(yTurnTop, y(data[i - 1].turnover)) - 8}
+                          y={Math.min(yTurnTop, y(data[i - 1].turnover)) - 10}
                           textAnchor="middle"
-                          fontSize="9"
+                          fontSize="12"
                           fontWeight="600"
                           fill={yoy >= 0 ? "var(--color-green)" : "var(--color-red)"}
                         >
@@ -481,9 +481,9 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                         (revParts.employer / revRest) * revH > 12 && (
                           <text
                             x={cx}
-                            y={yRevTop + ((revParts.employer / revRest) * revH) / 2 + 3}
+                            y={yRevTop + ((revParts.employer / revRest) * revH) / 2 + 4}
                             textAnchor="middle"
-                            fontSize="9"
+                            fontSize="12"
                             fontWeight="700"
                             fill="#ffffff"
                           >
@@ -505,7 +505,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
                     x={cx}
                     y={H - 8}
                     textAnchor="middle"
-                    fontSize="11"
+                    fontSize="12"
                     fill="var(--color-muted)"
                   >
                     {r.year}
@@ -516,7 +516,7 @@ export function MoneyFlowByYear({ rows, title }: { rows: YearFlow[]; title: stri
 
             {tt && (
               <div
-                className="border-line bg-panel text-ink pointer-events-none absolute z-[6] rounded-[4px] border px-1.5 py-1 text-[11px] whitespace-nowrap"
+                className="border-line bg-panel text-ink pointer-events-none absolute z-[6] rounded-[4px] border px-1.5 py-1 text-[13px] whitespace-nowrap"
                 style={{ left: tt.x, top: tt.y }}
                 dangerouslySetInnerHTML={{ __html: tt.html }}
               />

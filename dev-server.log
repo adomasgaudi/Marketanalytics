@@ -1,0 +1,15 @@
+
+> marketanalytics@3.110.0 dev C:\Users\adoma\Desktop\Coding\Client apps\Marketanalytics
+> next dev -H 0.0.0.0
+
+▲ Next.js 16.2.11 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 394ms
+
+○ Compiling / ...
+ GET / 200 in 5.0s (next.js: 4.2s, application-code: 798ms)
+ GET / 200 in 122ms (next.js: 5ms, application-code: 117ms)
+✓ Compiled in 101ms
+ GET / 200 in 122ms (next.js: 53ms, application-code: 70ms)
+ GET / 200 in 214ms (next.js: 5ms, application-code: 208ms)
