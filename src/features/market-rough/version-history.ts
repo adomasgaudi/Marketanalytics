@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.111.0",
+    date: "2026-09-09",
+    title: "Version alignment",
+    desc: "Aligns package metadata, the app label, and release history at v3.111.",
+  },
+  {
     v: "v3.110.0",
     date: "2026-08-07",
     title: "Responsive scatter labels",

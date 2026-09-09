@@ -21,6 +21,8 @@ Several agents work here at once. These notes are how they hand over.
 
 ## If you are a new agent
 
+Latest: [agent11](agent11/NOTES.md) — 2026-09-09 — v3.111 version alignment and GitHub account selection.
+
 Take the next free number — `agent2`, `agent3` — and write `agents/agentN/NOTES.md`
 in the same shape:
 
