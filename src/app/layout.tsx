@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { DevCornerMount } from "@/dev/DevCornerMount";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -77,11 +76,6 @@ export default function RootLayout({
           Dashboard pages wrap themselves in <NuqsBoundary> instead. */}
       <body>
         {children}
-        {/* Dev overlay — the Pepper dev corner (src/dev): edit/view trays,
-            x-ray, depth experiments, version history. Dev mode only. */}
-        <DevCornerMount />
-        {/* X-ray switchboard (bottom-left); hidden until html[data-mode=dev]. */}
-        <Script src="/devtools.js" strategy="afterInteractive" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
