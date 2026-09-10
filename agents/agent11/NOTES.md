@@ -12,4 +12,6 @@ Account selection is consequential here: the owner explicitly excluded adomasgau
 
 ## Follow-up: 2026-09-10
 
+Correction in v3.113: the owner clarified that developer tools should be hidden, not removed. Restored DevCornerMount and the xray asset, with the script loaded inside the developer-mode gate instead of globally. The existing eight-click unlock and normal-mode CSS hiding remain authoritative; saved developer-mode preferences retain their existing behavior.
+
 The owner requested removal of the pictured xray / box / pad / margin / inspect toolbar from the live site. Removed its global script loader and public asset, and unmounted the shared developer corner so a saved dev-mode preference cannot restore the overlay. Existing development-mode data controls remain available. Version v3.112 records this change. The production build and TypeScript check passed.

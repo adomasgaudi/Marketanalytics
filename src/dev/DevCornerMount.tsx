@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import { APP_VERSION } from "@/app-version";
 import { VERSIONS } from "@/features/market-rough/version-history";
 
 /**
  * @adomas/dev-tools is an OPTIONAL dependency: it resolves to a path outside
  * this repo, so CI installs without it. Loading it lazily and swallowing the
- * resolution failure keeps the production build green — the corner is dev-only
- * anyway, and `dev` is always false in a deployed build.
+ * resolution failure keeps the production build green. The corner and xray
+ * script load only when the user unlocks developer mode.
  */
 const DevCorner = dynamic(
   () => import("@adomas/dev-tools").then((m) => m.DevCorner).catch(() => () => null),
@@ -36,15 +37,18 @@ export function DevCornerMount() {
 
   if (!dev) return null;
   return (
-    <DevCorner
-      history={{
-        version: APP_VERSION,
-        entries: VERSIONS.map((e) => ({
-          version: e.v.replace(/^v/, ""),
-          title: e.title,
-          summary: e.desc ?? `${e.date}${e.sp != null ? ` · ${e.sp} sp` : ""}`,
-        })),
-      }}
-    />
+    <>
+      <Script src="/devtools.js" strategy="afterInteractive" />
+      <DevCorner
+        history={{
+          version: APP_VERSION,
+          entries: VERSIONS.map((e) => ({
+            version: e.v.replace(/^v/, ""),
+            title: e.title,
+            summary: e.desc ?? `${e.date}${e.sp != null ? ` · ${e.sp} sp` : ""}`,
+          })),
+        }}
+      />
+    </>
   );
 }

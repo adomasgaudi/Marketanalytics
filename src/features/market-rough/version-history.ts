@@ -10,6 +10,12 @@ export type VersionEntry = {
  *  removed in v3.41.0; the pre-v3 history lives in git only. */
 export const VERSIONS: VersionEntry[] = [
   {
+    v: "v3.113.0",
+    date: "2026-09-10",
+    title: "Restore hidden developer tools",
+    desc: "Restores the developer panel and loads the xray toolbar only in developer mode, unlocked with eight version clicks.",
+  },
+  {
     v: "v3.112.0",
     date: "2026-09-10",
     title: "Remove developer toolbar",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { DevCornerMount } from "@/dev/DevCornerMount";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -76,6 +77,7 @@ export default function RootLayout({
           Dashboard pages wrap themselves in <NuqsBoundary> instead. */}
       <body>
         {children}
+        <DevCornerMount />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
